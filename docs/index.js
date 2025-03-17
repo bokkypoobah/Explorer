@@ -12,7 +12,7 @@ const store = new Vuex.Store({
   strict: false, // TODO Set to true to test, false to disable _showDetails & vuex mutations
   state: {
     settings: {
-      etherscanAPIKey: "Blah",
+      etherscanAPIKey: null,
       version: 0,
     },
   },
