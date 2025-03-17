@@ -28,6 +28,7 @@ const Connection = {
   },
   mounted() {
     console.log(now() + " Connection - mounted");
+    store.dispatch('connection/restore');
   },
   destroyed() {
     console.log(now() + " Connection - destroyed");
@@ -54,10 +55,6 @@ const connectionModule = {
     info: state => state.info,
   },
   mutations: {
-    setConnected(state, connected) {
-      state.info.connected = connected;
-      console.log(now() + " connectionModule - mutations.setConnected - state.info: " + JSON.stringify(state.info));
-    },
     setInfo(state, info) {
       state.info.connected = info.connected;
       state.info.error = info.error;
@@ -67,6 +64,19 @@ const connectionModule = {
       state.info.coinbase = info.coinbase;
       state.provider = info.provider;
       console.log(now() + " connectionModule - mutations.setInfo - state.info: " + JSON.stringify(state.info));
+    },
+    setCoinbase(state, coinbase) {
+      state.info.coinbase = coinbase;
+      console.log(now() + " connectionModule - mutations.setCoinbase - state.info: " + JSON.stringify(state.info));
+    },
+    setBlockInfo(state, info) {
+      state.info.blockNumber = info.blockNumber;
+      state.info.timestamp = info.timestamp;
+      console.log(now() + " connectionModule - mutations.setBlockInfo - state.info: " + JSON.stringify(state.info));
+    },
+    setConnected(state, connected) {
+      state.info.connected = connected;
+      console.log(now() + " connectionModule - mutations.setConnected - state.info: " + JSON.stringify(state.info));
     },
   },
   actions: {
@@ -95,22 +105,69 @@ const connectionModule = {
           const signer = provider.getSigner();
           coinbase = await signer.getAddress();
         }
-        // TODO: Listeners
-        // window.ethereum.on('chainChanged', this.web3HandleChainChanged);
-        // window.ethereum.on('accountsChanged', this.web3HandleAccountsChanged);
-        // this.provider.on("block", this.web3HandleNewBlock);
+
+        if (connected) {
+          function handleChainChanged(_chainId) {
+            console.log(now() + " connectionModule - actions.connect.handleChainChanged - _chainId: " + parseInt(_chainId));
+            alert('Web3 network changed. This page will reload 5 seconds after you click OK.')
+            setTimeout(function() {
+                window.location.reload();
+              }, 5000);
+          }
+          window.ethereum.on('chainChanged', handleChainChanged);
+        }
+
+        if (connected) {
+          async function handleAccountsChanged(accounts) {
+            console.log(now() + " connectionModule - actions.connect.handleAccountsChanged - accounts: " + JSON.stringify(accounts));
+            const signer = provider.getSigner();
+            const coinbase = await signer.getAddress();
+            console.log(now() + " connectionModule - actions.connect.handleAccountsChanged - coinbase: " + coinbase);
+            // localStorage.gnosisSafeExplorerWeb3 = JSON.stringify(this.web3);
+            context.commit('setCoinbase', coinbase);
+            localStorage.explorerConnectionInfo = JSON.stringify(context.state.info);
+          }
+          window.ethereum.on('accountsChanged', handleAccountsChanged);
+        }
+
+        if (connected) {
+          async function handleNewBlock(blockNumber) {
+            console.log(now() + " connectionModule - actions.connect.handleNewBlock - blockNumber: " + JSON.stringify(blockNumber));
+            if (!context.state.info.blockNumber || blockNumber > context.state.info.blockNumber) {
+              const block = await provider.getBlock("latest");
+              const blockNumber = block.number;
+              const timestamp = block.timestamp;
+              if (blockNumber >= context.state.info.blockNumber) {
+                context.commit('setBlockInfo', { blockNumber, timestamp });
+                localStorage.explorerConnectionInfo = JSON.stringify(context.state.info);
+              }
+            }
+          }
+          provider.on("block", handleNewBlock);
+        }
+
       } else {
         error = "This app requires a web3 enabled browser";
       }
       context.commit('setInfo', { connected, error, chainId, blockNumber, timestamp, coinbase, provider });
+      localStorage.explorerConnectionInfo = JSON.stringify(context.state.info);
+    },
+    restore(context) {
+      console.log(now() + " connectionModule - actions.restore");
+      if (localStorage.explorerConnectionInfo) {
+        const info = JSON.parse(localStorage.explorerConnectionInfo);
+        console.log(now() + " connectionModule - actions.restore - info: " + JSON.stringify(info));
+      }
+      context.dispatch('connect');
     },
     disconnect(context) {
       console.log(now() + " connectionModule - actions.disconnect");
       if (context.state.info.connected) {
-        // TODO: Remove listeners
+        if (context.state.info.provider) {
+          context.state.info.provider.removeAllListeners();
+        }
         context.commit('setConnected', false);
-      // } else {
-      //   console.log(now() + " connectionModule - actions.disconnect - not connected");
+        localStorage.explorerConnectionInfo = JSON.stringify(context.state.info);
       }
     },
   },
