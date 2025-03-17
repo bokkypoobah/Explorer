@@ -182,9 +182,13 @@ const connectionModule = {
     restore(context) {
       if (localStorage.explorerConnectionInfo) {
         const info = JSON.parse(localStorage.explorerConnectionInfo);
-        console.log(now() + " connectionModule - actions.restore - info: " + JSON.stringify(info));
+        // console.log(now() + " connectionModule - actions.restore - info: " + JSON.stringify(info));
+        if (info.connected) {
+          context.dispatch('connect');
+        } else {
+          context.commit('setInfo', info);
+        }
       }
-      context.dispatch('connect');
     },
     disconnect(context) {
       console.log(now() + " connectionModule - actions.disconnect");
