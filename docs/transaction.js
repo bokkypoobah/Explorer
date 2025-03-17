@@ -73,11 +73,12 @@ const Transaction = {
   },
   mounted() {
     console.log(now() + " Transaction - mounted() $route: " + JSON.stringify(this.$route.params));
+    console.log(now() + " Transaction - mounted() this.txHash: " + this.txHash);
     store.dispatch('config/restoreState');
-    // this.reschedule = true;
-    // console.log(now() + " Transaction - Calling timeoutCallback()");
-    // this.timeoutCallback();
-    // this.loadNFTs();
+    const t = this;
+    setTimeout(function() {
+      store.dispatch('transaction/loadTransaction', t.txHash);
+    }, 1000);
   },
   destroyed() {
     this.reschedule = false;
@@ -87,28 +88,36 @@ const Transaction = {
 const transactionModule = {
   namespaced: true,
   state: {
-    // params: null,
-    // executing: false,
-    // executionQueue: [],
+    tx: null,
+    txReceipt: null,
   },
   getters: {
-    // params: state => state.params,
-    // executionQueue: state => state.executionQueue,
+    tx: state => state.tx,
+    txReceipt: state => state.txReceipt,
   },
   mutations: {
-    // deQueue(state) {
-    //   logDebug("transactionModule", "deQueue(" + JSON.stringify(state.executionQueue) + ")");
-    //   state.executionQueue.shift();
-    // },
-    // updateParams(state, params) {
-    //   state.params = params;
-    //   logDebug("transactionModule", "updateParams('" + params + "')")
-    // },
-    // updateExecuting(state, executing) {
-    //   state.executing = executing;
-    //   logDebug("transactionModule", "updateExecuting(" + executing + ")")
-    // },
+    setData(state, data) {
+      console.log(now() + " transactionModule - mutations.setData - data: " + JSON.stringify(data));
+      state.tx = data.tx;
+      state.txReceipt = data.txReceipt;
+      console.log(now() + " transactionModule - mutations.setData - state.tx: " + JSON.stringify(state.tx));
+      console.log(now() + " transactionModule - mutations.setData - state.txReceipt: " + JSON.stringify(state.txReceipt));
+    },
   },
   actions: {
+    async loadTransaction(context, txHash) {
+      console.log(now() + " transactionModule - actions.loadTransaction - txHash: " + txHash);
+      if (store.getters['connection/connected'] && window.ethereum) {
+        console.log(now() + " transactionModule - actions.loadTransaction - connected");
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const tx = await provider.getTransaction(txHash);
+        console.log(now() + " transactionModule - actions.loadTransaction - tx: " + JSON.stringify(tx));
+        const txReceipt = await provider.getTransactionReceipt(txHash);
+        console.log(now() + " transactionModule - actions.loadTransaction - txReceipt: " + JSON.stringify(txReceipt));
+        context.commit('setData', { tx, txReceipt });
+      } else {
+        console.error(now() + " transactionModule - actions.loadTransaction - not connected");
+      }
+    }
   },
 };
