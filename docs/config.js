@@ -30,44 +30,22 @@ const Config = {
     }
   },
   computed: {
-    // powerOn() {
-    //   return store.getters['connection/powerOn'];
-    // },
     etherscanAPIKey: {
       get: function () {
-        return store.getters['config/settings'].etherscanAPIKey;
+        return store.getters['settings'].etherscanAPIKey;
       },
       set: function (etherscanAPIKey) {
-        store.dispatch('config/setEtherscanAPIKey', etherscanAPIKey);
+        store.dispatch('setEtherscanAPIKey', etherscanAPIKey);
       },
     },
   },
   methods: {
-    // async syncIt(info) {
-    //   store.dispatch('data/syncIt', info);
-    // },
-    // async timeoutCallback() {
-    //   console.log(now() + " Config - timeoutCallback() count: " + this.count);
-    //
-    //   this.count++;
-    //   var t = this;
-    //   if (this.reschedule) {
-    //     setTimeout(function() {
-    //       t.timeoutCallback();
-    //     }, 15000);
-    //   }
-    // },
   },
   beforeDestroy() {
     console.log(now() + " Config - beforeDestroy()");
   },
   mounted() {
     console.log(now() + " Config - mounted() $route: " + JSON.stringify(this.$route.params));
-    store.dispatch('config/restoreState');
-    // this.reschedule = true;
-    // console.log(now() + " Config - Calling timeoutCallback()");
-    // this.timeoutCallback();
-    // this.loadNFTs();
   },
   destroyed() {
     this.reschedule = false;
@@ -77,39 +55,11 @@ const Config = {
 const configModule = {
   namespaced: true,
   state: {
-    settings: {
-      etherscanAPIKey: null,
-      version: 0,
-    },
   },
   getters: {
-    settings: state => state.settings,
   },
   mutations: {
-    restoreState(state, settings) {
-      // console.log(now() + " configModule - mutations.restoreState - settings: " + JSON.stringify(settings));
-      state.settings = settings;
-    },
-    setEtherscanAPIKey(state, apiKey) {
-      // console.log(now() + " configModule - mutations.setEtherscanAPIKey - apiKey: " + apiKey);
-      state.settings.etherscanAPIKey = apiKey;
-    },
   },
   actions: {
-    restoreState(context) {
-      console.log(now() + " configModule - actions.restoreState");
-      if (localStorage.explorerConfigSettings) {
-        const tempSettings = JSON.parse(localStorage.explorerConfigSettings);
-        if ('version' in tempSettings && tempSettings.version == context.state.settings.version) {
-          // console.log(now() + " configModule - actions.restoreState - tempSettings: " + JSON.stringify(tempSettings));
-          context.commit("restoreState", tempSettings);
-        }
-      }
-    },
-    setEtherscanAPIKey(context, apiKey) {
-      // console.log(now() + " configModule - actions.setEtherscanAPIKey - apiKey: " + apiKey);
-      context.commit('setEtherscanAPIKey', apiKey);
-      localStorage.explorerConfigSettings = JSON.stringify(context.state.settings);
-    },
   },
 };

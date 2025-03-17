@@ -143,11 +143,6 @@ const Welcome = {
   },
   mounted() {
     console.log(now() + " Welcome - mounted() $route: " + JSON.stringify(this.$route.params));
-    store.dispatch('config/restoreState');
-    // this.reschedule = true;
-    // console.log(now() + " Welcome - Calling timeoutCallback()");
-    // this.timeoutCallback();
-    // this.loadNFTs();
   },
   destroyed() {
     this.reschedule = false;

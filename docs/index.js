@@ -10,56 +10,77 @@ const router = new VueRouter({
 const storeVersion = 1;
 const store = new Vuex.Store({
   strict: false, // TODO Set to true to test, false to disable _showDetails & vuex mutations
-  // state: {
-  //   username: 'Jack',
-  //   phrases: ['Welcome back', 'Have a nice day'],
-  // },
-  // getters: {
-  //   getMessage(state) {
-  //     return state.route.name === 'top' ?
-  //       `${state.phrases[0]}, ${state.username}` :
-  //       `${state.phrases[1]}, ${state.username}`;
-  //   },
-  // },
+  state: {
+    settings: {
+      etherscanAPIKey: "Blah",
+      version: 0,
+    },
+  },
+  getters: {
+    settings: state => state.settings,
+  },
   mutations: {
-    initialiseStore(state) {
-      // TODO: Restore to IndexedDB here?
-      // // Check if the store exists
-    	// if (localStorage.getItem('store')) {
-    	// 	let store = JSON.parse(localStorage.getItem('store'));
-      //
-    	// 	// Check the version stored against current. If different, don't
-    	// 	// load the cached version
-    	// 	if(store.version == storeVersion) {
-      //     // logDebug("store.initialiseStore BEFORE", JSON.stringify(state, null, 4));
-    	// 		this.replaceState(
-    	// 			Object.assign(state, store.state)
-    	// 		);
-      //     // logDebug("store.initialiseStore AFTER", JSON.stringify(state, null, 4));
-    	// 	} else {
-    	// 		state.version = storeVersion;
-    	// 	}
-    	// }
-    }
+    restoreState(state, settings) {
+      console.log(now() + " store - mutations.restoreState - settings: " + JSON.stringify(settings));
+      state.settings = settings;
+    },
+    setEtherscanAPIKey(state, apiKey) {
+      console.log(now() + " store - mutations.setEtherscanAPIKey - apiKey: " + apiKey);
+      state.settings.etherscanAPIKey = apiKey;
+    },
+  },
+  actions: {
+    restoreState(context, settings) {
+      console.log(now() + " store - actions.restoreState - settings: " + JSON.stringify(settings));
+      context.commit('restoreState', settings);
+    },
+    setEtherscanAPIKey(context, apiKey) {
+      console.log(now() + " store - actions.setEtherscanAPIKey - apiKey: " + apiKey);
+      context.commit('setEtherscanAPIKey', apiKey);
+    },
   },
   modules: {
     connection: connectionModule,
     config: configModule,
     transaction: transactionModule,
-  }
+  },
+  plugins: [
+    function persistSettings(store) {
+      store.subscribe((mutation, state) => {
+        console.log(now() + " plugins.persistSettings - mutation.type: " + mutation.type);
+        if (mutation.type == "setEtherscanAPIKey") {
+          console.log(now() + " plugins.persistSettings - Persisting settings");
+          localStorage.explorerSettings = JSON.stringify(state.settings);
+        }
+      });
+
+      console.log(now() + " plugins.persistSettings INIT");
+      if (localStorage.explorerSettings) {
+        const tempSettings = JSON.parse(localStorage.explorerSettings);
+        console.log(now() + " plugins.persistSettings - tempSettings: " + JSON.stringify(tempSettings));
+        if ('version' in tempSettings && tempSettings.version == store.getters["settings"].version) {
+          console.log(now() + " plugins.persistSettings - LOADING tempSettings: " + JSON.stringify(tempSettings));
+          store.dispatch('restoreState', tempSettings);
+        }
+      }
+    },
+  ],
 });
 
 // Subscribe to store updates
-store.subscribe((mutation, state) => {
-  let store = {
-		version: storeVersion,
-		state: state,
-	};
-  // console.log("store.subscribe - mutation.type: " + mutation.type);
-  // console.log("store.subscribe - mutation.payload: " + mutation.payload);
-  // logDebug("store.updated", JSON.stringify(store, null, 4));
-	// TODO: Save to IndexedDB here? localStorage.setItem('store', JSON.stringify(store));
-});
+// store.subscribe((mutation, state) => {
+//   // console.log(now() + " store.subscribe-handler - mutation: " + JSON.stringify(mutation) + ", state: " + JSON.stringify(state));
+//   // let store = {
+// 	// 	version: storeVersion,
+// 	// 	state: state,
+// 	// };
+//   // console.log(now() + " store.subscribe-handler - mutation.type: " + mutation.type);
+//   // console.log(now() + " store.subscribe-handler - mutation.payload: " + JSON.stringify(mutation.payload).substring(0, 200));
+//   // console.table(mutation);
+//   // console.table(state);
+//   // logDebug("store.updated", JSON.stringify(store, null, 4));
+// 	// TODO: Save to IndexedDB here? localStorage.setItem('store', JSON.stringify(store));
+// });
 
 // sync store and router by using `vuex-router-sync`
 sync(store, router);
@@ -68,9 +89,7 @@ const app = new Vue({
   router,
   store,
   beforeCreate() {
-    // setLogLevel(1); // 0 = NONE, 1 = INFO (default), 2 = DEBUG
     console.log(now() + " index.js - app:beforeCreate");
-		// this.$store.commit('initialiseStore');
 	},
   data() {
     return {
@@ -94,9 +113,6 @@ const app = new Vue({
     },
   },
   methods: {
-    // setConnected(connected) {
-    //   store.dispatch('connection/setConnected', connected);
-    // },
     connect(connected) {
       store.dispatch('connection/connect');
     },
@@ -111,6 +127,5 @@ const app = new Vue({
   },
   destroyed() {
     console.log(now() + " index.js - app.destroyed");
-    // this.reschedule = false;
   },
 }).$mount('#app');

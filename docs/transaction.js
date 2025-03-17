@@ -92,7 +92,6 @@ const Transaction = {
   mounted() {
     console.log(now() + " Transaction - mounted() $route: " + JSON.stringify(this.$route.params));
     console.log(now() + " Transaction - mounted() this.txHash: " + this.txHash);
-    store.dispatch('config/restoreState');
     const t = this;
     setTimeout(function() {
       store.dispatch('transaction/loadTransaction', t.txHash);
