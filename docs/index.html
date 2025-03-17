@@ -53,18 +53,26 @@
           <b-navbar-nav class="ml-auto">
             <b-nav-item size="sm" to="/" active-class="active" v-b-popover.hover="'Welcome'">Home</b-nav-item>
             <b-button v-if="!connected" size="sm" variant="outline-primary" class="ml-5 mr-1" @click="connect();" v-b-popover.hover.bottom="'Connect to web3'">Connect</b-button>
-            <b-button v-if="connected" size="sm" variant="outline-primary" class="ml-5 mr-1" @click="disconnect();" v-b-popover.hover.bottom="'Disconnect from web3'">{{ info.coinbase && info.coinbase.substring(0, 10) }}</b-button>
+            <b-button v-if="connected" size="sm" variant="outline-primary" class="ml-5 mr-1" @click="disconnect();" v-b-popover.hover.bottom="'Connected to web3 with account ' + info.coinbase">{{ info.coinbase && info.coinbase.substring(0, 10) }}</b-button>
           </b-navbar-nav>
         </b-navbar>
-        <connection></connection>
         <div style="min-height: 600px;">
           <router-view></router-view>
         </div>
         <hr />
         <b-card no-header body-class="m-0 p-0" class="m-0 p-0 border-0">
-          <b-card-text class="text-right">
-            gm, and enjoy! <i>Explorer</i> &copy; Bok Consulting Pty Ltd 2025
-          </b-card-text>
+          <div class="d-flex flex-wrap m-0 p-0">
+            <div class="ml-0 mt-1 pl-1">
+              <connection></connection>
+            </div>
+            <div class="mt-0 flex-grow-1">
+            </div>
+            <div class="mt-0 pl-1 pr-1">
+              <font size="-1">
+                gm, and enjoy! <i>Explorer</i> &copy; Bok Consulting Pty Ltd 2025. The MIT Licence
+              </font>
+            </div>
+          </div>
         </b-card>
       </b-container>
     </div>

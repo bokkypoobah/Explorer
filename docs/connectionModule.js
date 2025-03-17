@@ -4,11 +4,18 @@
 const Connection = {
   template: `
     <div>
-      Connection Module:
-      <ul>
-        <li>connected: {{ connected }}</li>
-        <li>info: {{ info }}</li>
-      </ul>
+      <font size="-1">
+        {{ connected ? "Connected" : "Disconnected" }}
+        <b-link v-if="info.chainId" :href="'https://etherscan.io/'" v-b-popover.hover.bottom="'Network'" target="_blank">
+          {{ info.chainId == '1' ? 'Ethereum Mainnet' : 'Unsupported Network' }}
+        </b-link>
+        <b-link v-if="info.chainId == 1 && info.blockNumber" :href="'https://etherscan.io/block/' + info.blockNumber" v-b-popover.hover.bottom="'Latest block'" target="_blank">
+          {{ '#' + commify0(info.blockNumber) }}
+        </b-link>
+        <span v-if="info.chainId == 1 && info.timestamp" v-b-popover.hover.bottom="formatTimestamp(info.timestamp)">
+          {{ formatTimeDiff(info.timestamp) }}
+        </span>
+      </font>
     </div>
   `,
   data: function () {
@@ -25,6 +32,29 @@ const Connection = {
     },
   },
   methods: {
+    commify0(n) {
+      if (n != null) {
+        return Number(n).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+      }
+      return null;
+    },
+    formatTimestamp(ts) {
+      if (ts != null) {
+        // if (this.settings.reportingDateTime == 1) {
+        //   return moment.unix(ts).utc().format("YYYY-MM-DD HH:mm:ss");
+        // } else {
+          return moment.unix(ts).format("YYYY-MM-DD HH:mm:ss");
+        // }
+      }
+      return null;
+    },
+    formatTimeDiff(unixtime) {
+      if (unixtime) {
+        return moment.unix(unixtime).fromNow();
+      }
+      return null;
+    },
+
   },
   mounted() {
     console.log(now() + " Connection - mounted");
