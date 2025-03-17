@@ -9,6 +9,16 @@ const Transaction = {
             <div class="ml-1 mt-1 p-0" style="width: 36.0rem;">
               <b-form-input type="text" size="sm" :value="txHash" @change="updateTxHash($event);" debounce="600" v-b-popover.hover.bottom="'Transaction hash'" placeholder="🔍 tx hash, e.g., 0x1234...abcd"></b-form-input>
             </div>
+            <div class="mt-1 pr-1">
+              <b-dropdown size="sm" right text="" variant="link" class="m-0 p-0">
+                <b-dropdown-text>Sample Transactions</b-dropdown-text>
+                <b-dropdown-divider></b-dropdown-divider>
+                <b-dropdown-item @click="loadTransaction('0x00cf367c9ee21dc9538355d1da4ebac9b83645b790b07dd2c9d15ae7f9aed6d2');">EF: DeFi Multisig - Safe v1.4.1 - Transaction</b-dropdown-item>
+                <b-dropdown-item @click="loadTransaction('0xe6030c80c06283197ec49ef8fa6f22ee57e07fab776136310801415db5ccc389');">Random EOA to EOA ETH transfer</b-dropdown-item>
+              </b-dropdown>
+            </div>
+            <!-- <div class="mt-0 flex-grow-1">
+            </div> -->
           </div>
 
           <b-card-body class="p-0">
@@ -16,7 +26,10 @@ const Transaction = {
 
               <b-card-text>
                 <h5>Transaction</h5>
+                error: {{ error }}
+                <br />
                 tx: {{ tx }}
+                <br />
                 txReceipt: {{ txReceipt }}
               </b-card-text>
 
@@ -34,6 +47,9 @@ const Transaction = {
     }
   },
   computed: {
+    error() {
+      return store.getters['transaction/error'];
+    },
     tx() {
       return store.getters['transaction/tx'];
     },
@@ -51,22 +67,20 @@ const Transaction = {
     updateTxHash(txHash) {
       console.log(now() + " Transaction - updateTxHash - txHash: " + txHash);
       this.$router.push({ name: 'Transaction', params: { txHash } })
+      store.dispatch('transaction/loadTransaction', txHash);
     },
-    // async syncIt(info) {
-    //   store.dispatch('data/syncIt', info);
-    // },
-    // async timeoutCallback() {
-    //   console.log(now() + " Transaction - timeoutCallback() count: " + this.count);
-    //
-    //   this.count++;
-    //   var t = this;
-    //   if (this.reschedule) {
-    //     setTimeout(function() {
-    //       t.timeoutCallback();
-    //     }, 15000);
-    //   }
-    // },
+    // TODO: May be duplicate of above
+    loadTransaction(txHash) {
+      console.log(now() + " Transaction - loadTransaction - txHash: " + txHash);
+      this.$router.push({ name: 'Transaction', params: { txHash } })
+      store.dispatch('transaction/loadTransaction', txHash);
+    },
   },
+  // beforeRouteUpdate(to, from) {
+  //   console.log(now() + " Transaction - beforeRouteUpdate");
+  //   console.table(to);
+  //   console.table(from);
+  // },
   beforeDestroy() {
     console.log(now() + " Transaction - beforeDestroy()");
   },
@@ -87,36 +101,44 @@ const Transaction = {
 const transactionModule = {
   namespaced: true,
   state: {
+    error: null,
     tx: null,
     txReceipt: null,
   },
   getters: {
+    error: state => state.error,
     tx: state => state.tx,
     txReceipt: state => state.txReceipt,
   },
   mutations: {
     setData(state, data) {
-      console.log(now() + " transactionModule - mutations.setData - data: " + JSON.stringify(data));
+      // console.log(now() + " transactionModule - mutations.setData - data: " + JSON.stringify(data));
+      state.error = data.error;
       state.tx = data.tx;
       state.txReceipt = data.txReceipt;
-      console.log(now() + " transactionModule - mutations.setData - state.tx: " + JSON.stringify(state.tx));
-      console.log(now() + " transactionModule - mutations.setData - state.txReceipt: " + JSON.stringify(state.txReceipt));
+      // console.log(now() + " transactionModule - mutations.setData - state.tx: " + JSON.stringify(state.tx));
+      // console.log(now() + " transactionModule - mutations.setData - state.txReceipt: " + JSON.stringify(state.txReceipt));
     },
   },
   actions: {
     async loadTransaction(context, txHash) {
       console.log(now() + " transactionModule - actions.loadTransaction - txHash: " + txHash);
-      if (store.getters['connection/connected'] && window.ethereum) {
-        console.log(now() + " transactionModule - actions.loadTransaction - connected");
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const tx = await provider.getTransaction(txHash);
-        console.log(now() + " transactionModule - actions.loadTransaction - tx: " + JSON.stringify(tx));
-        const txReceipt = await provider.getTransactionReceipt(txHash);
-        console.log(now() + " transactionModule - actions.loadTransaction - txReceipt: " + JSON.stringify(txReceipt));
-        context.commit('setData', { tx, txReceipt });
+      let [error, tx, txReceipt] = [null, null, null];
+      if (/^0x([A-Fa-f0-9]{64})$/.test(txHash)) {
+        if (store.getters['connection/connected'] && window.ethereum) {
+          const provider = new ethers.providers.Web3Provider(window.ethereum);
+          tx = await provider.getTransaction(txHash);
+          txReceipt = await provider.getTransactionReceipt(txHash);
+          if (!tx || !txReceipt) {
+            error = "No transactions matching the transaction hash"
+          }
+        } else {
+          error = "Not connected";
+        }
       } else {
-        console.error(now() + " transactionModule - actions.loadTransaction - not connected");
+        error = "Invalid transaction hash";
       }
+      context.commit('setData', { error, tx, txReceipt });
     }
   },
 };
