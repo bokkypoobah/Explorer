@@ -32,6 +32,8 @@
 
     <script src="globals.js"></script>
     <script src="welcome.js"></script>
+    <script src="connectionModule.js"></script>
+
     <script src="routes.js"></script>
 
     <link rel="icon" type="image/png" href="/images/favicon-96x96.png" sizes="96x96" />
@@ -52,6 +54,7 @@
             <b-nav-item size="sm" to="/" active-class="active" v-b-popover.hover="'Welcome'">Home</b-nav-item>
           </b-navbar-nav>
         </b-navbar>
+        <connection></connection>
         <div style="min-height: 600px;">
           <router-view></router-view>
         </div>

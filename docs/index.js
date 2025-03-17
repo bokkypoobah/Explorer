@@ -1,5 +1,7 @@
 Vue.use(Vuex);
 
+Vue.component('connection', Connection);
+
 const router = new VueRouter({
   // mode: 'history', // https://stackoverflow.com/questions/45201014/how-to-handle-anchors-bookmarks-with-vue-router
   routes: routes,
@@ -41,17 +43,7 @@ const store = new Vuex.Store({
     }
   },
   modules: {
-    // connection: connectionModule,
-    // welcome: welcomeModule,
-    // names: namesModule,
-    // search: searchModule,
-    // newAddress: newAddressModule,
-    // syncOptions: syncOptionsModule,
-    // viewAddress: viewAddressModule,
-    // viewName: viewNameModule,
-    // config: configModule,
-    // data: dataModule,
-    // addresses: addressesModule,
+    connection: connectionModule,
   }
 });
 
