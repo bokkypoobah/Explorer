@@ -31,6 +31,8 @@ const Transaction = {
                 tx: {{ tx }}
                 <br />
                 txReceipt: {{ txReceipt }}
+                <br />
+                timestamp: {{ timestamp }}
               </b-card-text>
 
             </b-card>
@@ -55,6 +57,9 @@ const Transaction = {
     },
     txReceipt () {
       return store.getters['transaction/txReceipt'];
+    },
+    timestamp () {
+      return store.getters['transaction/timestamp'];
     },
     // coinbase() {
     //   return store.getters['connection/coinbase'];
@@ -104,11 +109,13 @@ const transactionModule = {
     error: null,
     tx: null,
     txReceipt: null,
+    timestamp: null,
   },
   getters: {
     error: state => state.error,
     tx: state => state.tx,
     txReceipt: state => state.txReceipt,
+    timestamp: state => state.timestamp,
   },
   mutations: {
     setData(state, data) {
@@ -116,6 +123,7 @@ const transactionModule = {
       state.error = data.error;
       state.tx = data.tx;
       state.txReceipt = data.txReceipt;
+      state.timestamp = data.timestamp;
       // console.log(now() + " transactionModule - mutations.setData - state.tx: " + JSON.stringify(state.tx));
       // console.log(now() + " transactionModule - mutations.setData - state.txReceipt: " + JSON.stringify(state.txReceipt));
     },
@@ -123,14 +131,16 @@ const transactionModule = {
   actions: {
     async loadTransaction(context, txHash) {
       console.log(now() + " transactionModule - actions.loadTransaction - txHash: " + txHash);
-      let [error, tx, txReceipt] = [null, null, null];
+      let [error, tx, txReceipt, timestamp] = [null, null, null, null];
       if (/^0x([A-Fa-f0-9]{64})$/.test(txHash)) {
         if (store.getters['connection/connected'] && window.ethereum) {
           const provider = new ethers.providers.Web3Provider(window.ethereum);
           tx = await provider.getTransaction(txHash);
           txReceipt = await provider.getTransactionReceipt(txHash);
+          const block = tx && await provider.getBlock(tx.blockNumber) || null;
+          timestamp = block && block.timestamp || null;
           if (!tx || !txReceipt) {
-            error = "No transactions matching the transaction hash"
+            error = "Transaction with specified hash cannot be found"
           }
         } else {
           error = "Not connected";
@@ -138,7 +148,7 @@ const transactionModule = {
       } else {
         error = "Invalid transaction hash";
       }
-      context.commit('setData', { error, tx, txReceipt });
+      context.commit('setData', { error, tx, txReceipt, timestamp });
     }
   },
 };
