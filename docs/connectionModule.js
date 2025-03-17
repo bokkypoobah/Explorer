@@ -63,20 +63,20 @@ const connectionModule = {
       state.info.timestamp = info.timestamp;
       state.info.coinbase = info.coinbase;
       state.provider = info.provider;
-      console.log(now() + " connectionModule - mutations.setInfo - state.info: " + JSON.stringify(state.info));
+      // console.log(now() + " connectionModule - mutations.setInfo - state.info: " + JSON.stringify(state.info));
     },
     setCoinbase(state, coinbase) {
       state.info.coinbase = coinbase;
-      console.log(now() + " connectionModule - mutations.setCoinbase - state.info: " + JSON.stringify(state.info));
+      // console.log(now() + " connectionModule - mutations.setCoinbase - state.info: " + JSON.stringify(state.info));
     },
     setBlockInfo(state, info) {
       state.info.blockNumber = info.blockNumber;
       state.info.timestamp = info.timestamp;
-      console.log(now() + " connectionModule - mutations.setBlockInfo - state.info: " + JSON.stringify(state.info));
+      // console.log(now() + " connectionModule - mutations.setBlockInfo - state.info: " + JSON.stringify(state.info));
     },
     setConnected(state, connected) {
       state.info.connected = connected;
-      console.log(now() + " connectionModule - mutations.setConnected - state.info: " + JSON.stringify(state.info));
+      // console.log(now() + " connectionModule - mutations.setConnected - state.info: " + JSON.stringify(state.info));
     },
   },
   actions: {
@@ -94,7 +94,6 @@ const connectionModule = {
         } else {
           connected = true;
         }
-        console.log(now() + " connectionModule - actions.connect - connected: " + connected);
         if (connected) {
           provider = new ethers.providers.Web3Provider(window.ethereum);
           const network = await provider.getNetwork();
@@ -119,7 +118,6 @@ const connectionModule = {
 
         if (connected) {
           async function handleAccountsChanged(accounts) {
-            console.log(now() + " connectionModule - actions.connect.handleAccountsChanged - accounts: " + JSON.stringify(accounts));
             const signer = provider.getSigner();
             const coinbase = await signer.getAddress();
             console.log(now() + " connectionModule - actions.connect.handleAccountsChanged - coinbase: " + coinbase);
@@ -131,7 +129,6 @@ const connectionModule = {
 
         if (connected) {
           async function handleNewBlock(blockNumber) {
-            console.log(now() + " connectionModule - actions.connect.handleNewBlock - blockNumber: " + JSON.stringify(blockNumber));
             if (!context.state.info.blockNumber || blockNumber > context.state.info.blockNumber) {
               const block = await provider.getBlock("latest");
               const blockNumber = block.number;
@@ -139,6 +136,7 @@ const connectionModule = {
               if (blockNumber > context.state.info.blockNumber) {
                 context.commit('setBlockInfo', { blockNumber, timestamp });
                 localStorage.explorerConnectionInfo = JSON.stringify(context.state.info);
+                console.log(now() + " connectionModule - actions.connect.handleNewBlock - blockNumber: " + blockNumber);
               }
             }
           }
@@ -152,7 +150,6 @@ const connectionModule = {
       localStorage.explorerConnectionInfo = JSON.stringify(context.state.info);
     },
     restore(context) {
-      console.log(now() + " connectionModule - actions.restore");
       if (localStorage.explorerConnectionInfo) {
         const info = JSON.parse(localStorage.explorerConnectionInfo);
         console.log(now() + " connectionModule - actions.restore - info: " + JSON.stringify(info));
