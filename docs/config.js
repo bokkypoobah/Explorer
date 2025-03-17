@@ -3,19 +3,23 @@ const Config = {
     <div class="m-0 p-0">
 
       <b-card no-body no-header class="border-0" header-class="p-1">
-        <b-card no-body class="border-0 m-0 mt-2">
+        <h5 class="mt-3">Config</h5>
+        <b-card no-body no-header bg-variant="light" class="m-1 mt-3 p-1 w-75">
+          <b-form-group label="Etherscan API Key:" label-for="etherscan-apikey" label-size="sm" label-cols-sm="2" label-align-sm="right" description="This key is stored in your local browser storage and is sent with Etherscan API requests. If not supplied, imports from Etherscan will be rate limited to 1 request every 5 seconds" class="mx-0 my-1 p-0">
+            <b-form-input type="text" size="sm" id="etherscan-apikey" v-model="etherscanAPIKey" placeholder="See https://docs.etherscan.io/ to obtain an API key" class="w-75"></b-form-input>
+          </b-form-group>
+        </b-card>
 
+        <!-- <b-card no-body class="border-0 m-0 mt-2">
           <b-card-body class="p-0">
             <b-card class="mb-2 border-0">
-
               <b-card-text>
                 <h5>Config</h5>
-                <!-- to <i>Explorer</i>. Status: <b>WIP</b> -->
               </b-card-text>
-
             </b-card>
           </b-card-body>
-        </b-card>
+        </b-card> -->
+
       </b-card>
     </div>
   `,
@@ -29,15 +33,14 @@ const Config = {
     // powerOn() {
     //   return store.getters['connection/powerOn'];
     // },
-    // explorer () {
-    //   return store.getters['connection/explorer'];
-    // },
-    // coinbase() {
-    //   return store.getters['connection/coinbase'];
-    // },
-    // chainId() {
-    //   return store.getters['connection/chainId'];
-    // },
+    etherscanAPIKey: {
+      get: function () {
+        return store.getters['config/settings'].etherscanAPIKey;
+      },
+      set: function (etherscanAPIKey) {
+        store.dispatch('config/setEtherscanAPIKey', etherscanAPIKey);
+      },
+    },
   },
   methods: {
     // async syncIt(info) {
@@ -60,6 +63,7 @@ const Config = {
   },
   mounted() {
     console.log(now() + " Config - mounted() $route: " + JSON.stringify(this.$route.params));
+    store.dispatch('config/restoreState');
     // this.reschedule = true;
     // console.log(now() + " Config - Calling timeoutCallback()");
     // this.timeoutCallback();
@@ -73,28 +77,39 @@ const Config = {
 const configModule = {
   namespaced: true,
   state: {
-    // params: null,
-    // executing: false,
-    // executionQueue: [],
+    settings: {
+      etherscanAPIKey: null,
+      version: 0,
+    },
   },
   getters: {
-    // params: state => state.params,
-    // executionQueue: state => state.executionQueue,
+    settings: state => state.settings,
   },
   mutations: {
-    // deQueue(state) {
-    //   logDebug("configModule", "deQueue(" + JSON.stringify(state.executionQueue) + ")");
-    //   state.executionQueue.shift();
-    // },
-    // updateParams(state, params) {
-    //   state.params = params;
-    //   logDebug("configModule", "updateParams('" + params + "')")
-    // },
-    // updateExecuting(state, executing) {
-    //   state.executing = executing;
-    //   logDebug("configModule", "updateExecuting(" + executing + ")")
-    // },
+    restoreState(state, settings) {
+      console.log(now() + " configModule - mutations.restoreState - settings: " + JSON.stringify(settings));
+      state.settings = settings;
+    },
+    setEtherscanAPIKey(state, apiKey) {
+      console.log(now() + " configModule - mutations.setEtherscanAPIKey - apiKey: " + apiKey);
+      state.settings.etherscanAPIKey = apiKey;
+    },
   },
   actions: {
+    restoreState(context) {
+      console.log(now() + " configModule - actions.restoreState");
+      if (localStorage.explorerConfigSettings) {
+        const tempSettings = JSON.parse(localStorage.explorerConfigSettings);
+        if ('version' in tempSettings && tempSettings.version == context.state.settings.version) {
+          console.log(now() + " configModule - actions.restoreState - tempSettings: " + JSON.stringify(tempSettings));
+          context.commit("restoreState", tempSettings);
+        }
+      }
+    },
+    setEtherscanAPIKey(context, apiKey) {
+      console.log(now() + " configModule - actions.setEtherscanAPIKey - apiKey: " + apiKey);
+      context.commit('setEtherscanAPIKey', apiKey);
+      localStorage.explorerConfigSettings = JSON.stringify(context.state.settings);
+    },
   },
 };

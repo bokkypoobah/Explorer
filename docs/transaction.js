@@ -60,6 +60,7 @@ const Transaction = {
   },
   mounted() {
     console.log(now() + " Transaction - mounted() $route: " + JSON.stringify(this.$route.params));
+    store.dispatch('config/restoreState');
     // this.reschedule = true;
     // console.log(now() + " Transaction - Calling timeoutCallback()");
     // this.timeoutCallback();
