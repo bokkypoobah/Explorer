@@ -25,10 +25,12 @@ const Connection = {
   },
   computed: {
     connected() {
-      return store.getters['connection/connected'];
+      // return store.getters['connection/connected'];
+      return store.getters['web3Connection'].connected;
     },
     info() {
-      return store.getters['connection/info'];
+      // return store.getters['connection/info'];
+      return store.getters['web3Connection'];
     },
   },
   methods: {
@@ -164,6 +166,7 @@ const connectionModule = {
               const blockNumber = block.number;
               const timestamp = block.timestamp;
               if (blockNumber > context.state.info.blockNumber) {
+                store.dispatch('setWeb3BlockInfo', { blockNumber, timestamp });
                 context.commit('setBlockInfo', { blockNumber, timestamp });
                 localStorage.explorerConnectionInfo = JSON.stringify(context.state.info);
                 console.log(now() + " connectionModule - actions.connect.handleNewBlock - blockNumber: " + blockNumber);
@@ -176,6 +179,7 @@ const connectionModule = {
       } else {
         error = "This app requires a web3 enabled browser";
       }
+      store.dispatch('setWeb3Connection', { connected, error, chainId, blockNumber, timestamp, coinbase });
       context.commit('setInfo', { connected, error, chainId, blockNumber, timestamp, coinbase, provider });
       localStorage.explorerConnectionInfo = JSON.stringify(context.state.info);
     },
@@ -197,6 +201,7 @@ const connectionModule = {
           context.state.provider.removeAllListeners();
           window.ethereum.removeAllListeners();
         }
+        store.dispatch('setWeb3Connected', false);
         context.commit('setConnected', false);
         localStorage.explorerConnectionInfo = JSON.stringify(context.state.info);
       }

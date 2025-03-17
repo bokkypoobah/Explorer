@@ -13,24 +13,44 @@ const store = new Vuex.Store({
   state: {
     settings: {
       etherscanAPIKey: null,
-      connection: {
-        connected: false,
-        error: false,
-        chainId: null,
-        blockNumber: null,
-        timestamp: null,
-        coinbase: null,
-      },
+      version: 0,
+    },
+    web3Connection: {
+      connected: false,
+      error: false,
+      chainId: null,
+      blockNumber: null,
+      timestamp: null,
+      coinbase: null,
       version: 0,
     },
   },
   getters: {
     settings: state => state.settings,
+    web3Connection: state => state.web3Connection,
   },
   mutations: {
-    restoreState(state, settings) {
-      console.log(now() + " store - mutations.restoreState - settings: " + JSON.stringify(settings));
+    setSettings(state, settings) {
+      // console.log(now() + " store - mutations.setSettings - settings: " + JSON.stringify(settings));
       state.settings = settings;
+    },
+    setWeb3Connection(state, web3Connection) {
+      console.log(now() + " store - mutations.setWeb3Connection - web3Connection: " + JSON.stringify(web3Connection));
+      state.web3Connection.connected = web3Connection.connected;
+      state.web3Connection.error = web3Connection.error;
+      state.web3Connection.chainId = web3Connection.chainId;
+      state.web3Connection.blockNumber = web3Connection.blockNumber;
+      state.web3Connection.timestamp = web3Connection.timestamp;
+      state.web3Connection.coinbase = web3Connection.coinbase;
+    },
+    setWeb3Connected(state, connected) {
+      console.log(now() + " store - mutations.setWeb3Connected - connected: " + connected);
+      state.web3Connection.connected = connected;
+    },
+    setWeb3BlockInfo(state, blockInfo) {
+      console.log(now() + " store - mutations.setWeb3BlockInfo - blockInfo: " + JSON.stringify(blockInfo));
+      state.web3Connection.blockNumber = blockInfo.blockNumber;
+      state.web3Connection.timestamp = blockInfo.timestamp;
     },
     setEtherscanAPIKey(state, apiKey) {
       console.log(now() + " store - mutations.setEtherscanAPIKey - apiKey: " + apiKey);
@@ -38,9 +58,21 @@ const store = new Vuex.Store({
     },
   },
   actions: {
-    restoreState(context, settings) {
-      console.log(now() + " store - actions.restoreState - settings: " + JSON.stringify(settings));
-      context.commit('restoreState', settings);
+    setSettings(context, settings) {
+      // console.log(now() + " store - actions.setSettings - settings: " + JSON.stringify(settings));
+      context.commit('setSettings', settings);
+    },
+    setWeb3Connection(context, web3Connection) {
+      console.log(now() + " store - actions.setWeb3Connection - web3Connection: " + JSON.stringify(web3Connection));
+      context.commit('setWeb3Connection', web3Connection);
+    },
+    setWeb3Connected(context, connected) {
+      console.log(now() + " store - actions.setWeb3Connected - connected: " + JSON.stringify(connected));
+      context.commit('setWeb3Connected', connected);
+    },
+    setWeb3BlockInfo(context, blockInfo) {
+      console.log(now() + " store - actions.setWeb3BlockInfo - blockInfo: " + JSON.stringify(blockInfo));
+      context.commit('setWeb3BlockInfo', blockInfo);
     },
     setEtherscanAPIKey(context, apiKey) {
       console.log(now() + " store - actions.setEtherscanAPIKey - apiKey: " + apiKey);
@@ -55,20 +87,31 @@ const store = new Vuex.Store({
   plugins: [
     function persistSettings(store) {
       store.subscribe((mutation, state) => {
-        console.log(now() + " plugins.persistSettings - mutation.type: " + mutation.type);
+        // console.log(now() + " plugins.persistSettings - mutation.type: " + mutation.type);
         if (mutation.type == "setEtherscanAPIKey") {
-          console.log(now() + " plugins.persistSettings - Persisting settings");
+          console.log(now() + " plugins.persistSettings - Persisting settings - mutation.type: " + mutation.type);
           localStorage.explorerSettings = JSON.stringify(state.settings);
+        } else if (mutation.type.substring(0, 7) == "setWeb3") {
+          console.log(now() + " plugins.persistSettings - Persisting connection - mutation.type: " + mutation.type);
+          localStorage.explorerWeb3Connection = JSON.stringify(state.web3Connection);
         }
       });
 
-      console.log(now() + " plugins.persistSettings INIT");
+      // console.log(now() + " plugins.persistSettings INIT");
       if (localStorage.explorerSettings) {
         const tempSettings = JSON.parse(localStorage.explorerSettings);
-        console.log(now() + " plugins.persistSettings - tempSettings: " + JSON.stringify(tempSettings));
+        // console.log(now() + " plugins.persistSettings - tempSettings: " + JSON.stringify(tempSettings));
         if ('version' in tempSettings && tempSettings.version == store.getters["settings"].version) {
           console.log(now() + " plugins.persistSettings - LOADING tempSettings: " + JSON.stringify(tempSettings));
-          store.dispatch('restoreState', tempSettings);
+          store.dispatch('setSettings', tempSettings);
+        }
+      }
+      if (localStorage.explorerWeb3Connection) {
+        const tempWeb3Connection = JSON.parse(localStorage.explorerWeb3Connection);
+        // console.log(now() + " plugins.persistSettings - tempWeb3Connection: " + JSON.stringify(tempWeb3Connection));
+        if ('version' in tempWeb3Connection && tempWeb3Connection.version == store.getters["web3Connection"].version) {
+          console.log(now() + " plugins.persistSettings - LOADING tempWeb3Connection: " + JSON.stringify(tempWeb3Connection));
+          store.dispatch('setWeb3Connection', tempWeb3Connection);
         }
       }
     },
