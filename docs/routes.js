@@ -1,22 +1,13 @@
 const routes = [{
-  //   path: '/config',
-  //   component: Config,
-  //   name: 'Config',
-  // }, {
-  //   path: '/names',
-  //   component: Names,
-  //   name: 'Names',
-  // }, {
-  //   path: '/search',
-  //   component: Search,
-  //   name: 'Search',
-  // }, {
-  //   path: '/addresses',
-  //   component: Addresses,
-  //   name: 'Addresses',
-  // }, {
-    path: '*',
+    path: '/transaction',
+    component: Transaction,
+    name: 'Transaction',
+  }, {
+    path: '/home',
     component: Welcome,
     name: ''
+  }, {
+    path: '*',
+    redirect: '/home',
   }
 ];
