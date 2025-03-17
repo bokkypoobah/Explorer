@@ -3,7 +3,13 @@ const Transaction = {
     <div class="m-0 p-0">
 
       <b-card no-body no-header class="border-0" header-class="p-1">
-        <b-card no-body class="border-0 m-0 mt-2">
+        <b-card no-body class="border-0 m-0 mt-0">
+
+          <div class="d-flex flex-wrap m-0 p-0 px-1 bg-white">
+            <div class="ml-1 mt-1 p-0" style="width: 36.0rem;">
+              <b-form-input type="text" size="sm" :value="txHash" @change="updateTxHash($event);" debounce="600" v-b-popover.hover.bottom="'Transaction hash'" placeholder="🔍 tx hash, e.g., 0x1234...abcd"></b-form-input>
+            </div>
+          </div>
 
           <b-card-body class="p-0">
             <b-card class="mb-2 border-0">
@@ -11,6 +17,8 @@ const Transaction = {
               <b-card-text>
                 <h5>Transaction</h5>
                 <!-- to <i>Explorer</i>. Status: <b>WIP</b> -->
+
+                {{ txHash }}
               </b-card-text>
 
             </b-card>
@@ -19,6 +27,7 @@ const Transaction = {
       </b-card>
     </div>
   `,
+  props: ['txHash'],
   data: function () {
     return {
       count: 0,
@@ -40,6 +49,10 @@ const Transaction = {
     // },
   },
   methods: {
+    updateTxHash(txHash) {
+      console.log(now() + " Transaction - updateTxHash - txHash: " + txHash);
+      this.$router.push({ name: 'Transaction', params: { txHash } })
+    },
     // async syncIt(info) {
     //   store.dispatch('data/syncIt', info);
     // },

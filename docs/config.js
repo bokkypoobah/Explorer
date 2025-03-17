@@ -87,11 +87,11 @@ const configModule = {
   },
   mutations: {
     restoreState(state, settings) {
-      console.log(now() + " configModule - mutations.restoreState - settings: " + JSON.stringify(settings));
+      // console.log(now() + " configModule - mutations.restoreState - settings: " + JSON.stringify(settings));
       state.settings = settings;
     },
     setEtherscanAPIKey(state, apiKey) {
-      console.log(now() + " configModule - mutations.setEtherscanAPIKey - apiKey: " + apiKey);
+      // console.log(now() + " configModule - mutations.setEtherscanAPIKey - apiKey: " + apiKey);
       state.settings.etherscanAPIKey = apiKey;
     },
   },
@@ -101,13 +101,13 @@ const configModule = {
       if (localStorage.explorerConfigSettings) {
         const tempSettings = JSON.parse(localStorage.explorerConfigSettings);
         if ('version' in tempSettings && tempSettings.version == context.state.settings.version) {
-          console.log(now() + " configModule - actions.restoreState - tempSettings: " + JSON.stringify(tempSettings));
+          // console.log(now() + " configModule - actions.restoreState - tempSettings: " + JSON.stringify(tempSettings));
           context.commit("restoreState", tempSettings);
         }
       }
     },
     setEtherscanAPIKey(context, apiKey) {
-      console.log(now() + " configModule - actions.setEtherscanAPIKey - apiKey: " + apiKey);
+      // console.log(now() + " configModule - actions.setEtherscanAPIKey - apiKey: " + apiKey);
       context.commit('setEtherscanAPIKey', apiKey);
       localStorage.explorerConfigSettings = JSON.stringify(context.state.settings);
     },

@@ -54,7 +54,7 @@
           </b-navbar-brand>
           <b-navbar-nav class="ml-auto">
             <b-nav-item size="sm" to="/home" active-class="active" v-b-popover.hover="'Welcome'">Home</b-nav-item>
-            <b-nav-item size="sm" to="/transaction" active-class="active" v-b-popover.hover="'View transaction'">Transaction</b-nav-item>
+            <b-nav-item size="sm" to="/tx/" active-class="active" v-b-popover.hover="'View transaction'">Transaction</b-nav-item>
             <b-nav-item size="sm" to="/config" active-class="active" v-b-popover.hover="'Configuration'">Config</b-nav-item>
             <b-button v-if="!connected" size="sm" variant="outline-primary" class="ml-5 mr-1" @click="connect();" v-b-popover.hover.bottom="'Connect to web3'">Connect</b-button>
             <b-button v-if="connected" size="sm" variant="outline-primary" class="ml-5 mr-1" @click="disconnect();" v-b-popover.hover.bottom="'Connected to web3 with account ' + info.coinbase">{{ info.coinbase && info.coinbase.substring(0, 10) }}</b-button>

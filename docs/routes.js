@@ -1,7 +1,8 @@
 const routes = [{
-    path: '/transaction',
+    path: '/tx/:txHash?',
     component: Transaction,
     name: 'Transaction',
+    props: true,
   }, {
     path: '/config',
     component: Config,
