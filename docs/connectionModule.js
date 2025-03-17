@@ -123,7 +123,6 @@ const connectionModule = {
             const signer = provider.getSigner();
             const coinbase = await signer.getAddress();
             console.log(now() + " connectionModule - actions.connect.handleAccountsChanged - coinbase: " + coinbase);
-            // localStorage.gnosisSafeExplorerWeb3 = JSON.stringify(this.web3);
             context.commit('setCoinbase', coinbase);
             localStorage.explorerConnectionInfo = JSON.stringify(context.state.info);
           }
@@ -137,7 +136,7 @@ const connectionModule = {
               const block = await provider.getBlock("latest");
               const blockNumber = block.number;
               const timestamp = block.timestamp;
-              if (blockNumber >= context.state.info.blockNumber) {
+              if (blockNumber > context.state.info.blockNumber) {
                 context.commit('setBlockInfo', { blockNumber, timestamp });
                 localStorage.explorerConnectionInfo = JSON.stringify(context.state.info);
               }
@@ -163,8 +162,9 @@ const connectionModule = {
     disconnect(context) {
       console.log(now() + " connectionModule - actions.disconnect");
       if (context.state.info.connected) {
-        if (context.state.info.provider) {
-          context.state.info.provider.removeAllListeners();
+        if (context.state.provider) {
+          context.state.provider.removeAllListeners();
+          window.ethereum.removeAllListeners();
         }
         context.commit('setConnected', false);
         localStorage.explorerConnectionInfo = JSON.stringify(context.state.info);
