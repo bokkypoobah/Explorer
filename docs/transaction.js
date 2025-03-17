@@ -16,9 +16,8 @@ const Transaction = {
 
               <b-card-text>
                 <h5>Transaction</h5>
-                <!-- to <i>Explorer</i>. Status: <b>WIP</b> -->
-
-                {{ txHash }}
+                tx: {{ tx }}
+                txReceipt: {{ txReceipt }}
               </b-card-text>
 
             </b-card>
@@ -35,12 +34,12 @@ const Transaction = {
     }
   },
   computed: {
-    // powerOn() {
-    //   return store.getters['connection/powerOn'];
-    // },
-    // explorer () {
-    //   return store.getters['connection/explorer'];
-    // },
+    tx() {
+      return store.getters['transaction/tx'];
+    },
+    txReceipt () {
+      return store.getters['transaction/txReceipt'];
+    },
     // coinbase() {
     //   return store.getters['connection/coinbase'];
     // },
