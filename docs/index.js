@@ -13,6 +13,14 @@ const store = new Vuex.Store({
   state: {
     settings: {
       etherscanAPIKey: null,
+      connection: {
+        connected: false,
+        error: false,
+        chainId: null,
+        blockNumber: null,
+        timestamp: null,
+        coinbase: null,
+      },
       version: 0,
     },
   },
