@@ -75,7 +75,7 @@ const app = new Vue({
   store,
   beforeCreate() {
     // setLogLevel(1); // 0 = NONE, 1 = INFO (default), 2 = DEBUG
-    console.log("index.js - app:beforeCreate()");
+    console.log(now() + " index.js - app:beforeCreate");
 		// this.$store.commit('initialiseStore');
 	},
   data() {
@@ -91,11 +91,11 @@ const app = new Vue({
     },
   },
   mounted() {
-    console.log("app.mounted() Called");
+    console.log(now() + " index.js - app.mounted");
   },
   destroyed() {
-    console.log("app.destroyed() Called");
-    this.reschedule = false;
+    console.log(now() + " index.js - app.destroyed");
+    // this.reschedule = false;
   },
   methods: {
   },

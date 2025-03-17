@@ -82,7 +82,7 @@ const Welcome = {
                 <h6>This Web3 Dapp</h6>
                 <ul>
                   <li>
-                    <b-link href="https://bokkypoobah.github.io/explorer/" target="_blank">https://bokkypoobah.github.io/explorer/</b-link>
+                    <b-link href="https://bokkypoobah.github.io/Explorer/" target="_blank">https://bokkypoobah.github.io/Explorer/</b-link>
                   </li>
                 </ul>
               </b-card-text>
@@ -91,7 +91,7 @@ const Welcome = {
                 <h6>Source Code</h6>
                 <ul>
                   <li>
-                    <b-link href="https://github.com/bokkypoobah/explorer" target="_blank">https://github.com/bokkypoobah/explorer</b-link>
+                    <b-link href="https://github.com/bokkypoobah/Explorer" target="_blank">https://github.com/bokkypoobah/Explorer</b-link>
                   </li>
                 </ul>
               </b-card-text>
@@ -127,7 +127,7 @@ const Welcome = {
     //   store.dispatch('data/syncIt', info);
     // },
     // async timeoutCallback() {
-    //   console.log("Welcome - timeoutCallback() count: " + this.count);
+    //   console.log(now() + " Welcome - timeoutCallback() count: " + this.count);
     //
     //   this.count++;
     //   var t = this;
@@ -139,12 +139,12 @@ const Welcome = {
     // },
   },
   beforeDestroy() {
-    console.log("Welcome - beforeDestroy()");
+    console.log(now() + " Welcome - beforeDestroy()");
   },
   mounted() {
-    console.log("Welcome - mounted() $route: " + JSON.stringify(this.$route.params));
+    console.log(now() + " Welcome - mounted() $route: " + JSON.stringify(this.$route.params));
     // this.reschedule = true;
-    // console.log("Welcome - Calling timeoutCallback()");
+    // console.log(now() + " Welcome - Calling timeoutCallback()");
     // this.timeoutCallback();
     // this.loadNFTs();
   },
