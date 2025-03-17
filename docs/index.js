@@ -81,16 +81,25 @@ const app = new Vue({
     connected() {
       return store.getters['connection/connected'];
     },
+    chainId() {
+      return store.getters['connection/chainId'];
+    },
+    info() {
+      return store.getters['connection/info'];
+    },
     moduleName () {
       return this.$route.name;
     },
   },
   methods: {
-    connect() {
-      store.dispatch('connection/connect', true);
+    // setConnected(connected) {
+    //   store.dispatch('connection/setConnected', connected);
+    // },
+    connect(connected) {
+      store.dispatch('connection/connect');
     },
-    disconnect() {
-      store.dispatch('connection/disconnect', true);
+    disconnect(connected) {
+      store.dispatch('connection/disconnect');
     },
   },
   components: {
