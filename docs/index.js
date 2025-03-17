@@ -78,9 +78,22 @@ const app = new Vue({
     };
   },
   computed: {
+    connected() {
+      return store.getters['connection/connected'];
+    },
     moduleName () {
       return this.$route.name;
     },
+  },
+  methods: {
+    connect() {
+      store.dispatch('connection/connect', true);
+    },
+    disconnect() {
+      store.dispatch('connection/disconnect', true);
+    },
+  },
+  components: {
   },
   mounted() {
     console.log(now() + " index.js - app.mounted");
@@ -88,9 +101,5 @@ const app = new Vue({
   destroyed() {
     console.log(now() + " index.js - app.destroyed");
     // this.reschedule = false;
-  },
-  methods: {
-  },
-  components: {
   },
 }).$mount('#app');

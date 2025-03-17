@@ -37,11 +37,20 @@ const connectionModule = {
     connected: state => state.connected,
   },
   mutations: {
+    setConnected(state, connected) {
+      console.log(now() + " connectionModule - mutations.setConnected: " + connected);
+      state.connected = connected;
+      // Vue.set(state.txs, tx, tx);
+    },
   },
   actions: {
-    setConnected(context, connected) {
-      // logDebug("connectionModule", "actions.setConnected(" + connected + ")");
-      // context.commit('setConnected', connected);
+    connect(context, blah) {
+      console.log(now() + " connectionModule - actions.connect(" + blah + ")");
+      context.commit('setConnected', true);
+    },
+    disconnect(context, blah) {
+      console.log(now() + " connectionModule - actions.disconnect(" + blah + ")");
+      context.commit('setConnected', false);
     },
   },
 };
