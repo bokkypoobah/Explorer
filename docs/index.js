@@ -44,6 +44,7 @@ const store = new Vuex.Store({
   },
   modules: {
     connection: connectionModule,
+    config: configModule,
   }
 });
 

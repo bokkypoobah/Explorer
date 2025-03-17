@@ -3,6 +3,10 @@ const routes = [{
     component: Transaction,
     name: 'Transaction',
   }, {
+    path: '/config',
+    component: Config,
+    name: 'Config',
+  }, {
     path: '/home',
     component: Welcome,
     name: ''
