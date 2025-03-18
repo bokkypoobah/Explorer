@@ -23,6 +23,8 @@ const Address = {
 
           <b-card no-body no-header bg-variant="light" class="m-1 p-1 w-75">
 
+            {{ address }}
+
             <b-form-group label-cols-lg="2" label="Address" label-size="md" label-class="font-weight-bold pt-0" class="mt-3 mb-0">
               <b-form-group label="Address:" label-for="address-address" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-input-group>
@@ -66,6 +68,9 @@ const Address = {
   computed: {
     error() {
       return store.getters['block/error'];
+    },
+    address() {
+      return store.getters['address/address'];
     },
     block() {
       return store.getters['block/block'];
@@ -142,30 +147,55 @@ const addressModule = {
   namespaced: true,
   state: {
     error: null,
+    address: null,
+    // transactionCount: null,
+    // ensName: null,
+    // transactions: [],
+
+    // TODO: Delete
     block: null,
   },
   getters: {
     error: state => state.error,
+    address: state => state.address,
+    // transactionCount: state => state.transactionCount,
+    // ensName: state => state.ensName,
+    // transactions: state => state.transactions,
+
+    // TODO: Delete
     block: state => state.block,
   },
   mutations: {
     setData(state, data) {
       console.log(now() + " addressModule - mutations.setData - data: " + JSON.stringify(data));
       state.error = data.error;
+      state.address = data.address;
+      // state.transactionCount = data.transactionCount;
+      // state.ensName = data.ensName;
+      // state.transactions = data.transactions;
+
+      // TODO: Delete
       state.block = data.block;
     },
   },
   actions: {
     async loadAddress(context, nameOrAddress) {
       console.log(now() + " addressModule - actions.loadAddress - nameOrAddress: " + nameOrAddress);
-      let [error, block] = [null, null];
+      let [error, address, transactionCount, ensName, transactions, block] = [null, null, null, null, null, null];
       if (nameOrAddress) {
         if (!store.getters['web3Connection'].connected || !window.ethereum) {
           error = "Not connected";
         }
-      //   if (!error && !(/^[0-9]+$/.test(blockNumber))) {
-      //     error = "Invalid block number";
-      //   }
+        if (!error && !(/^0x([A-Fa-f0-9]{40})$/.test(nameOrAddress))) {
+          error = "Invalid address (names will be included later)";
+        }
+        if (!error) {
+          try {
+            address = ethers.utils.getAddress(nameOrAddress);
+          } catch (e) {
+            error = "Invalid address: " + nameOrAddress;
+          }
+        }
       //   if (!error) {
       //     const provider = new ethers.providers.Web3Provider(window.ethereum);
       //     // const tx_ = await provider.getTransaction(txHash);
@@ -220,7 +250,7 @@ const addressModule = {
       console.log("error: " + error);
       // console.log("block: " + JSON.string(block, null, 2));
       // console.table(block);
-      // context.commit('setData', { error, block });
+      context.commit('setData', { error, address });
     }
   },
 };
