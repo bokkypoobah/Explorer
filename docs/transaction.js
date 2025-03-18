@@ -65,10 +65,14 @@ const Transaction = {
 
               <b-form-group label="From:" label-for="transaction-from" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0" :description="tx && tx.nonce && ('Nonce: ' + tx.nonce) || ''">
                 <b-input-group>
-                  <b-button v-if="tx && tx.from" :href="'https://etherscan.io/address/' + tx.from" variant="link" target="_blank" class="m-0 p-0 pt-1">
+                  <!-- <b-button v-if="tx && tx.from" :href="'https://etherscan.io/address/' + tx.from" variant="link" target="_blank" class="m-0 p-0 pt-1"> -->
+                  <b-button v-if="tx && tx.from" :href="'#/address/' + tx.from" variant="link" class="m-0 p-0 pt-1">
                     {{ tx.from }}
                   </b-button>
                   <b-input-group-append>
+                    <b-button v-if="tx && tx.from" :href="'https://etherscan.io/address/' + tx.from" variant="link" target="_blank" class="m-0 ml-2 p-0 pt-1">
+                      <b-icon-link-45deg shift-v="-1" font-scale="1.1"></b-icon-link-45deg>
+                    </b-button>
                     <b-button v-if="tx && tx.from" size="sm" @click="copyToClipboard(tx.from);" variant="link">
                       <b-icon-clipboard shift-v="-1" font-scale="1.1"></b-icon-clipboard>
                     </b-button>
@@ -76,13 +80,15 @@ const Transaction = {
                 </b-input-group>
               </b-form-group>
 
-              <!-- <b-form-group v-if="!(txReceipt && txReceipt.contractAddress)" label="To:" label-for="transaction-to" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0"> -->
               <b-form-group label="To:" label-for="transaction-to" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-input-group>
-                  <b-button v-if="tx && tx.to" :href="'https://etherscan.io/address/' + tx.to" variant="link" target="_blank" class="m-0 p-0 pt-1">
+                  <b-button v-if="tx && tx.to" :href="'#/address/' + tx.to" variant="link" class="m-0 p-0 pt-1">
                     {{ tx.to }}
                   </b-button>
                   <b-input-group-append>
+                    <b-button v-if="tx && tx.to" :href="'https://etherscan.io/address/' + tx.to" variant="link" target="_blank" class="m-0 ml-2 p-0 pt-1">
+                      <b-icon-link-45deg shift-v="-1" font-scale="1.1"></b-icon-link-45deg>
+                    </b-button>
                     <b-button v-if="tx && tx.to" size="sm" @click="copyToClipboard(tx.to);" variant="link">
                       <b-icon-clipboard shift-v="-1" font-scale="1.1"></b-icon-clipboard>
                     </b-button>

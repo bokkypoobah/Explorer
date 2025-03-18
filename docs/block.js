@@ -54,10 +54,13 @@ const Block = {
 
               <b-form-group label="Miner:" label-for="block-miner" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-input-group>
-                  <b-button v-if="block && block.miner" :href="'https://etherscan.io/address/' + block.miner" variant="link" target="_blank" class="m-0 p-0 pt-1">
+                  <b-button v-if="block && block.miner" :href="'#/address/' + block.miner" variant="link" class="m-0 p-0 pt-1">
                     {{ block.miner }}
                   </b-button>
                   <b-input-group-append>
+                    <b-button v-if="block && block.miner" :href="'https://etherscan.io/address/' + block.miner" variant="link" target="_blank" class="m-0 ml-2 p-0 pt-1">
+                      <b-icon-link-45deg shift-v="-1" font-scale="1.1"></b-icon-link-45deg>
+                    </b-button>
                     <b-button v-if="block && block.miner" size="sm" @click="copyToClipboard(block.miner);" variant="link">
                       <b-icon-clipboard shift-v="-1" font-scale="1.1"></b-icon-clipboard>
                     </b-button>
