@@ -25,7 +25,7 @@ const Transaction = {
             </div> -->
           </div>
 
-          <b-card no-body no-header bg-variant="light" class="m-1 p-1 w-75">
+          <b-card no-body no-header bg-variant="light" class="m-1 p-1">
             <b-form-group label-cols-lg="2" label="Transaction" label-size="md" label-class="font-weight-bold pt-0" class="mt-3 mb-0">
               <b-form-group label="Hash:" label-for="transaction-hash" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-input-group>
@@ -53,6 +53,9 @@ const Transaction = {
                     {{ tx && tx.blockNumber && commify0(tx.blockNumber) || '' }}
                   </b-button>
                   <b-input-group-append>
+                    <b-button v-if="tx && tx.blockNumber" :href="'https://etherscan.io/block/' + tx.blockNumber" variant="link" target="_blank" class="m-0 ml-2 p-0 pt-1">
+                      <b-icon-link-45deg shift-v="-1" font-scale="1.1"></b-icon-link-45deg>
+                    </b-button>
                     <b-button v-if="tx && tx.blockNumber" size="sm" @click="copyToClipboard(tx.blockNumber);" variant="link">
                       <b-icon-clipboard shift-v="-1" font-scale="1.1"></b-icon-clipboard>
                     </b-button>
