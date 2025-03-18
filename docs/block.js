@@ -14,11 +14,6 @@ const Block = {
                 <b-dropdown-text>Sample Blocks</b-dropdown-text>
                 <b-dropdown-divider></b-dropdown-divider>
                 <b-dropdown-item @click="loadBlock('0x00cf367c9ee21dc9538355d1da4ebac9b83645b790b07dd2c9d15ae7f9aed6d2');">0x00cf367c - EF: DeFi Multisig Safe v1.4.1 transaction</b-dropdown-item>
-                <b-dropdown-item @click="loadBlock('0x7c74738e01721782e92f277afad75245bcb637f7e49bbf61bd67a46b7e568f3c');">0x7c74738e - EF: DeFi Multisig Safe v1.4.1 deployment by proxy</b-dropdown-item>
-                <b-dropdown-item @click="loadBlock('0xa3f23edc79ae0aa3052a0b5a5fb81f9e13729adb338592d970ffe4a8f5ee3766');">0xa3f23edc - TURBO deployment</b-dropdown-item>
-                <b-dropdown-item @click="loadBlock('0xe6030c80c06283197ec49ef8fa6f22ee57e07fab776136310801415db5ccc389');">0xe6030c80 - Random EOA to EOA ETH transfer</b-dropdown-item>
-                <b-dropdown-item @click="loadBlock('0xce56f56bd3712611e360b4ebd8071aa3246f2eff3042eef81c3f24dedab77915');">0xce56f56b - Random failed transaction</b-dropdown-item>
-                <b-dropdown-item @click="loadBlock('0x6afbe0f0ea3613edd6b84b71260836c03bddce81604f05c81a070cd671d3d765');">0x6afbe0f0 - Random older transaction</b-dropdown-item>
               </b-dropdown>
             </div> -->
             <!-- <div class="mt-0 flex-grow-1">
@@ -26,6 +21,7 @@ const Block = {
           </div>
 
           <b-card no-body no-header bg-variant="light" class="m-1 p-1 w-75">
+            <!-- TODO: block or blockHash -->
             <b-form-group label-cols-lg="2" label="Block" label-size="md" label-class="font-weight-bold pt-0" class="mt-3 mb-0">
               <b-form-group label="Block:" label-for="block-blocknumber" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-input-group>
@@ -96,104 +92,6 @@ const Block = {
               <b-form-group label="Extra Data:" label-for="block-extradata" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0" :description="extraDataAsString">
                 <b-form-input type="text" plaintext size="sm" id="block-extradata" :value="block && block.extraData && block.extraData || ''"></b-form-input>
               </b-form-group>
-
-              <!-- <b-form-group v-if="txReceipt && txReceipt.status != null" label="Status:" label-for="block-status" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0" :description="txReceipt && txReceipt.byzantium && ('Byzantium: ' + txReceipt.byzantium)">
-                <b-form-input type="text" plaintext size="sm" id="block-status" :value="txReceipt.status == 1 ? 'SUCCESS' : 'FAIL'"></b-form-input>
-              </b-form-group> -->
-
-              <!-- <b-form-group label="Block:" label-for="block-block" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0" :description="timestamp && formatTimestamp(timestamp) || ''">
-                <b-input-group>
-                  <b-button v-if="tx && tx.blockNumber" :href="'https://etherscan.io/block/' + tx.blockNumber" variant="link" target="_blank" class="m-0 p-0 pt-1">
-                    {{ tx && tx.blockNumber && commify0(tx.blockNumber) || '' }}
-                  </b-button>
-                  <b-input-group-append>
-                    <b-button v-if="tx && tx.blockNumber" size="sm" @click="copyToClipboard(tx.blockNumber);" variant="link">
-                      <b-icon-clipboard shift-v="-1" font-scale="1.1"></b-icon-clipboard>
-                    </b-button>
-                  </b-input-group-append>
-                </b-input-group>
-              </b-form-group> -->
-
-              <!-- <b-form-group label="From:" label-for="block-from" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0" :description="tx && tx.nonce && ('Nonce: ' + tx.nonce) || ''">
-                <b-input-group>
-                  <b-button v-if="tx && tx.from" :href="'https://etherscan.io/address/' + tx.from" variant="link" target="_blank" class="m-0 p-0 pt-1">
-                    {{ tx.from }}
-                  </b-button>
-                  <b-input-group-append>
-                    <b-button v-if="tx && tx.from" size="sm" @click="copyToClipboard(tx.from);" variant="link">
-                      <b-icon-clipboard shift-v="-1" font-scale="1.1"></b-icon-clipboard>
-                    </b-button>
-                  </b-input-group-append>
-                </b-input-group>
-              </b-form-group> -->
-
-              <!-- <b-form-group label="To:" label-for="block-to" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-input-group>
-                  <b-button v-if="tx && tx.to" :href="'https://etherscan.io/address/' + tx.to" variant="link" target="_blank" class="m-0 p-0 pt-1">
-                    {{ tx.to }}
-                  </b-button>
-                  <b-input-group-append>
-                    <b-button v-if="tx && tx.to" size="sm" @click="copyToClipboard(tx.to);" variant="link">
-                      <b-icon-clipboard shift-v="-1" font-scale="1.1"></b-icon-clipboard>
-                    </b-button>
-                  </b-input-group-append>
-                </b-input-group>
-              </b-form-group> -->
-
-              <!-- <b-form-group v-if="txReceipt && txReceipt.contractAddress" label="Deployed contract:" label-for="block-contractaddress" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-input-group>
-                  <b-button v-if="txReceipt && txReceipt.contractAddress" :href="'https://etherscan.io/address/' + txReceipt.contractAddress" variant="link" target="_blank" class="m-0 p-0 pt-1">
-                    {{ txReceipt.contractAddress }}
-                  </b-button>
-                  <b-input-group-append>
-                    <b-button v-if="txReceipt && txReceipt.contractAddress" size="sm" @click="copyToClipboard(txReceipt.contractAddress);" variant="link">
-                      <b-icon-clipboard shift-v="-1" font-scale="1.1"></b-icon-clipboard>
-                    </b-button>
-                  </b-input-group-append>
-                </b-input-group>
-              </b-form-group> -->
-
-              <!-- <b-form-group label="Value:" label-for="block-value" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-form-input type="text" plaintext size="sm" id="block-value" :value="tx && tx.value && (formatETH(tx.value) + ' ETH')"></b-form-input>
-              </b-form-group> -->
-
-              <!-- <b-form-group label="Fee:" label-for="block-fee" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-form-input type="text" plaintext size="sm" id="block-fee" :value="fee && (formatETH(fee) + ' ETH')"></b-form-input>
-              </b-form-group> -->
-
-              <!-- <b-form-group label="Data:" label-for="block-data" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-input-group class="align-items-start">
-                  <b-form-textarea plaintext size="sm" id="block-data" :value="tx && tx.data && tx.data != '0x' && tx.data || ''" rows="3" max-rows="10"></b-form-textarea>
-                  <b-input-group-append>
-                    <b-button v-if="tx && tx.data" :disabled="tx.data == '0x'" size="sm" @click="copyToClipboard(tx.data);" variant="link">
-                      <b-icon-clipboard shift-v="-1" font-scale="1.1"></b-icon-clipboard>
-                    </b-button>
-                  </b-input-group-append>
-                </b-input-group>
-              </b-form-group> -->
-
-              <!-- <b-form-group label="Gas Limit:" label-for="block-gaslimit" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-form-input type="text" plaintext size="sm" id="block-gaslimit" :value="tx && tx.gasLimit && commify0(tx.gasLimit) || ''"></b-form-input>
-              </b-form-group>
-              <b-form-group label="Gas Used:" label-for="block-gasused" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-form-input type="text" plaintext size="sm" id="block-gasused" :value="txReceipt && txReceipt.gasUsed && commify0(txReceipt.gasUsed) || ''"></b-form-input>
-              </b-form-group>
-              <b-form-group label="Gas Price:" label-for="block-gasprice" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-form-input type="text" plaintext size="sm" id="block-gasprice" :value="tx && tx.gasPrice && (formatGas(tx.gasPrice) + ' gwei') || ''"></b-form-input>
-              </b-form-group>
-              <b-form-group label="Max Fee Per Gas:" label-for="block-maxfeepergas" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-form-input type="text" plaintext size="sm" id="block-maxfeepergas" :value="tx && tx.maxFeePerGas && (formatGas(tx.maxFeePerGas) + ' gwei') || ''"></b-form-input>
-              </b-form-group>
-              <b-form-group label="Max Priority Fee Per Gas:" label-for="block-maxpriorityfeepergas" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-form-input type="text" plaintext size="sm" id="block-maxpriorityfeepergas" :value="tx && tx.maxPriorityFeePerGas && (formatGas(tx.maxPriorityFeePerGas) + ' gwei') || ''"></b-form-input>
-              </b-form-group>
-              <b-form-group label="Effective Gas Price:" label-for="block-effectivegasprice" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-form-input type="text" plaintext size="sm" id="block-effectivegasprice" :value="txReceipt && txReceipt.effectiveGasPrice && (formatGas(txReceipt.effectiveGasPrice) + ' gwei') || ''"></b-form-input>
-              </b-form-group> -->
-
-              <!-- <b-form-group label="Logs (temp):" label-for="block-logs" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-form-textarea plaintext size="sm" id="block-logs" :value="txReceipt && txReceipt.logs && JSON.stringify(txReceipt.logs) || ''" rows="3" max-rows="10"></b-form-textarea>
-              </b-form-group> -->
 
             </b-form-group>
           </b-card>
