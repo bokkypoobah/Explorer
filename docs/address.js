@@ -7,7 +7,7 @@ const Address = {
 
           <div class="d-flex flex-wrap m-0 p-0 px-1 bg-white">
             <div class="m-0 mt-1 p-0" style="width: 36.0rem;">
-              <b-form-input type="text" size="sm" :value="address" @change="loadAddress($event);" debounce="600" v-b-popover.hover.bottom="'Address'" placeholder="🔍 address, e.g., 0x1234...abcd"></b-form-input>
+              <b-form-input type="text" size="sm" :value="nameOrAddress" @change="loadAddress($event);" debounce="600" v-b-popover.hover.bottom="'Address'" placeholder="🔍 address, e.g., 0x1234...abcd"></b-form-input>
             </div>
             <!-- <div class="mt-1 pr-1">
               <b-dropdown size="sm" right text="" variant="link" class="m-0 p-0">
@@ -27,7 +27,7 @@ const Address = {
 
           <b-card no-body no-header bg-variant="light" class="m-1 p-1 w-75">
             <b-form-group label-cols-lg="2" label="Address" label-size="md" label-class="font-weight-bold pt-0" class="mt-3 mb-0">
-              <b-form-group label="Address:" label-for="block-blocknumber" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-form-group label="ENS Name or Address:" label-for="block-blocknumber" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-input-group>
                   <b-input-group-prepend>
                     <b-button v-if="block && block.number != null" size="sm" @click="loadAddress(parseInt(blockNumber) - 1);" variant="link">
@@ -204,7 +204,7 @@ const Address = {
       </b-card>
     </div>
   `,
-  props: ['address'],
+  props: ['nameOrAddress'],
   data: function () {
     return {
       count: 0,
@@ -304,8 +304,8 @@ const addressModule = {
     },
   },
   actions: {
-    async loadAddress(context, address) {
-      console.log(now() + " addressModule - actions.loadAddress - address: " + address);
+    async loadAddress(context, nameOrAddress) {
+      console.log(now() + " addressModule - actions.loadAddress - nameOrAddress: " + nameOrAddress);
       let [error, block] = [null, null];
       if (blockNumber) {
         if (!store.getters['web3Connection'].connected || !window.ethereum) {

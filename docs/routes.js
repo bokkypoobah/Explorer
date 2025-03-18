@@ -9,7 +9,7 @@ const routes = [{
     name: 'Transaction',
     props: true,
   }, {
-    path: '/address/:address?',
+    path: '/address/:nameOrAddress?',
     component: Address,
     name: 'Address',
     props: true,
