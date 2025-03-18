@@ -7,18 +7,15 @@ const Address = {
 
           <div class="d-flex flex-wrap m-0 p-0 px-1 bg-white">
             <div class="m-0 mt-1 p-0" style="width: 24.0rem;">
-              <!-- <b-form-input type="text" size="sm" :value="nameOrAddress" @change="loadAddress($event);" debounce="600" v-b-popover.hover.bottom="'Address'" placeholder="🔍 ENS name or address, e.g., 0x1234...abcd"></b-form-input> -->
               <b-form-input type="text" size="sm" :value="nameOrAddress" @change="loadAddress($event);" debounce="600" v-b-popover.hover.bottom="'Address'" placeholder="🔍 address, e.g., 0x1234...abcd"></b-form-input>
             </div>
-            <!-- <div class="mt-1 pr-1">
+            <div class="mt-1 pr-1">
               <b-dropdown size="sm" right text="" variant="link" class="m-0 p-0">
-                <b-dropdown-text>Sample Blocks</b-dropdown-text>
+                <b-dropdown-text>Sample Addresses</b-dropdown-text>
                 <b-dropdown-divider></b-dropdown-divider>
-                <b-dropdown-item @click="loadAddress('0x00cf367c9ee21dc9538355d1da4ebac9b83645b790b07dd2c9d15ae7f9aed6d2');">0x00cf367c - EF: DeFi Multisig Safe v1.4.1 transaction</b-dropdown-item>
+                <b-dropdown-item @click="loadAddress('0x13e003a57432062e4EdA204F687bE80139AD622f');">0x13e003a5 - Blackrock: Digital Asset Fund</b-dropdown-item>
               </b-dropdown>
-            </div> -->
-            <!-- <div class="mt-0 flex-grow-1">
-            </div> -->
+            </div>
           </div>
 
           <b-card no-body no-header bg-variant="light" class="m-1 p-1 w-75">
@@ -29,11 +26,8 @@ const Address = {
               </b-form-group>
 
               <b-form-group v-if="!error" label="Address:" label-for="address-address" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-input-group>
+                <b-input-group class="w-75">
                   <b-form-input type="text" plaintext size="sm" :value="address"></b-form-input>
-                  <!-- <b-button v-if="address" :href="'#/address/' + address" variant="link" class="m-0 p-0 pt-1">
-                    {{ address }}
-                  </b-button> -->
                   <b-input-group-append>
                     <b-button v-if="address" :href="'https://etherscan.io/address/' + address" variant="link" target="_blank" class="m-0 ml-2 p-0 pt-1">
                       <b-icon-link-45deg shift-v="-1" font-scale="1.1"></b-icon-link-45deg>
