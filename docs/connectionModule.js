@@ -126,6 +126,7 @@ const connectionModule = {
         }
 
         if (connected) {
+          // TODO: ethers.js fires duplicated new block events sometimes
           async function handleNewBlock(blockNumber) {
             const lastBlockNumber = store.getters['web3Connection'].blockNumber;
             if (!lastBlockNumber || blockNumber > lastBlockNumber) {
