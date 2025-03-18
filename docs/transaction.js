@@ -14,6 +14,8 @@ const Transaction = {
                 <b-dropdown-text>Sample Transactions</b-dropdown-text>
                 <b-dropdown-divider></b-dropdown-divider>
                 <b-dropdown-item @click="loadTransaction('0x00cf367c9ee21dc9538355d1da4ebac9b83645b790b07dd2c9d15ae7f9aed6d2');">0x00cf367c - EF: DeFi Multisig Safe v1.4.1 transaction</b-dropdown-item>
+                <b-dropdown-item @click="loadTransaction('0x7c74738e01721782e92f277afad75245bcb637f7e49bbf61bd67a46b7e568f3c');">0x7c74738e - EF: DeFi Multisig Safe v1.4.1 deployment by proxy</b-dropdown-item>
+                <b-dropdown-item @click="loadTransaction('0xa3f23edc79ae0aa3052a0b5a5fb81f9e13729adb338592d970ffe4a8f5ee3766');">0xa3f23edc - TURBO deployment</b-dropdown-item>
                 <b-dropdown-item @click="loadTransaction('0xe6030c80c06283197ec49ef8fa6f22ee57e07fab776136310801415db5ccc389');">0xe6030c80 - Random EOA to EOA ETH transfer</b-dropdown-item>
                 <b-dropdown-item @click="loadTransaction('0xce56f56bd3712611e360b4ebd8071aa3246f2eff3042eef81c3f24dedab77915');">0xce56f56b - Random failed transaction</b-dropdown-item>
                 <b-dropdown-item @click="loadTransaction('0x6afbe0f0ea3613edd6b84b71260836c03bddce81604f05c81a070cd671d3d765');">0x6afbe0f0 - Random older transaction</b-dropdown-item>
@@ -25,7 +27,7 @@ const Transaction = {
 
           <b-card no-body no-header bg-variant="light" class="m-1 p-1 w-75">
             <b-form-group label-cols-lg="2" label="Transaction" label-size="md" label-class="font-weight-bold pt-0" class="mt-3 mb-0">
-              <b-form-group label="Hash:" label-for="transaction-hash" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-form-group label="Hash:" label-for="transaction-hash" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-input-group>
                   <b-button v-if="tx && tx.hash" :href="'https://etherscan.io/tx/' + tx.hash" variant="link" target="_blank" class="m-0 p-0 pt-1">
                     {{ tx.hash }}
@@ -38,11 +40,11 @@ const Transaction = {
                 </b-input-group>
               </b-form-group>
 
-              <b-form-group v-if="txReceipt && txReceipt.status != null" label="Status:" label-for="transaction-status" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0" :description="txReceipt && txReceipt.byzantium && ('Byzantium: ' + txReceipt.byzantium)">
+              <b-form-group v-if="txReceipt && txReceipt.status != null" label="Status:" label-for="transaction-status" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0" :description="txReceipt && txReceipt.byzantium && ('Byzantium: ' + txReceipt.byzantium)">
                 <b-form-input type="text" plaintext size="sm" id="transaction-status" :value="txReceipt.status == 1 ? 'SUCCESS' : 'FAIL'"></b-form-input>
               </b-form-group>
 
-              <b-form-group label="Block:" label-for="transaction-block" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-form-group label="Block:" label-for="transaction-block" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0" :description="timestamp && formatTimestamp(timestamp) || ''">
                 <b-input-group>
                   <b-button v-if="tx && tx.blockNumber" :href="'https://etherscan.io/block/' + tx.blockNumber" variant="link" target="_blank" class="m-0 p-0 pt-1">
                     {{ tx.blockNumber }}
@@ -55,7 +57,7 @@ const Transaction = {
                 </b-input-group>
               </b-form-group>
 
-              <b-form-group label="From:" label-for="transaction-from" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0" :description="tx && tx.nonce && ('Nonce: ' + tx.nonce) || ''">
+              <b-form-group label="From:" label-for="transaction-from" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0" :description="tx && tx.nonce && ('Nonce: ' + tx.nonce) || ''">
                 <b-input-group>
                   <b-button v-if="tx && tx.from" :href="'https://etherscan.io/address/' + tx.from" variant="link" target="_blank" class="m-0 p-0 pt-1">
                     {{ tx.from }}
@@ -68,7 +70,7 @@ const Transaction = {
                 </b-input-group>
               </b-form-group>
 
-              <b-form-group label="To:" label-for="transaction-to" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-form-group v-if="!(txReceipt && txReceipt.contractAddress)" label="To:" label-for="transaction-to" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-input-group>
                   <b-button v-if="tx && tx.to" :href="'https://etherscan.io/address/' + tx.to" variant="link" target="_blank" class="m-0 p-0 pt-1">
                     {{ tx.to }}
@@ -81,7 +83,20 @@ const Transaction = {
                 </b-input-group>
               </b-form-group>
 
-              <b-form-group label="Value:" label-for="transaction-value" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-form-group v-if="txReceipt && txReceipt.contractAddress" label="Deployed contract:" label-for="transaction-contractaddress" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-input-group>
+                  <b-button v-if="txReceipt && txReceipt.contractAddress" :href="'https://etherscan.io/address/' + txReceipt.contractAddress" variant="link" target="_blank" class="m-0 p-0 pt-1">
+                    {{ txReceipt.contractAddress }}
+                  </b-button>
+                  <b-input-group-append>
+                    <b-button v-if="txReceipt && txReceipt.contractAddress" size="sm" @click="copyToClipboard(txReceipt.contractAddress);" variant="link">
+                      <b-icon-clipboard shift-v="-1" font-scale="1.1"></b-icon-clipboard>
+                    </b-button>
+                  </b-input-group-append>
+                </b-input-group>
+              </b-form-group>
+
+              <b-form-group label="Value:" label-for="transaction-value" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-form-input type="text" plaintext size="sm" id="transaction-value" :value="tx && tx.value && (formatETH(tx.value) + ' ETH')"></b-form-input>
               </b-form-group>
 
@@ -144,6 +159,12 @@ const Transaction = {
       }
       return null;
     },
+    formatTimestamp(ts) {
+      if (ts != null) {
+        return moment.unix(ts).format("YYYY-MM-DD HH:mm:ss");
+      }
+      return null;
+    },
   },
   // beforeRouteUpdate(to, from) {
   //   console.log(now() + " Transaction - beforeRouteUpdate");
@@ -201,7 +222,7 @@ const transactionModule = {
         if (!error) {
           const provider = new ethers.providers.Web3Provider(window.ethereum);
           const tx_ = await provider.getTransaction(txHash);
-          console.log("tx_: " + JSON.stringify(tx_, null, 2));
+          // console.log("tx_: " + JSON.stringify(tx_, null, 2));
           tx = {
             hash: tx_.hash,
             chainId: parseInt(tx_.chainId),
@@ -225,6 +246,7 @@ const transactionModule = {
             // creates: tx_.creates,
           };
           const txReceipt_ = await provider.getTransactionReceipt(txHash);
+          console.log("txReceipt_: " + JSON.stringify(txReceipt_, null, 2));
           txReceipt = {
             status: txReceipt_.status,
             type: txReceipt_.type,
