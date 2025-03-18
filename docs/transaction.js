@@ -132,7 +132,7 @@ const transactionModule = {
       console.log(now() + " transactionModule - actions.loadTransaction - txHash: " + txHash);
       let [error, tx, txReceipt, timestamp] = [null, null, null, null];
       if (/^0x([A-Fa-f0-9]{64})$/.test(txHash)) {
-        if (store.getters['connection/connected'] && window.ethereum) {
+        if (store.getters['web3Connection'].connected && window.ethereum) {
           const provider = new ethers.providers.Web3Provider(window.ethereum);
           tx = await provider.getTransaction(txHash);
           txReceipt = await provider.getTransactionReceipt(txHash);
