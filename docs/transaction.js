@@ -118,34 +118,65 @@ const transactionModule = {
   },
   mutations: {
     setData(state, data) {
-      // console.log(now() + " transactionModule - mutations.setData - data: " + JSON.stringify(data));
       state.error = data.error;
       state.tx = data.tx;
       state.txReceipt = data.txReceipt;
       state.timestamp = data.timestamp;
-      // console.log(now() + " transactionModule - mutations.setData - state.tx: " + JSON.stringify(state.tx));
-      // console.log(now() + " transactionModule - mutations.setData - state.txReceipt: " + JSON.stringify(state.txReceipt));
     },
   },
   actions: {
     async loadTransaction(context, txHash) {
       console.log(now() + " transactionModule - actions.loadTransaction - txHash: " + txHash);
       let [error, tx, txReceipt, timestamp] = [null, null, null, null];
-      if (/^0x([A-Fa-f0-9]{64})$/.test(txHash)) {
-        if (store.getters['web3Connection'].connected && window.ethereum) {
+      if (txHash) {
+        if (!store.getters['web3Connection'].connected || !window.ethereum) {
+          error = "Not connected";
+        }
+        if (!error && !(/^0x([A-Fa-f0-9]{64})$/.test(txHash))) {
+          error = "Invalid transaction hash";
+        }
+        if (!error) {
           const provider = new ethers.providers.Web3Provider(window.ethereum);
-          tx = await provider.getTransaction(txHash);
-          txReceipt = await provider.getTransactionReceipt(txHash);
+          const tx_ = await provider.getTransaction(txHash);
+          tx = {
+            hash: tx_.hash,
+            type: tx_.type || null,
+            // accessList: tx_.accessList,
+            // blockHash: tx_.blockHash,
+            transactionIndex: tx_.transactionIndex,
+            from: tx_.from,
+            to: tx_.to,
+            gasLimit: parseInt(tx_.gasLimit),
+            gasPrice: ethers.BigNumber.from(tx_.gasPrice).toString(),
+            maxFeePerGas: ethers.BigNumber.from(tx_.maxFeePerGas).toString(),
+            maxPriorityFeePerGas: ethers.BigNumber.from(tx_.maxPriorityFeePerGas).toString(),
+            value: ethers.BigNumber.from(tx_.value).toString(),
+            nonce: parseInt(tx_.nonce),
+            data: tx_.data,
+            // r: tx_.r,
+            // s: tx_.s,
+            // v: tx_.v,
+            // creates: tx_.creates,
+            chainId: parseInt(tx_.chainId),
+          };
+          const txReceipt_ = await provider.getTransactionReceipt(txHash);
+          txReceipt = {
+            contractAddress: txReceipt_.contractAddress,
+            gasUsed: parseInt(tx_.gasUsed),
+            // logsBloom: txReceipt_.logsBloom,
+            // blockHash: txReceipt_.blockHash,
+            logs: txReceipt_.logs,
+            cumulativeGasUsed: parseInt(txReceipt_.cumulativeGasUsed),
+            effectiveGasPrice: txReceipt_.effectiveGasPrice,
+            status: txReceipt_.status,
+            type: txReceipt_.type,
+          };
           const block = tx && await provider.getBlock(tx.blockNumber) || null;
           timestamp = block && block.timestamp || null;
           if (!tx || !txReceipt) {
             error = "Transaction with specified hash cannot be found"
           }
-        } else {
-          error = "Not connected";
         }
-      } else {
-        error = "Invalid transaction hash";
       }
       context.commit('setData', { error, tx, txReceipt, timestamp });
     }
