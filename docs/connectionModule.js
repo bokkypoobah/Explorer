@@ -71,49 +71,18 @@ const Connection = {
 const connectionModule = {
   namespaced: true,
   state: {
-    info: {
-      connected: false,
-      error: false,
-      chainId: null,
-      blockNumber: null,
-      timestamp: null,
-      coinbase: null,
-    },
     provider: null,
   },
   getters: {
-    connected: state => state.info.connected,
-    chainId: state => state.info.chainId,
-    info: state => state.info,
   },
   mutations: {
-    setInfo(state, info) {
-      state.info.connected = info.connected;
-      state.info.error = info.error;
-      state.info.chainId = info.chainId;
-      state.info.blockNumber = info.blockNumber;
-      state.info.timestamp = info.timestamp;
-      state.info.coinbase = info.coinbase;
-      state.provider = info.provider;
-      // console.log(now() + " connectionModule - mutations.setInfo - state.info: " + JSON.stringify(state.info));
-    },
-    setCoinbase(state, coinbase) {
-      state.info.coinbase = coinbase;
-      // console.log(now() + " connectionModule - mutations.setCoinbase - state.info: " + JSON.stringify(state.info));
-    },
-    setBlockInfo(state, info) {
-      state.info.blockNumber = info.blockNumber;
-      state.info.timestamp = info.timestamp;
-      // console.log(now() + " connectionModule - mutations.setBlockInfo - state.info: " + JSON.stringify(state.info));
-    },
-    setConnected(state, connected) {
-      state.info.connected = connected;
-      // console.log(now() + " connectionModule - mutations.setConnected - state.info: " + JSON.stringify(state.info));
+    setProvider(state, provider) {
+      console.log(now() + " connectionModule - mutations.setProvider");
+      state.provider = provider;
     },
   },
   actions: {
     async connect(context) {
-      console.log(now() + " connectionModule - actions.connect");
       let [provider, connected, error, chainId, blockNumber, timestamp, coinbase] = [null, false, null, null, null, null, null];
       if (window.ethereum) {
         if (!window.ethereum.isConnected() || !window.ethereum['isUnlocked']) {
@@ -139,7 +108,6 @@ const connectionModule = {
 
         if (connected) {
           function handleChainChanged(_chainId) {
-            console.log(now() + " connectionModule - actions.connect.handleChainChanged - _chainId: " + parseInt(_chainId));
             alert('Web3 network changed. This page will reload 5 seconds after you click OK.')
             setTimeout(function() {
                 window.location.reload();
@@ -152,24 +120,19 @@ const connectionModule = {
           async function handleAccountsChanged(accounts) {
             const signer = provider.getSigner();
             const coinbase = await signer.getAddress();
-            console.log(now() + " connectionModule - actions.connect.handleAccountsChanged - coinbase: " + coinbase);
-            context.commit('setCoinbase', coinbase);
-            localStorage.explorerConnectionInfo = JSON.stringify(context.state.info);
+            store.dispatch('setWeb3Coinbase', coinbase);
           }
           window.ethereum.on('accountsChanged', handleAccountsChanged);
         }
 
         if (connected) {
           async function handleNewBlock(blockNumber) {
-            if (!context.state.info.blockNumber || blockNumber > context.state.info.blockNumber) {
+            const lastBlockNumber = store.getters['web3Connection'].blockNumber;
+            if (!lastBlockNumber || blockNumber > lastBlockNumber) {
               const block = await provider.getBlock("latest");
-              const blockNumber = block.number;
-              const timestamp = block.timestamp;
-              if (blockNumber > context.state.info.blockNumber) {
-                store.dispatch('setWeb3BlockInfo', { blockNumber, timestamp });
-                context.commit('setBlockInfo', { blockNumber, timestamp });
-                localStorage.explorerConnectionInfo = JSON.stringify(context.state.info);
-                console.log(now() + " connectionModule - actions.connect.handleNewBlock - blockNumber: " + blockNumber);
+              if (block.number > lastBlockNumber) {
+                store.dispatch('setWeb3BlockInfo', { blockNumber: block.number, timestamp: block.timestamp });
+                console.log(now() + " connectionModule - actions.connect.handleNewBlock - blockNumber: " + block.number);
               }
             }
           }
@@ -180,30 +143,20 @@ const connectionModule = {
         error = "This app requires a web3 enabled browser";
       }
       store.dispatch('setWeb3Connection', { connected, error, chainId, blockNumber, timestamp, coinbase });
-      context.commit('setInfo', { connected, error, chainId, blockNumber, timestamp, coinbase, provider });
-      localStorage.explorerConnectionInfo = JSON.stringify(context.state.info);
+      context.commit('setProvider', provider);
     },
     restore(context) {
-      if (localStorage.explorerConnectionInfo) {
-        const info = JSON.parse(localStorage.explorerConnectionInfo);
-        // console.log(now() + " connectionModule - actions.restore - info: " + JSON.stringify(info));
-        if (info.connected) {
-          context.dispatch('connect');
-        } else {
-          context.commit('setInfo', info);
-        }
+      if (store.getters['web3Connection'].connected) {
+        context.dispatch('connect');
       }
     },
     disconnect(context) {
-      console.log(now() + " connectionModule - actions.disconnect");
-      if (context.state.info.connected) {
+      if (store.getters['web3Connection'].connected) {
         if (context.state.provider) {
           context.state.provider.removeAllListeners();
           window.ethereum.removeAllListeners();
         }
         store.dispatch('setWeb3Connected', false);
-        context.commit('setConnected', false);
-        localStorage.explorerConnectionInfo = JSON.stringify(context.state.info);
       }
     },
   },
