@@ -25,11 +25,9 @@ const Connection = {
   },
   computed: {
     connected() {
-      // return store.getters['connection/connected'];
       return store.getters['web3Connection'].connected;
     },
     info() {
-      // return store.getters['connection/info'];
       return store.getters['web3Connection'];
     },
   },
@@ -77,7 +75,6 @@ const connectionModule = {
   },
   mutations: {
     setProvider(state, provider) {
-      console.log(now() + " connectionModule - mutations.setProvider");
       state.provider = provider;
     },
   },
