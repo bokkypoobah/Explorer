@@ -6,8 +6,8 @@ const Block = {
         <b-card no-body class="border-0 m-0 mt-0">
 
           <div class="d-flex flex-wrap m-0 p-0 px-1 bg-white">
-            <div class="m-0 mt-1 p-0" style="width: 36.0rem;">
-              <b-form-input type="text" size="sm" :value="blockNumber" @change="loadBlock($event);" debounce="600" v-b-popover.hover.bottom="'Block'" placeholder="🔍 block, e.g., 4000000"></b-form-input>
+            <div class="m-0 mt-1 p-0" style="width: 12.0rem;">
+              <b-form-input type="text" size="sm" :value="blockNumber" @change="loadBlock($event);" debounce="600" v-b-popover.hover.bottom="'Block'" placeholder="🔍 block, e.g., 20000000"></b-form-input>
             </div>
             <!-- <div class="mt-1 pr-1">
               <b-dropdown size="sm" right text="" variant="link" class="m-0 p-0">

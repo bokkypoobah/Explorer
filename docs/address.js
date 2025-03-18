@@ -6,7 +6,7 @@ const Address = {
         <b-card no-body class="border-0 m-0 mt-0">
 
           <div class="d-flex flex-wrap m-0 p-0 px-1 bg-white">
-            <div class="m-0 mt-1 p-0" style="width: 36.0rem;">
+            <div class="m-0 mt-1 p-0" style="width: 24.0rem;">
               <!-- <b-form-input type="text" size="sm" :value="nameOrAddress" @change="loadAddress($event);" debounce="600" v-b-popover.hover.bottom="'Address'" placeholder="🔍 ENS name or address, e.g., 0x1234...abcd"></b-form-input> -->
               <b-form-input type="text" size="sm" :value="nameOrAddress" @change="loadAddress($event);" debounce="600" v-b-popover.hover.bottom="'Address'" placeholder="🔍 address, e.g., 0x1234...abcd"></b-form-input>
             </div>
@@ -49,6 +49,10 @@ const Address = {
                 <b-form-input type="text" plaintext size="sm" id="address-transactioncount" :value="commify0(transactionCount) || ''"></b-form-input>
               </b-form-group>
 
+              <b-form-group label="Balance:" label-for="address-balance" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-form-input type="text" plaintext size="sm" id="address-balance" :value="balance && (formatETH(balance) + ' ETH')"></b-form-input>
+              </b-form-group>
+
             </b-form-group>
           </b-card>
           <!-- <b-card-text>
@@ -77,6 +81,9 @@ const Address = {
     },
     transactionCount() {
       return store.getters['address/transactionCount'];
+    },
+    balance() {
+      return store.getters['address/balance'];
     },
     transactions() {
       const results = [];
@@ -144,6 +151,7 @@ const addressModule = {
     error: null,
     address: null,
     transactionCount: null,
+    balance: null,
     // ensName: null,
     // transactions: [],
   },
@@ -151,6 +159,7 @@ const addressModule = {
     error: state => state.error,
     address: state => state.address,
     transactionCount: state => state.transactionCount,
+    balance: state => state.balance,
     // ensName: state => state.ensName,
     // transactions: state => state.transactions,
   },
@@ -160,6 +169,7 @@ const addressModule = {
       state.error = data.error;
       state.address = data.address;
       state.transactionCount = data.transactionCount;
+      state.balance = data.balance;
       // state.ensName = data.ensName;
       // state.transactions = data.transactions;
     },
@@ -167,7 +177,7 @@ const addressModule = {
   actions: {
     async loadAddress(context, nameOrAddress) {
       console.log(now() + " addressModule - actions.loadAddress - nameOrAddress: " + nameOrAddress);
-      let [error, address, transactionCount, ensName, transactions, block] = [null, null, null, null, null, null];
+      let [error, address, transactionCount, balance, ensName, transactions, block] = [null, null, null, null, null, null, null];
       if (nameOrAddress) {
         if (!store.getters['web3Connection'].connected || !window.ethereum) {
           error = "Not connected";
@@ -186,10 +196,12 @@ const addressModule = {
           const provider = new ethers.providers.Web3Provider(window.ethereum);
           transactionCount = await provider.getTransactionCount(address);
           console.log(now() + " addressModule - actions.loadAddress - transactionCount: " + transactionCount);
+          balance = await provider.getBalance(address);
+          console.log(now() + " addressModule - actions.loadAddress - balance: " + balance);
         }
       }
       console.log("error: " + error);
-      context.commit('setData', { error, address, transactionCount });
+      context.commit('setData', { error, address, transactionCount, balance });
     }
   },
 };
