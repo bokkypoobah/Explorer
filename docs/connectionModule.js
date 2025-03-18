@@ -113,7 +113,9 @@ const connectionModule = {
                 window.location.reload();
               }, 5000);
           }
-          window.ethereum.on('chainChanged', handleChainChanged);
+          if (!window.ethereum._events.chainChanged) {
+            window.ethereum.on('chainChanged', handleChainChanged);
+          }
         }
 
         if (connected) {
@@ -122,7 +124,9 @@ const connectionModule = {
             const coinbase = await signer.getAddress();
             store.dispatch('setWeb3Coinbase', coinbase);
           }
-          window.ethereum.on('accountsChanged', handleAccountsChanged);
+          if (!window.ethereum._events.accountsChanged) {
+            window.ethereum.on('accountsChanged', handleAccountsChanged);
+          }
         }
 
         if (connected) {
@@ -137,7 +141,9 @@ const connectionModule = {
               }
             }
           }
-          provider.on("block", handleNewBlock);
+          if (provider._events.length == 0) {
+            provider.on("block", handleNewBlock);
+          }
         }
 
       } else {
