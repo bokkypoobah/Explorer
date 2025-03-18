@@ -27,7 +27,7 @@ const Transaction = {
 
           <b-card no-body no-header bg-variant="light" class="m-1 p-1 w-75">
             <b-form-group label-cols-lg="2" label="Transaction" label-size="md" label-class="font-weight-bold pt-0" class="mt-3 mb-0">
-              <b-form-group label="Hash:" label-for="transaction-hash" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-form-group label="Hash:" label-for="transaction-hash" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-input-group>
                   <b-button v-if="tx && tx.hash" :href="'https://etherscan.io/tx/' + tx.hash" variant="link" target="_blank" class="m-0 p-0 pt-1">
                     {{ tx.hash }}
@@ -40,14 +40,14 @@ const Transaction = {
                 </b-input-group>
               </b-form-group>
 
-              <b-form-group v-if="txReceipt && txReceipt.status != null" label="Status:" label-for="transaction-status" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0" :description="txReceipt && txReceipt.byzantium && ('Byzantium: ' + txReceipt.byzantium)">
+              <b-form-group v-if="txReceipt && txReceipt.status != null" label="Status:" label-for="transaction-status" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0" :description="txReceipt && txReceipt.byzantium && ('Byzantium: ' + txReceipt.byzantium)">
                 <b-form-input type="text" plaintext size="sm" id="transaction-status" :value="txReceipt.status == 1 ? 'SUCCESS' : 'FAIL'"></b-form-input>
               </b-form-group>
 
-              <b-form-group label="Block:" label-for="transaction-block" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0" :description="timestamp && formatTimestamp(timestamp) || ''">
+              <b-form-group label="Block:" label-for="transaction-block" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0" :description="timestamp && formatTimestamp(timestamp) || ''">
                 <b-input-group>
                   <b-button v-if="tx && tx.blockNumber" :href="'https://etherscan.io/block/' + tx.blockNumber" variant="link" target="_blank" class="m-0 p-0 pt-1">
-                    {{ tx.blockNumber }}
+                    {{ tx && tx.blockNumber && commify0(tx.blockNumber) || '' }}
                   </b-button>
                   <b-input-group-append>
                     <b-button v-if="tx && tx.blockNumber" size="sm" @click="copyToClipboard(tx.blockNumber);" variant="link">
@@ -57,7 +57,7 @@ const Transaction = {
                 </b-input-group>
               </b-form-group>
 
-              <b-form-group label="From:" label-for="transaction-from" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0" :description="tx && tx.nonce && ('Nonce: ' + tx.nonce) || ''">
+              <b-form-group label="From:" label-for="transaction-from" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0" :description="tx && tx.nonce && ('Nonce: ' + tx.nonce) || ''">
                 <b-input-group>
                   <b-button v-if="tx && tx.from" :href="'https://etherscan.io/address/' + tx.from" variant="link" target="_blank" class="m-0 p-0 pt-1">
                     {{ tx.from }}
@@ -70,8 +70,8 @@ const Transaction = {
                 </b-input-group>
               </b-form-group>
 
-              <!-- <b-form-group v-if="!(txReceipt && txReceipt.contractAddress)" label="To:" label-for="transaction-to" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0"> -->
-              <b-form-group label="To:" label-for="transaction-to" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
+              <!-- <b-form-group v-if="!(txReceipt && txReceipt.contractAddress)" label="To:" label-for="transaction-to" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0"> -->
+              <b-form-group label="To:" label-for="transaction-to" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-input-group>
                   <b-button v-if="tx && tx.to" :href="'https://etherscan.io/address/' + tx.to" variant="link" target="_blank" class="m-0 p-0 pt-1">
                     {{ tx.to }}
@@ -84,7 +84,7 @@ const Transaction = {
                 </b-input-group>
               </b-form-group>
 
-              <b-form-group v-if="txReceipt && txReceipt.contractAddress" label="Deployed contract:" label-for="transaction-contractaddress" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-form-group v-if="txReceipt && txReceipt.contractAddress" label="Deployed contract:" label-for="transaction-contractaddress" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-input-group>
                   <b-button v-if="txReceipt && txReceipt.contractAddress" :href="'https://etherscan.io/address/' + txReceipt.contractAddress" variant="link" target="_blank" class="m-0 p-0 pt-1">
                     {{ txReceipt.contractAddress }}
@@ -97,11 +97,15 @@ const Transaction = {
                 </b-input-group>
               </b-form-group>
 
-              <b-form-group label="Value:" label-for="transaction-value" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-form-group label="Value:" label-for="transaction-value" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-form-input type="text" plaintext size="sm" id="transaction-value" :value="tx && tx.value && (formatETH(tx.value) + ' ETH')"></b-form-input>
               </b-form-group>
 
-              <b-form-group label="Data:" label-for="transaction-data" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-form-group label="Fee:" label-for="transaction-fee" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-form-input type="text" plaintext size="sm" id="transaction-fee" :value="fee && (formatETH(fee) + ' ETH')"></b-form-input>
+              </b-form-group>
+
+              <b-form-group label="Data:" label-for="transaction-data" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-input-group class="align-items-start">
                   <b-form-textarea plaintext size="sm" id="transaction-data" :value="tx && tx.data && tx.data != '0x' && tx.data || ''" rows="3" max-rows="10"></b-form-textarea>
                   <b-input-group-append>
@@ -112,31 +116,33 @@ const Transaction = {
                 </b-input-group>
               </b-form-group>
 
-              <b-form-group label="Gas Limit:" label-for="transaction-gaslimit" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-form-input type="text" plaintext size="sm" id="transaction-gaslimit" :value="tx && tx.gasLimit"></b-form-input>
+              <b-form-group label="Gas Limit:" label-for="transaction-gaslimit" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-form-input type="text" plaintext size="sm" id="transaction-gaslimit" :value="tx && tx.gasLimit && commify0(tx.gasLimit) || ''"></b-form-input>
               </b-form-group>
-              <b-form-group label="Gas Used:" label-for="transaction-gasused" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-form-input type="text" plaintext size="sm" id="transaction-gasused" :value="txReceipt && txReceipt.gasUsed"></b-form-input>
+              <b-form-group label="Gas Used:" label-for="transaction-gasused" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-form-input type="text" plaintext size="sm" id="transaction-gasused" :value="txReceipt && txReceipt.gasUsed && commify0(txReceipt.gasUsed) || ''"></b-form-input>
               </b-form-group>
-              <b-form-group label="Gas Price:" label-for="transaction-gasprice" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-form-group label="Gas Price:" label-for="transaction-gasprice" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-form-input type="text" plaintext size="sm" id="transaction-gasprice" :value="tx && tx.gasPrice && (formatGas(tx.gasPrice) + ' gwei') || ''"></b-form-input>
               </b-form-group>
-              <b-form-group label="Max Fee/Gas:" label-for="transaction-maxfeepergas" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-form-group label="Max Fee Per Gas:" label-for="transaction-maxfeepergas" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-form-input type="text" plaintext size="sm" id="transaction-maxfeepergas" :value="tx && tx.maxFeePerGas && (formatGas(tx.maxFeePerGas) + ' gwei') || ''"></b-form-input>
               </b-form-group>
-              <b-form-group label="Max Priority Fee/Gas:" label-for="transaction-maxpriorityfeepergas" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-form-group label="Max Priority Fee Per Gas:" label-for="transaction-maxpriorityfeepergas" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-form-input type="text" plaintext size="sm" id="transaction-maxpriorityfeepergas" :value="tx && tx.maxPriorityFeePerGas && (formatGas(tx.maxPriorityFeePerGas) + ' gwei') || ''"></b-form-input>
               </b-form-group>
+              <b-form-group label="Effective Gas Price:" label-for="transaction-effectivegasprice" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-form-input type="text" plaintext size="sm" id="transaction-effectivegasprice" :value="txReceipt && txReceipt.effectiveGasPrice && (formatGas(txReceipt.effectiveGasPrice) + ' gwei') || ''"></b-form-input>
+              </b-form-group>
 
-
-
+              <b-form-group label="Logs (temp):" label-for="transaction-logs" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-form-textarea plaintext size="sm" id="transaction-logs" :value="txReceipt && txReceipt.logs && JSON.stringify(txReceipt.logs) || ''" rows="3" max-rows="10"></b-form-textarea>
+              </b-form-group>
 
             </b-form-group>
           </b-card>
-
-          <b-card-body class="p-0">
+          <!-- <b-card-body class="p-0">
             <b-card class="mb-2 border-0">
-
               <b-card-text>
                 <h5>Transaction</h5>
                 error: {{ error }}
@@ -147,9 +153,8 @@ const Transaction = {
                 <br />
                 timestamp: {{ timestamp }}
               </b-card-text>
-
             </b-card>
-          </b-card-body>
+          </b-card-body> -->
         </b-card>
       </b-card>
     </div>
@@ -174,6 +179,12 @@ const Transaction = {
     timestamp () {
       return store.getters['transaction/timestamp'];
     },
+    fee() {
+      if (this.tx && this.txReceipt && this.txReceipt.gasUsed && this.txReceipt.effectiveGasPrice) {
+        return ethers.BigNumber.from(this.txReceipt.gasUsed).mul(this.txReceipt.effectiveGasPrice);
+      }
+      return null;
+    },
   },
   methods: {
     loadTransaction(txHash) {
@@ -183,6 +194,12 @@ const Transaction = {
     },
     copyToClipboard(str) {
       navigator.clipboard.writeText(str);
+    },
+    commify0(n) {
+      if (n != null) {
+        return Number(n).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+      }
+      return null;
     },
     formatETH(e) {
       if (e) {
