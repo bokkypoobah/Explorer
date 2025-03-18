@@ -48,6 +48,48 @@ const Block = {
                 </b-input-group>
               </b-form-group>
 
+              <b-form-group label="Timestamp:" label-for="block-timestamp" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-form-input type="text" plaintext size="sm" id="block-timestamp" :value="block && block.timestamp && formatTimestamp(block.timestamp) || ''"></b-form-input>
+              </b-form-group>
+
+              <b-form-group label="Miner:" label-for="block-miner" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0" :description="tx && tx.nonce && ('Nonce: ' + tx.nonce) || ''">
+                <b-input-group>
+                  <b-button v-if="block && block.miner" :href="'https://etherscan.io/address/' + block.miner" variant="link" target="_blank" class="m-0 p-0 pt-1">
+                    {{ block.miner }}
+                  </b-button>
+                  <b-input-group-append>
+                    <b-button v-if="block && block.miner" size="sm" @click="copyToClipboard(block.miner);" variant="link">
+                      <b-icon-clipboard shift-v="-1" font-scale="1.1"></b-icon-clipboard>
+                    </b-button>
+                  </b-input-group-append>
+                </b-input-group>
+              </b-form-group>
+
+              <b-form-group label="Block Hash:" label-for="block-hash" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-form-input type="text" plaintext size="sm" id="block-hash" :value="block && block.hash || ''"></b-form-input>
+              </b-form-group>
+
+              <!-- TODO: Link -->
+              <b-form-group label="Parent Block Hash:" label-for="block-parentblockhash" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-form-input type="text" plaintext size="sm" id="block-parentblockhash" :value="block && block.parentHash || ''"></b-form-input>
+              </b-form-group>
+
+              <b-form-group label="Nonce:" label-for="block-nonce" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-form-input type="text" plaintext size="sm" id="block-nonce" :value="block && block.nonce || ''"></b-form-input>
+              </b-form-group>
+
+              <b-form-group label="Difficulty:" label-for="block-difficulty" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-form-input type="text" plaintext size="sm" id="block-difficulty" :value="block && block.difficulty && commify0(block.difficulty) || ''"></b-form-input>
+              </b-form-group>
+
+              <b-form-group label="Gas Limit:" label-for="block-gaslimit" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-form-input type="text" plaintext size="sm" id="block-gaslimit" :value="block && block.gasLimit && commify0(block.gasLimit) || ''"></b-form-input>
+              </b-form-group>
+
+              <b-form-group label="Extra Data:" label-for="block-extradata" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0" :description="extraDataAsString">
+                <b-form-input type="text" plaintext size="sm" id="block-extradata" :value="block && block.extraData && block.extraData || ''"></b-form-input>
+              </b-form-group>
+
               <!-- <b-form-group v-if="txReceipt && txReceipt.status != null" label="Status:" label-for="block-status" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0" :description="txReceipt && txReceipt.byzantium && ('Byzantium: ' + txReceipt.byzantium)">
                 <b-form-input type="text" plaintext size="sm" id="block-status" :value="txReceipt.status == 1 ? 'SUCCESS' : 'FAIL'"></b-form-input>
               </b-form-group> -->
@@ -171,6 +213,14 @@ const Block = {
     },
     block() {
       return store.getters['block/block'];
+    },
+    extraDataAsString() {
+      try {
+        const extraData = store.getters['block/block'] && store.getters['block/block'].extraData || null;
+        return extraData && ethers.utils.toUtf8String(extraData) || null;
+      } catch (e) {
+      }
+      return null;
     },
     tx() {
       return store.getters['transaction/tx'];
