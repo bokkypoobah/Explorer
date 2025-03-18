@@ -42,6 +42,19 @@ const Transaction = {
                 <b-form-input type="text" plaintext size="sm" id="transaction-status" :value="txReceipt.status == 1 ? 'SUCCESS' : 'FAIL'"></b-form-input>
               </b-form-group>
 
+              <b-form-group label="Block:" label-for="transaction-block" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-input-group>
+                  <b-button v-if="tx && tx.blockNumber" :href="'https://etherscan.io/block/' + tx.blockNumber" variant="link" target="_blank" class="m-0 p-0 pt-1">
+                    {{ tx.blockNumber }}
+                  </b-button>
+                  <b-input-group-append>
+                    <b-button v-if="tx && tx.blockNumber" size="sm" @click="copyToClipboard(tx.blockNumber);" variant="link">
+                      <b-icon-clipboard shift-v="-1" font-scale="1.1"></b-icon-clipboard>
+                    </b-button>
+                  </b-input-group-append>
+                </b-input-group>
+              </b-form-group>
+
               <b-form-group label="From:" label-for="transaction-from" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0" :description="tx && tx.nonce && ('Nonce: ' + tx.nonce) || ''">
                 <b-input-group>
                   <b-button v-if="tx && tx.from" :href="'https://etherscan.io/address/' + tx.from" variant="link" target="_blank" class="m-0 p-0 pt-1">
