@@ -226,21 +226,11 @@ const Block = {
       }
       return null;
     },
-    tx() {
-      return store.getters['transaction/tx'];
-    },
-    txReceipt () {
-      return store.getters['transaction/txReceipt'];
-    },
-    timestamp () {
-      return store.getters['transaction/timestamp'];
-    },
-    fee() {
-      if (this.tx && this.txReceipt && this.txReceipt.gasUsed && this.txReceipt.effectiveGasPrice) {
-        return ethers.BigNumber.from(this.txReceipt.gasUsed).mul(this.txReceipt.effectiveGasPrice);
-      }
-      return null;
-    },
+    transactions() {
+      const results = [];
+      results.push({ blah: "Blah" });
+      return results;
+    }
   },
   methods: {
     loadBlock(blockNumber) {
