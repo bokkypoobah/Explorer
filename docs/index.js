@@ -80,6 +80,7 @@ const store = new Vuex.Store({
     config: configModule,
     block: blockModule,
     transaction: transactionModule,
+    address: addressModule,
   },
   plugins: [
     function persistSettings(store) {

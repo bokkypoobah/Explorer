@@ -1,12 +1,17 @@
 const routes = [{
-  path: '/block/:blockNumber?',
-  component: Block,
-  name: 'Block',
-  props: true,
-}, {
+    path: '/block/:blockNumber?',
+    component: Block,
+    name: 'Block',
+    props: true,
+  }, {
     path: '/tx/:txHash?',
     component: Transaction,
     name: 'Transaction',
+    props: true,
+  }, {
+    path: '/address/:address?',
+    component: Address,
+    name: 'Address',
     props: true,
   }, {
     path: '/config',

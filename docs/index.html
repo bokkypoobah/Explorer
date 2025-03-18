@@ -34,6 +34,7 @@
     <script src="config.js"></script>
     <script src="block.js"></script>
     <script src="transaction.js"></script>
+    <script src="address.js"></script>
     <script src="welcome.js"></script>
     <script src="connectionModule.js"></script>
 
@@ -57,6 +58,7 @@
             <b-nav-item size="sm" to="/home" active-class="active" v-b-popover.hover="'Welcome'">Home</b-nav-item>
             <b-nav-item size="sm" to="/block/" active-class="active" v-b-popover.hover="'View block'">Block</b-nav-item>
             <b-nav-item size="sm" to="/tx/" active-class="active" v-b-popover.hover="'View transaction'">Transaction</b-nav-item>
+            <b-nav-item size="sm" to="/address/" active-class="active" v-b-popover.hover="'View address'">Address</b-nav-item>
             <b-nav-item size="sm" to="/config" active-class="active" v-b-popover.hover="'Configuration'">Config</b-nav-item>
             <b-button v-if="!connected" size="sm" variant="outline-primary" class="ml-5 mr-1" @click="connect();" v-b-popover.hover.bottom="'Connect to web3'">Connect</b-button>
             <b-button v-if="connected" size="sm" variant="outline-primary" class="ml-5 mr-1" @click="disconnect();" v-b-popover.hover.bottom="'Connected to web3 with account ' + info.coinbase">{{ info.coinbase && info.coinbase.substring(0, 10) }}</b-button>
