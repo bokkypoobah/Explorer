@@ -9,15 +9,13 @@ const Block = {
             <div class="m-0 mt-1 p-0" style="width: 12.0rem;">
               <b-form-input type="text" size="sm" :value="blockNumber" @change="loadBlock($event);" debounce="600" v-b-popover.hover.bottom="'Block'" placeholder="🔍 block, e.g., 20000000"></b-form-input>
             </div>
-            <!-- <div class="mt-1 pr-1">
+            <div class="mt-1 pr-1">
               <b-dropdown size="sm" right text="" variant="link" class="m-0 p-0">
                 <b-dropdown-text>Sample Blocks</b-dropdown-text>
                 <b-dropdown-divider></b-dropdown-divider>
-                <b-dropdown-item @click="loadBlock('0x00cf367c9ee21dc9538355d1da4ebac9b83645b790b07dd2c9d15ae7f9aed6d2');">0x00cf367c - EF: DeFi Multisig Safe v1.4.1 transaction</b-dropdown-item>
+                <b-dropdown-item @click="loadBlock('20000000');">20,000,000</b-dropdown-item>
               </b-dropdown>
-            </div> -->
-            <!-- <div class="mt-0 flex-grow-1">
-            </div> -->
+            </div>
           </div>
 
           <b-card no-body no-header bg-variant="light" class="m-1 p-1 w-75">
@@ -82,7 +80,7 @@ const Block = {
                 <b-form-input type="text" plaintext size="sm" id="block-nonce" :value="block && block.nonce || ''"></b-form-input>
               </b-form-group>
 
-              <b-form-group v-if="!error" label="Difficulty:" label-for="block-difficulty" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-form-group v-if="!error && block && block.difficulty" label="Difficulty:" label-for="block-difficulty" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-form-input type="text" plaintext size="sm" id="block-difficulty" :value="block && block.difficulty && commify0(block.difficulty) || ''"></b-form-input>
               </b-form-group>
 
