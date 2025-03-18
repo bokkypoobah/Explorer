@@ -233,10 +233,10 @@ const Address = {
     }
   },
   methods: {
-    loadAddress(address) {
-      console.log(now() + " Address - loadAddress - address: " + address);
-      this.$router.push({ name: 'Address', params: { address } })
-      store.dispatch('address/loadAddress', address);
+    loadAddress(nameOrAddress) {
+      console.log(now() + " Address - methods.loadAddress - nameOrAddress: " + nameOrAddress);
+      this.$router.push({ name: 'Address', params: { nameOrAddress } })
+      store.dispatch('address/loadAddress', nameOrAddress);
     },
     copyToClipboard(str) {
       navigator.clipboard.writeText(str);
@@ -278,7 +278,7 @@ const Address = {
     console.log(now() + " Address - mounted() $route.params: " + JSON.stringify(this.$route.params));
     const t = this;
     setTimeout(function() {
-      store.dispatch('address/loadAddress', t.address);
+      store.dispatch('address/loadAddress', t.nameOrAddress);
     }, 1000);
   },
   destroyed() {
@@ -307,68 +307,68 @@ const addressModule = {
     async loadAddress(context, nameOrAddress) {
       console.log(now() + " addressModule - actions.loadAddress - nameOrAddress: " + nameOrAddress);
       let [error, block] = [null, null];
-      if (blockNumber) {
+      if (nameOrAddress) {
         if (!store.getters['web3Connection'].connected || !window.ethereum) {
           error = "Not connected";
         }
-        if (!error && !(/^[0-9]+$/.test(blockNumber))) {
-          error = "Invalid block number";
-        }
-        if (!error) {
-          const provider = new ethers.providers.Web3Provider(window.ethereum);
-          // const tx_ = await provider.getTransaction(txHash);
-          // console.log("tx_: " + JSON.stringify(tx_, null, 2));
-          // tx = {
-          //   hash: tx_.hash,
-          //   chainId: parseInt(tx_.chainId),
-          //   blockNumber: parseInt(tx_.blockNumber),
-          //   transactionIndex: tx_.transactionIndex,
-          //   type: tx_.type || null,
-          //   from: tx_.from,
-          //   to: tx_.to,
-          //   nonce: parseInt(tx_.nonce),
-          //   value: ethers.BigNumber.from(tx_.value).toString(),
-          //   data: tx_.data,
-          //   gasLimit: parseInt(tx_.gasLimit),
-          //   gasPrice: ethers.BigNumber.from(tx_.gasPrice).toString(),
-          //   maxFeePerGas: tx_.maxFeePerGas && ethers.BigNumber.from(tx_.maxFeePerGas).toString() || null,
-          //   maxPriorityFeePerGas: tx_.maxPriorityFeePerGas && ethers.BigNumber.from(tx_.maxPriorityFeePerGas).toString() || null,
-          //   // accessList: tx_.accessList,
-          //   // blockHash: tx_.blockHash,
-          //   // r: tx_.r,
-          //   // s: tx_.s,
-          //   // v: tx_.v,
-          //   // creates: tx_.creates,
-          // };
-          // const txReceipt_ = await provider.getTransactionReceipt(txHash);
-          // console.log("txReceipt_: " + JSON.stringify(txReceipt_, null, 2));
-          // txReceipt = {
-          //   status: txReceipt_.status,
-          //   type: txReceipt_.type,
-          //   byzantium: txReceipt_.byzantium || null,
-          //   contractAddress: txReceipt_.contractAddress,
-          //   gasUsed: parseInt(txReceipt_.gasUsed),
-          //   cumulativeGasUsed: parseInt(txReceipt_.cumulativeGasUsed),
-          //   effectiveGasPrice: ethers.BigNumber.from(txReceipt_.effectiveGasPrice).toString(),
-          //   logs: txReceipt_.logs,
-          //   // to: txReceipt_.to,
-          //   // from: txReceipt_.from,
-          //   // blockNumber: parseInt(txReceipt_.blockNumber),
-          //   // logsBloom: txReceipt_.logsBloom,
-          //   // blockHash: txReceipt_.blockHash,
-          // };
-          block = await provider.getBlockWithTransactions(parseInt(blockNumber)) || null;
-          // console.log("DEBUG 4 - block: " + JSON.stringify(block));
-          // timestamp = block && block.timestamp || null;
-          // if (!tx || !txReceipt) {
-          //   error = "Address with specified number cannot be found"
-          // }
-        }
+      //   if (!error && !(/^[0-9]+$/.test(blockNumber))) {
+      //     error = "Invalid block number";
+      //   }
+      //   if (!error) {
+      //     const provider = new ethers.providers.Web3Provider(window.ethereum);
+      //     // const tx_ = await provider.getTransaction(txHash);
+      //     // console.log("tx_: " + JSON.stringify(tx_, null, 2));
+      //     // tx = {
+      //     //   hash: tx_.hash,
+      //     //   chainId: parseInt(tx_.chainId),
+      //     //   blockNumber: parseInt(tx_.blockNumber),
+      //     //   transactionIndex: tx_.transactionIndex,
+      //     //   type: tx_.type || null,
+      //     //   from: tx_.from,
+      //     //   to: tx_.to,
+      //     //   nonce: parseInt(tx_.nonce),
+      //     //   value: ethers.BigNumber.from(tx_.value).toString(),
+      //     //   data: tx_.data,
+      //     //   gasLimit: parseInt(tx_.gasLimit),
+      //     //   gasPrice: ethers.BigNumber.from(tx_.gasPrice).toString(),
+      //     //   maxFeePerGas: tx_.maxFeePerGas && ethers.BigNumber.from(tx_.maxFeePerGas).toString() || null,
+      //     //   maxPriorityFeePerGas: tx_.maxPriorityFeePerGas && ethers.BigNumber.from(tx_.maxPriorityFeePerGas).toString() || null,
+      //     //   // accessList: tx_.accessList,
+      //     //   // blockHash: tx_.blockHash,
+      //     //   // r: tx_.r,
+      //     //   // s: tx_.s,
+      //     //   // v: tx_.v,
+      //     //   // creates: tx_.creates,
+      //     // };
+      //     // const txReceipt_ = await provider.getTransactionReceipt(txHash);
+      //     // console.log("txReceipt_: " + JSON.stringify(txReceipt_, null, 2));
+      //     // txReceipt = {
+      //     //   status: txReceipt_.status,
+      //     //   type: txReceipt_.type,
+      //     //   byzantium: txReceipt_.byzantium || null,
+      //     //   contractAddress: txReceipt_.contractAddress,
+      //     //   gasUsed: parseInt(txReceipt_.gasUsed),
+      //     //   cumulativeGasUsed: parseInt(txReceipt_.cumulativeGasUsed),
+      //     //   effectiveGasPrice: ethers.BigNumber.from(txReceipt_.effectiveGasPrice).toString(),
+      //     //   logs: txReceipt_.logs,
+      //     //   // to: txReceipt_.to,
+      //     //   // from: txReceipt_.from,
+      //     //   // blockNumber: parseInt(txReceipt_.blockNumber),
+      //     //   // logsBloom: txReceipt_.logsBloom,
+      //     //   // blockHash: txReceipt_.blockHash,
+      //     // };
+      //     block = await provider.getBlockWithTransactions(parseInt(blockNumber)) || null;
+      //     // console.log("DEBUG 4 - block: " + JSON.stringify(block));
+      //     // timestamp = block && block.timestamp || null;
+      //     // if (!tx || !txReceipt) {
+      //     //   error = "Address with specified number cannot be found"
+      //     // }
+      //   }
       }
-      // console.log("error: " + error);
+      console.log("error: " + error);
       // console.log("block: " + JSON.string(block, null, 2));
       // console.table(block);
-      context.commit('setData', { error, block });
+      // context.commit('setData', { error, block });
     }
   },
 };
