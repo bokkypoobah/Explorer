@@ -9,7 +9,7 @@ const Block = {
             <div class="m-0 mt-1 p-0" style="width: 36.0rem;">
               <b-form-input type="text" size="sm" :value="blockNumber" @change="loadBlock($event);" debounce="600" v-b-popover.hover.bottom="'Block'" placeholder="🔍 block, e.g., 4000000"></b-form-input>
             </div>
-            <div class="mt-1 pr-1">
+            <!-- <div class="mt-1 pr-1">
               <b-dropdown size="sm" right text="" variant="link" class="m-0 p-0">
                 <b-dropdown-text>Sample Blocks</b-dropdown-text>
                 <b-dropdown-divider></b-dropdown-divider>
@@ -20,7 +20,7 @@ const Block = {
                 <b-dropdown-item @click="loadBlock('0xce56f56bd3712611e360b4ebd8071aa3246f2eff3042eef81c3f24dedab77915');">0xce56f56b - Random failed transaction</b-dropdown-item>
                 <b-dropdown-item @click="loadBlock('0x6afbe0f0ea3613edd6b84b71260836c03bddce81604f05c81a070cd671d3d765');">0x6afbe0f0 - Random older transaction</b-dropdown-item>
               </b-dropdown>
-            </div>
+            </div> -->
             <!-- <div class="mt-0 flex-grow-1">
             </div> -->
           </div>
@@ -29,10 +29,18 @@ const Block = {
             <b-form-group label-cols-lg="2" label="Block" label-size="md" label-class="font-weight-bold pt-0" class="mt-3 mb-0">
               <b-form-group label="Block:" label-for="block-blocknumber" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-input-group>
+                  <b-input-group-prepend>
+                    <b-button v-if="block && block.number" size="sm" @click="loadBlock(parseInt(blockNumber) - 1);" variant="link">
+                      <b-icon-chevron-left shift-v="-1" font-scale="1.1"></b-icon-chevron-left>
+                    </b-button>
+                  </b-input-group-prepend>
                   <b-button v-if="block && block.number" :href="'https://etherscan.io/block/' + block.number" variant="link" target="_blank" class="m-0 p-0 pt-1">
                     {{ commify0(block.number) }}
                   </b-button>
                   <b-input-group-append>
+                    <b-button v-if="block && block.number" size="sm" @click="loadBlock(parseInt(blockNumber) + 1);" variant="link">
+                      <b-icon-chevron-right shift-v="-1" font-scale="1.1"></b-icon-chevron-right>
+                    </b-button>
                     <b-button v-if="block && block.number" size="sm" @click="copyToClipboard(block.number);" variant="link">
                       <b-icon-clipboard shift-v="-1" font-scale="1.1"></b-icon-clipboard>
                     </b-button>
