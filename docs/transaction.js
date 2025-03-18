@@ -7,7 +7,7 @@ const Transaction = {
 
           <div class="d-flex flex-wrap m-0 p-0 px-1 bg-white">
             <div class="ml-1 mt-1 p-0" style="width: 36.0rem;">
-              <b-form-input type="text" size="sm" :value="txHash" @change="updateTxHash($event);" debounce="600" v-b-popover.hover.bottom="'Transaction hash'" placeholder="🔍 tx hash, e.g., 0x1234...abcd"></b-form-input>
+              <b-form-input type="text" size="sm" :value="txHash" @change="loadTransaction($event);" debounce="600" v-b-popover.hover.bottom="'Transaction hash'" placeholder="🔍 tx hash, e.g., 0x1234...abcd"></b-form-input>
             </div>
             <div class="mt-1 pr-1">
               <b-dropdown size="sm" right text="" variant="link" class="m-0 p-0">
@@ -61,20 +61,8 @@ const Transaction = {
     timestamp () {
       return store.getters['transaction/timestamp'];
     },
-    // coinbase() {
-    //   return store.getters['connection/coinbase'];
-    // },
-    // chainId() {
-    //   return store.getters['connection/chainId'];
-    // },
   },
   methods: {
-    updateTxHash(txHash) {
-      console.log(now() + " Transaction - updateTxHash - txHash: " + txHash);
-      this.$router.push({ name: 'Transaction', params: { txHash } })
-      store.dispatch('transaction/loadTransaction', txHash);
-    },
-    // TODO: May be duplicate of above
     loadTransaction(txHash) {
       console.log(now() + " Transaction - loadTransaction - txHash: " + txHash);
       this.$router.push({ name: 'Transaction', params: { txHash } })
@@ -90,8 +78,7 @@ const Transaction = {
     console.log(now() + " Transaction - beforeDestroy()");
   },
   mounted() {
-    console.log(now() + " Transaction - mounted() $route: " + JSON.stringify(this.$route.params));
-    console.log(now() + " Transaction - mounted() this.txHash: " + this.txHash);
+    console.log(now() + " Transaction - mounted() $route.params: " + JSON.stringify(this.$route.params));
     const t = this;
     setTimeout(function() {
       store.dispatch('transaction/loadTransaction', t.txHash);
@@ -138,38 +125,45 @@ const transactionModule = {
         if (!error) {
           const provider = new ethers.providers.Web3Provider(window.ethereum);
           const tx_ = await provider.getTransaction(txHash);
+          // console.log("tx_: " + JSON.stringify(tx_, null, 2));
           tx = {
             hash: tx_.hash,
-            type: tx_.type || null,
-            // accessList: tx_.accessList,
-            // blockHash: tx_.blockHash,
+            chainId: parseInt(tx_.chainId),
+            blockNumber: parseInt(tx_.blockNumber),
             transactionIndex: tx_.transactionIndex,
+            type: tx_.type || null,
             from: tx_.from,
             to: tx_.to,
+            nonce: parseInt(tx_.nonce),
+            value: ethers.BigNumber.from(tx_.value).toString(),
+            data: tx_.data,
             gasLimit: parseInt(tx_.gasLimit),
             gasPrice: ethers.BigNumber.from(tx_.gasPrice).toString(),
             maxFeePerGas: ethers.BigNumber.from(tx_.maxFeePerGas).toString(),
             maxPriorityFeePerGas: ethers.BigNumber.from(tx_.maxPriorityFeePerGas).toString(),
-            value: ethers.BigNumber.from(tx_.value).toString(),
-            nonce: parseInt(tx_.nonce),
-            data: tx_.data,
+            // accessList: tx_.accessList,
+            // blockHash: tx_.blockHash,
             // r: tx_.r,
             // s: tx_.s,
             // v: tx_.v,
             // creates: tx_.creates,
-            chainId: parseInt(tx_.chainId),
           };
           const txReceipt_ = await provider.getTransactionReceipt(txHash);
+          console.log("txReceipt_: " + JSON.stringify(txReceipt_, null, 2));
           txReceipt = {
-            contractAddress: txReceipt_.contractAddress,
-            gasUsed: parseInt(tx_.gasUsed),
-            // logsBloom: txReceipt_.logsBloom,
-            // blockHash: txReceipt_.blockHash,
-            logs: txReceipt_.logs,
-            cumulativeGasUsed: parseInt(txReceipt_.cumulativeGasUsed),
-            effectiveGasPrice: txReceipt_.effectiveGasPrice,
             status: txReceipt_.status,
             type: txReceipt_.type,
+            byzantium: txReceipt_.byzantium,
+            contractAddress: txReceipt_.contractAddress,
+            gasUsed: parseInt(txReceipt_.gasUsed),
+            cumulativeGasUsed: parseInt(txReceipt_.cumulativeGasUsed),
+            effectiveGasPrice: ethers.BigNumber.from(txReceipt_.effectiveGasPrice).toString(),
+            logs: txReceipt_.logs,
+            // to: txReceipt_.to,
+            // from: txReceipt_.from,
+            // blockNumber: parseInt(txReceipt_.blockNumber),
+            // logsBloom: txReceipt_.logsBloom,
+            // blockHash: txReceipt_.blockHash,
           };
           const block = tx && await provider.getBlock(tx.blockNumber) || null;
           timestamp = block && block.timestamp || null;

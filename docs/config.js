@@ -9,17 +9,6 @@ const Config = {
             <b-form-input type="text" size="sm" id="etherscan-apikey" v-model="etherscanAPIKey" placeholder="See https://docs.etherscan.io/ to obtain an API key" class="w-75"></b-form-input>
           </b-form-group>
         </b-card>
-
-        <!-- <b-card no-body class="border-0 m-0 mt-2">
-          <b-card-body class="p-0">
-            <b-card class="mb-2 border-0">
-              <b-card-text>
-                <h5>Config</h5>
-              </b-card-text>
-            </b-card>
-          </b-card-body>
-        </b-card> -->
-
       </b-card>
     </div>
   `,
