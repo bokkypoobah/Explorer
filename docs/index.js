@@ -78,6 +78,7 @@ const store = new Vuex.Store({
   modules: {
     connection: connectionModule,
     config: configModule,
+    block: blockModule,
     transaction: transactionModule,
   },
   plugins: [

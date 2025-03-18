@@ -1,4 +1,9 @@
 const routes = [{
+  path: '/block/:blockNumber?',
+  component: Block,
+  name: 'Block',
+  props: true,
+}, {
     path: '/tx/:txHash?',
     component: Transaction,
     name: 'Transaction',
