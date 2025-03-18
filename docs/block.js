@@ -30,18 +30,18 @@ const Block = {
               <b-form-group label="Block:" label-for="block-blocknumber" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-input-group>
                   <b-input-group-prepend>
-                    <b-button v-if="block && block.number" size="sm" @click="loadBlock(parseInt(blockNumber) - 1);" variant="link">
+                    <b-button v-if="block && block.number != null" size="sm" @click="loadBlock(parseInt(blockNumber) - 1);" variant="link">
                       <b-icon-chevron-left shift-v="-1" font-scale="1.1"></b-icon-chevron-left>
                     </b-button>
                   </b-input-group-prepend>
-                  <b-button v-if="block && block.number" :href="'https://etherscan.io/block/' + block.number" variant="link" target="_blank" class="m-0 p-0 pt-1">
+                  <b-button v-if="block && block.number != null" :href="'https://etherscan.io/block/' + block.number" variant="link" target="_blank" class="m-0 p-0 pt-1">
                     {{ commify0(block.number) }}
                   </b-button>
                   <b-input-group-append>
-                    <b-button v-if="block && block.number" size="sm" @click="loadBlock(parseInt(blockNumber) + 1);" variant="link">
+                    <b-button v-if="block && block.number != null" size="sm" @click="loadBlock(parseInt(blockNumber) + 1);" variant="link">
                       <b-icon-chevron-right shift-v="-1" font-scale="1.1"></b-icon-chevron-right>
                     </b-button>
-                    <b-button v-if="block && block.number" size="sm" @click="copyToClipboard(block.number);" variant="link">
+                    <b-button v-if="block && block.number != null" size="sm" @click="copyToClipboard(block.number);" variant="link">
                       <b-icon-clipboard shift-v="-1" font-scale="1.1"></b-icon-clipboard>
                     </b-button>
                   </b-input-group-append>
@@ -52,7 +52,7 @@ const Block = {
                 <b-form-input type="text" plaintext size="sm" id="block-timestamp" :value="block && block.timestamp && formatTimestamp(block.timestamp) || ''"></b-form-input>
               </b-form-group>
 
-              <b-form-group label="Miner:" label-for="block-miner" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0" :description="tx && tx.nonce && ('Nonce: ' + tx.nonce) || ''">
+              <b-form-group label="Miner:" label-for="block-miner" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-input-group>
                   <b-button v-if="block && block.miner" :href="'https://etherscan.io/address/' + block.miner" variant="link" target="_blank" class="m-0 p-0 pt-1">
                     {{ block.miner }}
@@ -84,6 +84,10 @@ const Block = {
 
               <b-form-group label="Gas Limit:" label-for="block-gaslimit" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-form-input type="text" plaintext size="sm" id="block-gaslimit" :value="block && block.gasLimit && commify0(block.gasLimit) || ''"></b-form-input>
+              </b-form-group>
+
+              <b-form-group label="Gas Used:" label-for="block-gasused" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-form-input type="text" plaintext size="sm" id="block-gasused" :value="block && block.gasUsed && commify0(block.gasUsed) || ''"></b-form-input>
               </b-form-group>
 
               <b-form-group label="Extra Data:" label-for="block-extradata" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0" :description="extraDataAsString">

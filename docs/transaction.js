@@ -46,7 +46,10 @@ const Transaction = {
 
               <b-form-group label="Block:" label-for="transaction-block" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0" :description="timestamp && formatTimestamp(timestamp) || ''">
                 <b-input-group>
-                  <b-button v-if="tx && tx.blockNumber" :href="'https://etherscan.io/block/' + tx.blockNumber" variant="link" target="_blank" class="m-0 p-0 pt-1">
+                  <!-- <b-button v-if="tx && tx.blockNumber" :href="'https://etherscan.io/block/' + tx.blockNumber" variant="link" target="_blank" class="m-0 p-0 pt-1"> -->
+                  <!-- <b-button v-if="tx && tx.blockNumber" to="{ path: '/block', params: { blockNumber: tx.blockNumber } }" variant="link" class="m-0 p-0 pt-1"> -->
+                  <!-- <b-button v-if="tx && tx.blockNumber" @click="$router.push({ path: '/block/', params: { blockNumber: tx.blockNumber } })" variant="link" class="m-0 p-0 pt-1"> -->
+                  <b-button v-if="tx && tx.blockNumber" :href="'/#/block/' + tx.blockNumber" variant="link" class="m-0 p-0 pt-1">
                     {{ tx && tx.blockNumber && commify0(tx.blockNumber) || '' }}
                   </b-button>
                   <b-input-group-append>
