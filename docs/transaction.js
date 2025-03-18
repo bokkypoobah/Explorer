@@ -70,7 +70,8 @@ const Transaction = {
                 </b-input-group>
               </b-form-group>
 
-              <b-form-group v-if="!(txReceipt && txReceipt.contractAddress)" label="To:" label-for="transaction-to" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
+              <!-- <b-form-group v-if="!(txReceipt && txReceipt.contractAddress)" label="To:" label-for="transaction-to" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0"> -->
+              <b-form-group label="To:" label-for="transaction-to" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-input-group>
                   <b-button v-if="tx && tx.to" :href="'https://etherscan.io/address/' + tx.to" variant="link" target="_blank" class="m-0 p-0 pt-1">
                     {{ tx.to }}
@@ -102,14 +103,33 @@ const Transaction = {
 
               <b-form-group label="Data:" label-for="transaction-data" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-input-group class="align-items-start">
-                  <b-form-textarea plaintext size="sm" id="transaction-data" :value="tx && tx.data" rows="3" max-rows="10"></b-form-textarea>
+                  <b-form-textarea plaintext size="sm" id="transaction-data" :value="tx && tx.data && tx.data != '0x' && tx.data || ''" rows="3" max-rows="10"></b-form-textarea>
                   <b-input-group-append>
-                    <b-button v-if="tx && tx.data" size="sm" @click="copyToClipboard(tx.data);" variant="link">
+                    <b-button v-if="tx && tx.data" :disabled="tx.data == '0x'" size="sm" @click="copyToClipboard(tx.data);" variant="link">
                       <b-icon-clipboard shift-v="-1" font-scale="1.1"></b-icon-clipboard>
                     </b-button>
                   </b-input-group-append>
                 </b-input-group>
               </b-form-group>
+
+              <b-form-group label="Gas Limit:" label-for="transaction-gaslimit" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-form-input type="text" plaintext size="sm" id="transaction-gaslimit" :value="tx && tx.gasLimit"></b-form-input>
+              </b-form-group>
+              <b-form-group label="Gas Used:" label-for="transaction-gasused" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-form-input type="text" plaintext size="sm" id="transaction-gasused" :value="txReceipt && txReceipt.gasUsed"></b-form-input>
+              </b-form-group>
+              <b-form-group label="Gas Price:" label-for="transaction-gasprice" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-form-input type="text" plaintext size="sm" id="transaction-gasprice" :value="tx && tx.gasPrice && (formatGas(tx.gasPrice) + ' gwei') || ''"></b-form-input>
+              </b-form-group>
+              <b-form-group label="Max Fee/Gas:" label-for="transaction-maxfeepergas" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-form-input type="text" plaintext size="sm" id="transaction-maxfeepergas" :value="tx && tx.maxFeePerGas && (formatGas(tx.maxFeePerGas) + ' gwei') || ''"></b-form-input>
+              </b-form-group>
+              <b-form-group label="Max Priority Fee/Gas:" label-for="transaction-maxpriorityfeepergas" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-form-input type="text" plaintext size="sm" id="transaction-maxpriorityfeepergas" :value="tx && tx.maxPriorityFeePerGas && (formatGas(tx.maxPriorityFeePerGas) + ' gwei') || ''"></b-form-input>
+              </b-form-group>
+
+
+
 
             </b-form-group>
           </b-card>
@@ -167,6 +187,12 @@ const Transaction = {
     formatETH(e) {
       if (e) {
         return ethers.utils.formatEther(e).replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+      }
+      return null;
+    },
+    formatGas(e) {
+      if (e) {
+        return ethers.utils.formatUnits(e, "gwei").replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
       }
       return null;
     },
@@ -233,7 +259,7 @@ const transactionModule = {
         if (!error) {
           const provider = new ethers.providers.Web3Provider(window.ethereum);
           const tx_ = await provider.getTransaction(txHash);
-          // console.log("tx_: " + JSON.stringify(tx_, null, 2));
+          console.log("tx_: " + JSON.stringify(tx_, null, 2));
           tx = {
             hash: tx_.hash,
             chainId: parseInt(tx_.chainId),
