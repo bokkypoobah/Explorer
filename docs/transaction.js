@@ -6,20 +6,68 @@ const Transaction = {
         <b-card no-body class="border-0 m-0 mt-0">
 
           <div class="d-flex flex-wrap m-0 p-0 px-1 bg-white">
-            <div class="ml-1 mt-1 p-0" style="width: 36.0rem;">
+            <div class="m-0 mt-1 p-0" style="width: 36.0rem;">
               <b-form-input type="text" size="sm" :value="txHash" @change="loadTransaction($event);" debounce="600" v-b-popover.hover.bottom="'Transaction hash'" placeholder="🔍 tx hash, e.g., 0x1234...abcd"></b-form-input>
             </div>
             <div class="mt-1 pr-1">
               <b-dropdown size="sm" right text="" variant="link" class="m-0 p-0">
                 <b-dropdown-text>Sample Transactions</b-dropdown-text>
                 <b-dropdown-divider></b-dropdown-divider>
-                <b-dropdown-item @click="loadTransaction('0x00cf367c9ee21dc9538355d1da4ebac9b83645b790b07dd2c9d15ae7f9aed6d2');">EF: DeFi Multisig - Safe v1.4.1 - Transaction</b-dropdown-item>
-                <b-dropdown-item @click="loadTransaction('0xe6030c80c06283197ec49ef8fa6f22ee57e07fab776136310801415db5ccc389');">Random EOA to EOA ETH transfer</b-dropdown-item>
+                <b-dropdown-item @click="loadTransaction('0x00cf367c9ee21dc9538355d1da4ebac9b83645b790b07dd2c9d15ae7f9aed6d2');">0x00cf367c - EF: DeFi Multisig Safe v1.4.1 transaction</b-dropdown-item>
+                <b-dropdown-item @click="loadTransaction('0xe6030c80c06283197ec49ef8fa6f22ee57e07fab776136310801415db5ccc389');">0xe6030c80 - Random EOA to EOA ETH transfer</b-dropdown-item>
+                <b-dropdown-item @click="loadTransaction('0xce56f56bd3712611e360b4ebd8071aa3246f2eff3042eef81c3f24dedab77915');">0xce56f56b - Random failed transaction</b-dropdown-item>
               </b-dropdown>
             </div>
             <!-- <div class="mt-0 flex-grow-1">
             </div> -->
           </div>
+
+          <b-card no-body no-header bg-variant="light" class="m-1 p-1 w-75">
+            <b-form-group label-cols-lg="2" label="Transaction" label-size="md" label-class="font-weight-bold pt-0" class="mt-3 mb-0">
+              <b-form-group label="Hash:" label-for="transaction-hash" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-input-group>
+                  <b-button v-if="tx && tx.hash" :href="'https://etherscan.io/tx/' + tx.hash" variant="link" target="_blank" class="m-0 p-0 pt-1">
+                    {{ tx.hash }}
+                  </b-button>
+                  <b-input-group-append>
+                    <b-button v-if="tx && tx.hash" size="sm" @click="copyToClipboard(tx.hash);" variant="link">
+                      <b-icon-clipboard shift-v="-1" font-scale="1.1"></b-icon-clipboard>
+                    </b-button>
+                  </b-input-group-append>
+                </b-input-group>
+              </b-form-group>
+              <b-form-group label="Status:" label-for="transaction-status" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-form-input type="text" plaintext size="sm" id="transaction-status" :value="txReceipt && txReceipt.status"></b-form-input>
+              </b-form-group>
+
+              <b-form-group label="From:" label-for="transaction-from" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0" :description="tx && tx.nonce && ('Nonce: ' + tx.nonce) || ''">
+                <b-input-group>
+                  <b-button v-if="tx && tx.from" :href="'https://etherscan.io/address/' + tx.from" variant="link" target="_blank" class="m-0 p-0 pt-1">
+                    {{ tx.from }}
+                  </b-button>
+                  <b-input-group-append>
+                    <b-button v-if="tx && tx.from" size="sm" @click="copyToClipboard(tx.from);" variant="link">
+                      <b-icon-clipboard shift-v="-1" font-scale="1.1"></b-icon-clipboard>
+                    </b-button>
+                  </b-input-group-append>
+                </b-input-group>
+              </b-form-group>
+
+              <b-form-group label="To:" label-for="transaction-to" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-input-group>
+                  <b-button v-if="tx && tx.to" :href="'https://etherscan.io/address/' + tx.to" variant="link" target="_blank" class="m-0 p-0 pt-1">
+                    {{ tx.to }}
+                  </b-button>
+                  <b-input-group-append>
+                    <b-button v-if="tx && tx.to" size="sm" @click="copyToClipboard(tx.to);" variant="link">
+                      <b-icon-clipboard shift-v="-1" font-scale="1.1"></b-icon-clipboard>
+                    </b-button>
+                  </b-input-group-append>
+                </b-input-group>
+              </b-form-group>
+
+            </b-form-group>
+          </b-card>
 
           <b-card-body class="p-0">
             <b-card class="mb-2 border-0">
@@ -67,6 +115,9 @@ const Transaction = {
       console.log(now() + " Transaction - loadTransaction - txHash: " + txHash);
       this.$router.push({ name: 'Transaction', params: { txHash } })
       store.dispatch('transaction/loadTransaction', txHash);
+    },
+    copyToClipboard(str) {
+      navigator.clipboard.writeText(str);
     },
   },
   // beforeRouteUpdate(to, from) {
@@ -125,7 +176,6 @@ const transactionModule = {
         if (!error) {
           const provider = new ethers.providers.Web3Provider(window.ethereum);
           const tx_ = await provider.getTransaction(txHash);
-          // console.log("tx_: " + JSON.stringify(tx_, null, 2));
           tx = {
             hash: tx_.hash,
             chainId: parseInt(tx_.chainId),
@@ -149,7 +199,6 @@ const transactionModule = {
             // creates: tx_.creates,
           };
           const txReceipt_ = await provider.getTransactionReceipt(txHash);
-          console.log("txReceipt_: " + JSON.stringify(txReceipt_, null, 2));
           txReceipt = {
             status: txReceipt_.status,
             type: txReceipt_.type,
