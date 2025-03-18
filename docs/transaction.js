@@ -100,6 +100,17 @@ const Transaction = {
                 <b-form-input type="text" plaintext size="sm" id="transaction-value" :value="tx && tx.value && (formatETH(tx.value) + ' ETH')"></b-form-input>
               </b-form-group>
 
+              <b-form-group label="Data:" label-for="transaction-data" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-input-group class="align-items-start">
+                  <b-form-textarea plaintext size="sm" id="transaction-data" :value="tx && tx.data" rows="3" max-rows="10"></b-form-textarea>
+                  <b-input-group-append>
+                    <b-button v-if="tx && tx.data" size="sm" @click="copyToClipboard(tx.data);" variant="link">
+                      <b-icon-clipboard shift-v="-1" font-scale="1.1"></b-icon-clipboard>
+                    </b-button>
+                  </b-input-group-append>
+                </b-input-group>
+              </b-form-group>
+
             </b-form-group>
           </b-card>
 
