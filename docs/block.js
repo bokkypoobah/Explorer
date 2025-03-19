@@ -98,9 +98,48 @@ const Block = {
 
             </b-form-group>
           </b-card>
+
+
+          <!-- <b-table ref="safeTxsTable" small fixed striped responsive hover selectable select-mode="single" @row-selected='safeTxsRowSelected' :fields="safeTxsFields" :items="pagedFilteredSortedSafeTxs" show-empty empty-html="Click Sync above to retrieve Safes deployed by Safe factories v1.0.0, v1.1.1, v1.3.0 and v1.4.1" head-variant="light" class="mx-0 my-0">
+            <template #cell(index)="data">
+              <font size="-1" class="text-muted">
+                {{ parseInt(data.index) + ((settings.safeTxsTable.currentPage - 1) * settings.safeTxsTable.pageSize) + 1 }}
+              </font>
+            </template> -->
+
+          <b-table small fixed striped responsive hover :fields="transactionsFields" :items="pagedFilteredSortedTransactions" show-empty empty-html="zzz" head-variant="light" class="mx-0 my-0 p-1">
+            <template #cell(index)="data">
+              <font size="-1" class="text-muted">
+                {{ data.item.transactionIndex }}
+              </font>
+            </template>
+            <template #cell(hash)="data">
+              <font size="-1" class="text-muted">
+                {{ data.item.hash }}
+              </font>
+            </template>
+            <template #cell(from)="data">
+              <font size="-1" class="text-muted">
+                {{ data.item.from }}
+              </font>
+            </template>
+            <template #cell(to)="data">
+              <font size="-1" class="text-muted">
+                {{ data.item.to }}
+              </font>
+            </template>
+            <template #cell(value)="data">
+              <font size="-1" class="text-muted">
+                {{ formatETH(data.item.value) }}
+              </font>
+            </template>
+          </b-table>
+
           <b-card-text>
             <h5>Block</h5>
             error: {{ error }}
+            <br />
+            pagedFilteredSortedTransactions: {{ pagedFilteredSortedTransactions }}
             <br />
             block: {{ block }}
           </b-card-text>
@@ -111,8 +150,17 @@ const Block = {
   props: ['blockNumber'],
   data: function () {
     return {
-      count: 0,
-      reschedule: true,
+      transactionsFields: [
+        { key: 'index', label: 'Index', sortable: false, thStyle: 'width: 7%;', tdClass: 'text-truncate' },
+        { key: 'hash', label: 'Hash', sortable: false, thStyle: 'width: 23%;', tdClass: 'text-truncate' },
+        { key: 'from', label: 'From', sortable: false, thStyle: 'width: 20%;', tdClass: 'text-left' },
+        { key: 'to', label: 'To', sortable: false, thStyle: 'width: 20%;', tdClass: 'text-left' },
+        { key: 'value', label: 'Value', sortable: false, thStyle: 'width: 15%;', tdClass: 'text-left' },
+        // { key: 'fee', label: 'Fee', sortable: false, thStyle: 'width: 15%;', tdClass: 'text-left' },
+      ],
+
+      // count: 0,
+      // reschedule: true,
     }
   },
   computed: {
@@ -132,9 +180,17 @@ const Block = {
     },
     transactions() {
       const results = [];
-      results.push({ blah: "Blah" });
+      for (const tx of (this.block && this.block.transactions || [])) {
+        results.push(tx);
+      }
       return results;
-    }
+    },
+    filteredSortedTransactions() {
+      return this.transactions;
+    },
+    pagedFilteredSortedTransactions() {
+      return this.filteredSortedTransactions;
+    },
   },
   methods: {
     loadBlock(blockNumber) {
