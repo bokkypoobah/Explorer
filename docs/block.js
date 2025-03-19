@@ -126,15 +126,14 @@ const Block = {
               </font>
             </template>
           </b-table>
-
-          <b-card-text>
+          <!-- <b-card-text>
             <h5>Block</h5>
             error: {{ error }}
             <br />
             pagedFilteredSortedTransactions: {{ pagedFilteredSortedTransactions }}
             <br />
             block: {{ block }}
-          </b-card-text>
+          </b-card-text> -->
         </b-card>
       </b-card>
     </div>
@@ -256,7 +255,7 @@ const blockModule = {
   },
   mutations: {
     setData(state, data) {
-      console.log(now() + " blockModule - mutations.setData - data: " + JSON.stringify(data));
+      // console.log(now() + " blockModule - mutations.setData - data: " + JSON.stringify(data));
       state.error = data.error;
       state.block = data.block;
     },
