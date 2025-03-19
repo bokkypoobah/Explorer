@@ -48,7 +48,7 @@ const Block = {
               </b-form-group>
 
               <b-form-group v-if="!error" label="Timestamp:" label-for="block-timestamp" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-form-input type="text" plaintext size="sm" id="block-timestamp" :value="block && block.timestamp && formatTimestamp(block.timestamp) || ''"></b-form-input>
+                <b-form-input type="text" plaintext size="sm" id="block-timestamp" :value="block && block.timestamp && formatTimestamp(block.timestamp) || ''" v-b-popover.hover="block && block.timestamp && formatTimeDiff(block.timestamp) || ''" style="width: 10.0rem;"></b-form-input>
               </b-form-group>
 
               <b-form-group v-if="!error" label="Miner:" label-for="block-miner" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
@@ -222,6 +222,12 @@ const Block = {
     formatTimestamp(ts) {
       if (ts != null) {
         return moment.unix(ts).format("YYYY-MM-DD HH:mm:ss");
+      }
+      return null;
+    },
+    formatTimeDiff(unixtime) {
+      if (unixtime) {
+        return moment.unix(unixtime).fromNow();
       }
       return null;
     },
