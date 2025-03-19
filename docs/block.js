@@ -99,8 +99,23 @@ const Block = {
             </b-form-group>
           </b-card>
 
+          <div class="d-flex flex-wrap m-0 mt-1 p-0 px-1 bg-white">
+            <div class="mt-0 flex-grow-1">
+            </div>
+            <div class="mt-0 pl-1">
+              <!-- <font size="-2" v-b-popover.hover.bottom="'# Filtered / Transactions'">{{ filteredSortedTransactions.length + ' / ' + transactions.length }}</font> -->
+              <font size="-2" v-b-popover.hover.bottom="'# Transactions'">{{ transactions.length }}</font>
+            </div>
+            <div class="mt-0 pl-1">
+              <b-pagination size="sm" v-model="settings.txsTable.currentPage" :total-rows="transactions.length" :per-page="settings.txsTable.pageSize" style="height: 0;"></b-pagination>
+            </div>
+            <div class="mt-0 pl-1">
+              <b-form-select size="sm" v-model="settings.txsTable.pageSize" :options="pageSizes" v-b-popover.hover.bottom="'Yeah. Page size'"></b-form-select>
+            </div>
+          </div>
+
           <b-table small fixed striped responsive hover :fields="transactionsFields" :items="pagedFilteredSortedTransactions" show-empty empty-html="zzz" head-variant="light" class="mx-0 my-0 p-1">
-            <template #cell(index)="data">
+            <template #cell(txIndex)="data">
               <font size="-1" class="text-muted">
                 {{ data.item.transactionIndex }}
               </font>
@@ -141,8 +156,26 @@ const Block = {
   props: ['blockNumber'],
   data: function () {
     return {
+      settings: {
+        txsTable: {
+          filter: null,
+          currentPage: 1,
+          pageSize: 15,
+          sortOption: 'txindexasc',
+        },
+      },
+      pageSizes: [
+        { value: 10, text: '10' },
+        { value: 15, text: '15' },
+        { value: 25, text: '25' },
+        { value: 50, text: '50' },
+        { value: 100, text: '100' },
+        { value: 250, text: '250' },
+        { value: 500, text: '500' },
+        { value: 1000, text: '1,000' },
+      ],
       transactionsFields: [
-        { key: 'index', label: 'Index', sortable: false, thStyle: 'width: 7%;', tdClass: 'text-truncate' },
+        { key: 'txIndex', label: 'Tx Index', sortable: false, thStyle: 'width: 7%;', tdClass: 'text-truncate' },
         { key: 'hash', label: 'Hash', sortable: false, thStyle: 'width: 23%;', tdClass: 'text-truncate' },
         { key: 'from', label: 'From', sortable: false, thStyle: 'width: 20%;', tdClass: 'text-left' },
         { key: 'to', label: 'To', sortable: false, thStyle: 'width: 20%;', tdClass: 'text-left' },
@@ -172,15 +205,22 @@ const Block = {
     transactions() {
       const results = [];
       for (const tx of (this.block && this.block.transactions || [])) {
+        // TODO: filter?
         results.push(tx);
       }
       return results;
     },
     filteredSortedTransactions() {
+      // TODO: sort
       return this.transactions;
     },
     pagedFilteredSortedTransactions() {
-      return this.filteredSortedTransactions;
+      console.log(now() + " Block - computed.pagedFilteredSortedTransactions() - this.settings: " + JSON.stringify(this.settings));
+
+      const results = this.filteredSortedTransactions.slice((this.settings.txsTable.currentPage - 1) * this.settings.txsTable.pageSize, this.settings.txsTable.currentPage * this.settings.txsTable.pageSize);
+
+      // return this.filteredSortedTransactions;
+      return results;
     },
   },
   methods: {
