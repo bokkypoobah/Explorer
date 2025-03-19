@@ -9,7 +9,7 @@ const Connection = {
         <b-link v-if="info.chainId" :href="'https://etherscan.io/'" v-b-popover.hover.bottom="'Network'" target="_blank">
           {{ info.chainId == '1' ? 'Ethereum Mainnet' : 'Unsupported Network' }}
         </b-link>
-        <b-link v-if="info.chainId == 1 && info.blockNumber" :href="'https://etherscan.io/block/' + info.blockNumber" v-b-popover.hover.bottom="'Latest block'" target="_blank">
+        <b-link v-if="info.chainId == 1 && info.blockNumber" :href="'#/block/' + info.blockNumber" v-b-popover.hover.bottom="'Latest block'">
           {{ '#' + commify0(info.blockNumber) }}
         </b-link>
         <span v-if="info.chainId == 1 && info.timestamp" v-b-popover.hover.bottom="formatTimestamp(info.timestamp)">
