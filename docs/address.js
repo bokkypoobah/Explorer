@@ -13,7 +13,11 @@ const Address = {
               <b-dropdown size="sm" right text="" variant="link" class="m-0 p-0">
                 <b-dropdown-text>Sample Addresses</b-dropdown-text>
                 <b-dropdown-divider></b-dropdown-divider>
-                <b-dropdown-item @click="loadAddress('0x13e003a57432062e4EdA204F687bE80139AD622f');">0x13e003a5 - Blackrock: Digital Asset Fund</b-dropdown-item>
+                <b-dropdown-item @click="loadAddress('0x9fC3dc011b461664c835F2527fffb1169b3C213e');">0x9fC3dc01 - EF: DeFi Multisig - Safe v1.4.1</b-dropdown-item>
+                <!-- https://intel.arkm.com/explorer/address/0x13e003a57432062e4EdA204F687bE80139AD622f -->
+                <b-dropdown-item @click="loadAddress('0x13e003a57432062e4EdA204F687bE80139AD622f');">0x13e003a5 - Blackrock: BUIDL Fund</b-dropdown-item>
+                <!-- https://finance.yahoo.com/news/singapores-largest-bank-dbs-ether-094134637.html -->
+                <b-dropdown-item @click="loadAddress('0x9e927c02C9eadAE63f5EFb0Dd818943c7262Fb8e');">0x9e927c02 - DBS, largest bank in Singapore</b-dropdown-item>
               </b-dropdown>
             </div>
           </div>
