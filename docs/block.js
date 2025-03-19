@@ -99,14 +99,6 @@ const Block = {
             </b-form-group>
           </b-card>
 
-
-          <!-- <b-table ref="safeTxsTable" small fixed striped responsive hover selectable select-mode="single" @row-selected='safeTxsRowSelected' :fields="safeTxsFields" :items="pagedFilteredSortedSafeTxs" show-empty empty-html="Click Sync above to retrieve Safes deployed by Safe factories v1.0.0, v1.1.1, v1.3.0 and v1.4.1" head-variant="light" class="mx-0 my-0">
-            <template #cell(index)="data">
-              <font size="-1" class="text-muted">
-                {{ parseInt(data.index) + ((settings.safeTxsTable.currentPage - 1) * settings.safeTxsTable.pageSize) + 1 }}
-              </font>
-            </template> -->
-
           <b-table small fixed striped responsive hover :fields="transactionsFields" :items="pagedFilteredSortedTransactions" show-empty empty-html="zzz" head-variant="light" class="mx-0 my-0 p-1">
             <template #cell(index)="data">
               <font size="-1" class="text-muted">
@@ -114,19 +106,19 @@ const Block = {
               </font>
             </template>
             <template #cell(hash)="data">
-              <font size="-1" class="text-muted">
-                {{ data.item.hash }}
-              </font>
+              <b-button v-if="data.item.hash" :href="'#/tx/' + data.item.hash" variant="link" class="m-0 p-0 pt-1">
+                {{ data.item.hash.substring(0, 10) + '...' + data.item.hash.slice(-8) }}
+              </b-button>
             </template>
             <template #cell(from)="data">
-              <font size="-1" class="text-muted">
-                {{ data.item.from }}
-              </font>
+              <b-button v-if="data.item.from" :href="'#/address/' + data.item.from" variant="link" class="m-0 p-0 pt-1">
+                {{ data.item.from.substring(0, 6) + '...' + data.item.from.slice(-4) }}
+              </b-button>
             </template>
             <template #cell(to)="data">
-              <font size="-1" class="text-muted">
-                {{ data.item.to }}
-              </font>
+              <b-button v-if="data.item.to" :href="'#/address/' + data.item.to" variant="link" class="m-0 p-0 pt-1">
+                {{ data.item.to.substring(0, 6) + '...' + data.item.to.slice(-4) }}
+              </b-button>
             </template>
             <template #cell(value)="data">
               <font size="-1" class="text-muted">
