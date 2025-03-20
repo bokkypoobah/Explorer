@@ -11,16 +11,24 @@ const Contract = {
             </div>
             <div class="mt-1 pr-1">
               <b-dropdown size="sm" right text="" variant="link" class="m-0 p-0">
-                <b-dropdown-text>Sample Addresses</b-dropdown-text>
+                <b-dropdown-text>Sample Contracts</b-dropdown-text>
                 <b-dropdown-divider></b-dropdown-divider>
-                <b-dropdown-item @click="loadAddress('0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe');">0xde0B2956 - EthDev: Ethereum Foundation</b-dropdown-item>
-                <b-dropdown-item @click="loadAddress('0x9fC3dc011b461664c835F2527fffb1169b3C213e');">0x9fC3dc01 - EF: DeFi Multisig - Safe v1.4.1</b-dropdown-item>
-                <!-- https://intel.arkm.com/explorer/address/0x13e003a57432062e4EdA204F687bE80139AD622f -->
-                <b-dropdown-item @click="loadAddress('0x13e003a57432062e4EdA204F687bE80139AD622f');">0x13e003a5 - Blackrock: BUIDL Fund</b-dropdown-item>
-                <!-- https://finance.yahoo.com/news/singapores-largest-bank-dbs-ether-094134637.html -->
-                <b-dropdown-item @click="loadAddress('0x9e927c02C9eadAE63f5EFb0Dd818943c7262Fb8e');">0x9e927c02 - DBS, largest bank in Singapore</b-dropdown-item>
-                <b-dropdown-item @click="loadAddress('0xae2Fc483527B8EF99EB5D9B44875F005ba1FaE13');">0xae2Fc483 - jaredfromsubway.eth</b-dropdown-item>
+                <b-dropdown-item @click="loadAddress('0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB');">0xb47e3cd8 - CryptoPunksMarket</b-dropdown-item>
+                <b-dropdown-item @click="loadAddress('0x16F5A35647D6F03D5D3da7b35409D65ba03aF3B2');">0x16F5A356 - CryptopunksData</b-dropdown-item>
+                <b-dropdown-item @click="loadAddress('0x42069abfe407c60cf4ae4112bedead391dba1cdb');">0x42069abf - CryptoDickButts</b-dropdown-item>
+                <b-dropdown-item @click="loadAddress('0x8fa600364b93c53e0c71c7a33d2ade21f4351da3');">0x8fa60036 - Larva Chads</b-dropdown-item>
               </b-dropdown>
+            </div>
+            <div class="mt-0 flex-grow-1">
+            </div>
+            <div class="mt-0 pr-1">
+              <b-button :disabled="!etherscanAPIKey || !inputAddress" size="sm" @click="importABIFromEtherscan();" variant="link" v-b-popover.hover.top="'Import ABI from https://api.etherscan.io/. You will need to enter your Etherscan API key in the Config page'"><b-icon-cloud-download shift-v="-3" font-scale="1.2"></b-icon-cloud-download></b-button>
+            </div>
+            <div class="mt-0 flex-grow-1">
+            </div>
+            <div class="mt-0 flex-grow-1">
+            </div>
+            <div class="mt-0 flex-grow-1">
             </div>
           </div>
 
@@ -73,6 +81,9 @@ const Contract = {
     }
   },
   computed: {
+    etherscanAPIKey() {
+      return store.getters['settings'].etherscanAPIKey;
+    },
     error() {
       return store.getters['address/error'];
     },
@@ -96,6 +107,30 @@ const Contract = {
       console.log(now() + " Contract - methods.loadAddress - inputAddress: " + inputAddress);
       this.$router.push({ name: 'Contract', params: { inputAddress } })
       store.dispatch('address/loadAddress', inputAddress);
+    },
+    async importABIFromEtherscan() {
+      console.log(now() + " Contract - methods.importABIFromEtherscan");
+      const etherscanAPIKey = store.getters['settings'].etherscanAPIKey;
+      console.log(now() + " Contract - methods.importABIFromEtherscan - etherscanAPIKey: " + etherscanAPIKey);
+      const url = "https://api.etherscan.io/v2/api?chainid=1&module=contract&action=getabi&address=" + this.inputAddress + "&apikey=" + etherscanAPIKey;
+      // const url = "https://api.etherscan.io/v2/api?chainid=1&module=contract&action=getsourcecode&address=" + this.inputAddress + "&apikey=" + etherscanAPIKey;
+      console.log(now() + " Contract - url: " + url);
+      const data = await fetch(url).then(response => response.json());
+      console.log(now() + " Contract - data: " + JSON.stringify(data, null, 2));
+      if (data && data.status == 1 && data.message == "OK") {
+        const abi = JSON.parse(data.result);
+        console.log(now() + " Contract - abi: " + JSON.stringify(abi, null, 2));
+      //   for (const item of data.result) {
+      //     if (!(item.chainid in store.getters['settings'].chains)) {
+      //       store.dispatch('addChain', {
+      //         chainId: item.chainid,
+      //         name: item.chainname,
+      //         explorer: item.blockexplorer + (item.blockexplorer.substr(-1) != "/" ? "/" : ""),
+      //         api: item.apiurl,
+      //       });
+      //     }
+      //   }
+      }
     },
     copyToClipboard(str) {
       navigator.clipboard.writeText(str);
