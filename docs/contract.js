@@ -116,10 +116,22 @@ const Contract = {
     }
   },
   methods: {
-    loadAddress(inputAddress) {
+    async loadAddress(inputAddress) {
       console.log(now() + " Contract - methods.loadAddress - inputAddress: " + inputAddress);
       this.$router.push({ name: 'Contract', params: { inputAddress } })
-      store.dispatch('address/loadAddress', inputAddress);
+      // const provider = new ethers.providers.Web3Provider(window.ethereum);
+      // this.info = await getAddressInfo(this.inputAddress, provider);
+      // console.log(now() + " Contract - methods.testIt - this.info: " + JSON.stringify(this.info));
+      // store.dispatch('address/loadAddress', inputAddress);
+      await this.loadAddressInfo(inputAddress);
+    },
+    async loadAddressInfo(inputAddress) {
+      console.log(now() + " Contract - methods.loadAddressInfo - inputAddress: " + inputAddress);
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const info = await getAddressInfo(this.inputAddress, provider);
+      console.log(now() + " Contract - methods.loadAddressInfo - info: " + JSON.stringify(info));
+      Vue.set(this, 'info', info);
+      // store.dispatch('address/loadAddress', inputAddress);
     },
     async testIt() {
       console.log(now() + " Contract - methods.testIt - inputAddress: " + this.inputAddress);
@@ -191,7 +203,11 @@ const Contract = {
     console.log(now() + " Contract - mounted() $route.params: " + JSON.stringify(this.$route.params));
     const t = this;
     setTimeout(function() {
-      store.dispatch('contract/loadAddress', t.inputAddress);
+      // store.dispatch('contract/loadAddress', t.inputAddress);
+      // await t.loadAddress(t.inputAddress);
+      (async() => {
+        await t.loadAddressInfo(t.inputAddress);
+      })();
     }, 1000);
   },
   destroyed() {

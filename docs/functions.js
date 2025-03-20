@@ -26,6 +26,14 @@ async function getAddressInfo(inputAddress, provider) {
       console.error(now() + " functions.js:getAddressInfo - provider.getCode: " + e.message);
     }
   }
+  if (results.address) {
+    try {
+      results.balance = ethers.BigNumber.from(await provider.getBalance(results.address)).toString();
+      console.log(now() + " functions.js:getAddressInfo - balance: " + results.balance);
+    } catch (e) {
+      console.error(now() + " functions.js:getAddressInfo - provider.getBalance: " + e.message);
+    }
+  }
   if (results.type == "contract") {
     try {
       results.storage0 = await provider.getStorageAt(results.address, 0);
@@ -33,7 +41,15 @@ async function getAddressInfo(inputAddress, provider) {
     } catch (e) {
       console.error(now() + " functions.js:getAddressInfo - ERROR provider.getStorageAt: " + e.message);
     }
+  } else {
+    try {
+      results.transactionCount = await provider.getTransactionCount(results.address);
+      console.log(now() + " functions.js:getAddressInfo - results.transactionCount: " + results.transactionCount);
+    } catch (e) {
+      console.error(now() + " functions.js:getAddressInfo - ERROR provider.getStorageAt: " + e.message);
+    }
   }
+
   // Gnosis Safe contracts?
   if (results.type == "contract") {
     // All functions below in 1.1.1, 1.3.0 and 1.4.1, except that 1.1.1 does not have getStorageAt
