@@ -16,12 +16,12 @@ const store = new Vuex.Store({
       chains: {
         1: {
           name: "Ethereum Mainnet",
-          explorer: "https://etherscan.io",
+          explorer: "https://etherscan.io/",
           api: "https://api.etherscan.io/v2/api?chainid=1",
         },
         11155111: {
           name: "Sepolia Testnet",
-          explorer: "https://sepolia.etherscan.io",
+          explorer: "https://sepolia.etherscan.io/",
           api: "https://api.etherscan.io/v2/api?chainid=11155111",
         },
       },
@@ -48,6 +48,14 @@ const store = new Vuex.Store({
         explorer: chain && chain.explorer || "https://etherscan.io",
         api: chain && chain.api || "https://api.etherscan.io/v2/api?chainid=1",
       };
+    },
+    supportedNetwork(state) {
+      const chain = state.web3Connection.chainId && state.settings.chains[state.web3Connection.chainId] || null;
+      return !!chain;
+    },
+    networkName(state) {
+      const chain = state.web3Connection.chainId && state.settings.chains[state.web3Connection.chainId] || null;
+      return chain && chain.name || "Unknown chainId: " + state.web3Connection.chainId;
     },
     explorer(state) {
       const chain = state.web3Connection.chainId && state.settings.chains[state.web3Connection.chainId] || null;

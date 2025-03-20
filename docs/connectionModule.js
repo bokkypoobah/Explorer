@@ -6,13 +6,13 @@ const Connection = {
     <div>
       <font size="-1">
         {{ connected ? "Connected" : "Disconnected" }}
-        <b-link v-if="info.chainId" :href="'https://etherscan.io/'" v-b-popover.hover.bottom="'Network'" target="_blank">
-          {{ info.chainId == '1' ? 'Ethereum Mainnet' : 'Unsupported Network' }}
+        <b-link v-if="info.chainId" :href="explorer" v-b-popover.hover.bottom="'Network'" target="_blank">
+          {{ networkName }}
         </b-link>
-        <b-link v-if="info.chainId == 1 && info.blockNumber" :href="'#/block/' + info.blockNumber" v-b-popover.hover.bottom="'Latest block'">
+        <b-link v-if="info.blockNumber" :href="'#/block/' + info.blockNumber" v-b-popover.hover.bottom="'Latest block'">
           {{ '#' + commify0(info.blockNumber) }}
         </b-link>
-        <span v-if="info.chainId == 1 && info.timestamp" v-b-popover.hover.bottom="formatTimestamp(info.timestamp)">
+        <span v-if="info.timestamp" v-b-popover.hover.bottom="formatTimestamp(info.timestamp)">
           {{ formatTimeDiff(info.timestamp) }}
         </span>
       </font>
@@ -29,6 +29,15 @@ const Connection = {
     },
     info() {
       return store.getters['web3Connection'];
+    },
+    supportedNetwork() {
+      return store.getters['supportedNetwork'];
+    },
+    networkName() {
+      return store.getters['networkName'];
+    },
+    explorer() {
+      return store.getters['explorer'];
     },
   },
   methods: {

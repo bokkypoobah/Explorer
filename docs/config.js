@@ -24,7 +24,7 @@ const Config = {
                 <div class="mt-0 pl-1">
                   <font size="-2" v-b-popover.hover.bottom="'# Chains'">{{ chains.length }}</font>
                 </div>
-                <div class="mt-0 pl-1" style="max-width: 8.0rem;">
+                <div class="mt-0 pl-1">
                   <b-form-select size="sm" v-model="chainsTable.sortOption" :options="sortOptions" v-b-popover.hover.top="'Yeah. Sort'"></b-form-select>
                 </div>
                 <div class="mt-0 pl-1">
@@ -56,6 +56,7 @@ const Config = {
       pageSizes: [
         { value: 10, text: '10' },
         { value: 20, text: '20' },
+        { value: 100, text: '100' },
       ],
       sortOptions: [
         { value: 'chainidasc', text: '▲ Chain Id' },
@@ -152,7 +153,7 @@ const Config = {
             store.dispatch('addChain', {
               chainId: item.chainid,
               name: item.chainname,
-              explorer: item.blockexplorer,
+              explorer: item.blockexplorer + (item.blockexplorer.substr(-1) != "/" ? "/" : ""),
               api: item.apiurl,
             });
           }
