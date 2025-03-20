@@ -41,6 +41,13 @@ const store = new Vuex.Store({
       coinbase: null,
       version: 0,
     },
+    db: {
+      name: "explorer088a",
+      version: 1,
+      schemaDefinition: {
+        cache: '&objectName',
+      },
+    },
   },
   getters: {
     settings: state => state.settings,

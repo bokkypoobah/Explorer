@@ -24,6 +24,9 @@ const Contract = {
             <div class="mt-0 pr-1">
               <b-button :disabled="!etherscanAPIKey || !inputAddress" size="sm" @click="importABIFromEtherscan();" variant="link" v-b-popover.hover.top="'Import ABI from https://api.etherscan.io/. You will need to enter your Etherscan API key in the Config page'"><b-icon-cloud-download shift-v="-3" font-scale="1.2"></b-icon-cloud-download></b-button>
             </div>
+            <div class="mt-0 pr-1">
+              <b-button :disabled="!inputAddress" size="sm" @click="testIt();" variant="link" v-b-popover.hover.top="'Test'"><b-icon-bullseye shift-v="-3" font-scale="1.2"></b-icon-bullseye></b-button>
+            </div>
             <div class="mt-0 flex-grow-1">
             </div>
             <div class="mt-0 flex-grow-1">
@@ -107,6 +110,12 @@ const Contract = {
       console.log(now() + " Contract - methods.loadAddress - inputAddress: " + inputAddress);
       this.$router.push({ name: 'Contract', params: { inputAddress } })
       store.dispatch('address/loadAddress', inputAddress);
+    },
+    async testIt() {
+      console.log(now() + " Contract - methods.testIt - inputAddress: " + this.inputAddress);
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const addressInfo = await getAddressInfo(this.inputAddress, provider);
+      console.log(now() + " Contract - methods.testIt - addressInfo: " + JSON.stringify(addressInfo));
     },
     async importABIFromEtherscan() {
       console.log(now() + " Contract - methods.importABIFromEtherscan");
