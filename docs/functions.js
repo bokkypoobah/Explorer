@@ -11,10 +11,12 @@ async function getAddressInfo(inputAddress, provider) {
   const results = {};
   // console.log(now() + " functions.js:getAddressInfo - inputAddress: " + inputAddress);
   results.address = null;
-  try {
-    results.address = ethers.utils.getAddress(inputAddress);
-  } catch (e) {
-    console.error(now() + " functions.js:getAddressInfo - invalid inputAddress: " + inputAddress);
+  if (inputAddress) {
+    try {
+      results.address = ethers.utils.getAddress(inputAddress);
+    } catch (e) {
+      console.error(now() + " functions.js:getAddressInfo - invalid inputAddress: " + inputAddress);
+    }    
   }
   // EOA or contract?
   if (results.address) {
@@ -34,24 +36,24 @@ async function getAddressInfo(inputAddress, provider) {
       console.error(now() + " functions.js:getAddressInfo - provider.getBalance: " + e.message);
     }
   }
-  if (results.type == "contract") {
-    try {
-      results.storage0 = await provider.getStorageAt(results.address, 0);
-      // console.log(now() + " functions.js:getAddressInfo - results.storage0: " + results.storage0);
-    } catch (e) {
-      console.error(now() + " functions.js:getAddressInfo - ERROR provider.getStorageAt: " + e.message);
-    }
-  } else {
+  if (results.address && results.type == "eoa") {
     try {
       results.transactionCount = await provider.getTransactionCount(results.address);
       console.log(now() + " functions.js:getAddressInfo - results.transactionCount: " + results.transactionCount);
     } catch (e) {
       console.error(now() + " functions.js:getAddressInfo - ERROR provider.getStorageAt: " + e.message);
     }
+  // } else {
+  //   try {
+  //     results.storage0 = await provider.getStorageAt(results.address, 0);
+  //     // console.log(now() + " functions.js:getAddressInfo - results.storage0: " + results.storage0);
+  //   } catch (e) {
+  //     console.error(now() + " functions.js:getAddressInfo - ERROR provider.getStorageAt: " + e.message);
+  //   }
   }
 
   // Gnosis Safe contracts?
-  if (results.type == "contract") {
+  if (results.address && results.type == "contract") {
     // All functions below in 1.1.1, 1.3.0 and 1.4.1, except that 1.1.1 does not have getStorageAt
     const ALL_SAFES_ABI = [
       "function VERSION() public view returns (string)",
@@ -104,7 +106,7 @@ async function getAddressInfo(inputAddress, provider) {
   }
 
   // ERC-20, ERC-721 or ERC-1155 contracts?
-  if (results.type == "contract") {
+  if (results.address && results.type == "contract") {
     const TOKENS_ABI = [
       "function name() public view returns (string)",
       "function symbol() public view returns (string)",

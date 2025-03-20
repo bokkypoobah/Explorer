@@ -128,7 +128,7 @@ const Contract = {
     async loadAddressInfo(inputAddress) {
       console.log(now() + " Contract - methods.loadAddressInfo - inputAddress: " + inputAddress);
       const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const info = await getAddressInfo(this.inputAddress, provider);
+      const info = await getAddressInfo(inputAddress, provider);
       console.log(now() + " Contract - methods.loadAddressInfo - info: " + JSON.stringify(info));
       Vue.set(this, 'info', info);
       // store.dispatch('address/loadAddress', inputAddress);
