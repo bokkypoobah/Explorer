@@ -1,4 +1,4 @@
-const Address = {
+const Contract = {
   template: `
     <div class="m-0 p-0">
 
@@ -26,7 +26,7 @@ const Address = {
 
           <b-card no-body no-header bg-variant="light" class="m-1 p-1 w-75">
 
-            <b-form-group label-cols-lg="2" label="Address" label-size="md" label-class="font-weight-bold pt-0" class="mt-3 mb-0">
+            <b-form-group label-cols-lg="2" label="Contract" label-size="md" label-class="font-weight-bold pt-0" class="mt-3 mb-0">
               <b-form-group v-if="error" label="Error:" label-for="address-error" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-form-input type="text" plaintext size="sm" id="address-error" :value="error"></b-form-input>
               </b-form-group>
@@ -93,8 +93,8 @@ const Address = {
   },
   methods: {
     loadAddress(inputAddress) {
-      console.log(now() + " Address - methods.loadAddress - inputAddress: " + inputAddress);
-      this.$router.push({ name: 'Address', params: { inputAddress } })
+      console.log(now() + " Contract - methods.loadAddress - inputAddress: " + inputAddress);
+      this.$router.push({ name: 'Contract', params: { inputAddress } })
       store.dispatch('address/loadAddress', inputAddress);
     },
     copyToClipboard(str) {
@@ -126,15 +126,15 @@ const Address = {
     },
   },
   // beforeRouteUpdate(to, from) {
-  //   console.log(now() + " Address - beforeRouteUpdate");
+  //   console.log(now() + " Contract - beforeRouteUpdate");
   //   console.table(to);
   //   console.table(from);
   // },
   beforeDestroy() {
-    console.log(now() + " Address - beforeDestroy()");
+    console.log(now() + " Contract - beforeDestroy()");
   },
   mounted() {
-    console.log(now() + " Address - mounted() $route.params: " + JSON.stringify(this.$route.params));
+    console.log(now() + " Contract - mounted() $route.params: " + JSON.stringify(this.$route.params));
     const t = this;
     setTimeout(function() {
       store.dispatch('address/loadAddress', t.inputAddress);
@@ -145,7 +145,7 @@ const Address = {
   },
 };
 
-const addressModule = {
+const contractModule = {
   namespaced: true,
   state: {
     error: null,
@@ -165,7 +165,7 @@ const addressModule = {
   },
   mutations: {
     setData(state, data) {
-      console.log(now() + " addressModule - mutations.setData - data: " + JSON.stringify(data));
+      console.log(now() + " contractModule - mutations.setData - data: " + JSON.stringify(data));
       state.error = data.error;
       state.address = data.address;
       state.transactionCount = data.transactionCount;
@@ -176,7 +176,7 @@ const addressModule = {
   },
   actions: {
     async loadAddress(context, inputAddress) {
-      console.log(now() + " addressModule - actions.loadAddress - inputAddress: " + inputAddress);
+      console.log(now() + " contractModule - actions.loadAddress - inputAddress: " + inputAddress);
       let [error, address, transactionCount, balance, ensName, transactions, block] = [null, null, null, null, null, null, null];
       if (inputAddress) {
         if (!store.getters['web3Connection'].connected || !window.ethereum) {
@@ -195,9 +195,9 @@ const addressModule = {
         if (!error) {
           const provider = new ethers.providers.Web3Provider(window.ethereum);
           transactionCount = await provider.getTransactionCount(address);
-          console.log(now() + " addressModule - actions.loadAddress - transactionCount: " + transactionCount);
+          console.log(now() + " contractModule - actions.loadAddress - transactionCount: " + transactionCount);
           balance = await provider.getBalance(address);
-          console.log(now() + " addressModule - actions.loadAddress - balance: " + balance);
+          console.log(now() + " contractModule - actions.loadAddress - balance: " + balance);
         }
       }
       console.log("error: " + error);

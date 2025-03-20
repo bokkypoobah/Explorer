@@ -136,6 +136,7 @@ const store = new Vuex.Store({
     block: blockModule,
     transaction: transactionModule,
     address: addressModule,
+    contract: contractModule,
   },
   plugins: [
     function persistSettings(store) {

@@ -9,9 +9,14 @@ const routes = [{
     name: 'Transaction',
     props: true,
   }, {
-    path: '/address/:nameOrAddress?',
+    path: '/address/:inputAddress?',
     component: Address,
     name: 'Address',
+    props: true,
+  }, {
+    path: '/contract/:inputAddress?',
+    component: Contract,
+    name: 'Contract',
     props: true,
   }, {
     path: '/config',
