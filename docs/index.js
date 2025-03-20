@@ -7,6 +7,11 @@ const router = new VueRouter({
   routes: routes,
 });
 
+// router.afterEach((to) => {
+  // console.log(now() + " index.js:router - to: " + JSON.stringify(to));
+  // document.title = to.meta.title || 'Default Title';
+// });
+
 const storeVersion = 1;
 const store = new Vuex.Store({
   strict: false, // TODO Set to true to test, false to disable _showDetails & vuex mutations
