@@ -40,6 +40,19 @@ const store = new Vuex.Store({
   getters: {
     settings: state => state.settings,
     web3Connection: state => state.web3Connection,
+    connection(state) {
+      const chain = state.web3Connection.chainId && state.settings.chains[state.web3Connection.chainId] || null;
+      return {
+        ...state.web3Connection,
+        name: chain && chain.name || null,
+        explorer: chain && chain.explorer || "https://etherscan.io",
+        api: chain && chain.api || "https://api.etherscan.io/v2/api?chainid=1",
+      };
+    },
+    explorer(state) {
+      const chain = state.web3Connection.chainId && state.settings.chains[state.web3Connection.chainId] || null;
+      return chain && chain.explorer || null;
+    },
   },
   mutations: {
     setSettings(state, settings) {
