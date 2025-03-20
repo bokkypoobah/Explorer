@@ -205,13 +205,12 @@ const Block = {
     transactions() {
       const results = [];
       for (const tx of (this.block && this.block.transactions || [])) {
-        // TODO: filter?
         results.push(tx);
       }
       return results;
     },
     filteredSortedTransactions() {
-      // TODO: sort
+      // TODO: filter & sort
       return this.transactions;
     },
     pagedFilteredSortedTransactions() {

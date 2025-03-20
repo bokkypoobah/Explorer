@@ -13,7 +13,19 @@ const store = new Vuex.Store({
   state: {
     settings: {
       etherscanAPIKey: null,
-      version: 0,
+      chains: {
+        1: {
+          name: "Ethereum Mainnet",
+          explorer: "https://etherscan.io",
+          api: "https://api.etherscan.io/v2/api?chainid=1",
+        },
+        11155111: {
+          name: "Sepolia Testnet",
+          explorer: "https://sepolia.etherscan.io",
+          api: "https://api.etherscan.io/v2/api?chainid=11155111",
+        },
+      },
+      version: 1,
     },
     web3Connection: {
       connected: false,
