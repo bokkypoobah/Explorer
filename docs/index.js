@@ -45,6 +45,20 @@ const store = new Vuex.Store({
     setSettings(state, settings) {
       state.settings = settings;
     },
+    addChain(state, chain) {
+      if (!(chain.chainId in state.settings.chains)) {
+        Vue.set(state.settings.chains, chain.chainId, {
+          name: chain.name,
+          explorer: chain.explorer,
+          api: chain.api,
+        });
+        // state.settings.chains[chain.chainId] = {
+        //   name: chain.name,
+        //   explorer: chain.explorer,
+        //   api: chain.api,
+        // };
+      }
+    },
     setWeb3Connection(state, web3Connection) {
       state.web3Connection.connected = web3Connection.connected;
       state.web3Connection.error = web3Connection.error;
@@ -70,6 +84,9 @@ const store = new Vuex.Store({
   actions: {
     setSettings(context, settings) {
       context.commit('setSettings', settings);
+    },
+    addChain(context, chain) {
+      context.commit('addChain', chain);
     },
     setWeb3Connection(context, web3Connection) {
       context.commit('setWeb3Connection', web3Connection);
@@ -97,7 +114,7 @@ const store = new Vuex.Store({
   plugins: [
     function persistSettings(store) {
       store.subscribe((mutation, state) => {
-        if (mutation.type == "setEtherscanAPIKey") {
+        if (mutation.type == "setEtherscanAPIKey" || mutation.type == "addChain") {
           localStorage.explorerSettings = JSON.stringify(state.settings);
         } else if (mutation.type.substring(0, 7) == "setWeb3") {
           localStorage.explorerWeb3Connection = JSON.stringify(state.web3Connection);

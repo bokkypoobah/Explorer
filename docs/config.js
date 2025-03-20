@@ -13,6 +13,11 @@ const Config = {
               <div class="d-flex flex-wrap m-0 mx-0 p-1 px-1 bg-white">
                 <div class="mt-0 flex-grow-1">
                 </div>
+                <div class="mt-0 pr-1">
+                  <b-button size="sm" @click="importChainlistFromEtherscan();" variant="link" v-b-popover.hover.top="'Import from https://api.etherscan.io/v2/chainlist'"><b-icon-cloud-download shift-v="+1" font-scale="1.2"></b-icon-cloud-download></b-button>
+                </div>
+                <div class="mt-0 flex-grow-1">
+                </div>
                 <div class="mt-0 pl-1">
                   <font size="-2" v-b-popover.hover.bottom="'# Chains'">{{ chains.length }}</font>
                 </div>
@@ -80,6 +85,23 @@ const Config = {
     },
   },
   methods: {
+    async importChainlistFromEtherscan() {
+      console.log(now() + " Config - methods.importChainlistFromEtherscan()");
+      const url = "https://api.etherscan.io/v2/chainlist";
+      const data = await fetch(url).then(response => response.json());
+      if (data && data.result) {
+        for (const item of data.result) {
+          if (!(item.chainid in store.getters['settings'].chains)) {
+            store.dispatch('addChain', {
+              chainId: item.chainid,
+              name: item.chainname,
+              explorer: item.blockexplorer,
+              api: item.apiurl,
+            });
+          }
+        }
+      }
+    },
   },
   beforeDestroy() {
     console.log(now() + " Config - beforeDestroy()");
