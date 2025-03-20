@@ -13,10 +13,13 @@ const Contract = {
               <b-dropdown size="sm" right text="" variant="link" class="m-0 p-0">
                 <b-dropdown-text>Sample Contracts</b-dropdown-text>
                 <b-dropdown-divider></b-dropdown-divider>
+                <b-dropdown-item @click="loadAddress('0x9fC3dc011b461664c835F2527fffb1169b3C213e');">0x9fC3dc01 - EF: DeFi Multisig - Safe v1.4.1</b-dropdown-item>
+                <b-dropdown-item @click="loadAddress('0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2');">0xC02aaA39 - ERC-20: WETH</b-dropdown-item>
+                <b-dropdown-item @click="loadAddress('0x42069abfe407c60cf4ae4112bedead391dba1cdb');">0x42069abf - ERC-721: CryptoDickButts</b-dropdown-item>
+                <b-dropdown-item @click="loadAddress('0x8fa600364b93c53e0c71c7a33d2ade21f4351da3');">0x8fa60036 - ERC-721: Larva Chads</b-dropdown-item>
+                <b-dropdown-item @click="loadAddress('0xB32979486938AA9694BFC898f35DBED459F44424');">0xB3297948 - ERC-1155: Nyan Cat</b-dropdown-item>
                 <b-dropdown-item @click="loadAddress('0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB');">0xb47e3cd8 - CryptoPunksMarket</b-dropdown-item>
                 <b-dropdown-item @click="loadAddress('0x16F5A35647D6F03D5D3da7b35409D65ba03aF3B2');">0x16F5A356 - CryptopunksData</b-dropdown-item>
-                <b-dropdown-item @click="loadAddress('0x42069abfe407c60cf4ae4112bedead391dba1cdb');">0x42069abf - CryptoDickButts</b-dropdown-item>
-                <b-dropdown-item @click="loadAddress('0x8fa600364b93c53e0c71c7a33d2ade21f4351da3');">0x8fa60036 - Larva Chads</b-dropdown-item>
               </b-dropdown>
             </div>
             <div class="mt-0 flex-grow-1">
@@ -65,6 +68,12 @@ const Contract = {
               </b-form-group>
 
             </b-form-group>
+
+            <font size="-1">
+              <pre>
+{{ info }}
+              </pre>
+            </font>
           </b-card>
           <!-- <b-card-text>
             <h5>Address</h5>
@@ -79,6 +88,7 @@ const Contract = {
   props: ['inputAddress'],
   data: function () {
     return {
+      info: {},
       count: 0,
       reschedule: true,
     }
@@ -88,16 +98,16 @@ const Contract = {
       return store.getters['settings'].etherscanAPIKey;
     },
     error() {
-      return store.getters['address/error'];
+      return store.getters['contract/error'];
     },
     address() {
-      return store.getters['address/address'];
+      return store.getters['contract/address'];
     },
     transactionCount() {
-      return store.getters['address/transactionCount'];
+      return store.getters['contract/transactionCount'];
     },
     balance() {
-      return store.getters['address/balance'];
+      return store.getters['contract/balance'];
     },
     transactions() {
       const results = [];
@@ -114,8 +124,8 @@ const Contract = {
     async testIt() {
       console.log(now() + " Contract - methods.testIt - inputAddress: " + this.inputAddress);
       const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const addressInfo = await getAddressInfo(this.inputAddress, provider);
-      console.log(now() + " Contract - methods.testIt - addressInfo: " + JSON.stringify(addressInfo));
+      this.info = await getAddressInfo(this.inputAddress, provider);
+      console.log(now() + " Contract - methods.testIt - this.info: " + JSON.stringify(this.info));
     },
     async importABIFromEtherscan() {
       console.log(now() + " Contract - methods.importABIFromEtherscan");
@@ -181,7 +191,7 @@ const Contract = {
     console.log(now() + " Contract - mounted() $route.params: " + JSON.stringify(this.$route.params));
     const t = this;
     setTimeout(function() {
-      store.dispatch('address/loadAddress', t.inputAddress);
+      store.dispatch('contract/loadAddress', t.inputAddress);
     }, 1000);
   },
   destroyed() {
@@ -209,7 +219,7 @@ const contractModule = {
   },
   mutations: {
     setData(state, data) {
-      console.log(now() + " contractModule - mutations.setData - data: " + JSON.stringify(data));
+      // console.log(now() + " contractModule - mutations.setData - data: " + JSON.stringify(data));
       state.error = data.error;
       state.address = data.address;
       state.transactionCount = data.transactionCount;
