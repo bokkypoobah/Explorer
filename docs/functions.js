@@ -16,7 +16,7 @@ async function getAddressInfo(inputAddress, provider) {
       results.address = ethers.utils.getAddress(inputAddress);
     } catch (e) {
       console.error(now() + " functions.js:getAddressInfo - invalid inputAddress: " + inputAddress);
-    }    
+    }
   }
   // EOA or contract?
   if (results.address) {
@@ -155,4 +155,22 @@ async function getAddressInfo(inputAddress, provider) {
     }
   }
   return results;
+}
+
+async function dbGetCachedData(db, chainId, name, empty) {
+  console.log(now() + " functions.js:dbGetCachedData - chainId: " + chainId + ", name: " + name + ", empty: " + JSON.stringify(empty));
+  const dataItems = await db.cache.where("objectName").equals(name + "_" + chainId).toArray();
+  if (dataItems.length == 1) {
+    return dataItems[0].object;
+  } else {
+    return empty;
+  }
+}
+
+async function dbSaveCacheData(db, chainId, name, data) {
+  console.log(now() + " functions.js:dbSaveCacheData - chainId: " + chainId + ", name: " + name + ", data: " + JSON.stringify(data));
+  await db.cache.put({ objectName: name + "_" + chainId, object: data }).then (function() {
+    }).catch(function(error) {
+      console.error(now() + " functions.js:dbSaveCacheData - ERROR chainId: " + chainId + ", name: " + name + ", data: " + JSON.stringify(data));
+    });
 }

@@ -145,8 +145,24 @@ const Contract = {
     async testIt() {
       console.log(now() + " Contract - methods.testIt - inputAddress: " + this.inputAddress);
       const provider = new ethers.providers.Web3Provider(window.ethereum);
-      this.info = await getAddressInfo(this.inputAddress, provider);
-      console.log(now() + " Contract - methods.testIt - this.info: " + JSON.stringify(this.info));
+      console.table(store);
+      const dbInfo = store.getters['db'];
+      console.log(now() + " Contract - methods.testIt - dbInfo: " + JSON.stringify(dbInfo, null, 2));
+
+      const db = new Dexie(dbInfo.name);
+      db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
+
+      const chainId = 1;
+      const name = "BLah";
+      const data = { blah: "Blah" };
+      await dbSaveCacheData(db, chainId, name, data);
+
+      const empty = {};
+      const retrievedData = await dbGetCachedData(db, chainId, name, empty);
+      console.log("retrievedData: " + JSON.stringify(retrievedData, null, 2));
+
+      // this.info = await getAddressInfo(this.inputAddress, provider);
+      // console.log(now() + " Contract - methods.testIt - this.info: " + JSON.stringify(this.info));
     },
     async importABIFromEtherscan() {
       console.log(now() + " Contract - methods.importABIFromEtherscan");

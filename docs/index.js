@@ -52,6 +52,7 @@ const store = new Vuex.Store({
   getters: {
     settings: state => state.settings,
     web3Connection: state => state.web3Connection,
+    db: state => state.db,
     connection(state) {
       const chain = state.web3Connection.chainId && state.settings.chains[state.web3Connection.chainId] || null;
       return {
