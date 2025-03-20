@@ -23,6 +23,7 @@ async function getAddressInfo(inputAddress, provider) {
     try {
       results.code = (await provider.getCode(results.address) || "").substring(0, 80) + "...";
       results.type = !results.code || results.code == "0x" ? "eoa" : "contract"
+      results.abi = null;
       // console.log(now() + " functions.js:getAddressInfo - results.code: " + results.code);
     } catch (e) {
       console.error(now() + " functions.js:getAddressInfo - provider.getCode: " + e.message);
@@ -69,7 +70,7 @@ async function getAddressInfo(inputAddress, provider) {
     } catch (e) {
       console.error(now() + " functions.js:getAddressInfo - ERROR allSafesContract.VERSION(): " + e.message);
     }
-    if (["1.1.1", "1.3.0", "1.4.1"].includes(results.version)) {
+    if (["1.0.0", "1.1.1", "1.3.0", "1.4.1"].includes(results.version)) {
       console.log(now() + " functions.js:getAddressInfo - CHECKING results.version: " + results.version);
       try {
         results.owners = await allSafesContract.getOwners();
@@ -101,6 +102,7 @@ async function getAddressInfo(inputAddress, provider) {
       if (results.owners && results.threshold && results.nonce) {
         // TODO: Should check that result.implementation a valid safe contract
         results.type = "safe";
+        results.abi = SAFE_ABIS["safe_" + results.version];
       }
     }
   }
@@ -139,19 +141,29 @@ async function getAddressInfo(inputAddress, provider) {
     } catch (e) {
       console.error(now() + " functions.js:getAddressInfo - ERROR tokensContract.totalSupply(): " + e.message);
     }
-    try {
-      if (await tokensContract.supportsInterface(ERC721_INTERFACE)) {
-        results.type = "erc721";
-      }
-    } catch (e) {
-      console.error(now() + " functions.js:getAddressInfo - ERROR tokensContract.supportsInterface(ERC721_INTERFACE): " + e.message);
+    if (results.name && results.decimals) {
+      results.type = "erc20";
+      results.abi = ERC20ABI;
     }
-    try {
-      if (await tokensContract.supportsInterface(ERC1155_INTERFACE)) {
-        results.type = "erc1155";
+    if (results.type == "contract") {
+      try {
+        if (await tokensContract.supportsInterface(ERC721_INTERFACE)) {
+          results.type = "erc721";
+          results.abi = ERC721ABI;
+        }
+      } catch (e) {
+        console.error(now() + " functions.js:getAddressInfo - ERROR tokensContract.supportsInterface(ERC721_INTERFACE): " + e.message);
       }
-    } catch (e) {
-      console.error(now() + " functions.js:getAddressInfo - ERROR tokensContract.supportsInterface(ERC1155_INTERFACE): " + e.message);
+    }
+    if (results.type == "contract") {
+      try {
+        if (await tokensContract.supportsInterface(ERC1155_INTERFACE)) {
+          results.type = "erc1155";
+          results.abi = ERC1155ABI;
+        }
+      } catch (e) {
+        console.error(now() + " functions.js:getAddressInfo - ERROR tokensContract.supportsInterface(ERC1155_INTERFACE): " + e.message);
+      }
     }
   }
   return results;

@@ -230,7 +230,6 @@ const Contract = {
   },
   mounted() {
     console.log(now() + " Contract - mounted() $route.params: " + JSON.stringify(this.$route.params));
-
     if ('explorerContractSettings' in localStorage) {
       const tempSettings = JSON.parse(localStorage.explorerContractSettings);
       if ('version' in tempSettings && tempSettings.version == this.settings.version) {
@@ -253,54 +252,11 @@ const Contract = {
 const contractModule = {
   namespaced: true,
   state: {
-    // error: null,
-    // address: null,
-    // transactionCount: null,
-    // balance: null,
   },
   getters: {
-    // error: state => state.error,
-    // address: state => state.address,
-    // transactionCount: state => state.transactionCount,
-    // balance: state => state.balance,
   },
   mutations: {
-    // setData(state, data) {
-    //   // console.log(now() + " contractModule - mutations.setData - data: " + JSON.stringify(data));
-    //   state.error = data.error;
-    //   state.address = data.address;
-    //   state.transactionCount = data.transactionCount;
-    //   state.balance = data.balance;
-    // },
   },
   actions: {
-    // async loadAddress(context, inputAddress) {
-    //   console.log(now() + " contractModule - actions.loadAddress - inputAddress: " + inputAddress);
-    //   let [error, address, transactionCount, balance, ensName, transactions, block] = [null, null, null, null, null, null, null];
-    //   if (inputAddress) {
-    //     if (!store.getters['web3Connection'].connected || !window.ethereum) {
-    //       error = "Not connected";
-    //     }
-    //     if (!error && !(/^0x([A-Fa-f0-9]{40})$/.test(inputAddress))) {
-    //       error = "Invalid address (ENS names will be supported later)";
-    //     }
-    //     if (!error) {
-    //       try {
-    //         address = ethers.utils.getAddress(inputAddress);
-    //       } catch (e) {
-    //         error = "Invalid address: " + inputAddress;
-    //       }
-    //     }
-    //     if (!error) {
-    //       const provider = new ethers.providers.Web3Provider(window.ethereum);
-    //       transactionCount = await provider.getTransactionCount(address);
-    //       console.log(now() + " contractModule - actions.loadAddress - transactionCount: " + transactionCount);
-    //       balance = await provider.getBalance(address);
-    //       console.log(now() + " contractModule - actions.loadAddress - balance: " + balance);
-    //     }
-    //   }
-    //   console.log("error: " + error);
-    //   context.commit('setData', { error, address, transactionCount, balance });
-    // }
   },
 };
