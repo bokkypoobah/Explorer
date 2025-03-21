@@ -182,9 +182,10 @@ info: {{ info }}
       info: {},
       functionFields: [
         { key: 'index', label: '#', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-truncate' },
-        { key: 'methodId', label: 'Method Id', sortable: false, thStyle: 'width: 20%;', tdClass: 'text-truncate' },
+        { key: 'methodId', label: 'Method Id', sortable: false, thStyle: 'width: 15%;', tdClass: 'text-truncate' },
+        { key: 'stateMutability', label: 'Type', sortable: false, thStyle: 'width: 15%;', tdClass: 'text-truncate' },
         { key: 'function', label: 'Function', sortable: false, thStyle: 'width: 25%;', tdClass: 'text-left' },
-        { key: 'parameters', label: 'Parameters', sortable: false, thStyle: 'width: 50%;', tdClass: 'text-left' },
+        { key: 'parameters', label: 'Parameters', sortable: false, thStyle: 'width: 40%;', tdClass: 'text-left' },
       ],
       eventFields: [
         { key: 'index', label: '#', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-truncate' },
@@ -214,7 +215,7 @@ info: {{ info }}
               const functionInfo = interface.getFunction(f.substring(9,));
               const methodId = interface.getSighash(functionInfo);
               const parameters = functionInfo.inputs.map(e => ({ name: e.name, type: e.type }));
-              results[methodId] = { name: functionInfo.name, parameters /*, names, types*/ };
+              results[methodId] = { name: functionInfo.name, stateMutability: functionInfo.stateMutability, parameters /*, names, types*/ };
             }
           }
         } catch (e) {
