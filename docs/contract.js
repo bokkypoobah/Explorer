@@ -207,17 +207,13 @@ info: {{ info }}
     functions() {
       const results = {};
       if (this.info.abi) {
-        // console.log(now() + " Contract - computed.functions - info.abi: " + JSON.stringify(this.info.abi).substring(0, 1000) + "...");
         try {
           const interface = new ethers.utils.Interface(this.info.abi);
           for (const f of interface.format(ethers.utils.FormatTypes.full)) {
             if (f.substring(0, 8) == "function") {
               const functionInfo = interface.getFunction(f.substring(9,));
               const methodId = interface.getSighash(functionInfo);
-              // const names = functionInfo.inputs.map(e => e.name);
-              // const types = functionInfo.inputs.map(e => e.type);
               const parameters = functionInfo.inputs.map(e => ({ name: e.name, type: e.type }));
-              // console.log(methodId + " => " + functionInfo.name + " " + JSON.stringify(parameters));
               results[methodId] = { name: functionInfo.name, parameters /*, names, types*/ };
             }
           }
@@ -230,7 +226,6 @@ info: {{ info }}
     events() {
       const results = {};
       if (this.info.abi) {
-        // console.log(now() + " Contract - computed.events - info.abi: " + JSON.stringify(this.info.abi).substring(0, 1000) + "...");
         try {
           const interface = new ethers.utils.Interface(this.info.abi);
           for (const f of interface.format(ethers.utils.FormatTypes.full)) {
@@ -238,9 +233,6 @@ info: {{ info }}
               const eventInfo = interface.getEvent(f.substring(6,));
               const topicCount = eventInfo.inputs.filter(e => e.indexed).length + 1;
               const eventSig = interface.getEventTopic(eventInfo);
-              // const names = eventInfo.inputs.map(e => e.name);
-              // const types = eventInfo.inputs.map(e => e.type);
-              // const indexed = eventInfo.inputs.map(e => e.indexed);
               const parameters = eventInfo.inputs.map(e => ({ name: e.name, type: e.type, indexed: e.indexed }));
               results[eventSig] = { name: eventInfo.name, parameters /*, names, types, indexed*/, topicCount };
             }
