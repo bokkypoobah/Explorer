@@ -190,8 +190,8 @@ const Contract = {
       console.log(now() + " Contract - methods.importSourceCodeFromEtherscan");
       const etherscanAPIKey = store.getters['settings'].etherscanAPIKey;
       console.log(now() + " Contract - methods.importSourceCodeFromEtherscan - etherscanAPIKey: " + etherscanAPIKey);
-      const url = "https://api.etherscan.io/v2/api?chainid=1&module=contract&action=getabi&address=" + this.inputAddress + "&apikey=" + etherscanAPIKey;
-      // const url = "https://api.etherscan.io/v2/api?chainid=1&module=contract&action=getsourcecode&address=" + this.inputAddress + "&apikey=" + etherscanAPIKey;
+      // const url = "https://api.etherscan.io/v2/api?chainid=1&module=contract&action=getabi&address=" + this.inputAddress + "&apikey=" + etherscanAPIKey;
+      const url = "https://api.etherscan.io/v2/api?chainid=1&module=contract&action=getsourcecode&address=" + this.inputAddress + "&apikey=" + etherscanAPIKey;
       console.log(now() + " Contract - url: " + url);
       const data = await fetch(url).then(response => response.json());
       console.log(now() + " Contract - data: " + JSON.stringify(data, null, 2));
