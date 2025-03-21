@@ -101,18 +101,38 @@ info: {{ info }}
                 </b-input-group>
               </b-form-group>
               <b-form-group label="Functions:" label-for="contractabi-functions" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
-                <font size="-1">
-                  <pre class="mt-2">
-functionList: {{ functionList }}
-                  </pre>
-                </font>
+                <b-table small fixed striped responsive hover :fields="functionFields" :items="functionList" show-empty empty-html="zzz" head-variant="light" class="mx-0 my-0 p-1">
+                  <template #cell(index)="data">
+                    <font size="-1" class="text-muted">
+                      {{ data.index + 1 }}
+                    </font>
+                  </template>
+                  <template #cell(function)="data">
+                    {{ data.item.name }}
+                  </template>
+                  <template #cell(parameters)="data">
+                    <div v-for="(item, index) of data.item.parameters" v-bind:key="index">
+                      {{ item }}
+                    </div>
+                  </template>
+                </b-table>
               </b-form-group>
               <b-form-group label="Events:" label-for="contractabi-events" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
-                <font size="-1">
-                  <pre class="mt-2">
-eventList: {{ eventList }}
-                  </pre>
-                </font>
+                <b-table small fixed striped responsive hover :fields="eventFields" :items="eventList" show-empty empty-html="zzz" head-variant="light" class="mx-0 my-0 p-1">
+                  <template #cell(index)="data">
+                    <font size="-1" class="text-muted">
+                      {{ data.index + 1 }}
+                    </font>
+                  </template>
+                  <template #cell(event)="data">
+                    {{ data.item.name }}
+                  </template>
+                  <template #cell(parameters)="data">
+                    <div v-for="(item, index) of data.item.parameters" v-bind:key="index">
+                      {{ item }}
+                    </div>
+                  </template>
+                </b-table>
               </b-form-group>
             </div>
             <div v-if="settings.tabIndex == 2">
@@ -149,6 +169,18 @@ eventList: {{ eventList }}
         version: 0,
       },
       info: {},
+      functionFields: [
+        { key: 'index', label: '#', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-truncate' },
+        { key: 'methodId', label: 'Method Id', sortable: false, thStyle: 'width: 20%;', tdClass: 'text-truncate' },
+        { key: 'function', label: 'Function', sortable: false, thStyle: 'width: 25%;', tdClass: 'text-left' },
+        { key: 'parameters', label: 'Parameters', sortable: false, thStyle: 'width: 50%;', tdClass: 'text-left' },
+      ],
+      eventFields: [
+        { key: 'index', label: '#', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-truncate' },
+        { key: 'eventSig', label: 'Event Sig', sortable: false, thStyle: 'width: 20%;', tdClass: 'text-truncate' },
+        { key: 'event', label: 'Event', sortable: false, thStyle: 'width: 25%;', tdClass: 'text-truncate' },
+        { key: 'parameters', label: 'Parameters', sortable: false, thStyle: 'width: 50%;', tdClass: 'text-left' },
+      ],
     }
   },
   computed: {
