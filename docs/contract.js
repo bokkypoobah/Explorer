@@ -76,6 +76,8 @@ const Contract = {
                 <b-form-group label="Info:" label-for="address-info" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
                   <font size="-1">
                     <pre class="mt-2">
+eventList: {{ eventList }}
+functionList: {{ functionList }}
 events: {{ events }}
 functions: {{ functions }}
 info: {{ info }}
@@ -97,6 +99,20 @@ info: {{ info }}
                     </b-button>
                   </b-input-group-append>
                 </b-input-group>
+              </b-form-group>
+              <b-form-group label="Functions:" label-for="contractabi-functions" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
+                <font size="-1">
+                  <pre class="mt-2">
+functionList: {{ functionList }}
+                  </pre>
+                </font>
+              </b-form-group>
+              <b-form-group label="Events:" label-for="contractabi-events" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
+                <font size="-1">
+                  <pre class="mt-2">
+eventList: {{ eventList }}
+                  </pre>
+                </font>
               </b-form-group>
             </div>
             <div v-if="settings.tabIndex == 2">
@@ -189,6 +205,20 @@ info: {{ info }}
         } catch (e) {
           console.error(now() + " Contract - computed.events - ERROR: " + e.message);
         }
+      }
+      return results;
+    },
+    functionList() {
+      const results = [];
+      for (const [methodId, functionData] of Object.entries(this.functions)) {
+        results.push({ methodId, ...functionData });
+      }
+      return results;
+    },
+    eventList() {
+      const results = [];
+      for (const [eventSig, eventData] of Object.entries(this.events)) {
+        results.push({ eventSig, ...eventData });
       }
       return results;
     },
