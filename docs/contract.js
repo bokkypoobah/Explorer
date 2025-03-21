@@ -227,7 +227,6 @@ info: {{ info }}
           for (const f of interface.format(ethers.utils.FormatTypes.full)) {
             if (f.substring(0, 8) == "function") {
               const functionInfo = interface.getFunction(f.substring(9,));
-              console.log(functionInfo);
               const methodId = interface.getSighash(functionInfo);
               results[methodId] = { name: functionInfo.name, stateMutability: functionInfo.stateMutability, inputs: functionInfo.inputs, outputs: functionInfo.outputs };
             }
