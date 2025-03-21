@@ -44,6 +44,7 @@ const Contract = {
             </template>
             <b-tab title="Info" no-body></b-tab>
             <b-tab title="ABI" no-body></b-tab>
+            <b-tab title="Functions" no-body></b-tab>
             <b-tab title="Source Code" no-body></b-tab>
           </b-tabs>
 
@@ -196,6 +197,9 @@ info: {{ info }}
               </b-form-group>
             </div>
             <div v-if="settings.tabIndex == 2">
+              TODO: Select and execute functions
+            </div>
+            <div v-if="settings.tabIndex == 3">
               <b-form-group label="Source code:" label-for="contractabi-sourcecode" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-input-group class="align-items-start">
                   <b-form-textarea plaintext size="sm" id="contractabi-sourcecode" :value="info.sourceCode && JSON.stringify(info.sourceCode) || null" rows="5" max-rows="10"></b-form-textarea>
