@@ -85,7 +85,7 @@ info: {{ info }}
             <div v-if="settings.tabIndex == 1">
               <b-form-group label="ABI:" label-for="contractabi-abi" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-input-group class="align-items-start">
-                  <b-form-textarea plaintext size="sm" id="contractabi-abi" :value="info.abi && JSON.stringify(info.abi) || null" rows="5" max-rows="10"></b-form-textarea>
+                  <b-form-textarea size="sm" id="contractabi-abi" :value="info.abi && JSON.stringify(info.abi) || null" @change="updateABI(inputAddress, $event)" rows="5" max-rows="10"></b-form-textarea>
                   <b-input-group-append>
                     <b-button :disabled="!etherscanAPIKey || !inputAddress" size="sm" @click="importABIFromEtherscan();" variant="link" v-b-popover.hover.top="'Import ABI from https://api.etherscan.io/. You will need to enter your Etherscan API key in the Config page'">
                       <b-icon-cloud-download shift-v="-3" font-scale="1.2"></b-icon-cloud-download>
@@ -289,6 +289,19 @@ info: {{ info }}
         }
       }
       Vue.set(this, 'info', info);
+      db.close();
+    },
+    async updateABI(address, abi) {
+      console.log(now() + " Contract - methods.updateABI - address: " + address + ", abi: " + abi);
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const db = new Dexie(this.dbInfo.name);
+      db.version(this.dbInfo.version).stores(this.dbInfo.schemaDefinition);
+      const validatedAddress = validateAddress(address);
+      if (validatedAddress && validatedAddress == this.info.address) {
+        console.log(now() + " Contract - methods.updateABI - this.info: " + JSON.stringify(this.info).substring(0, 1000) + "...");
+        await dbSaveCacheData(db, validatedAddress + "_" + this.chainId + "_contract", this.info);
+        Vue.set(this.info, 'abi', abi);
+      }
       db.close();
     },
     async testIt() {
