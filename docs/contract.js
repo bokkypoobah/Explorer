@@ -76,10 +76,6 @@ const Contract = {
                 <b-form-group label="Info:" label-for="address-info" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
                   <font size="-1">
                     <pre class="mt-2">
-eventList: {{ eventList }}
-functionList: {{ functionList }}
-events: {{ events }}
-functions: {{ functions }}
 info: {{ info }}
                     </pre>
                   </font>
@@ -111,8 +107,14 @@ info: {{ info }}
                     {{ data.item.name }}
                   </template>
                   <template #cell(parameters)="data">
-                    <div v-for="(item, index) of data.item.parameters" v-bind:key="index">
-                      {{ item }}
+                    <div v-for="(item, parameterIndex) of data.item.parameters" v-bind:key="parameterIndex">
+                      <font size="-1" class="text-muted">
+                        {{ parameterIndex + 1 }}
+                      </font>
+                      <span class="text-muted">
+                        {{ item.type }}
+                      </span>
+                     {{ item.name || "(unnamed)" }}
                     </div>
                   </template>
                 </b-table>
@@ -128,8 +130,17 @@ info: {{ info }}
                     {{ data.item.name }}
                   </template>
                   <template #cell(parameters)="data">
-                    <div v-for="(item, index) of data.item.parameters" v-bind:key="index">
-                      {{ item }}
+                    <div v-for="(item, parameterIndex) of data.item.parameters" v-bind:key="parameterIndex">
+                      <font size="-1" class="text-muted">
+                        {{ parameterIndex + 1 }}
+                      </font>
+                      <span class="text-muted">
+                        {{ item.type }}
+                      </span>
+                      <span v-if="item.indexed" class="text-muted">
+                        indexed
+                      </span>
+                     {{ item.name || "(unnamed)" }}
                     </div>
                   </template>
                 </b-table>
