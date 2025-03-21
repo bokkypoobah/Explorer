@@ -308,10 +308,9 @@ info: {{ info }}
       // db.close();
     },
     async importABIFromEtherscan() {
+      console.log(now() + " Contract - methods.importABIFromEtherscan");
       const db = new Dexie(this.dbInfo.name);
       db.version(this.dbInfo.version).stores(this.dbInfo.schemaDefinition);
-
-      console.log(now() + " Contract - methods.importABIFromEtherscan");
       const url = "https://api.etherscan.io/v2/api?chainid=1&module=contract&action=getabi&address=" + (this.info.implementation ? this.info.implementation : this.info.address) + "&apikey=" + store.getters['settings'].etherscanAPIKey;
       console.log(now() + " Contract - url: " + url);
       const data = await fetch(url).then(response => response.json());
@@ -323,32 +322,24 @@ info: {{ info }}
         Vue.set(this.info, 'abi', abi);
         await dbSaveCacheData(db, this.info.address + "_" + this.chainId + "_contract", this.info);
       }
-
       db.close();
-
     },
     async importSourceCodeFromEtherscan() {
       console.log(now() + " Contract - methods.importSourceCodeFromEtherscan");
-      const etherscanAPIKey = store.getters['settings'].etherscanAPIKey;
-      console.log(now() + " Contract - methods.importSourceCodeFromEtherscan - etherscanAPIKey: " + etherscanAPIKey);
-      // const url = "https://api.etherscan.io/v2/api?chainid=1&module=contract&action=getabi&address=" + this.inputAddress + "&apikey=" + etherscanAPIKey;
-      const url = "https://api.etherscan.io/v2/api?chainid=1&module=contract&action=getsourcecode&address=" + this.inputAddress + "&apikey=" + etherscanAPIKey;
+      const db = new Dexie(this.dbInfo.name);
+      db.version(this.dbInfo.version).stores(this.dbInfo.schemaDefinition);
+      const url = "https://api.etherscan.io/v2/api?chainid=1&module=contract&action=getsourcecode&address=" + (this.info.implementation ? this.info.implementation : this.info.address) + "&apikey=" + store.getters['settings'].etherscanAPIKey;
       console.log(now() + " Contract - url: " + url);
       const data = await fetch(url).then(response => response.json());
       console.log(now() + " Contract - data: " + JSON.stringify(data, null, 2));
       if (data && data.status == 1 && data.message == "OK") {
         console.log(now() + " Contract - data.result: " + JSON.stringify(data.result, null, 2));
-      //   for (const item of data.result) {
-      //     if (!(item.chainid in store.getters['settings'].chains)) {
-      //       store.dispatch('addChain', {
-      //         chainId: item.chainid,
-      //         name: item.chainname,
-      //         explorer: item.blockexplorer + (item.blockexplorer.substr(-1) != "/" ? "/" : ""),
-      //         api: item.apiurl,
-      //       });
-      //     }
-      //   }
+        // Vue.set(this.info, 'sourceCode', JSON.stringify(data.result).replace(/\/\//, "/"));
+        // Vue.set(this.info, 'sourceCode', data.result[0].SourceCode.replace(/\/r\/n/, ""));
+        Vue.set(this.info, 'sourceCode', data.result[0].SourceCode);
+        await dbSaveCacheData(db, this.info.address + "_" + this.chainId + "_contract", this.info);
       }
+      db.close();
     },
     saveSettings() {
       console.log(now() + " Contract - saveSettings");
