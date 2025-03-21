@@ -122,4 +122,38 @@ else
 fi
 rm $SOURCETEMP
 
+# Check vue-router.js 3.2.0 (not used atm)
+SOURCE=https://unpkg.com/vue-router@3.2.0/dist/vue-router.js
+SOURCETEMP=vue-router.js_3.2.0
+INSTALLED=../docs/js/vue-router.js
+echo "Checking installed ${INSTALLED} vs ${SOURCE}" >> $RESULTS
+wget $SOURCE -O $SOURCETEMP
+echo "- shasum -a 256 ${INSTALLED} ${SOURCETEMP}" >> $RESULTS
+shasum -a 256 ${INSTALLED} ${SOURCETEMP} | sed 's/^/  - /' >> $RESULTS
+if diff $SOURCETEMP $INSTALLED >& /dev/null; then
+    echo "- Installed ${INSTALLED} is identical to ${SOURCE}" >> $RESULTS
+else
+    echo "- Installed ${INSTALLED} differs from ${SOURCE}" >> $RESULTS
+    # diff $SOURCETEMP $INSTALLED >> $RESULTS
+fi
+rm $SOURCETEMP
+echo "" >> $RESULTS
+
+# Check vue-router.min.js 3.2.0
+SOURCE=https://unpkg.com/vue-router@3.2.0/dist/vue-router.min.js
+SOURCETEMP=vue-router.min.js_3.2.0
+INSTALLED=../docs/js/vue-router.min.js
+echo "Checking installed ${INSTALLED} vs ${SOURCE}" >> $RESULTS
+wget $SOURCE -O $SOURCETEMP
+echo "- shasum -a 256 ${INSTALLED} ${SOURCETEMP}" >> $RESULTS
+shasum -a 256 ${INSTALLED} ${SOURCETEMP} | sed 's/^/  - /' >> $RESULTS
+if diff $SOURCETEMP $INSTALLED >& /dev/null; then
+    echo "- Installed ${INSTALLED} is identical to ${SOURCE}" >> $RESULTS
+else
+    echo "- Installed ${INSTALLED} differs from ${SOURCE}" >> $RESULTS
+    # diff $SOURCETEMP $INSTALLED >> $RESULTS
+fi
+rm $SOURCETEMP
+echo "" >> $RESULTS
+
 cat $RESULTS

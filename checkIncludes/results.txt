@@ -1,4 +1,4 @@
-Fri Mar 21 13:23:29 AEDT 2025
+Fri Mar 21 13:27:33 AEDT 2025
 
 Checking installed ../docs/js/dexie.js vs https://unpkg.com/dexie@3.0.3/dist/dexie.js
 - shasum -a 256 ../docs/js/dexie.js dexie.js_3.0.3
@@ -41,3 +41,15 @@ Checking installed ../docs/js/vue.min.js vs https://cdn.jsdelivr.net/npm/vue@2.6
   - 9e0156dd49c03744e79bbea60eebbbb94b5811c1b71b91f5fb38a8270dedfbaf  ../docs/js/vue.min.js
   - 9e0156dd49c03744e79bbea60eebbbb94b5811c1b71b91f5fb38a8270dedfbaf  vue.min.js_2_6_11
 - Installed ../docs/js/vue.min.js is identical to https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.min.js
+Checking installed ../docs/js/vue-router.js vs https://unpkg.com/vue-router@3.2.0/dist/vue-router.js
+- shasum -a 256 ../docs/js/vue-router.js vue-router.js_3.2.0
+  - eb3d0111539b0c9e7ddba0c24b2fa06ec920dc9b8c8d1cbc13c45c1e44dcd1b3  ../docs/js/vue-router.js
+  - eb3d0111539b0c9e7ddba0c24b2fa06ec920dc9b8c8d1cbc13c45c1e44dcd1b3  vue-router.js_3.2.0
+- Installed ../docs/js/vue-router.js is identical to https://unpkg.com/vue-router@3.2.0/dist/vue-router.js
+
+Checking installed ../docs/js/vue-router.min.js vs https://unpkg.com/vue-router@3.2.0/dist/vue-router.min.js
+- shasum -a 256 ../docs/js/vue-router.min.js vue-router.min.js_3.2.0
+  - bf2f76348f9c1b62ddfaa7424da2a59eb6b7ed869b5b309f5144d86979cab17b  ../docs/js/vue-router.min.js
+  - bf2f76348f9c1b62ddfaa7424da2a59eb6b7ed869b5b309f5144d86979cab17b  vue-router.min.js_3.2.0
+- Installed ../docs/js/vue-router.min.js is identical to https://unpkg.com/vue-router@3.2.0/dist/vue-router.min.js
+
