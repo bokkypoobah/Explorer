@@ -87,5 +87,39 @@ else
     # diff $SOURCETEMP $INSTALLED >> $RESULTS
 fi
 rm $SOURCETEMP
+echo "" >> $RESULTS
+
+# Check vue.js 2.6.11
+SOURCE=https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.js
+SOURCETEMP=vue.js_2_6_11
+INSTALLED=../docs/js/vue.js
+echo "Checking installed ${INSTALLED} vs ${SOURCE}" >> $RESULTS
+wget $SOURCE -O $SOURCETEMP
+echo "- shasum -a 256 ${INSTALLED} ${SOURCETEMP}" >> $RESULTS
+shasum -a 256 ${INSTALLED} ${SOURCETEMP} | sed 's/^/  - /' >> $RESULTS
+if diff $SOURCETEMP $INSTALLED >& /dev/null; then
+    echo "- Installed ${INSTALLED} is identical to ${SOURCE}" >> $RESULTS
+else
+    echo "- Installed ${INSTALLED} differs from ${SOURCE}" >> $RESULTS
+    # diff $SOURCETEMP $INSTALLED >> $RESULTS
+fi
+rm $SOURCETEMP
+echo "" >> $RESULTS
+
+# Check vue.min.js 2.6.11 (not used atm)
+SOURCE=https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.min.js
+SOURCETEMP=vue.min.js_2_6_11
+INSTALLED=../docs/js/vue.min.js
+echo "Checking installed ${INSTALLED} vs ${SOURCE}" >> $RESULTS
+wget $SOURCE -O $SOURCETEMP
+echo "- shasum -a 256 ${INSTALLED} ${SOURCETEMP}" >> $RESULTS
+shasum -a 256 ${INSTALLED} ${SOURCETEMP} | sed 's/^/  - /' >> $RESULTS
+if diff $SOURCETEMP $INSTALLED >& /dev/null; then
+    echo "- Installed ${INSTALLED} is identical to ${SOURCE}" >> $RESULTS
+else
+    echo "- Installed ${INSTALLED} differs from ${SOURCE}" >> $RESULTS
+    # diff $SOURCETEMP $INSTALLED >> $RESULTS
+fi
+rm $SOURCETEMP
 
 cat $RESULTS
