@@ -106,8 +106,19 @@ info: {{ info }}
                   <template #cell(function)="data">
                     {{ data.item.name }}
                   </template>
-                  <template #cell(parameters)="data">
-                    <div v-for="(item, parameterIndex) of data.item.parameters" v-bind:key="parameterIndex">
+                  <template #cell(inputs)="data">
+                    <div v-for="(item, parameterIndex) of data.item.inputs" v-bind:key="parameterIndex">
+                      <font size="-1" class="text-muted">
+                        {{ parameterIndex + 1 }}
+                      </font>
+                      <span class="text-muted">
+                        {{ item.type }}
+                      </span>
+                     {{ item.name || "(unnamed)" }}
+                    </div>
+                  </template>
+                  <template #cell(outputs)="data">
+                    <div v-for="(item, parameterIndex) of data.item.outputs" v-bind:key="parameterIndex">
                       <font size="-1" class="text-muted">
                         {{ parameterIndex + 1 }}
                       </font>
@@ -184,9 +195,10 @@ info: {{ info }}
       functionFields: [
         { key: 'index', label: '#', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-truncate' },
         { key: 'methodId', label: 'Method Id', sortable: true, thStyle: 'width: 15%;', tdClass: 'text-truncate' },
-        { key: 'stateMutability', label: 'Type', sortable: true, thStyle: 'width: 15%;', tdClass: 'text-truncate' },
-        { key: 'function', label: 'Function', sortable: true, thStyle: 'width: 25%;', tdClass: 'text-left' },
-        { key: 'parameters', label: 'Parameters', sortable: false, thStyle: 'width: 40%;', tdClass: 'text-left' },
+        { key: 'stateMutability', label: 'State Mutability', sortable: true, thStyle: 'width: 20%;', tdClass: 'text-truncate' },
+        { key: 'function', label: 'Function', sortable: true, thStyle: 'width: 20%;', tdClass: 'text-left' },
+        { key: 'inputs', label: 'Inputs', sortable: false, thStyle: 'width: 25%;', tdClass: 'text-left' },
+        { key: 'outputs', label: 'Outputs', sortable: false, thStyle: 'width: 25%;', tdClass: 'text-left' },
       ],
       // TODO: 'event' sortable does not work
       eventFields: [
@@ -215,15 +227,16 @@ info: {{ info }}
           for (const f of interface.format(ethers.utils.FormatTypes.full)) {
             if (f.substring(0, 8) == "function") {
               const functionInfo = interface.getFunction(f.substring(9,));
+              console.log(functionInfo);
               const methodId = interface.getSighash(functionInfo);
-              const parameters = functionInfo.inputs.map(e => ({ name: e.name, type: e.type }));
-              results[methodId] = { name: functionInfo.name, stateMutability: functionInfo.stateMutability, parameters /*, names, types*/ };
+              results[methodId] = { name: functionInfo.name, stateMutability: functionInfo.stateMutability, inputs: functionInfo.inputs, outputs: functionInfo.outputs };
             }
           }
         } catch (e) {
           console.error(now() + " Contract - computed.functions - ERROR info.abi: " + e.message);
         }
       }
+      console.log(now() + " Contract - computed.functions - results: " + JSON.stringify(results, null, 2));
       return results;
     },
     events() {
@@ -237,7 +250,7 @@ info: {{ info }}
               const topicCount = eventInfo.inputs.filter(e => e.indexed).length + 1;
               const eventSig = interface.getEventTopic(eventInfo);
               const parameters = eventInfo.inputs.map(e => ({ name: e.name, type: e.type, indexed: e.indexed }));
-              results[eventSig] = { name: eventInfo.name, parameters /*, names, types, indexed*/, topicCount };
+              results[eventSig] = { name: eventInfo.name, parameters, topicCount };
             }
           }
         } catch (e) {
