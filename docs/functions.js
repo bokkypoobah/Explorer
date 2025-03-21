@@ -181,7 +181,7 @@ async function getAddressInfo(inputAddress, provider) {
 }
 
 async function dbGetCachedData(db, name, empty) {
-  console.log(now() + " functions.js:dbGetCachedData - name: " + name + ", empty: " + JSON.stringify(empty));
+  // console.log(now() + " functions.js:dbGetCachedData - name: " + name + ", empty: " + JSON.stringify(empty));
   const dataItems = await db.cache.where("objectName").equals(name).toArray();
   if (dataItems.length == 1) {
     return dataItems[0].object;
@@ -191,7 +191,7 @@ async function dbGetCachedData(db, name, empty) {
 }
 
 async function dbSaveCacheData(db, name, data) {
-  console.log(now() + " functions.js:dbSaveCacheData - name: " + name + ", data: " + JSON.stringify(data));
+  // console.log(now() + " functions.js:dbSaveCacheData - name: " + name + ", data: " + JSON.stringify(data));
   await db.cache.put({ objectName: name, object: data }).then (function() {
     }).catch(function(error) {
       console.error(now() + " functions.js:dbSaveCacheData - ERROR name: " + name + ", data: " + JSON.stringify(data));

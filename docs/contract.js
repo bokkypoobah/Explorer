@@ -84,12 +84,12 @@ const Contract = {
             <div v-if="settings.tabIndex == 1">
               <b-form-group label="ABI:" label-for="contractabi-abi" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-input-group class="align-items-start">
-                  <b-form-textarea plaintext size="sm" id="contractabi-abi" :value="info && info.abi && JSON.stringify(info.abi) || null" rows="5" max-rows="10"></b-form-textarea>
+                  <b-form-textarea plaintext size="sm" id="contractabi-abi" :value="info.abi && JSON.stringify(info.abi) || null" rows="5" max-rows="10"></b-form-textarea>
                   <b-input-group-append>
                     <b-button :disabled="!etherscanAPIKey || !inputAddress" size="sm" @click="importABIFromEtherscan();" variant="link" v-b-popover.hover.top="'Import ABI from https://api.etherscan.io/. You will need to enter your Etherscan API key in the Config page'">
                       <b-icon-cloud-download shift-v="-3" font-scale="1.2"></b-icon-cloud-download>
                     </b-button>
-                    <b-button :disabled="!info || !info.abi" size="sm" @click="copyToClipboard(info && info.abi && JSON.stringify(info.abi) || null);" variant="link">
+                    <b-button :disabled="!info || !info.abi" size="sm" @click="copyToClipboard(info.abi && JSON.stringify(info.abi) || null);" variant="link">
                       <b-icon-clipboard shift-v="-1" font-scale="1.1"></b-icon-clipboard>
                     </b-button>
                   </b-input-group-append>
@@ -97,12 +97,12 @@ const Contract = {
               </b-form-group>
               <b-form-group label="Source code:" label-for="contractabi-sourcecode" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-input-group class="align-items-start">
-                  <b-form-textarea plaintext size="sm" id="contractabi-sourcecode" :value="info && info.sourceCode && JSON.stringify(info.sourceCode) || null" rows="5" max-rows="10"></b-form-textarea>
+                  <b-form-textarea plaintext size="sm" id="contractabi-sourcecode" :value="info.sourceCode && JSON.stringify(info.sourceCode) || null" rows="5" max-rows="10"></b-form-textarea>
                   <b-input-group-append>
                     <b-button :disabled="!etherscanAPIKey || !inputAddress" size="sm" @click="importSourceCodeFromEtherscan();" variant="link" v-b-popover.hover.top="'Import ABI from https://api.etherscan.io/. You will need to enter your Etherscan API key in the Config page'">
                       <b-icon-cloud-download shift-v="-3" font-scale="1.2"></b-icon-cloud-download>
                     </b-button>
-                    <b-button :disabled="!info || !info.sourceCode" size="sm" @click="copyToClipboard(info && info.sourceCode && JSON.stringify(info.sourceCode) || null);" variant="link">
+                    <b-button :disabled="!info || !info.sourceCode" size="sm" @click="copyToClipboard(info.sourceCode && JSON.stringify(info.sourceCode) || null);" variant="link">
                       <b-icon-clipboard shift-v="-1" font-scale="1.1"></b-icon-clipboard>
                     </b-button>
                   </b-input-group-append>
@@ -158,7 +158,7 @@ const Contract = {
         info = await dbGetCachedData(db, validatedAddress + "_" + this.chainId + "_contract", {});
         console.log(now() + " Contract - methods.loadData - info: " + JSON.stringify(info).substring(0, 1000) + "...");
         if (Object.keys(info).length == 0 || forceUpdate) {
-          const info = await getAddressInfo(validatedAddress, provider);
+          info = await getAddressInfo(validatedAddress, provider);
           console.log(now() + " Contract - methods.loadData - info: " + JSON.stringify(info).substring(0, 1000) + "...");
           await dbSaveCacheData(db, validatedAddress + "_" + this.chainId + "_contract", info);
         }
@@ -167,16 +167,16 @@ const Contract = {
       db.close();
     },
     async testIt() {
-      console.log(now() + " Contract - methods.testIt - inputAddress: " + this.inputAddress);
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      console.log(now() + " Contract - methods.testIt - dbInfo: " + JSON.stringify(this.dbInfo, null, 2));
-      const db = new Dexie(this.dbInfo.name);
-      db.version(this.dbInfo.version).stores(this.dbInfo.schemaDefinition);
-      const name = "BLah";
-      // await dbSaveCacheData(db, this.chainId, name, { blah: "Blah" });
-      // const retrievedData = await dbGetCachedData(db, this.chainId, name, {});
-      console.log("retrievedData: " + JSON.stringify(retrievedData, null, 2));
-      db.close();
+      // console.log(now() + " Contract - methods.testIt - inputAddress: " + this.inputAddress);
+      // const provider = new ethers.providers.Web3Provider(window.ethereum);
+      // console.log(now() + " Contract - methods.testIt - dbInfo: " + JSON.stringify(this.dbInfo, null, 2));
+      // const db = new Dexie(this.dbInfo.name);
+      // db.version(this.dbInfo.version).stores(this.dbInfo.schemaDefinition);
+      // const name = "BLah";
+      // await dbSaveCacheData(db, name, { blah: "Blah" });
+      // const retrievedData = await dbGetCachedData(db, name, {});
+      // console.log("retrievedData: " + JSON.stringify(retrievedData, null, 2));
+      // db.close();
     },
     async importABIFromEtherscan() {
       console.log(now() + " Contract - methods.importABIFromEtherscan");
