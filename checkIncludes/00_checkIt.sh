@@ -38,10 +38,27 @@ fi
 rm $SOURCETEMP
 echo "" >> $RESULTS
 
-# Check vuex.js
+# Check vuex.min.js
 SOURCE=https://unpkg.com/vuex@3.6.2/dist/vuex.js
 SOURCETEMP=vuex.js_3.6.2
 INSTALLED=../docs/js/vuex.js
+echo "Checking installed ${INSTALLED} vs ${SOURCE}" >> $RESULTS
+wget $SOURCE -O $SOURCETEMP
+echo "- shasum -a 256 ${INSTALLED} ${SOURCETEMP}" >> $RESULTS
+shasum -a 256 ${INSTALLED} ${SOURCETEMP} | sed 's/^/  - /' >> $RESULTS
+if diff $SOURCETEMP $INSTALLED >& /dev/null; then
+    echo "- Installed ${INSTALLED} is identical to ${SOURCE}" >> $RESULTS
+else
+    echo "- Installed ${INSTALLED} differs from ${SOURCE}" >> $RESULTS
+    # diff $SOURCETEMP $INSTALLED >> $RESULTS
+fi
+rm $SOURCETEMP
+echo "" >> $RESULTS
+
+# Check vuex.min.js (not used atm)
+SOURCE=https://unpkg.com/vuex@3.6.2/dist/vuex.min.js
+SOURCETEMP=vuex.min.js_3.6.2
+INSTALLED=../docs/js/vuex.min.js
 echo "Checking installed ${INSTALLED} vs ${SOURCE}" >> $RESULTS
 wget $SOURCE -O $SOURCETEMP
 echo "- shasum -a 256 ${INSTALLED} ${SOURCETEMP}" >> $RESULTS

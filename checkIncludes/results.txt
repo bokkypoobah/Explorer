@@ -1,4 +1,4 @@
-Fri Mar 21 13:10:26 AEDT 2025
+Fri Mar 21 13:19:15 AEDT 2025
 
 Checking installed ../docs/js/dexie.js vs https://unpkg.com/dexie@3.0.3/dist/dexie.js
 - shasum -a 256 ../docs/js/dexie.js dexie.js_3.0.3
@@ -17,6 +17,12 @@ Checking installed ../docs/js/vuex.js vs https://unpkg.com/vuex@3.6.2/dist/vuex.
   - 99a30acc47d5f4993fb9aeff55558f15eaee4988d45bd77216d9ced77079b497  ../docs/js/vuex.js
   - 99a30acc47d5f4993fb9aeff55558f15eaee4988d45bd77216d9ced77079b497  vuex.js_3.6.2
 - Installed ../docs/js/vuex.js is identical to https://unpkg.com/vuex@3.6.2/dist/vuex.js
+
+Checking installed ../docs/js/vuex.min.js vs https://unpkg.com/vuex@3.6.2/dist/vuex.min.js
+- shasum -a 256 ../docs/js/vuex.min.js vuex.min.js_3.6.2
+  - 3efd92158a4c24f9995773fafede2577e1646f738152c03b807678b610583f3c  ../docs/js/vuex.min.js
+  - 3efd92158a4c24f9995773fafede2577e1646f738152c03b807678b610583f3c  vuex.min.js_3.6.2
+- Installed ../docs/js/vuex.min.js is identical to https://unpkg.com/vuex@3.6.2/dist/vuex.min.js
 
 Checking installed ../docs/js/ethers-5.8.0.umd.min.js vs https://cdnjs.cloudflare.com/ajax/libs/ethers/5.8.0/ethers.umd.min.js
 - shasum -a 256 ../docs/js/ethers-5.8.0.umd.min.js ethers-5.8.0.umd.min.js
