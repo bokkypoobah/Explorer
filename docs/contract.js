@@ -47,9 +47,9 @@ const Contract = {
 
             <div v-if="settings.tabIndex == 0">
               <b-form-group label-cols-lg="2" label="Contract" label-size="md" label-class="font-weight-bold pt-0" class="mt-3 mb-0">
-                <b-form-group v-if="error" label="Error:" label-for="address-error" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
+                <!-- <b-form-group v-if="error" label="Error:" label-for="address-error" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
                   <b-form-input type="text" plaintext size="sm" id="address-error" :value="error"></b-form-input>
-                </b-form-group>
+                </b-form-group> -->
                 <!-- <b-form-group v-if="!error" label="Address:" label-for="address-address" label-size="sm" label-cols-sm="3" label-align-sm="right" class="mx-0 my-1 p-0">
                   <b-input-group class="w-75">
                     <b-form-input type="text" plaintext size="sm" :value="address"></b-form-input>
@@ -111,23 +111,6 @@ const Contract = {
     dbInfo() {
       return store.getters['db'];
     },
-    error() {
-      return store.getters['contract/error'];
-    },
-    address() {
-      return store.getters['contract/address'];
-    },
-    transactionCount() {
-      return store.getters['contract/transactionCount'];
-    },
-    balance() {
-      return store.getters['contract/balance'];
-    },
-    transactions() {
-      const results = [];
-      results.push({ blah: "Blah" });
-      return results;
-    }
   },
   methods: {
     async loadAddress(inputAddress) {
