@@ -105,6 +105,12 @@ const Contract = {
     etherscanAPIKey() {
       return store.getters['settings'].etherscanAPIKey;
     },
+    chainId() {
+      return store.getters['chainId'];
+    },
+    dbInfo() {
+      return store.getters['db'];
+    },
     error() {
       return store.getters['contract/error'];
     },
@@ -144,24 +150,13 @@ const Contract = {
     async testIt() {
       console.log(now() + " Contract - methods.testIt - inputAddress: " + this.inputAddress);
       const provider = new ethers.providers.Web3Provider(window.ethereum);
-      console.table(store);
-      const dbInfo = store.getters['db'];
-      console.log(now() + " Contract - methods.testIt - dbInfo: " + JSON.stringify(dbInfo, null, 2));
-
-      const db = new Dexie(dbInfo.name);
-      db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
-
-      const chainId = 1;
+      console.log(now() + " Contract - methods.testIt - dbInfo: " + JSON.stringify(this.dbInfo, null, 2));
+      const db = new Dexie(this.dbInfo.name);
+      db.version(this.dbInfo.version).stores(this.dbInfo.schemaDefinition);
       const name = "BLah";
-      const data = { blah: "Blah" };
-      await dbSaveCacheData(db, chainId, name, data);
-
-      const empty = {};
-      const retrievedData = await dbGetCachedData(db, chainId, name, empty);
+      await dbSaveCacheData(db, this.chainId, name, { blah: "Blah" });
+      const retrievedData = await dbGetCachedData(db, this.chainId, name, {});
       console.log("retrievedData: " + JSON.stringify(retrievedData, null, 2));
-
-      // this.info = await getAddressInfo(this.inputAddress, provider);
-      // console.log(now() + " Contract - methods.testIt - this.info: " + JSON.stringify(this.info));
     },
     async importABIFromEtherscan() {
       console.log(now() + " Contract - methods.importABIFromEtherscan");

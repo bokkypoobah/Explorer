@@ -62,6 +62,9 @@ const store = new Vuex.Store({
         api: chain && chain.api || "https://api.etherscan.io/v2/api?chainid=1",
       };
     },
+    chainId(state) {
+      return state.web3Connection.chainId;
+    },
     supportedNetwork(state) {
       const chain = state.web3Connection.chainId && state.settings.chains[state.web3Connection.chainId] || null;
       return !!chain;
