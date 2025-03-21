@@ -75,7 +75,8 @@ const Contract = {
                 <b-form-group label="Info:" label-for="address-info" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
                   <font size="-1">
                     <pre class="mt-2">
-{{ info }}
+functions: {{ functions }}
+info: {{ info }}
                     </pre>
                   </font>
                 </b-form-group>
@@ -139,6 +140,27 @@ const Contract = {
     },
     dbInfo() {
       return store.getters['db'];
+    },
+    functions() {
+      const results = {};
+      if (this.info.abi) {
+        // console.log(now() + " Contract - computed.functions - info.abi: " + JSON.stringify(this.info.abi).substring(0, 1000) + "...");
+        try {
+          const interface = new ethers.utils.Interface(this.info.abi);
+          for (const f of interface.format(ethers.utils.FormatTypes.full)) {
+            if (f.substring(0, 8) == "function") {
+              const functionInfo = interface.getFunction(f.substring(9,));
+              const methodId = interface.getSighash(functionInfo);
+              const names = functionInfo.inputs.map(e => e.name);
+              const types = functionInfo.inputs.map(e => e.type);
+              results[methodId] = { name: functionInfo.name, names, types };
+            }
+          }
+        } catch (e) {
+          console.error(now() + " Contract - computed.functions - ERROR info.abi: " + e.message);
+        }
+      }
+      return results;
     },
   },
   methods: {
