@@ -271,7 +271,7 @@ info: {{ info }}
       ],
       eventFields: [
         { key: 'index', label: '#', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-truncate' },
-        { key: 'eventSig', label: 'Event Sig', sortable: false, thStyle: 'width: 35%;', tdClass: 'text-truncate' },
+        { key: 'signature', label: 'Signature', sortable: false, thStyle: 'width: 35%;', tdClass: 'text-truncate' },
         { key: 'fullName', label: 'Event', sortable: false, thStyle: 'width: 60%;', tdClass: 'text-left' },
       ],
     }
@@ -314,9 +314,9 @@ info: {{ info }}
             if (fullName.substring(0, 5) == "event") {
               const eventInfo = interface.getEvent(fullName.substring(6,));
               const topicCount = eventInfo.inputs.filter(e => e.indexed).length + 1;
-              const eventSig = interface.getEventTopic(eventInfo);
+              const signature = interface.getEventTopic(eventInfo);
               const parameters = eventInfo.inputs.map(e => ({ name: e.name, type: e.type, indexed: e.indexed }));
-              results[eventSig] = { name: eventInfo.name, fullName, parameters, topicCount };
+              results[signature] = { name: eventInfo.name, fullName, parameters, topicCount };
             }
           }
         } catch (e) {
@@ -395,8 +395,8 @@ info: {{ info }}
     },
     eventsList() {
       const results = [];
-      for (const [eventSig, eventData] of Object.entries(this.events)) {
-        results.push({ eventSig, ...eventData });
+      for (const [signature, eventData] of Object.entries(this.events)) {
+        results.push({ signature, ...eventData });
       }
       return results;
     },
@@ -414,7 +414,7 @@ info: {{ info }}
       for (const item of this.eventsList) {
         let include = true;
         if (regex) {
-          if (!(regex.test(item.eventSig)) && !(regex.test(item.fullName))) {
+          if (!(regex.test(item.signature)) && !(regex.test(item.fullName))) {
             include = false;
           }
         }
@@ -432,11 +432,11 @@ info: {{ info }}
         });
       } else if (this.settings.eventsTable.sortOption == 'signatureasc') {
         results.sort((a, b) => {
-          return ('' + a.eventSig).localeCompare(b.eventSig);
+          return ('' + a.signature).localeCompare(b.signature);
         });
       } else if (this.settings.eventsTable.sortOption == 'signaturedsc') {
         results.sort((a, b) => {
-          return ('' + b.eventSig).localeCompare(a.eventSig);
+          return ('' + b.signature).localeCompare(a.signature);
         });
       }
       return results;
