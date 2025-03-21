@@ -26,11 +26,14 @@ const Contract = {
                 <div class="mt-0 flex-grow-1">
                 </div>
                 <div class="mt-0 pr-1">
+                  <b-button :disabled="!inputAddress" size="sm" @click="loadData(inputAddress, true);" variant="link" v-b-popover.hover.top="'Load info'"><b-icon-cloud-download shift-v="-3" font-scale="1.2"></b-icon-cloud-download></b-button>
+                </div>
+                <!-- <div class="mt-0 pr-1">
                   <b-button :disabled="!etherscanAPIKey || !inputAddress" size="sm" @click="importABIFromEtherscan();" variant="link" v-b-popover.hover.top="'Import ABI from https://api.etherscan.io/. You will need to enter your Etherscan API key in the Config page'"><b-icon-cloud-download shift-v="-3" font-scale="1.2"></b-icon-cloud-download></b-button>
-                </div>
-                <div class="mt-0 pr-1">
+                </div> -->
+                <!-- <div class="mt-0 pr-1">
                   <b-button :disabled="!inputAddress" size="sm" @click="testIt();" variant="link" v-b-popover.hover.top="'Test'"><b-icon-bullseye shift-v="-3" font-scale="1.2"></b-icon-bullseye></b-button>
-                </div>
+                </div> -->
               </div>
               <div class="mt-0 flex-grow-1">
               </div>
@@ -144,12 +147,24 @@ const Contract = {
       this.$router.push({ name: 'Contract', params: { inputAddress } })
       await this.loadData(inputAddress);
     },
-    async loadData(inputAddress) {
-      console.log(now() + " Contract - methods.loadData - inputAddress: " + inputAddress);
+    async loadData(inputAddress, forceUpdate = false) {
+      console.log(now() + " Contract - methods.loadData - inputAddress: " + inputAddress + ", forceUpdate: " + forceUpdate);
       const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const info = await getAddressInfo(inputAddress, provider);
-      console.log(now() + " Contract - methods.loadData - info: " + JSON.stringify(info));
+      const db = new Dexie(this.dbInfo.name);
+      db.version(this.dbInfo.version).stores(this.dbInfo.schemaDefinition);
+      const validatedAddress = validateAddress(inputAddress);
+      let info = {};
+      if (validatedAddress) {
+        info = await dbGetCachedData(db, validatedAddress + "_" + this.chainId + "_contract", {});
+        console.log(now() + " Contract - methods.loadData - info: " + JSON.stringify(info).substring(0, 1000) + "...");
+        if (Object.keys(info).length == 0 || forceUpdate) {
+          const info = await getAddressInfo(validatedAddress, provider);
+          console.log(now() + " Contract - methods.loadData - info: " + JSON.stringify(info).substring(0, 1000) + "...");
+          await dbSaveCacheData(db, validatedAddress + "_" + this.chainId + "_contract", info);
+        }
+      }
       Vue.set(this, 'info', info);
+      db.close();
     },
     async testIt() {
       console.log(now() + " Contract - methods.testIt - inputAddress: " + this.inputAddress);
@@ -158,9 +173,10 @@ const Contract = {
       const db = new Dexie(this.dbInfo.name);
       db.version(this.dbInfo.version).stores(this.dbInfo.schemaDefinition);
       const name = "BLah";
-      await dbSaveCacheData(db, this.chainId, name, { blah: "Blah" });
-      const retrievedData = await dbGetCachedData(db, this.chainId, name, {});
+      // await dbSaveCacheData(db, this.chainId, name, { blah: "Blah" });
+      // const retrievedData = await dbGetCachedData(db, this.chainId, name, {});
       console.log("retrievedData: " + JSON.stringify(retrievedData, null, 2));
+      db.close();
     },
     async importABIFromEtherscan() {
       console.log(now() + " Contract - methods.importABIFromEtherscan");
@@ -196,8 +212,7 @@ const Contract = {
       const data = await fetch(url).then(response => response.json());
       console.log(now() + " Contract - data: " + JSON.stringify(data, null, 2));
       if (data && data.status == 1 && data.message == "OK") {
-        // const abi = JSON.parse(data.result);
-        // console.log(now() + " Contract - abi: " + JSON.stringify(abi, null, 2));
+        console.log(now() + " Contract - data.result: " + JSON.stringify(data.result, null, 2));
       //   for (const item of data.result) {
       //     if (!(item.chainid in store.getters['settings'].chains)) {
       //       store.dispatch('addChain', {

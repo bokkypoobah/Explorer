@@ -6,6 +6,16 @@ const ERC1155_INTERFACE = "0xd9b67a26";
 const ERC1155METADATA_INTERFACE = "0x0e89341c";
 const ERC1155TOKENRECEIVER_INTERFACE = "0x4e2312e0";
 
+function validateAddress(address) {
+  if (address) {
+    try {
+      return ethers.utils.getAddress(address);
+    } catch (e) {
+      console.error(now() + " functions.js:validateAddress - ERROR address: " + address);
+    }
+  }
+  return null;
+}
 
 async function getAddressInfo(inputAddress, provider) {
   const results = {};
@@ -170,9 +180,9 @@ async function getAddressInfo(inputAddress, provider) {
   return results;
 }
 
-async function dbGetCachedData(db, chainId, name, empty) {
-  console.log(now() + " functions.js:dbGetCachedData - chainId: " + chainId + ", name: " + name + ", empty: " + JSON.stringify(empty));
-  const dataItems = await db.cache.where("objectName").equals(name + "_" + chainId).toArray();
+async function dbGetCachedData(db, name, empty) {
+  console.log(now() + " functions.js:dbGetCachedData - name: " + name + ", empty: " + JSON.stringify(empty));
+  const dataItems = await db.cache.where("objectName").equals(name).toArray();
   if (dataItems.length == 1) {
     return dataItems[0].object;
   } else {
@@ -180,10 +190,10 @@ async function dbGetCachedData(db, chainId, name, empty) {
   }
 }
 
-async function dbSaveCacheData(db, chainId, name, data) {
-  console.log(now() + " functions.js:dbSaveCacheData - chainId: " + chainId + ", name: " + name + ", data: " + JSON.stringify(data));
-  await db.cache.put({ objectName: name + "_" + chainId, object: data }).then (function() {
+async function dbSaveCacheData(db, name, data) {
+  console.log(now() + " functions.js:dbSaveCacheData - name: " + name + ", data: " + JSON.stringify(data));
+  await db.cache.put({ objectName: name, object: data }).then (function() {
     }).catch(function(error) {
-      console.error(now() + " functions.js:dbSaveCacheData - ERROR chainId: " + chainId + ", name: " + name + ", data: " + JSON.stringify(data));
+      console.error(now() + " functions.js:dbSaveCacheData - ERROR name: " + name + ", data: " + JSON.stringify(data));
     });
 }
