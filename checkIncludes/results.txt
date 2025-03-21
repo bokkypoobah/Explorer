@@ -1,4 +1,40 @@
-Fri Mar 21 13:41:19 AEDT 2025
+Fri Mar 21 13:48:14 AEDT 2025
+
+Checking installed ../docs/css/bootstrap-vue-icons.css vs https://unpkg.com/bootstrap-vue@2.15.0/dist/bootstrap-vue-icons.css
+- shasum -a 256 ../docs/css/bootstrap-vue-icons.css bootstrap-vue-icons.css_2.15.0
+  - f5334515aec22f5e85fa726ecb895535e2b31cc4551f7a4b646eb3eb525c4a4c  ../docs/css/bootstrap-vue-icons.css
+  - f5334515aec22f5e85fa726ecb895535e2b31cc4551f7a4b646eb3eb525c4a4c  bootstrap-vue-icons.css_2.15.0
+- Installed ../docs/css/bootstrap-vue-icons.css is identical to https://unpkg.com/bootstrap-vue@2.15.0/dist/bootstrap-vue-icons.css
+
+Checking installed ../docs/css/bootstrap-vue-icons.min.css vs https://unpkg.com/bootstrap-vue@2.15.0/dist/bootstrap-vue-icons.min.css
+- shasum -a 256 ../docs/css/bootstrap-vue-icons.min.css bootstrap-vue-icons.min.css_2.15.0
+  - 1a43a4ce0ed51fa42ef5dc135dc20d8cb0ce6b87d4ba694ff26595f6a3cd0954  ../docs/css/bootstrap-vue-icons.min.css
+  - 1a43a4ce0ed51fa42ef5dc135dc20d8cb0ce6b87d4ba694ff26595f6a3cd0954  bootstrap-vue-icons.min.css_2.15.0
+- Installed ../docs/css/bootstrap-vue-icons.min.css is identical to https://unpkg.com/bootstrap-vue@2.15.0/dist/bootstrap-vue-icons.min.css
+
+Checking installed ../docs/css/bootstrap-vue.css vs https://unpkg.com/bootstrap-vue@2.15.0/dist/bootstrap-vue.css
+- shasum -a 256 ../docs/css/bootstrap-vue.css bootstrap-vue.css_2.15.0
+  - bec7ce3c31ed9504cc9a256dfb54d9652db426a0aa96602bd4eb48640e591dd6  ../docs/css/bootstrap-vue.css
+  - bec7ce3c31ed9504cc9a256dfb54d9652db426a0aa96602bd4eb48640e591dd6  bootstrap-vue.css_2.15.0
+- Installed ../docs/css/bootstrap-vue.css is identical to https://unpkg.com/bootstrap-vue@2.15.0/dist/bootstrap-vue.css
+
+Checking installed ../docs/css/bootstrap-vue.min.css vs https://unpkg.com/bootstrap-vue@2.15.0/dist/bootstrap-vue.min.css
+- shasum -a 256 ../docs/css/bootstrap-vue.min.css bootstrap-vue.min.css_2.15.0
+  - 7b81cea05db469637bb4fddcdc1f978d02eac7c0b4977b1dacb122c85dbb0493  ../docs/css/bootstrap-vue.min.css
+  - 7b81cea05db469637bb4fddcdc1f978d02eac7c0b4977b1dacb122c85dbb0493  bootstrap-vue.min.css_2.15.0
+- Installed ../docs/css/bootstrap-vue.min.css is identical to https://unpkg.com/bootstrap-vue@2.15.0/dist/bootstrap-vue.min.css
+
+Checking installed ../docs/css/bootstrap-vue.css vs https://unpkg.com/bootstrap-vue@2.15.0/dist/bootstrap-vue.css
+- shasum -a 256 ../docs/css/bootstrap-vue.css bootstrap-vue.css_2.15.0
+  - bec7ce3c31ed9504cc9a256dfb54d9652db426a0aa96602bd4eb48640e591dd6  ../docs/css/bootstrap-vue.css
+  - bec7ce3c31ed9504cc9a256dfb54d9652db426a0aa96602bd4eb48640e591dd6  bootstrap-vue.css_2.15.0
+- Installed ../docs/css/bootstrap-vue.css is identical to https://unpkg.com/bootstrap-vue@2.15.0/dist/bootstrap-vue.css
+
+Checking installed ../docs/css/bootstrap-vue.min.css vs https://unpkg.com/bootstrap-vue@2.15.0/dist/bootstrap-vue.min.css
+- shasum -a 256 ../docs/css/bootstrap-vue.min.css bootstrap-vue.min.css_2.15.0
+  - 7b81cea05db469637bb4fddcdc1f978d02eac7c0b4977b1dacb122c85dbb0493  ../docs/css/bootstrap-vue.min.css
+  - 7b81cea05db469637bb4fddcdc1f978d02eac7c0b4977b1dacb122c85dbb0493  bootstrap-vue.min.css_2.15.0
+- Installed ../docs/css/bootstrap-vue.min.css is identical to https://unpkg.com/bootstrap-vue@2.15.0/dist/bootstrap-vue.min.css
 
 Checking installed ../docs/js/bootstrap-vue-icons.js vs https://unpkg.com/bootstrap-vue@2.15.0/dist/bootstrap-vue-icons.js
 - shasum -a 256 ../docs/js/bootstrap-vue-icons.js bootstrap-vue-icons.js_2.15.0

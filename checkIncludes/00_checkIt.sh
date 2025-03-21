@@ -4,6 +4,102 @@ RESULTS=results.txt
 date > $RESULTS
 echo "" >> $RESULTS
 
+# Check bootstrap-vue-icons.css 2.15.0 (not used atm)
+SOURCE=https://unpkg.com/bootstrap-vue@2.15.0/dist/bootstrap-vue-icons.css
+SOURCETEMP=bootstrap-vue-icons.css_2.15.0
+INSTALLED=../docs/css/bootstrap-vue-icons.css
+echo "Checking installed ${INSTALLED} vs ${SOURCE}" >> $RESULTS
+wget $SOURCE -O $SOURCETEMP
+echo "- shasum -a 256 ${INSTALLED} ${SOURCETEMP}" >> $RESULTS
+shasum -a 256 ${INSTALLED} ${SOURCETEMP} | sed 's/^/  - /' >> $RESULTS
+if diff $SOURCETEMP $INSTALLED >& /dev/null; then
+    echo "- Installed ${INSTALLED} is identical to ${SOURCE}" >> $RESULTS
+else
+    echo "- Installed ${INSTALLED} differs from ${SOURCE}" >> $RESULTS
+fi
+rm $SOURCETEMP
+echo "" >> $RESULTS
+
+# Check bootstrap-vue-icons.min.css 2.15.0
+SOURCE=https://unpkg.com/bootstrap-vue@2.15.0/dist/bootstrap-vue-icons.min.css
+SOURCETEMP=bootstrap-vue-icons.min.css_2.15.0
+INSTALLED=../docs/css/bootstrap-vue-icons.min.css
+echo "Checking installed ${INSTALLED} vs ${SOURCE}" >> $RESULTS
+wget $SOURCE -O $SOURCETEMP
+echo "- shasum -a 256 ${INSTALLED} ${SOURCETEMP}" >> $RESULTS
+shasum -a 256 ${INSTALLED} ${SOURCETEMP} | sed 's/^/  - /' >> $RESULTS
+if diff $SOURCETEMP $INSTALLED >& /dev/null; then
+    echo "- Installed ${INSTALLED} is identical to ${SOURCE}" >> $RESULTS
+else
+    echo "- Installed ${INSTALLED} differs from ${SOURCE}" >> $RESULTS
+fi
+rm $SOURCETEMP
+echo "" >> $RESULTS
+
+# Check bootstrap-vue.css 2.15.0 (not used atm)
+SOURCE=https://unpkg.com/bootstrap-vue@2.15.0/dist/bootstrap-vue.css
+SOURCETEMP=bootstrap-vue.css_2.15.0
+INSTALLED=../docs/css/bootstrap-vue.css
+echo "Checking installed ${INSTALLED} vs ${SOURCE}" >> $RESULTS
+wget $SOURCE -O $SOURCETEMP
+echo "- shasum -a 256 ${INSTALLED} ${SOURCETEMP}" >> $RESULTS
+shasum -a 256 ${INSTALLED} ${SOURCETEMP} | sed 's/^/  - /' >> $RESULTS
+if diff $SOURCETEMP $INSTALLED >& /dev/null; then
+    echo "- Installed ${INSTALLED} is identical to ${SOURCE}" >> $RESULTS
+else
+    echo "- Installed ${INSTALLED} differs from ${SOURCE}" >> $RESULTS
+fi
+rm $SOURCETEMP
+echo "" >> $RESULTS
+
+# Check bootstrap-vue.min.css 2.15.0
+SOURCE=https://unpkg.com/bootstrap-vue@2.15.0/dist/bootstrap-vue.min.css
+SOURCETEMP=bootstrap-vue.min.css_2.15.0
+INSTALLED=../docs/css/bootstrap-vue.min.css
+echo "Checking installed ${INSTALLED} vs ${SOURCE}" >> $RESULTS
+wget $SOURCE -O $SOURCETEMP
+echo "- shasum -a 256 ${INSTALLED} ${SOURCETEMP}" >> $RESULTS
+shasum -a 256 ${INSTALLED} ${SOURCETEMP} | sed 's/^/  - /' >> $RESULTS
+if diff $SOURCETEMP $INSTALLED >& /dev/null; then
+    echo "- Installed ${INSTALLED} is identical to ${SOURCE}" >> $RESULTS
+else
+    echo "- Installed ${INSTALLED} differs from ${SOURCE}" >> $RESULTS
+fi
+rm $SOURCETEMP
+echo "" >> $RESULTS
+
+# Check bootstrap-vue.css 2.15.0 (not used atm)
+SOURCE=https://unpkg.com/bootstrap-vue@2.15.0/dist/bootstrap-vue.css
+SOURCETEMP=bootstrap-vue.css_2.15.0
+INSTALLED=../docs/css/bootstrap-vue.css
+echo "Checking installed ${INSTALLED} vs ${SOURCE}" >> $RESULTS
+wget $SOURCE -O $SOURCETEMP
+echo "- shasum -a 256 ${INSTALLED} ${SOURCETEMP}" >> $RESULTS
+shasum -a 256 ${INSTALLED} ${SOURCETEMP} | sed 's/^/  - /' >> $RESULTS
+if diff $SOURCETEMP $INSTALLED >& /dev/null; then
+    echo "- Installed ${INSTALLED} is identical to ${SOURCE}" >> $RESULTS
+else
+    echo "- Installed ${INSTALLED} differs from ${SOURCE}" >> $RESULTS
+fi
+rm $SOURCETEMP
+echo "" >> $RESULTS
+
+# Check bootstrap-vue.min.css 2.15.0
+SOURCE=https://unpkg.com/bootstrap-vue@2.15.0/dist/bootstrap-vue.min.css
+SOURCETEMP=bootstrap-vue.min.css_2.15.0
+INSTALLED=../docs/css/bootstrap-vue.min.css
+echo "Checking installed ${INSTALLED} vs ${SOURCE}" >> $RESULTS
+wget $SOURCE -O $SOURCETEMP
+echo "- shasum -a 256 ${INSTALLED} ${SOURCETEMP}" >> $RESULTS
+shasum -a 256 ${INSTALLED} ${SOURCETEMP} | sed 's/^/  - /' >> $RESULTS
+if diff $SOURCETEMP $INSTALLED >& /dev/null; then
+    echo "- Installed ${INSTALLED} is identical to ${SOURCE}" >> $RESULTS
+else
+    echo "- Installed ${INSTALLED} differs from ${SOURCE}" >> $RESULTS
+fi
+rm $SOURCETEMP
+echo "" >> $RESULTS
+
 # Check bootstrap-vue-icons.js 2.15.0 (not used atm)
 SOURCE=https://unpkg.com/bootstrap-vue@2.15.0/dist/bootstrap-vue-icons.js
 SOURCETEMP=bootstrap-vue-icons.js_2.15.0
