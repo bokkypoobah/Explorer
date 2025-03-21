@@ -1,4 +1,28 @@
-Fri Mar 21 13:27:33 AEDT 2025
+Fri Mar 21 13:40:02 AEDT 2025
+
+Checking installed ../docs/js/bootstrap-vue-icons.js vs https://unpkg.com/bootstrap-vue@2.15.0/dist/bootstrap-vue-icons.js
+- shasum -a 256 ../docs/js/bootstrap-vue-icons.js bootstrap-vue-icons.js_2.15.0
+  - 0108552c5dda74e44a687fbb3da88327f06cf7a28f752e71332b3ed6f84a3bf4  ../docs/js/bootstrap-vue-icons.js
+  - 0108552c5dda74e44a687fbb3da88327f06cf7a28f752e71332b3ed6f84a3bf4  bootstrap-vue-icons.js_2.15.0
+- Installed ../docs/js/bootstrap-vue-icons.js is identical to https://unpkg.com/bootstrap-vue@2.15.0/dist/bootstrap-vue-icons.js
+
+Checking installed ../docs/js/bootstrap-vue-icons.min.js vs https://unpkg.com/bootstrap-vue@2.15.0/dist/bootstrap-vue-icons.min.js
+- shasum -a 256 ../docs/js/bootstrap-vue-icons.min.js bootstrap-vue-icons.min.js_2.15.0
+  - 93776d54f170756b0ab6ab94e5b7b38ddedc0add2080693a33a0eb566ff1eb98  ../docs/js/bootstrap-vue-icons.min.js
+  - 93776d54f170756b0ab6ab94e5b7b38ddedc0add2080693a33a0eb566ff1eb98  bootstrap-vue-icons.min.js_2.15.0
+- Installed ../docs/js/bootstrap-vue-icons.min.js is identical to https://unpkg.com/bootstrap-vue@2.15.0/dist/bootstrap-vue-icons.min.js
+
+Checking installed ../docs/js/bootstrap-vue.js vs https://unpkg.com/bootstrap-vue@2.15.0/dist/bootstrap-vue.js
+- shasum -a 256 ../docs/js/bootstrap-vue.js bootstrap-vue.js_2.15.0
+  - edbc9425bf7bf5dfdf1ee11f786e75af619b6326e4398126d21f571b53d29dde  ../docs/js/bootstrap-vue.js
+  - edbc9425bf7bf5dfdf1ee11f786e75af619b6326e4398126d21f571b53d29dde  bootstrap-vue.js_2.15.0
+- Installed ../docs/js/bootstrap-vue.js is identical to https://unpkg.com/bootstrap-vue@2.15.0/dist/bootstrap-vue.js
+
+Checking installed ../docs/js/bootstrap-vue.min.js vs https://unpkg.com/bootstrap-vue@2.15.0/dist/bootstrap-vue.min.js
+- shasum -a 256 ../docs/js/bootstrap-vue.min.js bootstrap-vue.min.js_2.15.0
+  - cbd569f1f32d5c82e3b1667682a3888dfedc24143ad0612994ef9b8735eb5c98  ../docs/js/bootstrap-vue.min.js
+  - cbd569f1f32d5c82e3b1667682a3888dfedc24143ad0612994ef9b8735eb5c98  bootstrap-vue.min.js_2.15.0
+- Installed ../docs/js/bootstrap-vue.min.js is identical to https://unpkg.com/bootstrap-vue@2.15.0/dist/bootstrap-vue.min.js
 
 Checking installed ../docs/js/dexie.js vs https://unpkg.com/dexie@3.0.3/dist/dexie.js
 - shasum -a 256 ../docs/js/dexie.js dexie.js_3.0.3
@@ -6,29 +30,35 @@ Checking installed ../docs/js/dexie.js vs https://unpkg.com/dexie@3.0.3/dist/dex
   - d8678e0443adeeac4da48c9166e18ac87d549b526e11d6e60e556f9b7ca27b7e  dexie.js_3.0.3
 - Installed ../docs/js/dexie.js is identical to https://unpkg.com/dexie@3.0.3/dist/dexie.js
 
+Checking installed ../docs/js/ethers-5.8.0.umd.min.js vs https://cdnjs.cloudflare.com/ajax/libs/ethers/5.8.0/ethers.umd.min.js
+- shasum -a 256 ../docs/js/ethers-5.8.0.umd.min.js ethers-5.8.0.umd.min.js
+  - 755f1f8a4cdd8c63056e2fa2f1e44e16c82eface12eb1afe71306333601953ac  ../docs/js/ethers-5.8.0.umd.min.js
+  - 755f1f8a4cdd8c63056e2fa2f1e44e16c82eface12eb1afe71306333601953ac  ethers-5.8.0.umd.min.js
+- Installed ../docs/js/ethers-5.8.0.umd.min.js is identical to https://cdnjs.cloudflare.com/ajax/libs/ethers/5.8.0/ethers.umd.min.js
+
 Checking installed ../docs/js/moment.js vs https://unpkg.com/moment@2.24.0
 - shasum -a 256 ../docs/js/moment.js moment.js_2.24.0
   - 1fd8c0cfffd02e40cecbf9f313d1b86988a342d90bb7d16f1a67544f0064ea0b  ../docs/js/moment.js
   - 1fd8c0cfffd02e40cecbf9f313d1b86988a342d90bb7d16f1a67544f0064ea0b  moment.js_2.24.0
 - Installed ../docs/js/moment.js is identical to https://unpkg.com/moment@2.24.0
 
-Checking installed ../docs/js/vuex.js vs https://unpkg.com/vuex@3.6.2/dist/vuex.js
-- shasum -a 256 ../docs/js/vuex.js vuex.js_3.6.2
-  - 99a30acc47d5f4993fb9aeff55558f15eaee4988d45bd77216d9ced77079b497  ../docs/js/vuex.js
-  - 99a30acc47d5f4993fb9aeff55558f15eaee4988d45bd77216d9ced77079b497  vuex.js_3.6.2
-- Installed ../docs/js/vuex.js is identical to https://unpkg.com/vuex@3.6.2/dist/vuex.js
+Checking installed ../docs/js/moment.min.js vs https://unpkg.com/moment@2.24.0/min/moment.min.js
+- shasum -a 256 ../docs/js/moment.min.js moment.min.js_2.24.0
+  - e22419e8154be2a34a950dbb4c4c448413751c53ef02f00c6c56af28aa2c4964  ../docs/js/moment.min.js
+  - e22419e8154be2a34a950dbb4c4c448413751c53ef02f00c6c56af28aa2c4964  moment.min.js_2.24.0
+- Installed ../docs/js/moment.min.js is identical to https://unpkg.com/moment@2.24.0/min/moment.min.js
 
-Checking installed ../docs/js/vuex.min.js vs https://unpkg.com/vuex@3.6.2/dist/vuex.min.js
-- shasum -a 256 ../docs/js/vuex.min.js vuex.min.js_3.6.2
-  - 3efd92158a4c24f9995773fafede2577e1646f738152c03b807678b610583f3c  ../docs/js/vuex.min.js
-  - 3efd92158a4c24f9995773fafede2577e1646f738152c03b807678b610583f3c  vuex.min.js_3.6.2
-- Installed ../docs/js/vuex.min.js is identical to https://unpkg.com/vuex@3.6.2/dist/vuex.min.js
+Checking installed ../docs/js/vue-router.js vs https://unpkg.com/vue-router@3.2.0/dist/vue-router.js
+- shasum -a 256 ../docs/js/vue-router.js vue-router.js_3.2.0
+  - eb3d0111539b0c9e7ddba0c24b2fa06ec920dc9b8c8d1cbc13c45c1e44dcd1b3  ../docs/js/vue-router.js
+  - eb3d0111539b0c9e7ddba0c24b2fa06ec920dc9b8c8d1cbc13c45c1e44dcd1b3  vue-router.js_3.2.0
+- Installed ../docs/js/vue-router.js is identical to https://unpkg.com/vue-router@3.2.0/dist/vue-router.js
 
-Checking installed ../docs/js/ethers-5.8.0.umd.min.js vs https://cdnjs.cloudflare.com/ajax/libs/ethers/5.8.0/ethers.umd.min.js
-- shasum -a 256 ../docs/js/ethers-5.8.0.umd.min.js ethers-5.8.0.umd.min.js
-  - 755f1f8a4cdd8c63056e2fa2f1e44e16c82eface12eb1afe71306333601953ac  ../docs/js/ethers-5.8.0.umd.min.js
-  - 755f1f8a4cdd8c63056e2fa2f1e44e16c82eface12eb1afe71306333601953ac  ethers-5.8.0.umd.min.js
-- Installed ../docs/js/ethers-5.8.0.umd.min.js is identical to https://cdnjs.cloudflare.com/ajax/libs/ethers/5.8.0/ethers.umd.min.js
+Checking installed ../docs/js/vue-router.min.js vs https://unpkg.com/vue-router@3.2.0/dist/vue-router.min.js
+- shasum -a 256 ../docs/js/vue-router.min.js vue-router.min.js_3.2.0
+  - bf2f76348f9c1b62ddfaa7424da2a59eb6b7ed869b5b309f5144d86979cab17b  ../docs/js/vue-router.min.js
+  - bf2f76348f9c1b62ddfaa7424da2a59eb6b7ed869b5b309f5144d86979cab17b  vue-router.min.js_3.2.0
+- Installed ../docs/js/vue-router.min.js is identical to https://unpkg.com/vue-router@3.2.0/dist/vue-router.min.js
 
 Checking installed ../docs/js/vue.js vs https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.js
 - shasum -a 256 ../docs/js/vue.js vue.js_2_6_11
@@ -41,15 +71,18 @@ Checking installed ../docs/js/vue.min.js vs https://cdn.jsdelivr.net/npm/vue@2.6
   - 9e0156dd49c03744e79bbea60eebbbb94b5811c1b71b91f5fb38a8270dedfbaf  ../docs/js/vue.min.js
   - 9e0156dd49c03744e79bbea60eebbbb94b5811c1b71b91f5fb38a8270dedfbaf  vue.min.js_2_6_11
 - Installed ../docs/js/vue.min.js is identical to https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.min.js
-Checking installed ../docs/js/vue-router.js vs https://unpkg.com/vue-router@3.2.0/dist/vue-router.js
-- shasum -a 256 ../docs/js/vue-router.js vue-router.js_3.2.0
-  - eb3d0111539b0c9e7ddba0c24b2fa06ec920dc9b8c8d1cbc13c45c1e44dcd1b3  ../docs/js/vue-router.js
-  - eb3d0111539b0c9e7ddba0c24b2fa06ec920dc9b8c8d1cbc13c45c1e44dcd1b3  vue-router.js_3.2.0
-- Installed ../docs/js/vue-router.js is identical to https://unpkg.com/vue-router@3.2.0/dist/vue-router.js
 
-Checking installed ../docs/js/vue-router.min.js vs https://unpkg.com/vue-router@3.2.0/dist/vue-router.min.js
-- shasum -a 256 ../docs/js/vue-router.min.js vue-router.min.js_3.2.0
-  - bf2f76348f9c1b62ddfaa7424da2a59eb6b7ed869b5b309f5144d86979cab17b  ../docs/js/vue-router.min.js
-  - bf2f76348f9c1b62ddfaa7424da2a59eb6b7ed869b5b309f5144d86979cab17b  vue-router.min.js_3.2.0
-- Installed ../docs/js/vue-router.min.js is identical to https://unpkg.com/vue-router@3.2.0/dist/vue-router.min.js
+Note: ../docs/js/vuex-router-sync is a snippet of code see https://stackoverflow.com/questions/44171210/what-is-vuex-router-sync-for
+
+Checking installed ../docs/js/vuex.js vs https://unpkg.com/vuex@3.6.2/dist/vuex.js
+- shasum -a 256 ../docs/js/vuex.js vuex.js_3.6.2
+  - 99a30acc47d5f4993fb9aeff55558f15eaee4988d45bd77216d9ced77079b497  ../docs/js/vuex.js
+  - 99a30acc47d5f4993fb9aeff55558f15eaee4988d45bd77216d9ced77079b497  vuex.js_3.6.2
+- Installed ../docs/js/vuex.js is identical to https://unpkg.com/vuex@3.6.2/dist/vuex.js
+
+Checking installed ../docs/js/vuex.min.js vs https://unpkg.com/vuex@3.6.2/dist/vuex.min.js
+- shasum -a 256 ../docs/js/vuex.min.js vuex.min.js_3.6.2
+  - 3efd92158a4c24f9995773fafede2577e1646f738152c03b807678b610583f3c  ../docs/js/vuex.min.js
+  - 3efd92158a4c24f9995773fafede2577e1646f738152c03b807678b610583f3c  vuex.min.js_3.6.2
+- Installed ../docs/js/vuex.min.js is identical to https://unpkg.com/vuex@3.6.2/dist/vuex.min.js
 
