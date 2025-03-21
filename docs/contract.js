@@ -87,7 +87,7 @@ info: {{ info }}
                 <b-input-group class="align-items-start">
                   <b-form-textarea size="sm" id="contractabi-abi" :value="info.abi && JSON.stringify(info.abi) || null" @change="updateABI(inputAddress, $event)" rows="5" max-rows="10"></b-form-textarea>
                   <b-input-group-append>
-                    <b-button :disabled="!etherscanAPIKey || !inputAddress" size="sm" @click="importABIFromEtherscan();" variant="link" v-b-popover.hover.top="'Import ABI from https://api.etherscan.io/. You will need to enter your Etherscan API key in the Config page'">
+                    <b-button :disabled="!etherscanAPIKey || !info.address" size="sm" @click="importABIFromEtherscan();" variant="link" v-b-popover.hover.top="'Import ABI from https://api.etherscan.io/. You will need to enter your Etherscan API key in the Config page'">
                       <b-icon-cloud-download shift-v="-3" font-scale="1.2"></b-icon-cloud-download>
                     </b-button>
                     <b-button :disabled="!info || !info.abi" size="sm" @click="copyToClipboard(info.abi && JSON.stringify(info.abi) || null);" variant="link">
@@ -285,14 +285,13 @@ info: {{ info }}
     },
     async updateABI(address, abi) {
       console.log(now() + " Contract - methods.updateABI - address: " + address + ", abi: " + abi);
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
       const db = new Dexie(this.dbInfo.name);
       db.version(this.dbInfo.version).stores(this.dbInfo.schemaDefinition);
       const validatedAddress = validateAddress(address);
       if (validatedAddress && validatedAddress == this.info.address) {
         console.log(now() + " Contract - methods.updateABI - this.info: " + JSON.stringify(this.info).substring(0, 1000) + "...");
-        await dbSaveCacheData(db, validatedAddress + "_" + this.chainId + "_contract", this.info);
         Vue.set(this.info, 'abi', abi);
+        await dbSaveCacheData(db, this.info.address + "_" + this.chainId + "_contract", this.info);
       }
       db.close();
     },
@@ -309,28 +308,24 @@ info: {{ info }}
       // db.close();
     },
     async importABIFromEtherscan() {
+      const db = new Dexie(this.dbInfo.name);
+      db.version(this.dbInfo.version).stores(this.dbInfo.schemaDefinition);
+
       console.log(now() + " Contract - methods.importABIFromEtherscan");
-      const etherscanAPIKey = store.getters['settings'].etherscanAPIKey;
-      console.log(now() + " Contract - methods.importABIFromEtherscan - etherscanAPIKey: " + etherscanAPIKey);
-      const url = "https://api.etherscan.io/v2/api?chainid=1&module=contract&action=getabi&address=" + this.inputAddress + "&apikey=" + etherscanAPIKey;
-      // const url = "https://api.etherscan.io/v2/api?chainid=1&module=contract&action=getsourcecode&address=" + this.inputAddress + "&apikey=" + etherscanAPIKey;
+      const url = "https://api.etherscan.io/v2/api?chainid=1&module=contract&action=getabi&address=" + (this.info.implementation ? this.info.implementation : this.info.address) + "&apikey=" + store.getters['settings'].etherscanAPIKey;
       console.log(now() + " Contract - url: " + url);
       const data = await fetch(url).then(response => response.json());
       console.log(now() + " Contract - data: " + JSON.stringify(data, null, 2));
       if (data && data.status == 1 && data.message == "OK") {
         const abi = JSON.parse(data.result);
-        console.log(now() + " Contract - abi: " + JSON.stringify(abi, null, 2));
-      //   for (const item of data.result) {
-      //     if (!(item.chainid in store.getters['settings'].chains)) {
-      //       store.dispatch('addChain', {
-      //         chainId: item.chainid,
-      //         name: item.chainname,
-      //         explorer: item.blockexplorer + (item.blockexplorer.substr(-1) != "/" ? "/" : ""),
-      //         api: item.apiurl,
-      //       });
-      //     }
-      //   }
+        console.log(now() + " Contract - abi: " + JSON.stringify(abi, null, 2).substring(0, 1000) + "...");
+        console.log(now() + " Contract - methods.importABIFromEtherscan - this.info: " + JSON.stringify(this.info).substring(0, 1000) + "...");
+        Vue.set(this.info, 'abi', abi);
+        await dbSaveCacheData(db, this.info.address + "_" + this.chainId + "_contract", this.info);
       }
+
+      db.close();
+
     },
     async importSourceCodeFromEtherscan() {
       console.log(now() + " Contract - methods.importSourceCodeFromEtherscan");
