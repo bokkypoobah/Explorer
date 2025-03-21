@@ -44,6 +44,7 @@ const Contract = {
             </template>
             <b-tab title="Info" no-body></b-tab>
             <b-tab title="ABI" no-body></b-tab>
+            <b-tab title="Source Code" no-body></b-tab>
           </b-tabs>
 
           <b-card no-body no-header bg-variant="light" class="m-0 p-1">
@@ -75,6 +76,7 @@ const Contract = {
                 <b-form-group label="Info:" label-for="address-info" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
                   <font size="-1">
                     <pre class="mt-2">
+events: {{ events }}
 functions: {{ functions }}
 info: {{ info }}
                     </pre>
@@ -96,6 +98,8 @@ info: {{ info }}
                   </b-input-group-append>
                 </b-input-group>
               </b-form-group>
+            </div>
+            <div v-if="settings.tabIndex == 2">
               <b-form-group label="Source code:" label-for="contractabi-sourcecode" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-input-group class="align-items-start">
                   <b-form-textarea plaintext size="sm" id="contractabi-sourcecode" :value="info.sourceCode && JSON.stringify(info.sourceCode) || null" rows="5" max-rows="10"></b-form-textarea>
@@ -151,13 +155,39 @@ info: {{ info }}
             if (f.substring(0, 8) == "function") {
               const functionInfo = interface.getFunction(f.substring(9,));
               const methodId = interface.getSighash(functionInfo);
-              const names = functionInfo.inputs.map(e => e.name);
-              const types = functionInfo.inputs.map(e => e.type);
-              results[methodId] = { name: functionInfo.name, names, types };
+              // const names = functionInfo.inputs.map(e => e.name);
+              // const types = functionInfo.inputs.map(e => e.type);
+              const parameters = functionInfo.inputs.map(e => ({ name: e.name, type: e.type }));
+              // console.log(methodId + " => " + functionInfo.name + " " + JSON.stringify(parameters));
+              results[methodId] = { name: functionInfo.name, parameters /*, names, types*/ };
             }
           }
         } catch (e) {
           console.error(now() + " Contract - computed.functions - ERROR info.abi: " + e.message);
+        }
+      }
+      return results;
+    },
+    events() {
+      const results = {};
+      if (this.info.abi) {
+        // console.log(now() + " Contract - computed.events - info.abi: " + JSON.stringify(this.info.abi).substring(0, 1000) + "...");
+        try {
+          const interface = new ethers.utils.Interface(this.info.abi);
+          for (const f of interface.format(ethers.utils.FormatTypes.full)) {
+            if (f.substring(0, 5) == "event") {
+              const eventInfo = interface.getEvent(f.substring(6,));
+              const topicCount = eventInfo.inputs.filter(e => e.indexed).length + 1;
+              const eventSig = interface.getEventTopic(eventInfo);
+              // const names = eventInfo.inputs.map(e => e.name);
+              // const types = eventInfo.inputs.map(e => e.type);
+              // const indexed = eventInfo.inputs.map(e => e.indexed);
+              const parameters = eventInfo.inputs.map(e => ({ name: e.name, type: e.type, indexed: e.indexed }));
+              results[eventSig] = { name: eventInfo.name, parameters /*, names, types, indexed*/, topicCount };
+            }
+          }
+        } catch (e) {
+          console.error(now() + " Contract - computed.events - ERROR: " + e.message);
         }
       }
       return results;
