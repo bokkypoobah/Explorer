@@ -204,10 +204,15 @@ info: {{ info }}
               </b-form-group>
             </div>
             <div v-if="settings.tabIndex == 2">
-              <b-form-group label="Function:" label-for="function-function" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-form-group label="Execute:" label-for="function-function" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-form-select size="sm" v-model="settings.selectedMethodId" @change="saveSettings" :options="functionsOptions"></b-form-select>
               </b-form-group>
-              {{ settings.selectedMethodId && functions[settings.selectedMethodId] }}
+              selectedFunctionStateMutability: {{ selectedFunctionStateMutability }}
+              <br />
+              selectedFunctionInputs: {{ selectedFunctionInputs }}
+              <br />
+              selectedFunctionOutputs: {{ selectedFunctionOutputs }}
+              <!-- {{ settings.selectedMethodId && functions[settings.selectedMethodId] }} -->
             </div>
             <div v-if="settings.tabIndex == 3">
               <b-form-group label="Source code:" label-for="contractabi-sourcecode" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
@@ -343,9 +348,21 @@ info: {{ info }}
       const results = [];
       results.push({ value: null, text: "(Select function)"});
       for (const [methodId, functionData] of Object.entries(this.functions)) {
-        results.push({ value: methodId, text: functionData.fullName.substring(9,) });
+        results.push({ value: methodId, text: functionData.fullName /*.substring(9,)*/ });
       }
       return results;
+    },
+    selectedFunction() {
+      return this.settings.selectedMethodId && this.functions[this.settings.selectedMethodId] || null;
+    },
+    selectedFunctionStateMutability() {
+      return this.selectedFunction && this.selectedFunction.stateMutability || [];
+    },
+    selectedFunctionInputs() {
+      return this.selectedFunction && this.selectedFunction.inputs || [];
+    },
+    selectedFunctionOutputs() {
+      return this.selectedFunction && this.selectedFunction.outputs || [];
     },
     functionsList() {
       const results = [];
