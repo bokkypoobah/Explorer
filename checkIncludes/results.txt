@@ -1,7 +1,25 @@
-Fri Mar 21 12:50:14 AEDT 2025
+Fri Mar 21 13:10:26 AEDT 2025
+
 Checking installed ../docs/js/dexie.js vs https://unpkg.com/dexie@3.0.3/dist/dexie.js
+- shasum -a 256 ../docs/js/dexie.js dexie.js_3.0.3
+  - d8678e0443adeeac4da48c9166e18ac87d549b526e11d6e60e556f9b7ca27b7e  ../docs/js/dexie.js
+  - d8678e0443adeeac4da48c9166e18ac87d549b526e11d6e60e556f9b7ca27b7e  dexie.js_3.0.3
 - Installed ../docs/js/dexie.js is identical to https://unpkg.com/dexie@3.0.3/dist/dexie.js
+
 Checking installed ../docs/js/moment.js vs https://unpkg.com/moment@2.24.0
+- shasum -a 256 ../docs/js/moment.js moment.js_2.24.0
+  - 1fd8c0cfffd02e40cecbf9f313d1b86988a342d90bb7d16f1a67544f0064ea0b  ../docs/js/moment.js
+  - 1fd8c0cfffd02e40cecbf9f313d1b86988a342d90bb7d16f1a67544f0064ea0b  moment.js_2.24.0
 - Installed ../docs/js/moment.js is identical to https://unpkg.com/moment@2.24.0
+
 Checking installed ../docs/js/vuex.js vs https://unpkg.com/vuex@3.6.2/dist/vuex.js
+- shasum -a 256 ../docs/js/vuex.js vuex.js_3.6.2
+  - 99a30acc47d5f4993fb9aeff55558f15eaee4988d45bd77216d9ced77079b497  ../docs/js/vuex.js
+  - 99a30acc47d5f4993fb9aeff55558f15eaee4988d45bd77216d9ced77079b497  vuex.js_3.6.2
 - Installed ../docs/js/vuex.js is identical to https://unpkg.com/vuex@3.6.2/dist/vuex.js
+
+Checking installed ../docs/js/ethers-5.8.0.umd.min.js vs https://cdnjs.cloudflare.com/ajax/libs/ethers/5.8.0/ethers.umd.min.js
+- shasum -a 256 ../docs/js/ethers-5.8.0.umd.min.js ethers-5.8.0.umd.min.js
+  - 755f1f8a4cdd8c63056e2fa2f1e44e16c82eface12eb1afe71306333601953ac  ../docs/js/ethers-5.8.0.umd.min.js
+  - 755f1f8a4cdd8c63056e2fa2f1e44e16c82eface12eb1afe71306333601953ac  ethers-5.8.0.umd.min.js
+- Installed ../docs/js/ethers-5.8.0.umd.min.js is identical to https://cdnjs.cloudflare.com/ajax/libs/ethers/5.8.0/ethers.umd.min.js
