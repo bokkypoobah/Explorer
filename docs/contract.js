@@ -79,6 +79,32 @@ const Contract = {
               </b-form-group>
             </div>
             <div v-if="settings.tabIndex == 1">
+              <b-form-group label="ABI:" label-for="contractabi-abi" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-input-group class="align-items-start">
+                  <b-form-textarea plaintext size="sm" id="contractabi-abi" :value="info && info.abi && JSON.stringify(info.abi) || null" rows="5" max-rows="10"></b-form-textarea>
+                  <b-input-group-append>
+                    <b-button :disabled="!etherscanAPIKey || !inputAddress" size="sm" @click="importABIFromEtherscan();" variant="link" v-b-popover.hover.top="'Import ABI from https://api.etherscan.io/. You will need to enter your Etherscan API key in the Config page'">
+                      <b-icon-cloud-download shift-v="-3" font-scale="1.2"></b-icon-cloud-download>
+                    </b-button>
+                    <b-button :disabled="!info || !info.abi" size="sm" @click="copyToClipboard(info && info.abi && JSON.stringify(info.abi) || null);" variant="link">
+                      <b-icon-clipboard shift-v="-1" font-scale="1.1"></b-icon-clipboard>
+                    </b-button>
+                  </b-input-group-append>
+                </b-input-group>
+              </b-form-group>
+              <b-form-group label="Source code:" label-for="contractabi-sourcecode" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-input-group class="align-items-start">
+                  <b-form-textarea plaintext size="sm" id="contractabi-sourcecode" :value="info && info.sourceCode && JSON.stringify(info.sourceCode) || null" rows="5" max-rows="10"></b-form-textarea>
+                  <b-input-group-append>
+                    <b-button :disabled="!etherscanAPIKey || !inputAddress" size="sm" @click="importSourceCodeFromEtherscan();" variant="link" v-b-popover.hover.top="'Import ABI from https://api.etherscan.io/. You will need to enter your Etherscan API key in the Config page'">
+                      <b-icon-cloud-download shift-v="-3" font-scale="1.2"></b-icon-cloud-download>
+                    </b-button>
+                    <b-button :disabled="!info || !info.sourceCode" size="sm" @click="copyToClipboard(info && info.sourceCode && JSON.stringify(info.sourceCode) || null);" variant="link">
+                      <b-icon-clipboard shift-v="-1" font-scale="1.1"></b-icon-clipboard>
+                    </b-button>
+                  </b-input-group-append>
+                </b-input-group>
+              </b-form-group>
             </div>
           </b-card>
           <!-- <b-card-text>
@@ -116,19 +142,14 @@ const Contract = {
     async loadAddress(inputAddress) {
       console.log(now() + " Contract - methods.loadAddress - inputAddress: " + inputAddress);
       this.$router.push({ name: 'Contract', params: { inputAddress } })
-      // const provider = new ethers.providers.Web3Provider(window.ethereum);
-      // this.info = await getAddressInfo(this.inputAddress, provider);
-      // console.log(now() + " Contract - methods.testIt - this.info: " + JSON.stringify(this.info));
-      // store.dispatch('address/loadAddress', inputAddress);
-      await this.loadAddressInfo(inputAddress);
+      await this.loadData(inputAddress);
     },
-    async loadAddressInfo(inputAddress) {
-      console.log(now() + " Contract - methods.loadAddressInfo - inputAddress: " + inputAddress);
+    async loadData(inputAddress) {
+      console.log(now() + " Contract - methods.loadData - inputAddress: " + inputAddress);
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const info = await getAddressInfo(inputAddress, provider);
-      console.log(now() + " Contract - methods.loadAddressInfo - info: " + JSON.stringify(info));
+      console.log(now() + " Contract - methods.loadData - info: " + JSON.stringify(info));
       Vue.set(this, 'info', info);
-      // store.dispatch('address/loadAddress', inputAddress);
     },
     async testIt() {
       console.log(now() + " Contract - methods.testIt - inputAddress: " + this.inputAddress);
@@ -153,6 +174,30 @@ const Contract = {
       if (data && data.status == 1 && data.message == "OK") {
         const abi = JSON.parse(data.result);
         console.log(now() + " Contract - abi: " + JSON.stringify(abi, null, 2));
+      //   for (const item of data.result) {
+      //     if (!(item.chainid in store.getters['settings'].chains)) {
+      //       store.dispatch('addChain', {
+      //         chainId: item.chainid,
+      //         name: item.chainname,
+      //         explorer: item.blockexplorer + (item.blockexplorer.substr(-1) != "/" ? "/" : ""),
+      //         api: item.apiurl,
+      //       });
+      //     }
+      //   }
+      }
+    },
+    async importSourceCodeFromEtherscan() {
+      console.log(now() + " Contract - methods.importSourceCodeFromEtherscan");
+      const etherscanAPIKey = store.getters['settings'].etherscanAPIKey;
+      console.log(now() + " Contract - methods.importSourceCodeFromEtherscan - etherscanAPIKey: " + etherscanAPIKey);
+      const url = "https://api.etherscan.io/v2/api?chainid=1&module=contract&action=getabi&address=" + this.inputAddress + "&apikey=" + etherscanAPIKey;
+      // const url = "https://api.etherscan.io/v2/api?chainid=1&module=contract&action=getsourcecode&address=" + this.inputAddress + "&apikey=" + etherscanAPIKey;
+      console.log(now() + " Contract - url: " + url);
+      const data = await fetch(url).then(response => response.json());
+      console.log(now() + " Contract - data: " + JSON.stringify(data, null, 2));
+      if (data && data.status == 1 && data.message == "OK") {
+        // const abi = JSON.parse(data.result);
+        // console.log(now() + " Contract - abi: " + JSON.stringify(abi, null, 2));
       //   for (const item of data.result) {
       //     if (!(item.chainid in store.getters['settings'].chains)) {
       //       store.dispatch('addChain', {
@@ -217,7 +262,7 @@ const Contract = {
     const t = this;
     setTimeout(function() {
       (async() => {
-        await t.loadAddressInfo(t.inputAddress);
+        await t.loadData(t.inputAddress);
       })();
     }, 1000);
   },

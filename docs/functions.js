@@ -24,6 +24,7 @@ async function getAddressInfo(inputAddress, provider) {
       results.code = (await provider.getCode(results.address) || "").substring(0, 80) + "...";
       results.type = !results.code || results.code == "0x" ? "eoa" : "contract"
       results.abi = null;
+      results.sourceCode = null;
       // console.log(now() + " functions.js:getAddressInfo - results.code: " + results.code);
     } catch (e) {
       console.error(now() + " functions.js:getAddressInfo - provider.getCode: " + e.message);
