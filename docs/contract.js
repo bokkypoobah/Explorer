@@ -180,17 +180,19 @@ info: {{ info }}
         version: 0,
       },
       info: {},
+      // TODO: 'function' sortable does not work
       functionFields: [
         { key: 'index', label: '#', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-truncate' },
-        { key: 'methodId', label: 'Method Id', sortable: false, thStyle: 'width: 15%;', tdClass: 'text-truncate' },
-        { key: 'stateMutability', label: 'Type', sortable: false, thStyle: 'width: 15%;', tdClass: 'text-truncate' },
-        { key: 'function', label: 'Function', sortable: false, thStyle: 'width: 25%;', tdClass: 'text-left' },
+        { key: 'methodId', label: 'Method Id', sortable: true, thStyle: 'width: 15%;', tdClass: 'text-truncate' },
+        { key: 'stateMutability', label: 'Type', sortable: true, thStyle: 'width: 15%;', tdClass: 'text-truncate' },
+        { key: 'function', label: 'Function', sortable: true, thStyle: 'width: 25%;', tdClass: 'text-left' },
         { key: 'parameters', label: 'Parameters', sortable: false, thStyle: 'width: 40%;', tdClass: 'text-left' },
       ],
+      // TODO: 'event' sortable does not work
       eventFields: [
         { key: 'index', label: '#', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-truncate' },
-        { key: 'eventSig', label: 'Event Sig', sortable: false, thStyle: 'width: 20%;', tdClass: 'text-truncate' },
-        { key: 'event', label: 'Event', sortable: false, thStyle: 'width: 25%;', tdClass: 'text-truncate' },
+        { key: 'eventSig', label: 'Event Sig', sortable: true, thStyle: 'width: 20%;', tdClass: 'text-truncate' },
+        { key: 'event', label: 'Event', sortable: true, thStyle: 'width: 25%;', tdClass: 'text-truncate' },
         { key: 'parameters', label: 'Parameters', sortable: false, thStyle: 'width: 50%;', tdClass: 'text-left' },
       ],
     }
