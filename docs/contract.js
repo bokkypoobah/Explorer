@@ -123,8 +123,15 @@ info: {{ info }}
                       {{ parseInt(data.index) + ((settings.functionsTable.currentPage - 1) * settings.functionsTable.pageSize) + 1 }}
                     </font>
                   </template>
+                  <template #cell(methodId)="data">
+                    <b-button @click="settings.selectedMethodId = data.item.methodId; settings.tabIndex = 2; saveSettings()" variant="link" class="m-0 p-0 pt-1">
+                      {{ data.item.methodId }}
+                    </b-button>
+                  </template>
                   <template #cell(fullName)="data">
-                    {{ data.item.fullName }}
+                    <!-- <b-button @click="settings.selectedMethodId = data.item.methodId; settings.tabIndex = 2; saveSettings()" variant="transparent" class="m-0 p-0 pt-1"> -->
+                      {{ data.item.fullName }}
+                    <!-- </b-button> -->
                   </template>
                   <!-- <template #cell(inputs)="data">
                     <div v-for="(item, parameterIndex) of data.item.inputs" v-bind:key="parameterIndex">
@@ -197,7 +204,10 @@ info: {{ info }}
               </b-form-group>
             </div>
             <div v-if="settings.tabIndex == 2">
-              TODO: Select and execute functions
+              <b-form-group label="Function:" label-for="function-function" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-form-select size="sm" v-model="settings.selectedMethodId" @change="saveSettings" :options="functionsOptions"></b-form-select>
+              </b-form-group>
+              {{ settings.selectedMethodId && functions[settings.selectedMethodId] }}
             </div>
             <div v-if="settings.tabIndex == 3">
               <b-form-group label="Source code:" label-for="contractabi-sourcecode" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
@@ -230,6 +240,7 @@ info: {{ info }}
     return {
       settings: {
         tabIndex: 0,
+        selectedMethodId: null,
         functionsTable: {
           filter: null,
           currentPage: 1,
@@ -242,7 +253,7 @@ info: {{ info }}
           pageSize: 5,
           sortOption: 'nameasc',
         },
-        version: 1,
+        version: 2,
       },
       info: {},
       functionsSortOptions: [
@@ -306,7 +317,6 @@ info: {{ info }}
           console.error(now() + " Contract - computed.functions - ERROR info.abi: " + e.message);
         }
       }
-      // console.log(now() + " Contract - computed.functions - results: " + JSON.stringify(results, null, 2));
       return results;
     },
     events() {
@@ -327,7 +337,14 @@ info: {{ info }}
           console.error(now() + " Contract - computed.events - ERROR: " + e.message);
         }
       }
-      // console.log(now() + " Contract - computed.events - results: " + JSON.stringify(results, null, 2));
+      return results;
+    },
+    functionsOptions() {
+      const results = [];
+      results.push({ value: null, text: "(Select function)"});
+      for (const [methodId, functionData] of Object.entries(this.functions)) {
+        results.push({ value: methodId, text: functionData.fullName.substring(9,) });
+      }
       return results;
     },
     functionsList() {
