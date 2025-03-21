@@ -103,10 +103,13 @@ info: {{ info }}
                       {{ data.index + 1 }}
                     </font>
                   </template>
-                  <template #cell(function)="data">
+                  <!-- <template #cell(name)="data">
                     {{ data.item.name }}
+                  </template> -->
+                  <template #cell(fullName)="data">
+                    {{ data.item.fullName }}
                   </template>
-                  <template #cell(inputs)="data">
+                  <!-- <template #cell(inputs)="data">
                     <div v-for="(item, parameterIndex) of data.item.inputs" v-bind:key="parameterIndex">
                       <font size="-1" class="text-muted">
                         {{ parameterIndex + 1 }}
@@ -116,8 +119,8 @@ info: {{ info }}
                       </span>
                      {{ item.name || "(unnamed)" }}
                     </div>
-                  </template>
-                  <template #cell(outputs)="data">
+                  </template> -->
+                  <!-- <template #cell(outputs)="data">
                     <div v-for="(item, parameterIndex) of data.item.outputs" v-bind:key="parameterIndex">
                       <font size="-1" class="text-muted">
                         {{ parameterIndex + 1 }}
@@ -127,7 +130,7 @@ info: {{ info }}
                       </span>
                      {{ item.name || "(unnamed)" }}
                     </div>
-                  </template>
+                  </template> -->
                 </b-table>
               </b-form-group>
               <b-form-group label="Events:" label-for="contractabi-events" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
@@ -137,8 +140,8 @@ info: {{ info }}
                       {{ data.index + 1 }}
                     </font>
                   </template>
-                  <template #cell(event)="data">
-                    {{ data.item.name }}
+                  <template #cell(fullName)="data">
+                    {{ data.item.fullName }}
                   </template>
                   <template #cell(parameters)="data">
                     <div v-for="(item, parameterIndex) of data.item.parameters" v-bind:key="parameterIndex">
@@ -191,21 +194,18 @@ info: {{ info }}
         version: 0,
       },
       info: {},
-      // TODO: 'function' sortable does not work
+      // TODO: 'methodId' sortable does not work
       functionFields: [
         { key: 'index', label: '#', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-truncate' },
         { key: 'methodId', label: 'Method Id', sortable: true, thStyle: 'width: 15%;', tdClass: 'text-truncate' },
-        { key: 'stateMutability', label: 'State Mutability', sortable: true, thStyle: 'width: 20%;', tdClass: 'text-truncate' },
-        { key: 'function', label: 'Function', sortable: true, thStyle: 'width: 20%;', tdClass: 'text-left' },
-        { key: 'inputs', label: 'Inputs', sortable: false, thStyle: 'width: 25%;', tdClass: 'text-left' },
-        { key: 'outputs', label: 'Outputs', sortable: false, thStyle: 'width: 25%;', tdClass: 'text-left' },
+        { key: 'stateMutability', label: 'State Mutability', sortable: true, thStyle: 'width: 15%;', tdClass: 'text-truncate' },
+        { key: 'fullName', label: 'Function', sortable: true, thStyle: 'width: 65%;', tdClass: 'text-left' },
       ],
-      // TODO: 'event' sortable does not work
+      // TODO: 'eventSig' sortable does not work
       eventFields: [
         { key: 'index', label: '#', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-truncate' },
-        { key: 'eventSig', label: 'Event Sig', sortable: true, thStyle: 'width: 20%;', tdClass: 'text-truncate' },
-        { key: 'event', label: 'Event', sortable: true, thStyle: 'width: 25%;', tdClass: 'text-truncate' },
-        { key: 'parameters', label: 'Parameters', sortable: false, thStyle: 'width: 50%;', tdClass: 'text-left' },
+        { key: 'eventSig', label: 'Event Sig', sortable: true, thStyle: 'width: 35%;', tdClass: 'text-truncate' },
+        { key: 'fullName', label: 'Event', sortable: true, thStyle: 'width: 60%;', tdClass: 'text-left' },
       ],
     }
   },
@@ -220,22 +220,23 @@ info: {{ info }}
       return store.getters['db'];
     },
     functions() {
+      console.log(now() + " Contract - computed.functions");
       const results = {};
       if (this.info.abi) {
         try {
           const interface = new ethers.utils.Interface(this.info.abi);
-          for (const f of interface.format(ethers.utils.FormatTypes.full)) {
-            if (f.substring(0, 8) == "function") {
-              const functionInfo = interface.getFunction(f.substring(9,));
+          for (const fullName of interface.format(ethers.utils.FormatTypes.full)) {
+            if (fullName.substring(0, 8) == "function") {
+              const functionInfo = interface.getFunction(fullName.substring(9,));
               const methodId = interface.getSighash(functionInfo);
-              results[methodId] = { name: functionInfo.name, stateMutability: functionInfo.stateMutability, inputs: functionInfo.inputs, outputs: functionInfo.outputs };
+              results[methodId] = { name: functionInfo.name, fullName, stateMutability: functionInfo.stateMutability, inputs: functionInfo.inputs, outputs: functionInfo.outputs };
             }
           }
         } catch (e) {
           console.error(now() + " Contract - computed.functions - ERROR info.abi: " + e.message);
         }
       }
-      console.log(now() + " Contract - computed.functions - results: " + JSON.stringify(results, null, 2));
+      // console.log(now() + " Contract - computed.functions - results: " + JSON.stringify(results, null, 2));
       return results;
     },
     events() {
@@ -243,19 +244,20 @@ info: {{ info }}
       if (this.info.abi) {
         try {
           const interface = new ethers.utils.Interface(this.info.abi);
-          for (const f of interface.format(ethers.utils.FormatTypes.full)) {
-            if (f.substring(0, 5) == "event") {
-              const eventInfo = interface.getEvent(f.substring(6,));
+          for (const fullName of interface.format(ethers.utils.FormatTypes.full)) {
+            if (fullName.substring(0, 5) == "event") {
+              const eventInfo = interface.getEvent(fullName.substring(6,));
               const topicCount = eventInfo.inputs.filter(e => e.indexed).length + 1;
               const eventSig = interface.getEventTopic(eventInfo);
               const parameters = eventInfo.inputs.map(e => ({ name: e.name, type: e.type, indexed: e.indexed }));
-              results[eventSig] = { name: eventInfo.name, parameters, topicCount };
+              results[eventSig] = { name: eventInfo.name, fullName, parameters, topicCount };
             }
           }
         } catch (e) {
           console.error(now() + " Contract - computed.events - ERROR: " + e.message);
         }
       }
+      // console.log(now() + " Contract - computed.events - results: " + JSON.stringify(results, null, 2));
       return results;
     },
     functionList() {
