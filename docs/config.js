@@ -1,7 +1,7 @@
 const Config = {
   template: `
     <div class="m-0 p-0">
-      <b-card no-body no-header class="border-0" header-class="p-1">
+      <b-card no-body no-header class="border-0">
         <b-card no-body no-header bg-variant="light" class="m-1 p-1">
           <b-form-group label-cols-lg="1" label="API" label-size="md" label-class="font-weight-bold pt-0" class="mt-3 mb-0">
             <b-form-group label="Etherscan API Key:" label-for="etherscan-apikey" label-size="sm" label-cols-sm="2" label-align-sm="right" description="This key is stored in your local browser storage and is sent with Etherscan API requests. Will be used to import transactions without events (EOA to EOA) and internal transactions" class="mx-0 my-1 p-0">

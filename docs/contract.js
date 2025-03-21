@@ -2,10 +2,9 @@ const Contract = {
   template: `
     <div class="m-0 p-0">
 
-      <b-card no-body no-header class="border-0" header-class="p-1">
-        <b-card no-body class="border-0 m-0 mt-0">
-
-          <b-tabs v-model="settings.tabIndex" @input="saveSettings" align="right" class="text-right mt-1" content-class="m-0 p-0">
+      <b-card no-body no-header class="border-0">
+        <b-card no-body class="border-0 m-0 mt-0 px-1">
+          <b-tabs v-model="settings.tabIndex" @input="saveSettings" align="right" class="text-right mt-1" content-class="m-1 mb-0 p-0">
             <template #tabs-start>
               <div class="d-flex flex-grow-1">
                 <div class="m-0 mt-1 p-0" style="width: 24.0rem;">
@@ -44,7 +43,7 @@ const Contract = {
             <b-tab title="ABI" no-body></b-tab>
           </b-tabs>
 
-          <b-card no-body no-header bg-variant="light" class="m-1 p-1">
+          <b-card no-body no-header bg-variant="light" class="m-0 p-1">
 
             <div v-if="settings.tabIndex == 0">
               <b-form-group label-cols-lg="2" label="Contract" label-size="md" label-class="font-weight-bold pt-0" class="mt-3 mb-0">

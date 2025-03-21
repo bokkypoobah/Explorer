@@ -2,7 +2,7 @@ const Transaction = {
   template: `
     <div class="m-0 p-0">
 
-      <b-card no-body no-header class="border-0" header-class="p-1">
+      <b-card no-body no-header class="border-0">
         <b-card no-body class="border-0 m-0 mt-0">
 
           <div class="d-flex flex-wrap m-0 p-0 px-1 bg-white">
