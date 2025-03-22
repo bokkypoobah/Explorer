@@ -234,7 +234,7 @@ info: {{ info }}
               <b-form-group v-if="settings.selectedMethodId && (selectedFunctionStateMutability == 'payable' || selectedFunctionStateMutability == 'nonpayable')" label="" label-for="function-execute" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-button size="sm" variant="warning" @click="executeTransaction();">TODO: Execute Transaction</b-button>
               </b-form-group>
-              <b-form-group v-if="settings.selectedMethodId" label="Outputs:" label-for="function-outputs" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-form-group v-if="settings.selectedMethodId" label="Outputs:" label-for="function-outputs" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 mt-4 p-0">
                 <b-table small :fields="outputFields" :items="selectedFunctionOutputs" borderless>
                   <template #cell(index)="data">
                     <font size="-1" class="text-muted">{{ parseInt(data.index) + 1 }}</font>
@@ -668,15 +668,32 @@ info: {{ info }}
       console.log(now() + " Contract - setOutputs - outputs: " + JSON.stringify(outputs));
       this.saveSettings();
     },
-    callFunction() {
-      console.log(now() + " Contract - callFunction");
+    async callFunction() {
+      console.log(now() + " Contract - callFunction - address: " + this.info.address + ", selectedMethodId: " + this.settings.selectedMethodId);
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const functionInfo = this.settings.selectedMethodId && this.functions[this.settings.selectedMethodId] || null;
+      if (functionInfo) {
+        console.log(now() + " Contract - callFunction - functionInfo: " + JSON.stringify(functionInfo));
+        const interface = new ethers.utils.Interface(this.info.abi);
+        // const interfaceFunction = interface.getFunction(functionInfo.name);
+        // console.table(interfaceFunction);
+        const contract = new ethers.Contract(this.info.address, this.info.abi, provider);
+        console.table(contract);
+        try {
+          const parameters = "0x9fC3dc011b461664c835F2527fffb1169b3C213e";
+          const version  = await contract[functionInfo.name](parameters);
+          console.log("version: " + version);
+        } catch (e) {
+          console.error(moment().format("HH:mm:ss") + " Contract - callFunction - error: " + e.message);
+        }
+      }
     },
     executeTransaction() {
       console.log(now() + " Contract - executeTransaction");
     },
 
     saveSettings() {
-      console.log(now() + " Contract - saveSettings: " + JSON.stringify(this.settings, null, 2));
+      // console.log(now() + " Contract - saveSettings: " + JSON.stringify(this.settings, null, 2));
       localStorage.explorerContractSettings = JSON.stringify(this.settings);
     },
     copyToClipboard(str) {
