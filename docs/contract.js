@@ -228,11 +228,11 @@ info: {{ info }}
               <b-form-group v-if="settings.selectedMethodId && selectedFunctionStateMutability == 'payable'" label="Value:" label-for="function-outputs" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
                 <font size="-1" class="text-muted">TODO: [Value input] here</font>
               </b-form-group>
-              <b-form-group v-if="settings.selectedMethodId && (selectedFunctionStateMutability == 'payable' || selectedFunctionStateMutability == 'nonpayable')" label="Execute:" label-for="function-execute" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
-                <font size="-1" class="text-muted">[TODO: Execute write function here]</font>
+              <b-form-group v-if="settings.selectedMethodId && (selectedFunctionStateMutability == 'payable' || selectedFunctionStateMutability == 'nonpayable')" label="" label-for="function-execute" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-button size="sm" variant="warning" @click="executeTransaction();">TODO: Execute Transaction</b-button>
               </b-form-group>
-              <b-form-group v-if="settings.selectedMethodId && (selectedFunctionStateMutability == 'view' || selectedFunctionStateMutability == 'pure')" label="Call:" label-for="function-call" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
-                <font size="-1" class="text-muted">[TODO: Call readonly function here]</font>
+              <b-form-group v-if="settings.selectedMethodId && (selectedFunctionStateMutability == 'view' || selectedFunctionStateMutability == 'pure')" label="" label-for="function-call" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-button size="sm" variant="primary" @click="callFunction();">Call Function</b-button>
               </b-form-group>
               <b-form-group v-if="settings.selectedMethodId" label="Outputs:" label-for="function-outputs" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-table small :fields="outputFields" :items="selectedFunctionOutputs" borderless>
@@ -622,35 +622,39 @@ info: {{ info }}
     getInput(index) {
       console.log(now() + " Contract - getInput - index: " + index);
       // return "input " + this.info.address + ":" + this.settings.selectedMethodId + ":" + index;
-      if (this.info.address in this.settings.inputs) {
-        if (this.settings.selectedMethodId in this.settings.inputs[this.info.address]) {
-          return this.settings.inputs[this.info.address][this.settings.selectedMethodId][index];
+      if (this.settings.selectedMethodId in this.functions) {
+        if (this.info.address in this.settings.inputs) {
+          if (this.settings.selectedMethodId in this.settings.inputs[this.info.address]) {
+            return this.settings.inputs[this.info.address][this.settings.selectedMethodId][index];
+          }
         }
       }
       return null;
     },
     setInput(index, value) {
       console.log(now() + " Contract - setInput - index: " + index + ", value: " + value);
-      if (value) {
-        if (!(this.info.address in this.settings.inputs)) {
-          Vue.set(this.settings.inputs, this.info.address, {});
-        }
-        if (!(this.settings.selectedMethodId in this.settings.inputs[this.info.address])) {
-          Vue.set(this.settings.inputs[this.info.address], this.settings.selectedMethodId, {});
-        }
-        Vue.set(this.settings.inputs[this.info.address][this.settings.selectedMethodId], index, value);
-      } else {
-        if (this.info.address in this.settings.inputs) {
-          if (this.settings.selectedMethodId in this.settings.inputs[this.info.address]) {
-            if (index in this.settings.inputs[this.info.address][this.settings.selectedMethodId]) {
-              Vue.delete(this.settings.inputs[this.info.address][this.settings.selectedMethodId], index);
-            }
-            if (Object.keys(this.settings.inputs[this.info.address][this.settings.selectedMethodId]).length == 0) {
-              Vue.delete(this.settings.inputs[this.info.address], this.settings.selectedMethodId);
-            }
+      if (this.settings.selectedMethodId in this.functions) {
+        if (value) {
+          if (!(this.info.address in this.settings.inputs)) {
+            Vue.set(this.settings.inputs, this.info.address, {});
           }
-          if (Object.keys(this.settings.inputs[this.info.address]).length == 0) {
-            Vue.delete(this.settings.inputs, this.info.address);
+          if (!(this.settings.selectedMethodId in this.settings.inputs[this.info.address])) {
+            Vue.set(this.settings.inputs[this.info.address], this.settings.selectedMethodId, {});
+          }
+          Vue.set(this.settings.inputs[this.info.address][this.settings.selectedMethodId], index, value);
+        } else {
+          if (this.info.address in this.settings.inputs) {
+            if (this.settings.selectedMethodId in this.settings.inputs[this.info.address]) {
+              if (index in this.settings.inputs[this.info.address][this.settings.selectedMethodId]) {
+                Vue.delete(this.settings.inputs[this.info.address][this.settings.selectedMethodId], index);
+              }
+              if (Object.keys(this.settings.inputs[this.info.address][this.settings.selectedMethodId]).length == 0) {
+                Vue.delete(this.settings.inputs[this.info.address], this.settings.selectedMethodId);
+              }
+            }
+            if (Object.keys(this.settings.inputs[this.info.address]).length == 0) {
+              Vue.delete(this.settings.inputs, this.info.address);
+            }
           }
         }
       }
