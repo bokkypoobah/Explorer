@@ -21,6 +21,7 @@ const Contract = {
                     <b-dropdown-item @click="loadAddress('0xB32979486938AA9694BFC898f35DBED459F44424');">0xB3297948 - ERC-1155: Nyan Cat</b-dropdown-item>
                     <b-dropdown-item @click="loadAddress('0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB');">0xb47e3cd8 - CryptoPunksMarket</b-dropdown-item>
                     <b-dropdown-item @click="loadAddress('0x16F5A35647D6F03D5D3da7b35409D65ba03aF3B2');">0x16F5A356 - CryptopunksData</b-dropdown-item>
+                    <b-dropdown-item @click="loadAddress('0x78F96B2D5F717fa9ad416957B79D825cc4ccE69d');">0x78F96B2D - BokkyPooBahsDateTimeLibrary:TestDateTime</b-dropdown-item>
                   </b-dropdown>
                 </div>
                 <div class="mt-0 flex-grow-1">
@@ -207,12 +208,21 @@ info: {{ info }}
               <b-form-group label="Execute:" label-for="function-function" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-form-select size="sm" v-model="settings.selectedMethodId" @change="saveSettings" :options="functionsOptions"></b-form-select>
               </b-form-group>
-              selectedFunctionStateMutability: {{ selectedFunctionStateMutability }}
-              <br />
-              selectedFunctionInputs: {{ selectedFunctionInputs }}
-              <br />
-              selectedFunctionOutputs: {{ selectedFunctionOutputs }}
-              <!-- {{ settings.selectedMethodId && functions[settings.selectedMethodId] }} -->
+              <b-form-group label="Inputs:" label-for="function-inputs" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
+                selectedFunctionInputs: {{ selectedFunctionInputs }}
+              </b-form-group>
+              <b-form-group v-if="selectedFunctionStateMutability == 'payable'" label="Value:" label-for="function-outputs" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
+                <font size="-1" class="text-muted">TODO: [Value input] here</font>
+              </b-form-group>
+              <b-form-group v-if="selectedFunctionStateMutability == 'payable' || selectedFunctionStateMutability == 'nonpayable'" label="" label-for="function-execute" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
+                <font size="-1" class="text-muted">[TODO: Execute write function here]</font>
+              </b-form-group>
+              <b-form-group v-if="selectedFunctionStateMutability == 'view' || selectedFunctionStateMutability == 'pure'" label="" label-for="function-call" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
+                <font size="-1" class="text-muted">[TODO: Call readonly function here]</font>
+              </b-form-group>
+              <b-form-group label="Outputs:" label-for="function-outputs" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
+                selectedFunctionOutputs: {{ selectedFunctionOutputs }}
+              </b-form-group>
             </div>
             <div v-if="settings.tabIndex == 3">
               <b-form-group label="Source code:" label-for="contractabi-sourcecode" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
@@ -356,7 +366,7 @@ info: {{ info }}
       return this.settings.selectedMethodId && this.functions[this.settings.selectedMethodId] || null;
     },
     selectedFunctionStateMutability() {
-      return this.selectedFunction && this.selectedFunction.stateMutability || [];
+      return this.selectedFunction && this.selectedFunction.stateMutability || null;
     },
     selectedFunctionInputs() {
       return this.selectedFunction && this.selectedFunction.inputs || [];
