@@ -228,11 +228,11 @@ info: {{ info }}
               <b-form-group v-if="settings.selectedMethodId && selectedFunctionStateMutability == 'payable'" label="Value:" label-for="function-outputs" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
                 <font size="-1" class="text-muted">TODO: [Value input] here</font>
               </b-form-group>
-              <b-form-group v-if="settings.selectedMethodId && (selectedFunctionStateMutability == 'payable' || selectedFunctionStateMutability == 'nonpayable')" label="" label-for="function-execute" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-button size="sm" variant="warning" @click="executeTransaction();">TODO: Execute Transaction</b-button>
-              </b-form-group>
               <b-form-group v-if="settings.selectedMethodId && (selectedFunctionStateMutability == 'view' || selectedFunctionStateMutability == 'pure')" label="" label-for="function-call" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-button size="sm" variant="primary" @click="callFunction();">Call Function</b-button>
+              </b-form-group>
+              <b-form-group v-if="settings.selectedMethodId && (selectedFunctionStateMutability == 'payable' || selectedFunctionStateMutability == 'nonpayable')" label="" label-for="function-execute" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-button size="sm" variant="warning" @click="executeTransaction();">TODO: Execute Transaction</b-button>
               </b-form-group>
               <b-form-group v-if="settings.selectedMethodId" label="Outputs:" label-for="function-outputs" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-table small :fields="outputFields" :items="selectedFunctionOutputs" borderless>
@@ -667,6 +667,12 @@ info: {{ info }}
     setOutputs(outputs) {
       console.log(now() + " Contract - setOutputs - outputs: " + JSON.stringify(outputs));
       this.saveSettings();
+    },
+    callFunction() {
+      console.log(now() + " Contract - callFunction");
+    },
+    executeTransaction() {
+      console.log(now() + " Contract - executeTransaction");
     },
 
     saveSettings() {
