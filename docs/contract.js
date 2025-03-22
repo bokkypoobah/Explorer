@@ -205,31 +205,51 @@ info: {{ info }}
               </b-form-group>
             </div>
             <div v-if="settings.tabIndex == 2">
-              <b-form-group label="Execute:" label-for="function-function" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-form-group label="Function:" label-for="function-function" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-form-select size="sm" v-model="settings.selectedMethodId" @change="saveSettings" :options="functionsOptions"></b-form-select>
               </b-form-group>
-              <b-form-group label="Inputs:" label-for="function-inputs" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-table :items="selectedFunctionInputs" borderless hover="false" >
+              <b-form-group v-if="settings.selectedMethodId" label="Inputs:" label-for="function-inputs" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-table small :fields="inputFields" :items="selectedFunctionInputs" borderless>
+                  <template #cell(index)="data">
+                    <font size="-1" class="text-muted">{{ parseInt(data.index) + 1 }}</font>
+                  </template>
+                  <template #cell(name)="data">
+                    <font v-if="!data.item.name" size="-1" class="text-muted">(Unnamed)</font>
+                    {{ data.item.name }}
+                  </template>
+                  <template #cell(type)="data">
+                    <font size="-1" class="text-muted">{{ data.item.type }}</font>
+                  </template>
+                  <template #cell(input)="data">
+                    <b-form-input type="text" size="sm" :value="getInput(data.index)" @change="setInput(data.index, $event)"></b-form-input>
+                  </template>
                 </b-table>
-                <!-- <div v-for="(item, inputIndex) of selectedFunctionInputs" v-bind:key="inputIndex">
-                  {{ item }}
-                </div> -->
               </b-form-group>
-              <b-form-group v-if="selectedFunctionStateMutability == 'payable'" label="Value:" label-for="function-outputs" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-form-group v-if="settings.selectedMethodId && selectedFunctionStateMutability == 'payable'" label="Value:" label-for="function-outputs" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
                 <font size="-1" class="text-muted">TODO: [Value input] here</font>
               </b-form-group>
-              <b-form-group v-if="selectedFunctionStateMutability == 'payable' || selectedFunctionStateMutability == 'nonpayable'" label="" label-for="function-execute" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-form-group v-if="settings.selectedMethodId && (selectedFunctionStateMutability == 'payable' || selectedFunctionStateMutability == 'nonpayable')" label="Execute:" label-for="function-execute" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
                 <font size="-1" class="text-muted">[TODO: Execute write function here]</font>
               </b-form-group>
-              <b-form-group v-if="selectedFunctionStateMutability == 'view' || selectedFunctionStateMutability == 'pure'" label="" label-for="function-call" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-form-group v-if="settings.selectedMethodId && (selectedFunctionStateMutability == 'view' || selectedFunctionStateMutability == 'pure')" label="Call:" label-for="function-call" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
                 <font size="-1" class="text-muted">[TODO: Call readonly function here]</font>
               </b-form-group>
-              <b-form-group label="Outputs:" label-for="function-outputs" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-table :items="selectedFunctionOutputs" borderless hover="false" >
+              <b-form-group v-if="settings.selectedMethodId" label="Outputs:" label-for="function-outputs" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
+                <b-table small :fields="outputFields" :items="selectedFunctionOutputs" borderless>
+                  <template #cell(index)="data">
+                    <font size="-1" class="text-muted">{{ parseInt(data.index) + 1 }}</font>
+                  </template>
+                  <template #cell(name)="data">
+                    <font v-if="!data.item.name" size="-1" class="text-muted">(Unnamed)</font>
+                    {{ data.item.name }}
+                  </template>
+                  <template #cell(type)="data">
+                    <font size="-1" class="text-muted">{{ data.item.type }}</font>
+                  </template>
+                  <template #cell(output)="data">
+                    <b-form-input type="text" readonly size="sm" :value="getOutput(data.index)"></b-form-input>
+                  </template>
                 </b-table>
-                <!-- <div v-for="(item, outputIndex) of selectedFunctionOutputs" v-bind:key="outputIndex">
-                  {{ item }}
-                </div> -->
               </b-form-group>
             </div>
             <div v-if="settings.tabIndex == 3">
@@ -264,6 +284,8 @@ info: {{ info }}
       settings: {
         tabIndex: 0,
         selectedMethodId: null,
+        inputs: {}, // address -> field -> value
+        outputs: {}, // address -> field -> value
         functionsTable: {
           filter: null,
           currentPage: 1,
@@ -276,7 +298,7 @@ info: {{ info }}
           pageSize: 5,
           sortOption: 'nameasc',
         },
-        version: 2,
+        version: 3,
       },
       info: {},
       functionsSortOptions: [
@@ -311,6 +333,18 @@ info: {{ info }}
         { key: 'index', label: '#', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-truncate' },
         { key: 'signature', label: 'Signature', sortable: false, thStyle: 'width: 35%;', tdClass: 'text-truncate' },
         { key: 'fullName', label: 'Event', sortable: false, thStyle: 'width: 60%;', tdClass: 'text-left' },
+      ],
+      inputFields: [
+        { key: 'index', label: '#', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-truncate' },
+        { key: 'name', label: 'Name', sortable: false, thStyle: 'width: 15%;', tdClass: 'text-truncate' },
+        { key: 'type', label: 'Type', sortable: false, thStyle: 'width: 15%;', tdClass: 'text-truncate' },
+        { key: 'input', label: 'Input', sortable: false, thStyle: 'width: 65%;', tdClass: 'text-left' },
+      ],
+      outputFields: [
+        { key: 'index', label: '#', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-truncate' },
+        { key: 'name', label: 'Name', sortable: false, thStyle: 'width: 15%;', tdClass: 'text-truncate' },
+        { key: 'type', label: 'Type', sortable: false, thStyle: 'width: 15%;', tdClass: 'text-truncate' },
+        { key: 'output', label: 'Output', sortable: false, thStyle: 'width: 65%;', tdClass: 'text-left' },
       ],
     }
   },
@@ -584,8 +618,55 @@ info: {{ info }}
       }
       db.close();
     },
+
+    getInput(index) {
+      console.log(now() + " Contract - getInput - index: " + index);
+      // return "input " + this.info.address + ":" + this.settings.selectedMethodId + ":" + index;
+      if (this.info.address in this.settings.inputs) {
+        if (this.settings.selectedMethodId in this.settings.inputs[this.info.address]) {
+          return this.settings.inputs[this.info.address][this.settings.selectedMethodId][index];
+        }
+      }
+      return null;
+    },
+    setInput(index, value) {
+      console.log(now() + " Contract - setInput - index: " + index + ", value: " + value);
+      if (value) {
+        if (!(this.info.address in this.settings.inputs)) {
+          Vue.set(this.settings.inputs, this.info.address, {});
+        }
+        if (!(this.settings.selectedMethodId in this.settings.inputs[this.info.address])) {
+          Vue.set(this.settings.inputs[this.info.address], this.settings.selectedMethodId, {});
+        }
+        Vue.set(this.settings.inputs[this.info.address][this.settings.selectedMethodId], index, value);
+      } else {
+        if (this.info.address in this.settings.inputs) {
+          if (this.settings.selectedMethodId in this.settings.inputs[this.info.address]) {
+            if (index in this.settings.inputs[this.info.address][this.settings.selectedMethodId]) {
+              Vue.delete(this.settings.inputs[this.info.address][this.settings.selectedMethodId], index);
+            }
+            if (Object.keys(this.settings.inputs[this.info.address][this.settings.selectedMethodId]).length == 0) {
+              Vue.delete(this.settings.inputs[this.info.address], this.settings.selectedMethodId);
+            }
+          }
+          if (Object.keys(this.settings.inputs[this.info.address]).length == 0) {
+            Vue.delete(this.settings.inputs, this.info.address);
+          }
+        }
+      }
+      this.saveSettings();
+    },
+    getOutput(index) {
+      console.log(now() + " Contract - getOutput - index: " + index);
+      return "output " + this.info.address + ":" + this.settings.selectedMethodId + ":" + index;
+    },
+    setOutputs(outputs) {
+      console.log(now() + " Contract - setOutputs - outputs: " + JSON.stringify(outputs));
+      this.saveSettings();
+    },
+
     saveSettings() {
-      console.log(now() + " Contract - saveSettings");
+      console.log(now() + " Contract - saveSettings: " + JSON.stringify(this.settings, null, 2));
       localStorage.explorerContractSettings = JSON.stringify(this.settings);
     },
     copyToClipboard(str) {
