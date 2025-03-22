@@ -209,7 +209,11 @@ info: {{ info }}
                 <b-form-select size="sm" v-model="settings.selectedMethodId" @change="saveSettings" :options="functionsOptions"></b-form-select>
               </b-form-group>
               <b-form-group label="Inputs:" label-for="function-inputs" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
-                selectedFunctionInputs: {{ selectedFunctionInputs }}
+                <b-table :items="selectedFunctionInputs" borderless hover="false" >
+                </b-table>
+                <!-- <div v-for="(item, inputIndex) of selectedFunctionInputs" v-bind:key="inputIndex">
+                  {{ item }}
+                </div> -->
               </b-form-group>
               <b-form-group v-if="selectedFunctionStateMutability == 'payable'" label="Value:" label-for="function-outputs" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
                 <font size="-1" class="text-muted">TODO: [Value input] here</font>
@@ -221,7 +225,11 @@ info: {{ info }}
                 <font size="-1" class="text-muted">[TODO: Call readonly function here]</font>
               </b-form-group>
               <b-form-group label="Outputs:" label-for="function-outputs" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
-                selectedFunctionOutputs: {{ selectedFunctionOutputs }}
+                <b-table :items="selectedFunctionOutputs" borderless hover="false" >
+                </b-table>
+                <!-- <div v-for="(item, outputIndex) of selectedFunctionOutputs" v-bind:key="outputIndex">
+                  {{ item }}
+                </div> -->
               </b-form-group>
             </div>
             <div v-if="settings.tabIndex == 3">
