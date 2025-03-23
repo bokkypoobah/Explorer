@@ -4,7 +4,7 @@
 const Connection = {
   template: `
     <div>
-      <font size="-1">
+      <font size="-2" class="text-muted">
         {{ connected ? "Connected" : "Disconnected" }}
         <b-link v-if="info.chainId" :href="explorer" v-b-popover.hover.bottom="'Network'" target="_blank">
           {{ networkName }}
