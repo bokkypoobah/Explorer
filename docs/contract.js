@@ -662,10 +662,24 @@ info: {{ info }}
     },
     getOutput(index) {
       console.log(now() + " Contract - getOutput - index: " + index);
-      return "output " + this.info.address + ":" + this.settings.selectedMethodId + ":" + index;
+      // return "output " + this.info.address + ":" + this.settings.selectedMethodId + ":" + index;
+      if (this.settings.selectedMethodId in this.functions) {
+        if (this.info.address in this.settings.outputs) {
+          if (this.settings.selectedMethodId in this.settings.outputs[this.info.address]) {
+            return this.settings.outputs[this.info.address][this.settings.selectedMethodId][index];
+          }
+        }
+      }
+      return null;
     },
     setOutputs(outputs) {
       console.log(now() + " Contract - setOutputs - outputs: " + JSON.stringify(outputs));
+      if (!(this.info.address in this.settings.outputs)) {
+        Vue.set(this.settings.outputs, this.info.address, {});
+      }
+      // if (!(this.settings.selectedMethodId in this.settings.outputs[this.info.address])) {
+      Vue.set(this.settings.outputs[this.info.address], this.settings.selectedMethodId, outputs);
+      // }
       this.saveSettings();
     },
     async callFunction() {
@@ -692,6 +706,32 @@ info: {{ info }}
           // const parameters = ["0x00cf367c9ee21dc9538355d1da4ebac9b83645b790b07dd2c9d15ae7f9aed6d2", "0x", "0x"]; // works for Safe 1.4.1 checkSignatures
           const results  = await contract[functionInfo.name](...parameters);
           console.log(now() + " Contract - callFunction - results: " + JSON.stringify(results));
+          const outputs = [];
+          for (const [index, output] of functionInfo.outputs.entries()) {
+            console.log(index + " => " + typeof output + " " + JSON.stringify(output));
+            let value;
+            if (Array.isArray(results)) {
+              value = results[index];
+              // outputs.push(results[index]);
+            } else {
+              value = results;
+              // if (output.type == "uint256") {
+              //   outputs.push(ethers.BigNumber.from(results).toString());
+              // } else {
+              //   outputs.push(results);
+              // }
+            }
+            if (output.type == "uint256") {
+              outputs.push(ethers.BigNumber.from(value).toString());
+            } else {
+              outputs.push(value);
+            }
+            // const value = this.getInput(index);
+            // parameters.push(value);
+          }
+          console.log(now() + " Contract - callFunction - outputs: " + JSON.stringify(outputs));
+          this.setOutputs(outputs);
+
         } catch (e) {
           console.error(moment().format("HH:mm:ss") + " Contract - callFunction - error: " + e.message);
         }
