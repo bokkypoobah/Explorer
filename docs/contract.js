@@ -125,14 +125,12 @@ info: {{ info }}
                     </font>
                   </template>
                   <template #cell(methodId)="data">
-                    <b-button @click="settings.selectedMethodId = data.item.methodId; settings.tabIndex = 2; saveSettings()" variant="link" class="m-0 p-0 pt-1">
+                    <b-button @click="setSelectedMethodId(data.item.methodId); settings.tabIndex = 2; saveSettings()" variant="link" class="m-0 p-0 pt-1">
                       {{ data.item.methodId }}
                     </b-button>
                   </template>
                   <template #cell(fullName)="data">
-                    <!-- <b-button @click="settings.selectedMethodId = data.item.methodId; settings.tabIndex = 2; saveSettings()" variant="transparent" class="m-0 p-0 pt-1"> -->
-                      {{ data.item.fullName }}
-                    <!-- </b-button> -->
+                    {{ data.item.fullName }}
                   </template>
                   <!-- <template #cell(inputs)="data">
                     <div v-for="(item, parameterIndex) of data.item.inputs" v-bind:key="parameterIndex">
@@ -206,9 +204,9 @@ info: {{ info }}
             </div>
             <div v-if="settings.tabIndex == 2">
               <b-form-group label="Function:" label-for="function-function" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-form-select size="sm" v-model="settings.selectedMethodId" @change="saveSettings" :options="functionsOptions"></b-form-select>
+                <b-form-select size="sm" :value="getSelectedMethodId" @change="setSelectedMethodId($event)" :options="functionsOptions"></b-form-select>
               </b-form-group>
-              <b-form-group v-if="settings.selectedMethodId" label="Inputs:" label-for="function-inputs" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-form-group v-if="getSelectedMethodId" label="Inputs:" label-for="function-inputs" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-table small :fields="inputFields" :items="selectedFunctionInputs" borderless>
                   <template #cell(index)="data">
                     <font size="-1" class="text-muted">{{ parseInt(data.index) + 1 }}</font>
@@ -225,16 +223,16 @@ info: {{ info }}
                   </template>
                 </b-table>
               </b-form-group>
-              <b-form-group v-if="settings.selectedMethodId && selectedFunctionStateMutability == 'payable'" label="Value:" label-for="function-outputs" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-form-group v-if="getSelectedMethodId && selectedFunctionStateMutability == 'payable'" label="Value:" label-for="function-outputs" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-form-input type="text" size="sm" :value="getValue()" @change="setValue($event)"></b-form-input>
               </b-form-group>
-              <b-form-group v-if="settings.selectedMethodId && (selectedFunctionStateMutability == 'view' || selectedFunctionStateMutability == 'pure')" label="" label-for="function-call" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-form-group v-if="getSelectedMethodId && (selectedFunctionStateMutability == 'view' || selectedFunctionStateMutability == 'pure')" label="" label-for="function-call" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-button size="sm" variant="primary" @click="callFunction();">Call Function</b-button>
               </b-form-group>
-              <b-form-group v-if="settings.selectedMethodId && (selectedFunctionStateMutability == 'payable' || selectedFunctionStateMutability == 'nonpayable')" label="" label-for="function-execute" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
+              <b-form-group v-if="getSelectedMethodId && (selectedFunctionStateMutability == 'payable' || selectedFunctionStateMutability == 'nonpayable')" label="" label-for="function-execute" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-button size="sm" variant="warning" @click="executeTransaction();">TODO: Execute Transaction</b-button>
               </b-form-group>
-              <b-form-group v-if="settings.selectedMethodId" label="Outputs:" label-for="function-outputs" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 mt-4 p-0">
+              <b-form-group v-if="getSelectedMethodId" label="Outputs:" label-for="function-outputs" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 mt-4 p-0">
                 <b-table small :fields="outputFields" :items="selectedFunctionOutputs" borderless>
                   <template #cell(index)="data">
                     <font size="-1" class="text-muted">{{ parseInt(data.index) + 1 }}</font>
@@ -277,7 +275,7 @@ info: {{ info }}
     return {
       settings: {
         tabIndex: 0,
-        selectedMethodId: null,
+        selectedMethodIds: {}, // address -> methodId
         inputs: {}, // address -> methodId -> index -> value
         outputs: {}, // address -> methodId -> array of values
         values: {}, // address -> methodId -> value
@@ -293,7 +291,7 @@ info: {{ info }}
           pageSize: 5,
           sortOption: 'nameasc',
         },
-        version: 4,
+        version: 5,
       },
       info: {},
       functionsSortOptions: [
@@ -399,8 +397,12 @@ info: {{ info }}
       }
       return results;
     },
+    getSelectedMethodId() {
+      // console.log(now() + " Contract - getSelectedMethodId");
+      return this.info.address && this.settings.selectedMethodIds[this.info.address] || null;
+    },
     selectedFunction() {
-      return this.settings.selectedMethodId && this.functions[this.settings.selectedMethodId] || null;
+      return this.getSelectedMethodId && this.functions[this.getSelectedMethodId] || null;
     },
     selectedFunctionStateMutability() {
       return this.selectedFunction && this.selectedFunction.stateMutability || null;
@@ -614,12 +616,20 @@ info: {{ info }}
       db.close();
     },
 
+    setSelectedMethodId(value) {
+      console.log(now() + " Contract - setSelectedMethodId - value: " + JSON.stringify(value));
+      if (!(this.info.address in this.settings.selectedMethodIds)) {
+        Vue.set(this.settings.selectedMethodIds, this.info.address, {});
+      }
+      Vue.set(this.settings.selectedMethodIds, this.info.address, value);
+      this.saveSettings();
+    },
     getInput(index) {
       // console.log(now() + " Contract - getInput - index: " + index);
-      if (this.settings.selectedMethodId in this.functions) {
+      if (this.getSelectedMethodId in this.functions) {
         if (this.info.address in this.settings.inputs) {
-          if (this.settings.selectedMethodId in this.settings.inputs[this.info.address]) {
-            return this.settings.inputs[this.info.address][this.settings.selectedMethodId][index];
+          if (this.getSelectedMethodId in this.settings.inputs[this.info.address]) {
+            return this.settings.inputs[this.info.address][this.getSelectedMethodId][index];
           }
         }
       }
@@ -627,23 +637,23 @@ info: {{ info }}
     },
     setInput(index, value) {
       // console.log(now() + " Contract - setInput - index: " + index + ", value: " + value);
-      if (this.settings.selectedMethodId in this.functions) {
+      if (this.getSelectedMethodId in this.functions) {
         if (value) {
           if (!(this.info.address in this.settings.inputs)) {
             Vue.set(this.settings.inputs, this.info.address, {});
           }
-          if (!(this.settings.selectedMethodId in this.settings.inputs[this.info.address])) {
-            Vue.set(this.settings.inputs[this.info.address], this.settings.selectedMethodId, {});
+          if (!(this.getSelectedMethodId in this.settings.inputs[this.info.address])) {
+            Vue.set(this.settings.inputs[this.info.address], this.getSelectedMethodId, {});
           }
-          Vue.set(this.settings.inputs[this.info.address][this.settings.selectedMethodId], index, value);
+          Vue.set(this.settings.inputs[this.info.address][this.getSelectedMethodId], index, value);
         } else {
           if (this.info.address in this.settings.inputs) {
-            if (this.settings.selectedMethodId in this.settings.inputs[this.info.address]) {
-              if (index in this.settings.inputs[this.info.address][this.settings.selectedMethodId]) {
-                Vue.delete(this.settings.inputs[this.info.address][this.settings.selectedMethodId], index);
+            if (this.getSelectedMethodId in this.settings.inputs[this.info.address]) {
+              if (index in this.settings.inputs[this.info.address][this.getSelectedMethodId]) {
+                Vue.delete(this.settings.inputs[this.info.address][this.getSelectedMethodId], index);
               }
-              if (Object.keys(this.settings.inputs[this.info.address][this.settings.selectedMethodId]).length == 0) {
-                Vue.delete(this.settings.inputs[this.info.address], this.settings.selectedMethodId);
+              if (Object.keys(this.settings.inputs[this.info.address][this.getSelectedMethodId]).length == 0) {
+                Vue.delete(this.settings.inputs[this.info.address], this.getSelectedMethodId);
               }
             }
             if (Object.keys(this.settings.inputs[this.info.address]).length == 0) {
@@ -656,10 +666,10 @@ info: {{ info }}
     },
     getOutput(index) {
       // console.log(now() + " Contract - getOutput - index: " + index);
-      if (this.settings.selectedMethodId in this.functions) {
+      if (this.getSelectedMethodId in this.functions) {
         if (this.info.address in this.settings.outputs) {
-          if (this.settings.selectedMethodId in this.settings.outputs[this.info.address]) {
-            return this.settings.outputs[this.info.address][this.settings.selectedMethodId][index];
+          if (this.getSelectedMethodId in this.settings.outputs[this.info.address]) {
+            return this.settings.outputs[this.info.address][this.getSelectedMethodId][index];
           }
         }
       }
@@ -670,15 +680,15 @@ info: {{ info }}
       if (!(this.info.address in this.settings.outputs)) {
         Vue.set(this.settings.outputs, this.info.address, {});
       }
-      Vue.set(this.settings.outputs[this.info.address], this.settings.selectedMethodId, outputs);
+      Vue.set(this.settings.outputs[this.info.address], this.getSelectedMethodId, outputs);
       this.saveSettings();
     },
     getValue() {
       console.log(now() + " Contract - getValue");
-      if (this.settings.selectedMethodId in this.functions) {
+      if (this.getSelectedMethodId in this.functions) {
         if (this.info.address in this.settings.values) {
-          if (this.settings.selectedMethodId in this.settings.values[this.info.address]) {
-            return this.settings.values[this.info.address][this.settings.selectedMethodId];
+          if (this.getSelectedMethodId in this.settings.values[this.info.address]) {
+            return this.settings.values[this.info.address][this.getSelectedMethodId];
           }
         }
       }
@@ -689,14 +699,14 @@ info: {{ info }}
       if (!(this.info.address in this.settings.values)) {
         Vue.set(this.settings.values, this.info.address, {});
       }
-      Vue.set(this.settings.values[this.info.address], this.settings.selectedMethodId, value);
+      Vue.set(this.settings.values[this.info.address], this.getSelectedMethodId, value);
       this.saveSettings();
     },
 
     async callFunction() {
-      console.log(now() + " Contract - callFunction - address: " + this.info.address + ", selectedMethodId: " + this.settings.selectedMethodId);
+      console.log(now() + " Contract - callFunction - address: " + this.info.address);
       const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const functionInfo = this.settings.selectedMethodId && this.functions[this.settings.selectedMethodId] || null;
+      const functionInfo = this.getSelectedMethodId && this.functions[this.getSelectedMethodId] || null;
       if (functionInfo) {
         console.log(now() + " Contract - callFunction - functionInfo: " + JSON.stringify(functionInfo));
         const interface = new ethers.utils.Interface(this.info.abi);
@@ -739,7 +749,7 @@ info: {{ info }}
     },
 
     saveSettings() {
-      // console.log(now() + " Contract - saveSettings: " + JSON.stringify(this.settings, null, 2));
+      console.log(now() + " Contract - saveSettings: " + JSON.stringify(this.settings, null, 2));
       localStorage.explorerContractSettings = JSON.stringify(this.settings);
     },
     copyToClipboard(str) {
