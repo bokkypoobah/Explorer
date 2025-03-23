@@ -678,13 +678,20 @@ info: {{ info }}
         // const interfaceFunction = interface.getFunction(functionInfo.name);
         // console.table(interfaceFunction);
         const contract = new ethers.Contract(this.info.address, this.info.abi, provider);
-        console.table(contract);
+        // console.table(contract);
+        const parameters = [];
+        for (const [index, input] of functionInfo.inputs.entries()) {
+          console.log(index + " => " + JSON.stringify(input));
+          const value = this.getInput(index);
+          parameters.push(value);
+        }
+        console.log(now() + " Contract - callFunction - parameters: " + JSON.stringify(parameters));
         try {
           // const parameters = "0x9fC3dc011b461664c835F2527fffb1169b3C213e"; // works for Safe 1.4.1 isOwner
           // const parameters = [0, 1]; // works for Safe 1.4.1 getStorageAt
-          const parameters = ["0x00cf367c9ee21dc9538355d1da4ebac9b83645b790b07dd2c9d15ae7f9aed6d2", "0x", "0x"]; // works for Safe 1.4.1 checkSignatures
-          const result  = await contract[functionInfo.name](...parameters);
-          console.log("result: " + JSON.stringify(result));
+          // const parameters = ["0x00cf367c9ee21dc9538355d1da4ebac9b83645b790b07dd2c9d15ae7f9aed6d2", "0x", "0x"]; // works for Safe 1.4.1 checkSignatures
+          const results  = await contract[functionInfo.name](...parameters);
+          console.log(now() + " Contract - callFunction - results: " + JSON.stringify(results));
         } catch (e) {
           console.error(moment().format("HH:mm:ss") + " Contract - callFunction - error: " + e.message);
         }
