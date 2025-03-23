@@ -395,6 +395,9 @@ info: {{ info }}
       for (const [methodId, functionData] of Object.entries(this.functions)) {
         results.push({ value: methodId, text: functionData.fullName /*.substring(9,)*/ });
       }
+      results.sort((a, b) => {
+        return ('' + a.text).localeCompare(b.text);
+      });
       return results;
     },
     getSelectedMethodId() {
