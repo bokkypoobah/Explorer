@@ -226,7 +226,7 @@ info: {{ info }}
                 </b-table>
               </b-form-group>
               <b-form-group v-if="settings.selectedMethodId && selectedFunctionStateMutability == 'payable'" label="Value:" label-for="function-outputs" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
-                <font size="-1" class="text-muted">TODO: [Value input] here</font>
+                <b-form-input type="text" size="sm" :value="getValue()" @change="setValue($event)"></b-form-input>
               </b-form-group>
               <b-form-group v-if="settings.selectedMethodId && (selectedFunctionStateMutability == 'view' || selectedFunctionStateMutability == 'pure')" label="" label-for="function-call" label-size="sm" label-cols-sm="1" label-align-sm="right" class="mx-0 my-1 p-0">
                 <b-button size="sm" variant="primary" @click="callFunction();">Call Function</b-button>
@@ -268,12 +268,6 @@ info: {{ info }}
               </b-form-group>
             </div>
           </b-card>
-          <!-- <b-card-text>
-            <h5>Address</h5>
-            error: {{ error }}
-            <br />
-            address: {{ address }}
-          </b-card-text> -->
         </b-card>
       </b-card>
     </div>
@@ -284,8 +278,9 @@ info: {{ info }}
       settings: {
         tabIndex: 0,
         selectedMethodId: null,
-        inputs: {}, // address -> field -> value
-        outputs: {}, // address -> field -> value
+        inputs: {}, // address -> methodId -> index -> value
+        outputs: {}, // address -> methodId -> array of values
+        values: {}, // address -> methodId -> value
         functionsTable: {
           filter: null,
           currentPage: 1,
@@ -298,7 +293,7 @@ info: {{ info }}
           pageSize: 5,
           sortOption: 'nameasc',
         },
-        version: 3,
+        version: 4,
       },
       info: {},
       functionsSortOptions: [
@@ -620,8 +615,7 @@ info: {{ info }}
     },
 
     getInput(index) {
-      console.log(now() + " Contract - getInput - index: " + index);
-      // return "input " + this.info.address + ":" + this.settings.selectedMethodId + ":" + index;
+      // console.log(now() + " Contract - getInput - index: " + index);
       if (this.settings.selectedMethodId in this.functions) {
         if (this.info.address in this.settings.inputs) {
           if (this.settings.selectedMethodId in this.settings.inputs[this.info.address]) {
@@ -632,7 +626,7 @@ info: {{ info }}
       return null;
     },
     setInput(index, value) {
-      console.log(now() + " Contract - setInput - index: " + index + ", value: " + value);
+      // console.log(now() + " Contract - setInput - index: " + index + ", value: " + value);
       if (this.settings.selectedMethodId in this.functions) {
         if (value) {
           if (!(this.info.address in this.settings.inputs)) {
@@ -661,8 +655,7 @@ info: {{ info }}
       this.saveSettings();
     },
     getOutput(index) {
-      console.log(now() + " Contract - getOutput - index: " + index);
-      // return "output " + this.info.address + ":" + this.settings.selectedMethodId + ":" + index;
+      // console.log(now() + " Contract - getOutput - index: " + index);
       if (this.settings.selectedMethodId in this.functions) {
         if (this.info.address in this.settings.outputs) {
           if (this.settings.selectedMethodId in this.settings.outputs[this.info.address]) {
@@ -673,15 +666,33 @@ info: {{ info }}
       return null;
     },
     setOutputs(outputs) {
-      console.log(now() + " Contract - setOutputs - outputs: " + JSON.stringify(outputs));
+      // console.log(now() + " Contract - setOutputs - outputs: " + JSON.stringify(outputs));
       if (!(this.info.address in this.settings.outputs)) {
         Vue.set(this.settings.outputs, this.info.address, {});
       }
-      // if (!(this.settings.selectedMethodId in this.settings.outputs[this.info.address])) {
       Vue.set(this.settings.outputs[this.info.address], this.settings.selectedMethodId, outputs);
-      // }
       this.saveSettings();
     },
+    getValue() {
+      console.log(now() + " Contract - getValue");
+      if (this.settings.selectedMethodId in this.functions) {
+        if (this.info.address in this.settings.values) {
+          if (this.settings.selectedMethodId in this.settings.values[this.info.address]) {
+            return this.settings.values[this.info.address][this.settings.selectedMethodId];
+          }
+        }
+      }
+      return null;
+    },
+    setValue(value) {
+      console.log(now() + " Contract - setValue - value: " + JSON.stringify(value));
+      if (!(this.info.address in this.settings.values)) {
+        Vue.set(this.settings.values, this.info.address, {});
+      }
+      Vue.set(this.settings.values[this.info.address], this.settings.selectedMethodId, value);
+      this.saveSettings();
+    },
+
     async callFunction() {
       console.log(now() + " Contract - callFunction - address: " + this.info.address + ", selectedMethodId: " + this.settings.selectedMethodId);
       const provider = new ethers.providers.Web3Provider(window.ethereum);
