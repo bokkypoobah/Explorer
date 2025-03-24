@@ -239,13 +239,8 @@ function formatUintUnits(n, unit) {
   return result;
 }
 
-function parseUintUnits(n, unit) {
-  console.log(now() + " functions.js:parseUintUnits(" + n + ", " + unit + ")");
-}
-
 function testFormat() {
   console.log(now() + " functions.js:testFormat");
-
   formatUintUnits("123", null);
   formatUintUnits("123", "wei");
   formatUintUnits("123", "gwei");
@@ -258,7 +253,45 @@ function testFormat() {
   formatUintUnits("123", "boolean");
   formatUintUnits("1742782888", "datetimelocal");
   formatUintUnits("1742782888", "datetimeutc");
+}
+testFormat();
 
+function parseUintUnits(n, unit) {
+  // console.log(now() + " functions.js:parseUintUnits(" + n + ", " + unit + ")");
+  let result;
+  if (unit == null || unit == "wei") {
+    result = ethers.utils.parseUnits(n, "wei");
+  } else if (unit == "gwei" || unit == "ether") {
+    result = ethers.utils.parseUnits(n, unit);
+  } else if (unit in UNIT_TRANSLATION) {
+    result = ethers.utils.parseUnits(n, UNIT_TRANSLATION[unit]);
+  } else if (unit == "boolean") {
+    result = n.substring(0, 1).toLowerCase() == "t";
+  } else if (unit == "datetimelocal") {
+    result = moment(n).unix();
+  } else if (unit == "datetimeutc") {
+    result = moment.utc(n).unix();
+  }
+  console.log(now() + " functions.js:parseUintUnits(" + n + ", \"" + unit + "\") => \"" + result + "\"");
+  return result;
 }
 
-testFormat();
+function testParse() {
+  console.log(now() + " functions.js:testParse");
+  parseUintUnits("123", null);
+  parseUintUnits("123", "wei");
+  parseUintUnits("123.456", "gwei");
+  parseUintUnits("123.456", "ether");
+  parseUintUnits("123.456", "k");
+  parseUintUnits("123.456", "m");
+  parseUintUnits("123.456", "g");
+  parseUintUnits("123.456", "t");
+  parseUintUnits("false", "boolean");
+  parseUintUnits("trUe", "boolean");
+  parseUintUnits("t", "boolean");
+  parseUintUnits("2025-03-24 13:21:28", "datetimelocal");
+  parseUintUnits("2025-03-24", "datetimelocal");
+  parseUintUnits("2025-03-24 02:21:28", "datetimeutc");
+  parseUintUnits("2025-03-24", "datetimeutc");
+}
+testParse();
