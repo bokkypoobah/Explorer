@@ -197,3 +197,67 @@ async function dbSaveCacheData(db, name, data) {
       console.error(now() + " functions.js:dbSaveCacheData - ERROR name: " + name + ", data: " + JSON.stringify(data));
     });
 }
+
+
+
+// uintUnitsOptions: [
+//   { value: null, text: 'Number (0 decimals)' },
+//   { value: "wei", text: 'Wei (0 decimals)' },
+//   { value: "gwei", text: 'Gwei (9 decimals)' },
+//   { value: "ether", text: 'Ethers (18 decimals)' },
+//   { value: "k", text: 'K (x 1,000)' },
+//   { value: "m", text: 'M (x 1,000,000)' },
+//   { value: "g", text: 'M (x 1,000,000,000)' },
+//   { value: "t", text: 'T (x 1,000,000,000,000)' },
+//   { value: "boolean", text: 'Boolean (0 = false, 1 = true)' },
+//   { value: "datetimelocal", text: 'Local datetime yyyy-mm-dd [hh:mm:ss]' },
+//   { value: "datetimeutc", text: 'UTC datetime yyyy-mm-dd [hh:mm:ss]' },
+// ],
+
+function parseUintUnits(n, unit) {
+  console.log(now() + " functions.js:parseUintUnits(" + n + ", " + unit + ")");
+}
+
+const UNIT_TRANSLATION = {
+  "k": 3,
+  "m": 6,
+  "g": 9,
+  "t": 12,
+};
+function formatUintUnits(n, unit) {
+  let result;
+  if (unit == null || unit == "wei") {
+    result = n.toString();
+  } else if (unit == "gwei" || unit == "ether") {
+    result = ethers.utils.formatUnits(n, unit);
+  } else if (unit in UNIT_TRANSLATION) {
+    result = ethers.utils.formatUnits(n, UNIT_TRANSLATION[unit]);
+  } else if (unit == "boolean") {
+    result = n == null || n == 0 ? "false" : "true";
+  } else if (unit == "datetimelocal") {
+    result = moment.unix(n).format("YYYY-MM-DD HH:mm:ss")
+  } else if (unit == "datetimeutc") {
+    result = moment.unix(n).utc().format("YYYY-MM-DD HH:mm:ss")
+  }
+  console.log(now() + " functions.js:formatUintUnits(" + n + ", \"" + unit + "\") => \"" + result + "\"");
+  return result;
+}
+
+function testIt() {
+  console.log(now() + " functions.js:testIt");
+
+  formatUintUnits("123", "wei");
+  formatUintUnits("123", "gwei");
+  formatUintUnits("123", "ether");
+  formatUintUnits("123", "k");
+  formatUintUnits("123", "m");
+  formatUintUnits("123", "g");
+  formatUintUnits("123", "t");
+  formatUintUnits("0", "boolean");
+  formatUintUnits("123", "boolean");
+  formatUintUnits("1742782888", "datetimelocal");
+  formatUintUnits("1742782888", "datetimeutc");
+  
+}
+
+testIt();

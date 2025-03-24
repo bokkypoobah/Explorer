@@ -316,6 +316,19 @@ info: {{ info }}
         { value: 50, text: '50' },
         { value: 100, text: '100' },
       ],
+      uintUnitsOptions: [
+        { value: null, text: 'Number (0 decimals)' },
+        { value: "wei", text: 'Wei (0 decimals)' },
+        { value: "gwei", text: 'Gwei (9 decimals)' },
+        { value: "ether", text: 'Ethers (18 decimals)' },
+        { value: "k", text: 'K (x 1,000)' },
+        { value: "m", text: 'M (x 1,000,000)' },
+        { value: "g", text: 'M (x 1,000,000,000)' },
+        { value: "t", text: 'T (x 1,000,000,000,000)' },
+        { value: "boolean", text: 'Boolean (0 = false, 1 = true)' },
+        { value: "datetimelocal", text: 'Local datetime yyyy-mm-dd [hh:mm:ss]' },
+        { value: "datetimeutc", text: 'UTC datetime yyyy-mm-dd [hh:mm:ss]' },
+      ],
       functionFields: [
         { key: 'index', label: '#', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-truncate' },
         { key: 'methodId', label: 'Method Id', sortable: false, thStyle: 'width: 15%;', tdClass: 'text-truncate' },
@@ -752,7 +765,7 @@ info: {{ info }}
     },
 
     saveSettings() {
-      console.log(now() + " Contract - saveSettings: " + JSON.stringify(this.settings, null, 2));
+      // console.log(now() + " Contract - saveSettings: " + JSON.stringify(this.settings, null, 2));
       localStorage.explorerContractSettings = JSON.stringify(this.settings);
     },
     copyToClipboard(str) {
