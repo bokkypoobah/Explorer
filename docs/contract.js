@@ -21,6 +21,7 @@ const Contract = {
                     <b-dropdown-item @click="loadAddress('0xB32979486938AA9694BFC898f35DBED459F44424');">0xB3297948 - ERC-1155: Nyan Cat</b-dropdown-item>
                     <b-dropdown-item @click="loadAddress('0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB');">0xb47e3cd8 - CryptoPunksMarket</b-dropdown-item>
                     <b-dropdown-item @click="loadAddress('0x16F5A35647D6F03D5D3da7b35409D65ba03aF3B2');">0x16F5A356 - CryptopunksData</b-dropdown-item>
+                    <b-dropdown-item @click="loadAddress('0x23d23d8F243e57d0b924bff3A3191078Af325101');">0x23d23d8F - BokkyPooBahsDateTimeLibrary:BokkyPooBahsDateTimeContract</b-dropdown-item>
                     <b-dropdown-item @click="loadAddress('0x78F96B2D5F717fa9ad416957B79D825cc4ccE69d');">0x78F96B2D - BokkyPooBahsDateTimeLibrary:TestDateTime</b-dropdown-item>
                   </b-dropdown>
                 </div>
@@ -252,7 +253,15 @@ info: {{ info }}
                     <font size="-1" class="text-muted">{{ data.item.type }}</font>
                   </template>
                   <template #cell(output)="data">
-                    <b-form-input type="text" readonly size="sm" :value="getOutput(data.index)"></b-form-input>
+                    <b-input-group class="align-items-start">
+                      <b-form-input v-if="data.item.type == 'uint256'" type="text" readonly size="sm" :value="formatUintUnits(getOutput(data.index), getOutputUnits(data.index))"></b-form-input>
+                      <b-form-input v-else type="text" readonly size="sm" :value="getOutput(data.index)"></b-form-input>
+                      <b-input-group-append>
+                        <div v-if="data.item.type == 'uint256'">
+                          <b-form-select size="sm" :value="getOutputUnits(data.index)" @change="setOutputUnits(data.index, $event)" :options="uintUnitsOptions" v-b-popover.hover.top="'Select units'"></b-form-select>
+                        </div>
+                      </b-input-group-append>
+                    </b-input-group>
                   </template>
                 </b-table>
               </b-form-group>
@@ -336,7 +345,7 @@ info: {{ info }}
         { value: "ether", text: 'Ether x10^18' },
         { value: "k", text: 'K x10^3' },
         { value: "m", text: 'M x10^6' },
-        { value: "g", text: 'M x10^9' },
+        { value: "g", text: 'G x10^9' },
         { value: "t", text: 'T x10^12' },
         { value: "boolean", text: 'Boolean (0 = false, >0 = true)' },
         { value: "datetimelocal", text: 'Local yyyy-mm-dd [hh:mm:ss]' },
@@ -770,6 +779,87 @@ info: {{ info }}
       }
       Vue.set(this.settings.values[this.info.address], this.getSelectedMethodId, value);
       this.saveSettings();
+    },
+    getOutputUnits(index) {
+      console.log(now() + " Contract - getOutputUnits - index: " + index);
+      if (this.getSelectedMethodId in this.functions) {
+        if (this.info.address in this.settings.outputUnits) {
+          if (this.getSelectedMethodId in this.settings.outputUnits[this.info.address]) {
+            return this.settings.outputUnits[this.info.address][this.getSelectedMethodId][index];
+          }
+        }
+      }
+      return null;
+    },
+    setOutputUnits(index, value) {
+      console.log(now() + " Contract - setOutputUnits - index: " + index + ", value: " + value);
+      if (this.getSelectedMethodId in this.functions) {
+        if (value) {
+          if (!(this.info.address in this.settings.outputUnits)) {
+            Vue.set(this.settings.outputUnits, this.info.address, {});
+          }
+          if (!(this.getSelectedMethodId in this.settings.outputUnits[this.info.address])) {
+            Vue.set(this.settings.outputUnits[this.info.address], this.getSelectedMethodId, {});
+          }
+          Vue.set(this.settings.outputUnits[this.info.address][this.getSelectedMethodId], index, value);
+        } else {
+          if (this.info.address in this.settings.outputUnits) {
+            if (this.getSelectedMethodId in this.settings.outputUnits[this.info.address]) {
+              if (index in this.settings.outputUnits[this.info.address][this.getSelectedMethodId]) {
+                Vue.delete(this.settings.outputUnits[this.info.address][this.getSelectedMethodId], index);
+              }
+              if (Object.keys(this.settings.outputUnits[this.info.address][this.getSelectedMethodId]).length == 0) {
+                Vue.delete(this.settings.outputUnits[this.info.address], this.getSelectedMethodId);
+              }
+            }
+            if (Object.keys(this.settings.outputUnits[this.info.address]).length == 0) {
+              Vue.delete(this.settings.outputUnits, this.info.address);
+            }
+          }
+        }
+      }
+      this.saveSettings();
+    },
+
+    formatUintUnits(n, unit) {
+      console.log(now() + " Contract - methods.formatUintUnits - n: " + n + ", unit: " + unit);
+      if (n == null) {
+        return null;
+      }
+      let result;
+      if (unit == null) {
+        result = n.toString();
+      } else if (unit in ETHERS_UNIT_TRANSLATION) {
+        result = ethers.utils.formatUnits(n, ETHERS_UNIT_TRANSLATION[unit]);
+      } else if (unit == "boolean") {
+        result = n == null || n == 0 ? "false" : "true";
+      } else if (unit == "datetimelocal") {
+        result = moment.unix(n).format("YYYY-MM-DD HH:mm:ss")
+      } else if (unit == "datetimeutc") {
+        result = moment.unix(n).utc().format("YYYY-MM-DD HH:mm:ss")
+      }
+      console.log(now() + " functions.js:formatUintUnits(" + n + ", \"" + unit + "\") => \"" + result + "\"");
+      return result;
+    },
+
+    parseUintUnits(n, unit) {
+      if (n == null) {
+        return null;
+      }
+      let result;
+      if (unit == null) {
+        result = ethers.utils.parseUnits(n, "wei");
+      } else if (unit in ETHERS_UNIT_TRANSLATION) {
+        result = ethers.utils.parseUnits(n, ETHERS_UNIT_TRANSLATION[unit]);
+      } else if (unit == "boolean") {
+        result = n.substring(0, 1).toLowerCase() == "t" ? ethers.BigNumber.from("1") : ethers.BigNumber.from("0");
+      } else if (unit == "datetimelocal") {
+        result = ethers.BigNumber.from(moment(n).unix());
+      } else if (unit == "datetimeutc") {
+        result = ethers.BigNumber.from(moment.utc(n).unix());
+      }
+      console.log(now() + " functions.js:parseUintUnits(" + n + ", \"" + unit + "\") => \"" + result + "\"");
+      return result;
     },
 
     async callFunction() {
