@@ -200,8 +200,12 @@ async function dbSaveCacheData(db, name, data) {
 
 const ETHERS_UNIT_TRANSLATION = {
   "wei": 0,
+  "kwei": 3,
+  "mwei": 6,
   "gwei": 9,
-  "ether": 12,
+  "szabo": 12,
+  "finney": 15,
+  "ether": 18,
   "k": 3,
   "m": 6,
   "g": 9,
@@ -231,7 +235,11 @@ function testFormat() {
   console.log(now() + " functions.js:testFormat");
   formatUintUnits("123", null);
   formatUintUnits("123", "wei");
+  formatUintUnits("123", "kwei");
+  formatUintUnits("123", "mwei");
   formatUintUnits("123", "gwei");
+  formatUintUnits("123", "szabo");
+  formatUintUnits("123", "finney");
   formatUintUnits("123", "ether");
   formatUintUnits("123", "k");
   formatUintUnits("123", "m");
@@ -268,7 +276,12 @@ function testParse() {
   console.log(now() + " functions.js:testParse");
   parseUintUnits("123", null);
   parseUintUnits("123", "wei");
+  parseUintUnits("123.456", "kwei");
   parseUintUnits("123.456", "gwei");
+  parseUintUnits("123.456", "mwei");
+  parseUintUnits("123.456", "gwei");
+  parseUintUnits("123.456", "szabo");
+  parseUintUnits("123.456", "finney");
   parseUintUnits("123.456", "ether");
   parseUintUnits("123.456", "k");
   parseUintUnits("123.456", "m");
