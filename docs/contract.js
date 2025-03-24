@@ -219,7 +219,14 @@ info: {{ info }}
                     <font size="-1" class="text-muted">{{ data.item.type }}</font>
                   </template>
                   <template #cell(input)="data">
-                    <b-form-input type="text" size="sm" :value="getInput(data.index)" @change="setInput(data.index, $event)"></b-form-input>
+                    <b-input-group class="align-items-start">
+                      <b-form-input type="text" size="sm" :value="getInput(data.index)" @change="setInput(data.index, $event)"></b-form-input>
+                      <b-input-group-append>
+                        <div v-if="data.item.type == 'uint256'">
+                          <b-form-select size="sm" :value="getInputUnits(data.index)" @change="setInputUnits(data.index, $event)" :options="uintUnitsOptions" v-b-popover.hover.top="'Select units'"></b-form-select>
+                        </div>
+                      </b-input-group-append>
+                    </b-input-group>
                   </template>
                 </b-table>
               </b-form-group>
@@ -276,9 +283,11 @@ info: {{ info }}
       settings: {
         tabIndex: 0,
         selectedMethodIds: {}, // address -> methodId
-        inputs: {}, // address -> methodId -> index -> value
-        outputs: {}, // address -> methodId -> array of values
-        values: {}, // address -> methodId -> value
+        inputs: {},            // address -> methodId -> index -> value
+        inputUnits: {},        // address -> methodId -> index -> units
+        outputs: {},           // address -> methodId -> array of values
+        outputUnits: {},       // address -> methodId -> index -> units
+        values: {},            // address -> methodId -> value
         functionsTable: {
           filter: null,
           currentPage: 1,
@@ -291,7 +300,7 @@ info: {{ info }}
           pageSize: 5,
           sortOption: 'nameasc',
         },
-        version: 5,
+        version: 6,
       },
       info: {},
       functionsSortOptions: [
@@ -684,6 +693,46 @@ info: {{ info }}
       }
       this.saveSettings();
     },
+    getInputUnits(index) {
+      console.log(now() + " Contract - getInputUnits - index: " + index);
+      if (this.getSelectedMethodId in this.functions) {
+        if (this.info.address in this.settings.inputUnits) {
+          if (this.getSelectedMethodId in this.settings.inputUnits[this.info.address]) {
+            return this.settings.inputUnits[this.info.address][this.getSelectedMethodId][index];
+          }
+        }
+      }
+      return null;
+    },
+    setInputUnits(index, value) {
+      console.log(now() + " Contract - setInputUnits - index: " + index + ", value: " + value);
+      if (this.getSelectedMethodId in this.functions) {
+        if (value) {
+          if (!(this.info.address in this.settings.inputUnits)) {
+            Vue.set(this.settings.inputUnits, this.info.address, {});
+          }
+          if (!(this.getSelectedMethodId in this.settings.inputUnits[this.info.address])) {
+            Vue.set(this.settings.inputUnits[this.info.address], this.getSelectedMethodId, {});
+          }
+          Vue.set(this.settings.inputUnits[this.info.address][this.getSelectedMethodId], index, value);
+        } else {
+          if (this.info.address in this.settings.inputUnits) {
+            if (this.getSelectedMethodId in this.settings.inputUnits[this.info.address]) {
+              if (index in this.settings.inputUnits[this.info.address][this.getSelectedMethodId]) {
+                Vue.delete(this.settings.inputUnits[this.info.address][this.getSelectedMethodId], index);
+              }
+              if (Object.keys(this.settings.inputUnits[this.info.address][this.getSelectedMethodId]).length == 0) {
+                Vue.delete(this.settings.inputUnits[this.info.address], this.getSelectedMethodId);
+              }
+            }
+            if (Object.keys(this.settings.inputUnits[this.info.address]).length == 0) {
+              Vue.delete(this.settings.inputUnits, this.info.address);
+            }
+          }
+        }
+      }
+      this.saveSettings();
+    },
     getOutput(index) {
       // console.log(now() + " Contract - getOutput - index: " + index);
       if (this.getSelectedMethodId in this.functions) {
@@ -769,7 +818,7 @@ info: {{ info }}
     },
 
     saveSettings() {
-      // console.log(now() + " Contract - saveSettings: " + JSON.stringify(this.settings, null, 2));
+      console.log(now() + " Contract - saveSettings: " + JSON.stringify(this.settings, null, 2));
       localStorage.explorerContractSettings = JSON.stringify(this.settings);
     },
     copyToClipboard(str) {
