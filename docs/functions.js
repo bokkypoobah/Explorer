@@ -198,23 +198,7 @@ async function dbSaveCacheData(db, name, data) {
     });
 }
 
-
-
-// uintUnitsOptions: [
-//   { value: null, text: 'Number (0 decimals)' },
-//   { value: "wei", text: 'Wei (0 decimals)' },
-//   { value: "gwei", text: 'Gwei (9 decimals)' },
-//   { value: "ether", text: 'Ethers (18 decimals)' },
-//   { value: "k", text: 'K (x 1,000)' },
-//   { value: "m", text: 'M (x 1,000,000)' },
-//   { value: "g", text: 'M (x 1,000,000,000)' },
-//   { value: "t", text: 'T (x 1,000,000,000,000)' },
-//   { value: "boolean", text: 'Boolean (0 = false, 1 = true)' },
-//   { value: "datetimelocal", text: 'Local datetime yyyy-mm-dd [hh:mm:ss]' },
-//   { value: "datetimeutc", text: 'UTC datetime yyyy-mm-dd [hh:mm:ss]' },
-// ],
-
-const UNIT_TRANSLATION = {
+const UNIT_METRIC = {
   "k": 3,
   "m": 6,
   "g": 9,
@@ -222,12 +206,15 @@ const UNIT_TRANSLATION = {
 };
 function formatUintUnits(n, unit) {
   let result;
+  if (n == null) {
+    return null;
+  }
   if (unit == null || unit == "wei") {
     result = n.toString();
   } else if (unit == "gwei" || unit == "ether") {
     result = ethers.utils.formatUnits(n, unit);
-  } else if (unit in UNIT_TRANSLATION) {
-    result = ethers.utils.formatUnits(n, UNIT_TRANSLATION[unit]);
+  } else if (unit in UNIT_METRIC) {
+    result = ethers.utils.formatUnits(n, UNIT_METRIC[unit]);
   } else if (unit == "boolean") {
     result = n == null || n == 0 ? "false" : "true";
   } else if (unit == "datetimelocal") {
@@ -257,20 +244,22 @@ function testFormat() {
 testFormat();
 
 function parseUintUnits(n, unit) {
-  // console.log(now() + " functions.js:parseUintUnits(" + n + ", " + unit + ")");
   let result;
+  if (n == null) {
+    return null;
+  }
   if (unit == null || unit == "wei") {
     result = ethers.utils.parseUnits(n, "wei");
   } else if (unit == "gwei" || unit == "ether") {
     result = ethers.utils.parseUnits(n, unit);
-  } else if (unit in UNIT_TRANSLATION) {
-    result = ethers.utils.parseUnits(n, UNIT_TRANSLATION[unit]);
+  } else if (unit in UNIT_METRIC) {
+    result = ethers.utils.parseUnits(n, UNIT_METRIC[unit]);
   } else if (unit == "boolean") {
-    result = n.substring(0, 1).toLowerCase() == "t";
+    result = n.substring(0, 1).toLowerCase() == "t" ? ethers.BigNumber.from("1") : ethers.BigNumber.from("0");
   } else if (unit == "datetimelocal") {
-    result = moment(n).unix();
+    result = ethers.BigNumber.from(moment(n).unix());
   } else if (unit == "datetimeutc") {
-    result = moment.utc(n).unix();
+    result = ethers.BigNumber.from(moment.utc(n).unix());
   }
   console.log(now() + " functions.js:parseUintUnits(" + n + ", \"" + unit + "\") => \"" + result + "\"");
   return result;
