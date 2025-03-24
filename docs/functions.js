@@ -198,23 +198,24 @@ async function dbSaveCacheData(db, name, data) {
     });
 }
 
-const UNIT_METRIC = {
+const ETHERS_UNIT_TRANSLATION = {
+  "wei": 0,
+  "gwei": 9,
+  "ether": 12,
   "k": 3,
   "m": 6,
   "g": 9,
   "t": 12,
 };
 function formatUintUnits(n, unit) {
-  let result;
   if (n == null) {
     return null;
   }
-  if (unit == null || unit == "wei") {
+  let result;
+  if (unit == null) {
     result = n.toString();
-  } else if (unit == "gwei" || unit == "ether") {
-    result = ethers.utils.formatUnits(n, unit);
-  } else if (unit in UNIT_METRIC) {
-    result = ethers.utils.formatUnits(n, UNIT_METRIC[unit]);
+  } else if (unit in ETHERS_UNIT_TRANSLATION) {
+    result = ethers.utils.formatUnits(n, ETHERS_UNIT_TRANSLATION[unit]);
   } else if (unit == "boolean") {
     result = n == null || n == 0 ? "false" : "true";
   } else if (unit == "datetimelocal") {
@@ -244,16 +245,14 @@ function testFormat() {
 testFormat();
 
 function parseUintUnits(n, unit) {
-  let result;
   if (n == null) {
     return null;
   }
-  if (unit == null || unit == "wei") {
+  let result;
+  if (unit == null) {
     result = ethers.utils.parseUnits(n, "wei");
-  } else if (unit == "gwei" || unit == "ether") {
-    result = ethers.utils.parseUnits(n, unit);
-  } else if (unit in UNIT_METRIC) {
-    result = ethers.utils.parseUnits(n, UNIT_METRIC[unit]);
+  } else if (unit in ETHERS_UNIT_TRANSLATION) {
+    result = ethers.utils.parseUnits(n, ETHERS_UNIT_TRANSLATION[unit]);
   } else if (unit == "boolean") {
     result = n.substring(0, 1).toLowerCase() == "t" ? ethers.BigNumber.from("1") : ethers.BigNumber.from("0");
   } else if (unit == "datetimelocal") {
