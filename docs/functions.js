@@ -214,10 +214,6 @@ async function dbSaveCacheData(db, name, data) {
 //   { value: "datetimeutc", text: 'UTC datetime yyyy-mm-dd [hh:mm:ss]' },
 // ],
 
-function parseUintUnits(n, unit) {
-  console.log(now() + " functions.js:parseUintUnits(" + n + ", " + unit + ")");
-}
-
 const UNIT_TRANSLATION = {
   "k": 3,
   "m": 6,
@@ -243,9 +239,14 @@ function formatUintUnits(n, unit) {
   return result;
 }
 
-function testIt() {
-  console.log(now() + " functions.js:testIt");
+function parseUintUnits(n, unit) {
+  console.log(now() + " functions.js:parseUintUnits(" + n + ", " + unit + ")");
+}
 
+function testFormat() {
+  console.log(now() + " functions.js:testFormat");
+
+  formatUintUnits("123", null);
   formatUintUnits("123", "wei");
   formatUintUnits("123", "gwei");
   formatUintUnits("123", "ether");
@@ -257,7 +258,7 @@ function testIt() {
   formatUintUnits("123", "boolean");
   formatUintUnits("1742782888", "datetimelocal");
   formatUintUnits("1742782888", "datetimeutc");
-  
+
 }
 
-testIt();
+testFormat();
