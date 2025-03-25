@@ -217,7 +217,10 @@ info: {{ info }}
                     <div v-for="(item, itemIndex) of [getInput(data.index)]" v-bind:key="itemIndex">
                       {{ item }}
                       <div v-if="item.arrayLength">
-                        Array.
+                        <div v-for="(e, eIndex) of item.value" v-bind:key="eIndex">
+                          <!-- <b-form-input type="text" size="sm" :value="e" @change="setInput(data.index, $event)"></b-form-input> -->
+                          <b-form-input type="text" size="sm" :value="e" class="mt-1" @change="setInputArrayItem(data.index, eIndex, $event)"></b-form-input>
+                        </div>
                         <b-button size="sm" variant="primary" @click="addNewInputArrayItem(data.index);">New Row</b-button>
                       </div>
                       <div v-else>
@@ -699,7 +702,8 @@ info: {{ info }}
       if (input.arrayLength) {
         console.log(now() + " Contract - addNewInputArrayItem - Is an array: " + JSON.stringify(input.value));
         const newValue = input.value;
-        newValue.push(null);
+        // newValue.push(null);
+        newValue.push("ha ha");
         if (!(this.info.address in this.settings.inputs)) {
           Vue.set(this.settings.inputs, this.info.address, {});
         }
@@ -710,6 +714,23 @@ info: {{ info }}
           Vue.set(this.settings.inputs[this.info.address][this.getSelectedMethodId], index, { value: newValue, type: null });
         } else {
           Vue.set(this.settings.inputs[this.info.address][this.getSelectedMethodId][index], "value", newValue);
+        }
+      }
+      this.saveSettings();
+    },
+    setInputArrayItem(inputIndex, arrayIndex, elementValue) {
+      console.log(now() + " Contract - addNewInputArrayItem - inputIndex: " + inputIndex + ", arrayIndex: " + arrayIndex + ", elementValue: " + elementValue);
+      if (this.selectedFunction) {
+        if (this.info.address in this.settings.inputs) {
+          if (this.getSelectedMethodId in this.settings.inputs[this.info.address]) {
+            if (inputIndex in this.settings.inputs[this.info.address][this.getSelectedMethodId]) {
+              const currentElement = this.settings.inputs[this.info.address][this.getSelectedMethodId][inputIndex];
+              console.log(now() + " Contract - addNewInputArrayItem - currentElement: " + JSON.stringify(currentElement));
+              Vue.set(this.settings.inputs[this.info.address][this.getSelectedMethodId][inputIndex].value, arrayIndex, elementValue);
+              const newElement = this.settings.inputs[this.info.address][this.getSelectedMethodId][inputIndex];
+              console.log(now() + " Contract - addNewInputArrayItem - newElement: " + JSON.stringify(newElement));
+            }
+          }
         }
       }
       this.saveSettings();
