@@ -211,88 +211,88 @@ const ETHERS_UNIT_TRANSLATION = {
   "g": 9,
   "t": 12,
 };
-function formatUintUnits(n, unit) {
-  if (n == null) {
-    return null;
-  }
-  let result;
-  if (unit == null) {
-    result = n.toString();
-  } else if (unit in ETHERS_UNIT_TRANSLATION) {
-    result = ethers.utils.formatUnits(n, ETHERS_UNIT_TRANSLATION[unit]);
-  } else if (unit == "boolean") {
-    result = n == null || n == 0 ? "false" : "true";
-  } else if (unit == "datetimelocal") {
-    result = moment.unix(n).format("YYYY-MM-DD HH:mm:ss")
-  } else if (unit == "datetimeutc") {
-    result = moment.unix(n).utc().format("YYYY-MM-DD HH:mm:ss")
-  }
-  console.log(now() + " functions.js:formatUintUnits(" + n + ", \"" + unit + "\") => \"" + result + "\"");
-  return result;
-}
+// function formatUintUnits(n, unit) {
+//   if (n == null) {
+//     return null;
+//   }
+//   let result;
+//   if (unit == null) {
+//     result = n.toString();
+//   } else if (unit in ETHERS_UNIT_TRANSLATION) {
+//     result = ethers.utils.formatUnits(n, ETHERS_UNIT_TRANSLATION[unit]);
+//   } else if (unit == "boolean") {
+//     result = n == null || n == 0 ? "false" : "true";
+//   } else if (unit == "datetimelocal") {
+//     result = moment.unix(n).format("YYYY-MM-DD HH:mm:ss")
+//   } else if (unit == "datetimeutc") {
+//     result = moment.unix(n).utc().format("YYYY-MM-DD HH:mm:ss")
+//   }
+//   console.log(now() + " functions.js:formatUintUnits(" + n + ", \"" + unit + "\") => \"" + result + "\"");
+//   return result;
+// }
 
-function testFormat() {
-  console.log(now() + " functions.js:testFormat");
-  formatUintUnits("123", null);
-  formatUintUnits("123", "wei");
-  formatUintUnits("123", "kwei");
-  formatUintUnits("123", "mwei");
-  formatUintUnits("123", "gwei");
-  formatUintUnits("123", "szabo");
-  formatUintUnits("123", "finney");
-  formatUintUnits("123", "ether");
-  formatUintUnits("123", "k");
-  formatUintUnits("123", "m");
-  formatUintUnits("123", "g");
-  formatUintUnits("123", "t");
-  formatUintUnits("0", "boolean");
-  formatUintUnits("123", "boolean");
-  formatUintUnits("1742782888", "datetimelocal");
-  formatUintUnits("1742782888", "datetimeutc");
-}
-testFormat();
+// function testFormat() {
+//   console.log(now() + " functions.js:testFormat");
+//   formatUintUnits("123", null);
+//   formatUintUnits("123", "wei");
+//   formatUintUnits("123", "kwei");
+//   formatUintUnits("123", "mwei");
+//   formatUintUnits("123", "gwei");
+//   formatUintUnits("123", "szabo");
+//   formatUintUnits("123", "finney");
+//   formatUintUnits("123", "ether");
+//   formatUintUnits("123", "k");
+//   formatUintUnits("123", "m");
+//   formatUintUnits("123", "g");
+//   formatUintUnits("123", "t");
+//   formatUintUnits("0", "boolean");
+//   formatUintUnits("123", "boolean");
+//   formatUintUnits("1742782888", "datetimelocal");
+//   formatUintUnits("1742782888", "datetimeutc");
+// }
+// testFormat();
 
-function parseUintUnits(n, unit) {
-  if (n == null) {
-    return null;
-  }
-  let result;
-  if (unit == null) {
-    result = ethers.utils.parseUnits(n, "wei");
-  } else if (unit in ETHERS_UNIT_TRANSLATION) {
-    result = ethers.utils.parseUnits(n, ETHERS_UNIT_TRANSLATION[unit]);
-  } else if (unit == "boolean") {
-    result = n.substring(0, 1).toLowerCase() == "t" ? ethers.BigNumber.from("1") : ethers.BigNumber.from("0");
-  } else if (unit == "datetimelocal") {
-    result = ethers.BigNumber.from(moment(n).unix());
-  } else if (unit == "datetimeutc") {
-    result = ethers.BigNumber.from(moment.utc(n).unix());
-  }
-  console.log(now() + " functions.js:parseUintUnits(" + n + ", \"" + unit + "\") => \"" + result + "\"");
-  return result;
-}
-
-function testParse() {
-  console.log(now() + " functions.js:testParse");
-  parseUintUnits("123", null);
-  parseUintUnits("123", "wei");
-  parseUintUnits("123.456", "kwei");
-  parseUintUnits("123.456", "gwei");
-  parseUintUnits("123.456", "mwei");
-  parseUintUnits("123.456", "gwei");
-  parseUintUnits("123.456", "szabo");
-  parseUintUnits("123.456", "finney");
-  parseUintUnits("123.456", "ether");
-  parseUintUnits("123.456", "k");
-  parseUintUnits("123.456", "m");
-  parseUintUnits("123.456", "g");
-  parseUintUnits("123.456", "t");
-  parseUintUnits("false", "boolean");
-  parseUintUnits("trUe", "boolean");
-  parseUintUnits("t", "boolean");
-  parseUintUnits("2025-03-24 13:21:28", "datetimelocal");
-  parseUintUnits("2025-03-24", "datetimelocal");
-  parseUintUnits("2025-03-24 02:21:28", "datetimeutc");
-  parseUintUnits("2025-03-24", "datetimeutc");
-}
-testParse();
+// function parseUintUnits(n, unit) {
+//   if (n == null) {
+//     return null;
+//   }
+//   let result;
+//   if (unit == null) {
+//     result = ethers.utils.parseUnits(n, "wei");
+//   } else if (unit in ETHERS_UNIT_TRANSLATION) {
+//     result = ethers.utils.parseUnits(n, ETHERS_UNIT_TRANSLATION[unit]);
+//   } else if (unit == "boolean") {
+//     result = n.substring(0, 1).toLowerCase() == "t" ? ethers.BigNumber.from("1") : ethers.BigNumber.from("0");
+//   } else if (unit == "datetimelocal") {
+//     result = ethers.BigNumber.from(moment(n).unix());
+//   } else if (unit == "datetimeutc") {
+//     result = ethers.BigNumber.from(moment.utc(n).unix());
+//   }
+//   console.log(now() + " functions.js:parseUintUnits(" + n + ", \"" + unit + "\") => \"" + result + "\"");
+//   return result;
+// }
+//
+// function testParse() {
+//   console.log(now() + " functions.js:testParse");
+//   parseUintUnits("123", null);
+//   parseUintUnits("123", "wei");
+//   parseUintUnits("123.456", "kwei");
+//   parseUintUnits("123.456", "gwei");
+//   parseUintUnits("123.456", "mwei");
+//   parseUintUnits("123.456", "gwei");
+//   parseUintUnits("123.456", "szabo");
+//   parseUintUnits("123.456", "finney");
+//   parseUintUnits("123.456", "ether");
+//   parseUintUnits("123.456", "k");
+//   parseUintUnits("123.456", "m");
+//   parseUintUnits("123.456", "g");
+//   parseUintUnits("123.456", "t");
+//   parseUintUnits("false", "boolean");
+//   parseUintUnits("trUe", "boolean");
+//   parseUintUnits("t", "boolean");
+//   parseUintUnits("2025-03-24 13:21:28", "datetimelocal");
+//   parseUintUnits("2025-03-24", "datetimelocal");
+//   parseUintUnits("2025-03-24 02:21:28", "datetimeutc");
+//   parseUintUnits("2025-03-24", "datetimeutc");
+// }
+// testParse();

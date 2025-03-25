@@ -14,15 +14,9 @@ const Contract = {
                   <b-dropdown size="sm" right text="" variant="link" class="m-0 p-0">
                     <b-dropdown-text>Sample Contracts</b-dropdown-text>
                     <b-dropdown-divider></b-dropdown-divider>
-                    <b-dropdown-item @click="loadAddress('0x9fC3dc011b461664c835F2527fffb1169b3C213e');">0x9fC3dc01 - EF: DeFi Multisig - Safe v1.4.1</b-dropdown-item>
-                    <b-dropdown-item @click="loadAddress('0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2');">0xC02aaA39 - ERC-20: WETH</b-dropdown-item>
-                    <b-dropdown-item @click="loadAddress('0x42069abfe407c60cf4ae4112bedead391dba1cdb');">0x42069abf - ERC-721: CryptoDickButts</b-dropdown-item>
-                    <b-dropdown-item @click="loadAddress('0x8fa600364b93c53e0c71c7a33d2ade21f4351da3');">0x8fa60036 - ERC-721: Larva Chads</b-dropdown-item>
-                    <b-dropdown-item @click="loadAddress('0xB32979486938AA9694BFC898f35DBED459F44424');">0xB3297948 - ERC-1155: Nyan Cat</b-dropdown-item>
-                    <b-dropdown-item @click="loadAddress('0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB');">0xb47e3cd8 - CryptoPunksMarket</b-dropdown-item>
-                    <b-dropdown-item @click="loadAddress('0x16F5A35647D6F03D5D3da7b35409D65ba03aF3B2');">0x16F5A356 - CryptopunksData</b-dropdown-item>
-                    <b-dropdown-item @click="loadAddress('0x23d23d8F243e57d0b924bff3A3191078Af325101');">0x23d23d8F - BokkyPooBahsDateTimeLibrary:BokkyPooBahsDateTimeContract</b-dropdown-item>
-                    <b-dropdown-item @click="loadAddress('0x78F96B2D5F717fa9ad416957B79D825cc4ccE69d');">0x78F96B2D - BokkyPooBahsDateTimeLibrary:TestDateTime</b-dropdown-item>
+                    <span v-for="(sample, sampleIndex) of (chainId && SAMPLES[chainId] || [])" v-bind:key="sampleIndex">
+                      <b-dropdown-item v-if="sample.type == 'contract'" @click="loadAddress(sample.address);">{{ sample.address.substring(0, 10) + ' - ' + sample.info }}</b-dropdown-item>
+                    </span>
                   </b-dropdown>
                 </div>
                 <div class="mt-0 flex-grow-1">
@@ -377,6 +371,9 @@ info: {{ info }}
     }
   },
   computed: {
+    SAMPLES() {
+      return SAMPLES;
+    },
     etherscanAPIKey() {
       return store.getters['settings'].etherscanAPIKey;
     },
