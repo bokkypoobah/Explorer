@@ -206,10 +206,10 @@ const ETHERS_UNIT_TRANSLATION = {
   "szabo": 12,
   "finney": 15,
   "ether": 18,
-  "k": 3,
-  "m": 6,
-  "g": 9,
-  "t": 12,
+  // "k": 3,
+  // "m": 6,
+  // "g": 9,
+  // "t": 12,
 };
 // function formatUintUnits(n, unit) {
 //   if (n == null) {

@@ -214,8 +214,9 @@ info: {{ info }}
                     <font size="-1" class="text-muted">{{ data.item.type }}</font>
                   </template>
                   <template #cell(input)="data">
+                    {{ getInput(data.index) }}
                     <b-input-group class="align-items-start">
-                      <b-form-input type="text" size="sm" :value="getInput(data.index)" @change="setInput(data.index, $event)"></b-form-input>
+                      <b-form-input type="text" size="sm" :value="getInput(data.index).value" @change="setInput(data.index, $event)"></b-form-input>
                       <b-input-group-append>
                         <div v-if="data.item.type == 'uint256'">
                           <b-form-select size="sm" :value="getInputUnits(data.index)" @change="setInputUnits(data.index, $event)" :options="uintUnitsOptions" v-b-popover.hover.top="'Select units'"></b-form-select>
@@ -331,16 +332,16 @@ info: {{ info }}
       uintUnitsOptions: [
         { value: null, text: 'Number' },
         { value: "wei", text: 'Wei x10^0' },
-        { value: "kwei", text: 'Kwei x10^3' },
-        { value: "mwei", text: 'Mwei x10^6' },
-        { value: "gwei", text: 'Gwei x10^9' },
-        { value: "szabo", text: 'Szabo x10^12' },
+        { value: "kwei", text: 'K, or Kwei x10^3' },
+        { value: "mwei", text: 'M, or Mwei x10^6' },
+        { value: "gwei", text: 'G, or Gwei x10^9' },
+        { value: "szabo", text: 'T, or Szabo x10^12' },
         { value: "finney", text: 'Finney x10^15' },
         { value: "ether", text: 'Ether x10^18' },
-        { value: "k", text: 'K x10^3' },
-        { value: "m", text: 'M x10^6' },
-        { value: "g", text: 'G x10^9' },
-        { value: "t", text: 'T x10^12' },
+        // { value: "k", text: 'K x10^3' },
+        // { value: "m", text: 'M x10^6' },
+        // { value: "g", text: 'G x10^9' },
+        // { value: "t", text: 'T x10^12' },
         { value: "boolean", text: 'Boolean (0 = false, >0 = true)' },
         { value: "datetimelocal", text: 'Local yyyy-mm-dd [hh:mm:ss]' },
         { value: "datetimeutc", text: 'UTC yyyy-mm-dd [hh:mm:ss]' },
@@ -660,19 +661,28 @@ info: {{ info }}
       this.saveSettings();
     },
     getInput(index) {
-      // console.log(now() + " Contract - getInput - index: " + index);
-      if (this.getSelectedMethodId in this.functions) {
+      console.log(now() + " Contract - getInput - index: " + index + ", this.selectedFunction: " + JSON.stringify(this.selectedFunction));
+      let [ value, type, isInt, arrayLength, arrayItemType, error ] = [ null, null, false, null, null, null ];
+      if (this.selectedFunction) {
+        type = this.selectedFunction.inputs[index].type;
+        isInt = this.selectedFunction.inputs[index].type.substring(0, 3) == "int" || this.selectedFunction.inputs[index].type.substring(0, 4) == "uint";
         if (this.info.address in this.settings.inputs) {
           if (this.getSelectedMethodId in this.settings.inputs[this.info.address]) {
-            return this.settings.inputs[this.info.address][this.getSelectedMethodId][index];
+            value = this.settings.inputs[this.info.address][this.getSelectedMethodId][index];
           }
         }
+        if (this.selectedFunction.inputs[index].type.slice(-2) == "[]") {
+          arrayItemType = this.selectedFunction.inputs[index].type.substring(0, this.selectedFunction.inputs[index].type.length - 2);
+          console.log(now() + " Contract - getInput - ARRAY");
+          arrayLength = this.selectedFunction.inputs[index].arrayLength;
+          value = [];
+        }
       }
-      return null;
+      return { value, type, isInt, arrayLength, arrayItemType, error };
     },
     setInput(index, value) {
       // console.log(now() + " Contract - setInput - index: " + index + ", value: " + value);
-      if (this.getSelectedMethodId in this.functions) {
+      if (this.selectedFunction) {
         if (value) {
           if (!(this.info.address in this.settings.inputs)) {
             Vue.set(this.settings.inputs, this.info.address, {});
@@ -905,7 +915,8 @@ info: {{ info }}
     },
 
     saveSettings() {
-      console.log(now() + " Contract - saveSettings: " + JSON.stringify(this.settings, null, 2));
+      // console.log(now() + " Contract - saveSettings: " + JSON.stringify(this.settings, null, 2));
+      console.log(now() + " Contract - saveSettings - settings.inputs: " + JSON.stringify(this.settings.inputs, null, 2));
       localStorage.explorerContractSettings = JSON.stringify(this.settings);
     },
     copyToClipboard(str) {
