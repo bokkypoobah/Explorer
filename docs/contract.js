@@ -215,7 +215,9 @@ info: {{ info }}
                   </template>
                   <template #cell(input)="data">
                     <div v-for="(item, itemIndex) of [getInput(data.index)]" v-bind:key="itemIndex">
-                      {{ itemIndex }} . {{ item }}
+                      <font size="-2" class="text-muted">
+                        {{ item }}
+                      </font>
                       <div v-if="item.arrayLength">
                         <div v-for="(e, eIndex) of item.value" v-bind:key="eIndex">
                           <!-- <b-form-input type="text" size="sm" :value="e" @change="setInput(data.index, $event)"></b-form-input> -->
@@ -633,7 +635,7 @@ info: {{ info }}
       console.log(now() + " Contract - methods.importABIFromEtherscan");
       const db = new Dexie(this.dbInfo.name);
       db.version(this.dbInfo.version).stores(this.dbInfo.schemaDefinition);
-      const url = "https://api.etherscan.io/v2/api?chainid=1&module=contract&action=getabi&address=" + (this.info.implementation ? this.info.implementation : this.info.address) + "&apikey=" + store.getters['settings'].etherscanAPIKey;
+      const url = "https://api.etherscan.io/v2/api?chainid=" + this.chainId + "&module=contract&action=getabi&address=" + (this.info.implementation ? this.info.implementation : this.info.address) + "&apikey=" + store.getters['settings'].etherscanAPIKey;
       console.log(now() + " Contract - url: " + url);
       const data = await fetch(url).then(response => response.json());
       console.log(now() + " Contract - data: " + JSON.stringify(data, null, 2));

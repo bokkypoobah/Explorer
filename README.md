@@ -28,6 +28,14 @@ Web3 dapp: https://bokkypoobah.github.io/Explorer/ connected to Ethereum Mainnet
 
 <br />
 
+---
+
+### Deployed Contracts For Testing
+
+* Mar 25 2025 - Deployed [deployed_contracts/TestExplorer_Sepolia_0xFD8609Efb8A768A8ef559Cba94Ec21E7Bf8801c4.sol](deployed_contracts/TestExplorer_Sepolia_0xFD8609Efb8A768A8ef559Cba94Ec21E7Bf8801c4.sol) to Sepolia [0xfd8609efb8a768a8ef559cba94ec21e7bf8801c4](https://sepolia.etherscan.io/address/0xfd8609efb8a768a8ef559cba94ec21e7bf8801c4#code)
+
+<br />
+
 <br />
 
 Enjoy!
