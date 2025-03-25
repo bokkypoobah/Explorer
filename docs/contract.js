@@ -219,18 +219,30 @@ info: {{ info }}
                         {{ item }}
                       </font>
                       <div v-if="item.arrayLength">
-                        <div v-for="(e, eIndex) of item.value" v-bind:key="eIndex">
-                          <!-- <b-form-input type="text" size="sm" :value="e" @change="setInput(data.index, $event)"></b-form-input> -->
-                          <b-form-input type="text" size="sm" :value="e" class="mt-1" @change="setInputArrayElement(data.index, eIndex, $event)"></b-form-input>
-                          <b-button size="sm" variant="primary" @click="removeInputArrayElement(data.index, eIndex);">Remove Row {{ eIndex }}</b-button>
-                        </div>
-                        <b-button size="sm" variant="primary" @click="addNewInputArrayItem(data.index);">New Row</b-button>
+                        <b-row v-for="(e, eIndex) of item.value" v-bind:key="eIndex">
+                          <b-col>
+                            <font size="-1" class="text-muted">{{ eIndex + 1 }}</font>
+                          </b-col>
+                          <b-col cols="7">
+                            <b-form-input type="text" size="sm" :value="e" class="mt-1" @change="setInputArrayElement(data.index, eIndex, $event)"></b-form-input>
+                          </b-col>
+                          <b-col cols="4">
+                            <b-button v-if="item.arrayLength < 0" size="sm" variant="primary" @click="removeInputArrayElement(data.index, eIndex);">Remove Row</b-button>
+                          </b-col>
+                        </b-row>
+                        <b-row>
+                          <b-col cols="8">
+                          </b-col>
+                          <b-col cols="4">
+                            <b-button v-if="item.arrayLength < 0" size="sm" variant="primary" @click="addNewInputArrayItem(data.index);">Add New Row</b-button>
+                          </b-col>
+                        </b-row>
                       </div>
                       <div v-else>
                         <b-input-group class="align-items-start">
                           <b-form-input type="text" size="sm" :value="item.value" @change="setInput(data.index, $event)"></b-form-input>
                           <b-input-group-append>
-                            <div v-if="data.item.type == 'uint256'">
+                            <div v-if="item.isInt">
                               <b-form-select size="sm" :value="getInputUnits(data.index)" @change="setInputUnits(data.index, $event)" :options="uintUnitsOptions" v-b-popover.hover.top="'Select units'"></b-form-select>
                             </div>
                           </b-input-group-append>
@@ -528,7 +540,9 @@ info: {{ info }}
       return results;
     },
     pagedFilteredSortedFunctions() {
-      return this.filteredSortedFunctions.slice((this.settings.functionsTable.currentPage - 1) * this.settings.functionsTable.pageSize, this.settings.functionsTable.currentPage * this.settings.functionsTable.pageSize);
+      const results = this.filteredSortedFunctions.slice((this.settings.functionsTable.currentPage - 1) * this.settings.functionsTable.pageSize, this.settings.functionsTable.currentPage * this.settings.functionsTable.pageSize);
+      // console.log(now() + " Contract - computed.pagedFilteredSortedFunctions - results: " + JSON.stringify(results, null, 2));
+      return results;
     },
     eventsList() {
       const results = [];
@@ -679,8 +693,10 @@ info: {{ info }}
       let [ value, unit, type, elementType, isInt, arrayLength, error ] = [ null, null, null, null, false, null, null ];
       if (this.selectedFunction) {
         type = this.selectedFunction.inputs[index].type;
-        elementType = this.selectedFunction.inputs[index].type.replace(/\[\]/, "");
+        elementType = this.selectedFunction.inputs[index].type.replace(/\[.\d*\]/, "");
         isInt = this.selectedFunction.inputs[index].type.substring(0, 3) == "int" || this.selectedFunction.inputs[index].type.substring(0, 4) == "uint";
+        arrayLength = this.selectedFunction.inputs[index].arrayLength;
+
         if (this.info.address in this.settings.inputs) {
           if (this.getSelectedMethodId in this.settings.inputs[this.info.address]) {
             if (this.settings.inputs[this.info.address][this.getSelectedMethodId][index]) {
@@ -689,11 +705,14 @@ info: {{ info }}
             }
           }
         }
-        if (this.selectedFunction.inputs[index].type.slice(-2).match(/\[\]$/)) {
+        if (arrayLength != null) {
           console.log(now() + " Contract - getInput - ARRAY");
-          arrayLength = this.selectedFunction.inputs[index].arrayLength;
           if (value == null) {
-            value = [];
+            if (arrayLength > 0) {
+              value = new Array(arrayLength).fill(null);
+            } else {
+              value = [];
+            }
           }
         }
       }
@@ -721,32 +740,18 @@ info: {{ info }}
       this.saveSettings();
     },
     setInputArrayElement(inputIndex, arrayIndex, elementValue) {
-      console.log(now() + " Contract - addNewInputArrayItem - inputIndex: " + inputIndex + ", arrayIndex: " + arrayIndex + ", elementValue: " + elementValue);
-      if (this.selectedFunction) {
-        if (this.info.address in this.settings.inputs) {
-          if (this.getSelectedMethodId in this.settings.inputs[this.info.address]) {
-            if (inputIndex in this.settings.inputs[this.info.address][this.getSelectedMethodId]) {
-              const currentElement = this.settings.inputs[this.info.address][this.getSelectedMethodId][inputIndex];
-              console.log(now() + " Contract - addNewInputArrayItem - currentElement: " + JSON.stringify(currentElement));
-              Vue.set(this.settings.inputs[this.info.address][this.getSelectedMethodId][inputIndex].value, arrayIndex, elementValue);
-              const newElement = this.settings.inputs[this.info.address][this.getSelectedMethodId][inputIndex];
-              console.log(now() + " Contract - addNewInputArrayItem - newElement: " + JSON.stringify(newElement));
-            }
-          }
-        }
-      }
-      this.saveSettings();
-    },
-    setInputArrayElement(inputIndex, arrayIndex, elementValue) {
       console.log(now() + " Contract - setInputArrayElement - inputIndex: " + inputIndex + ", arrayIndex: " + arrayIndex + ", elementValue: " + elementValue);
       if (this.selectedFunction) {
+        console.log(now() + " Contract - setInputArrayElement - this.selectedFunction: " + JSON.stringify(this.selectedFunction, null, 2));
         if (this.info.address in this.settings.inputs) {
           if (this.getSelectedMethodId in this.settings.inputs[this.info.address]) {
-            if (inputIndex in this.settings.inputs[this.info.address][this.getSelectedMethodId]) {
-              const currentElement = this.settings.inputs[this.info.address][this.getSelectedMethodId][inputIndex];
+            console.log(now() + " Contract - setInputArrayElement - inputIndex: " + inputIndex);
+            console.log(now() + " Contract - setInputArrayElement - this.settings.inputs[this.info.address][this.getSelectedMethodId]: " + JSON.stringify(this.settings.inputs[this.info.address][this.getSelectedMethodId], null, 2));
+            if (this.settings.inputs[this.info.address][this.getSelectedMethodId][inputIndex]) {
+              const currentElement = this.settings.inputs[this.info.address][this.getSelectedMethodId][inputIndex].value;
               console.log(now() + " Contract - setInputArrayElement - currentElement: " + JSON.stringify(currentElement));
               Vue.set(this.settings.inputs[this.info.address][this.getSelectedMethodId][inputIndex].value, arrayIndex, elementValue);
-              const newElement = this.settings.inputs[this.info.address][this.getSelectedMethodId][inputIndex];
+              const newElement = this.settings.inputs[this.info.address][this.getSelectedMethodId][inputIndex].value;
               console.log(now() + " Contract - setInputArrayElement - newElement: " + JSON.stringify(newElement));
             }
           }
@@ -754,6 +759,23 @@ info: {{ info }}
       }
       this.saveSettings();
     },
+    // setInputArrayElement(inputIndex, arrayIndex, elementValue) {
+    //   console.log(now() + " Contract - setInputArrayElement - inputIndex: " + inputIndex + ", arrayIndex: " + arrayIndex + ", elementValue: " + elementValue);
+    //   if (this.selectedFunction) {
+    //     if (this.info.address in this.settings.inputs) {
+    //       if (this.getSelectedMethodId in this.settings.inputs[this.info.address]) {
+    //         if (inputIndex in this.settings.inputs[this.info.address][this.getSelectedMethodId]) {
+    //           const currentElement = this.settings.inputs[this.info.address][this.getSelectedMethodId][inputIndex];
+    //           console.log(now() + " Contract - setInputArrayElement - currentElement: " + JSON.stringify(currentElement));
+    //           Vue.set(this.settings.inputs[this.info.address][this.getSelectedMethodId][inputIndex].value, arrayIndex, elementValue);
+    //           const newElement = this.settings.inputs[this.info.address][this.getSelectedMethodId][inputIndex];
+    //           console.log(now() + " Contract - setInputArrayElement - newElement: " + JSON.stringify(newElement));
+    //         }
+    //       }
+    //     }
+    //   }
+    //   this.saveSettings();
+    // },
     removeInputArrayElement(inputIndex, arrayIndex) {
       console.log(now() + " Contract - removeInputArrayElement - inputIndex: " + inputIndex + ", arrayIndex: " + arrayIndex);
       if (this.selectedFunction) {
@@ -786,8 +808,6 @@ info: {{ info }}
           } else {
             Vue.set(this.settings.inputs[this.info.address][this.getSelectedMethodId][index], "value", value);
           }
-
-
         } else {
           if (this.info.address in this.settings.inputs) {
             if (this.getSelectedMethodId in this.settings.inputs[this.info.address]) {
