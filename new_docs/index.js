@@ -176,6 +176,9 @@ const app = Vue.createApp({
     connected() {
       return store.getters['web3'].connected;
     },
+    coinbase() {
+      return store.getters['web3'].coinbase;
+    },
     // router() {
     //   return this.$router;
     // },

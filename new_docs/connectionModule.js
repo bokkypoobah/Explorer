@@ -6,6 +6,13 @@ const Connection = {
     <div>
       <p class="text-caption text--disabled">
         {{ connected ? "Connected" : "Disconnected" }}
+
+        <!-- <v-tooltip text="Tooltip">
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props">Hover Over Me</v-btn>
+          </template>
+        </v-tooltip> -->
+
         &nbsp;
         <a v-if="info.chainId" :href="explorer" target="_blank">
           {{ networkName }}
