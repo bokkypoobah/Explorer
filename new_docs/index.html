@@ -65,7 +65,7 @@
             <!-- <span class="mdi mdi-tools"></span> -->
             CONFIG
           </v-btn>
-          <v-spacer></v-spacer>
+          <!-- <v-spacer></v-spacer> -->
           <v-btn v-if="!connected" @click="connect();" text>CONNECT</v-btn>
           <v-tooltip v-else :text="coinbase">
             <template v-slot:activator="{ props }">
@@ -96,21 +96,17 @@
           </v-container>
         </v-main>
         <v-footer app fixed border>
-          <v-footer>
-            <v-row justify="space-between" align="center">
-              <v-col class="text-left">
-                <connection></connection>
-              </v-col>
-              <v-col class="text-right">
-                <p class="text-caption text--disabled">
-                  gm, and enjoy! <i>Explorer</i> &copy; Bok Consulting Pty Ltd 2025. The MIT Licence
-                </p>
-              </v-col>
-            </v-row>
-          </v-footer>
+          <v-row justify="space-between" align="center">
+            <v-col class="text-left">
+              <connection></connection>
+            </v-col>
+            <v-col class="text-right">
+              <p class="text-caption text--disabled">
+                gm, and enjoy! <i>Explorer</i> &copy; Bok Consulting Pty Ltd 2025. The MIT Licence
+              </p>
+            </v-col>
+          </v-row>
         </v-footer>
-        <!-- {{ testData }} -->
-        <!-- {{ name }} -->
       </v-app>
     </div>
     <script src="index.js"></script>

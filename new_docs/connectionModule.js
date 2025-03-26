@@ -4,37 +4,29 @@
 const Connection = {
   template: `
     <div>
-      <p class="text-caption text--disabled">
-        {{ connected ? "Connected" : "Disconnected" }}
-
-        <!-- <v-tooltip text="Tooltip">
-          <template v-slot:activator="{ props }">
-            <v-btn v-bind="props">Hover Over Me</v-btn>
-          </template>
-        </v-tooltip> -->
-
-        &nbsp;
-        <a v-if="info.chainId" :href="explorer" target="_blank">
+      <!-- <v-btn small :href="explorer + (coinbase && ('address/' + coinbase))" target="_blank" variant="plain">
+        <span v-if="connected" class="mdi mdi-network"></span>
+        <span v-if="!connected" class="mdi mdi-network-outline"></span>
+      </v-btn> -->
+      <span class="text-caption text--disabled">
+        <span v-if="coinbase">
+          <a :href="explorer + 'address/' + coinbase" target="_blank" >
+            {{ connected ? "CONNECTED" : "DISCONNECTED" }}
+          </a>
+        </span>
+        <span v-else>
+          {{ connected ? "CONNECTED" : "DISCONNECTED" }}
+        </span>
+        <a v-if="info.chainId" :href="explorer" target="_blank" class="ml-1">
           {{ networkName }}
         </a>
-        &nbsp;
-        <a v-if="info.blockNumber" :href="explorer + 'block/' + info.blockNumber" target="_blank">
+        <a v-if="info.blockNumber" :href="explorer + 'block/' + info.blockNumber" target="_blank" class="ml-1">
           {{ '#' + commify0(info.blockNumber) }}
         </a>
-        &nbsp;
-        <span v-if="info.timestamp">
+        <span v-if="info.timestamp" class="ml-1">
           {{ formatTimeDiff(info.timestamp) }}
         </span>
-        <!-- <a v-if="info.chainId" :href="explorer" target="_blank">
-          {{ networkName }}
-        </a> -->
-        <!-- <b-link v-if="info.blockNumber" :href="'#/block/' + info.blockNumber" v-b-popover.hover.bottom="'Latest block'">
-          {{ '#' + commify0(info.blockNumber) }}
-        </b-link> -->
-        <!-- <span v-if="info.timestamp" v-b-popover.hover.bottom="formatTimestamp(info.timestamp)">
-          {{ formatTimeDiff(info.timestamp) }}
-        </span> -->
-      </p>
+      </span>
     </div>
   `,
   data: function () {
@@ -45,6 +37,9 @@ const Connection = {
   computed: {
     connected() {
       return store.getters['web3'].connected;
+    },
+    coinbase() {
+      return store.getters['web3'].coinbase;
     },
     info() {
       return store.getters['web3'];
