@@ -26,9 +26,12 @@
     <script src="js/vuex_4.1.0.js"></script>
 
     <script src="globals.js"></script>
-    
+
     <script src="home.js"></script>
-    <script src="test.js"></script>
+    <script src="block.js"></script>
+    <script src="transaction.js"></script>
+    <script src="address.js"></script>
+    <script src="contract.js"></script>
 
     <script src="routes.js"></script>
 
@@ -44,12 +47,16 @@
 
         <v-toolbar fixed>
           <v-avatar image="images/fknchad_FkqVTzBaUAAiE8x_nobg.png"></v-avatar>
+          <v-toolbar-title>Explorer</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn to="/" text>HOME</v-btn>
+          <v-btn to="/block" text>BLOCK</v-btn>
+          <v-btn to="/transaction" text>TRANSACTION</v-btn>
+          <v-btn to="/address" text>ADDRESS</v-btn>
+          <v-btn to="/contract" text>CONTRACT</v-btn>
+          <v-spacer></v-spacer>
+          <v-btn text>CONNECT</v-btn>
         </v-toolbar>
-
-        <router-link to="/">Home</router-link> <router-link to="/test">Test</router-link>
-        <br />
-        <v-btn small to="/" color="primary">Click me</v-btn>
-        <br />
 
         <router-view v-slot="{ Component }">
           <component :is="Component" />
