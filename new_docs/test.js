@@ -10,12 +10,12 @@ const Test = {
 
   },
   beforeCreate() {
-    console.log("now()" + " home.js - app:beforeCreate");
+    console.log(now() + " Test - app:beforeCreate");
 	},
   mounted() {
-    console.log("now()" + " home.js - app:mounted");
+    console.log(now() + " Test - app:mounted");
 	},
   destroyed() {
-    console.log("now()" + " home.js - app:destroyed");
+    console.log(now() + " Test - app:destroyed");
 	},
 };

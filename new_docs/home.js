@@ -15,12 +15,12 @@ const Home = {
 
   },
   beforeCreate() {
-    console.log("now()" + " home.js - app:beforeCreate");
+    console.log(now() + " Home - app:beforeCreate");
 	},
   mounted() {
-    console.log("now()" + " home.js - app:mounted");
+    console.log(now() + " Home - app:mounted");
 	},
   destroyed() {
-    console.log("now()" + " home.js - app:destroyed");
+    console.log(now() + " Home - app:destroyed");
 	},
 };

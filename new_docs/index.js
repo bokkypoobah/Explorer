@@ -52,14 +52,14 @@ const app = Vue.createApp({
   //   }
   // },
   beforeCreate() {
-    console.log("now()" + " index.js - app:beforeCreate");
+    console.log(now() + " index.js - app:beforeCreate");
 	},
-  // mounted() {
-  //   console.log("now()" + " index.js - app.mounted");
-  // },
-  // destroyed() {
-  //   console.log("now()" + " index.js - app.destroyed");
-  // },
+  mounted() {
+    console.log(now() + " index.js - app.mounted");
+  },
+  destroyed() {
+    console.log(now() + " index.js - app.destroyed");
+  },
 });
 
 // router.beforeEach((to, from) => {
