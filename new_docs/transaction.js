@@ -1,7 +1,16 @@
 const Transaction = {
-  template: "<div><h1>Transaction</h1><p>TODO</p></div>",
+  template: `
+    <div>
+      <h1>Transaction</h1>
+      <p>TODO</p>
+      <p>{{ inputTxHash }}</p>
+    </div>
+  `,
+  props: ['inputTxHash'],
   data: function () {
-    return {};
+    return {
+      txHash: null,
+    };
   },
   computed: {
 

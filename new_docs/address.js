@@ -1,7 +1,16 @@
 const Address = {
-  template: "<div><h1>Address</h1><p>TODO</p></div>",
+  template: `
+    <div>
+      <h1>Address</h1>
+      <p>TODO</p>
+      <p>{{ inputAddress }}</p>
+    </div>
+  `,
+  props: ['inputAddress'],
   data: function () {
-    return {};
+    return {
+      address: null,
+    };
   },
   computed: {
 

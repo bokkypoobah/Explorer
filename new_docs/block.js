@@ -1,7 +1,16 @@
 const Block = {
-  template: "<div><h1>Block</h1><p>TODO</p></div>",
+  template: `
+    <div>
+      <h1>Block</h1>
+      <p>TODO</p>
+      <p>{{ inputBlockNumber }}</p>
+    </div>
+  `,
+  props: ['inputBlockNumber'],
   data: function () {
-    return {};
+    return {
+      blockNumber: null,
+    };
   },
   computed: {
 
