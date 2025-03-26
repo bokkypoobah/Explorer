@@ -15,6 +15,9 @@ const Address = {
   mounted() {
     console.log(now() + " Address - app:mounted");
 	},
+  unmounted() {
+    console.log(now() + " Address - app:unmounted");
+	},
   destroyed() {
     console.log(now() + " Address - app:destroyed");
 	},

@@ -15,6 +15,9 @@ const Contract = {
   mounted() {
     console.log(now() + " Contract - app:mounted");
 	},
+  unmounted() {
+    console.log(now() + " Contract - app:unmounted");
+	},
   destroyed() {
     console.log(now() + " Contract - app:destroyed");
 	},

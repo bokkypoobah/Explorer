@@ -15,6 +15,9 @@ const Block = {
   mounted() {
     console.log(now() + " Block - app:mounted");
 	},
+  unmounted() {
+    console.log(now() + " Block - app:unmounted");
+	},
   destroyed() {
     console.log(now() + " Block - app:destroyed");
 	},

@@ -15,6 +15,9 @@ const Transaction = {
   mounted() {
     console.log(now() + " Transaction - app:mounted");
 	},
+  unmounted() {
+    console.log(now() + " Transaction - app:unmounted");
+	},
   destroyed() {
     console.log(now() + " Transaction - app:destroyed");
 	},
