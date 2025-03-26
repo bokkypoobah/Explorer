@@ -41,3 +41,27 @@ wget $SOURCE -O $DEST
 SOURCE=https://cdn.jsdelivr.net/npm/vuetify@3.7.18/dist/vuetify.min.js
 DEST=../new_docs/js/vuetify_3.7.18.min.js
 wget $SOURCE -O $DEST
+
+# Get dexie[.min].js 3.0.3
+SOURCE=https://unpkg.com/dexie@3.0.3/dist/dexie.js
+DEST=../new_docs/js/dexie_3.0.3.js
+wget $SOURCE -O $DEST
+SOURCE=https://unpkg.com/dexie@3.0.3/dist/dexie.min.js
+DEST=../new_docs/js/dexie_3.0.3.min.js
+wget $SOURCE -O $DEST
+
+# Get dexie[.min].js 3.0.3
+SOURCE=https://cdnjs.cloudflare.com/ajax/libs/ethers/5.8.0/ethers.umd.js
+DEST=../new_docs/js/ethers_5.8.0.umd.js
+wget $SOURCE -O $DEST
+SOURCE=https://cdnjs.cloudflare.com/ajax/libs/ethers/5.8.0/ethers.umd.min.js
+DEST=../new_docs/js/ethers_5.8.0.umd.min.js
+wget $SOURCE -O $DEST
+
+# Get moment[.min].js 2.24.0
+SOURCE=https://unpkg.com/moment@2.24.0/moment.js
+DEST=../new_docs/js/moment_2.24.0.js
+wget $SOURCE -O $DEST
+SOURCE=https://unpkg.com/moment@2.24.0/min/moment.min.js
+DEST=../new_docs/js/moment_2.24.0.min.js
+wget $SOURCE -O $DEST
