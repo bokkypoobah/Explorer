@@ -33,7 +33,16 @@ const Block = {
               <v-text-field v-if="block" readonly v-model="extraData" label="Extra Data:"></v-text-field>
             </v-col>
           </v-row>
-          <v-data-table v-if="block" :items="transactions" density="compact" style="position: relative;">
+          <v-data-table v-if="block" :items="transactions" @click:row="handleClick" density="compact" style="position: relative;">
+            <template v-slot:item.txHash="{ item }">
+              <a :href="'#/transaction/' + item.txHash">{{ item.txHash }}</a>
+            </template>
+            <template v-slot:item.from="{ item }">
+              <a :href="'#/address/' + item.from">{{ item.from }}</a>
+            </template>
+            <template v-slot:item.to="{ item }">
+              <a :href="'#/address/' + item.to">{{ item.to }}</a>
+            </template>
           </v-data-table>
           <!-- <p>{{ block }}</p> -->
         </v-card-text>
@@ -92,6 +101,9 @@ const Block = {
     },
   },
   methods: {
+    handleClick(event, row) {
+      console.log(now() + " Block - handleClick - event: " + JSON.stringify(event, null, 2) + ", row: " + JSON.stringify(row, null, 2));
+    },
     formatETH(e) {
       if (e) {
         return ethers.utils.formatEther(e).replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
@@ -117,10 +129,10 @@ const Block = {
 
 	},
   unmounted() {
-    console.log(now() + " Block - app:unmounted");
+    console.log(now() + " Block - unmounted");
 	},
   destroyed() {
-    console.log(now() + " Block - app:destroyed");
+    console.log(now() + " Block - destroyed");
 	},
 };
 
