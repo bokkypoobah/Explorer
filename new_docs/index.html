@@ -16,18 +16,38 @@
     <meta property="og:image" content="https://bokkypoobah.github.io/Explorer/images/fknchad_FkqVTzBaUAAiE8x_nobg.png" />
 
     <link type="text/css" rel="stylesheet" href="css/vuetify_3.7.18.css" />
+
     <script src="js/vue_3.5.13.js"></script>
+    <script src="js/vue-router_4.5.0.js"></script>
     <script src="js/vuex_4.1.0.js"></script>
     <script src="js/vuetify_3.7.18.js"></script>
 
-    <!-- <script src="index.js"></script> -->
+    <script src="home.js"></script>
+    <script src="test.js"></script>
+
+    <script src="routes.js"></script>
+
   </head>
   <body>
     <div id="app">
-      {{ testData }}
-      {{ name }}
+
+      <v-btn small to="/" color="primary">Click me</v-btn>
+
+      router: {{ router }}
+
+      <br />
+      <br />
+      router-link:
+      <router-link to="/">Go to Home</router-link>
+      <br />
+      <router-link to="/test">Go to Test</router-link>
+
+      <br />
+      <br />
+      router-view: <router-view />
+      <!-- {{ testData }} -->
+      <!-- {{ name }} -->
     </div>
-    <script src="index.js">
-    </script>
+    <script src="index.js"></script>
   </body>
 </html>
