@@ -35,6 +35,7 @@
     <script src="address.js"></script>
     <script src="contract.js"></script>
     <script src="config.js"></script>
+    <script src="connectionModule.js"></script>
 
     <script src="routes.js"></script>
 
@@ -59,7 +60,8 @@
           <v-btn to="/contract" text>CONTRACT</v-btn>
           <v-btn to="/config" text>CONFIG</v-btn>
           <v-spacer></v-spacer>
-          <v-btn text>CONNECT</v-btn>
+          <v-btn v-if="!connected" @click="connect(); " text>CONNECT</v-btn>
+          <v-btn v-else @click="disconnect(); " text>DISCONNECT</v-btn>
         </v-app-bar>
 
         <!-- <v-toolbar fixed>
@@ -83,7 +85,20 @@
             </router-view>
           </v-container>
         </v-main>
-        <v-footer app fixed border>Hi hi</v-footer>
+        <v-footer app fixed border>
+          <v-footer>
+            <v-row justify="space-between" align="center">
+              <v-col class="text-left">
+                <connection></connection>
+              </v-col>
+              <v-col class="text-right">
+                <p class="text-caption text--disabled">
+                  gm, and enjoy! <i>Explorer</i> &copy; Bok Consulting Pty Ltd 2025. The MIT Licence
+                </p>
+              </v-col>
+            </v-row>
+          </v-footer>
+        </v-footer>
         <!-- {{ testData }} -->
         <!-- {{ name }} -->
       </v-app>
