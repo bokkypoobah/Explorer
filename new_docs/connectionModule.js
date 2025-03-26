@@ -79,7 +79,7 @@ const Connection = {
   },
   mounted() {
     console.log(now() + " Connection - mounted");
-    // store.dispatch('connection/restore');
+    store.dispatch('connection/restore');
   },
   destroyed() {
     console.log(now() + " Connection - destroyed");
@@ -171,9 +171,9 @@ const connectionModule = {
       context.commit('setProvider', provider);
     },
     restore(context) {
-      // if (store.getters['web3'].connected) {
-      //   context.dispatch('connect');
-      // }
+      if (store.getters['web3'].connected) {
+        context.dispatch('connect');
+      }
     },
     disconnect(context) {
       if (store.getters['web3'].connected) {
