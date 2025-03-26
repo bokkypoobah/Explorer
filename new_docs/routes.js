@@ -1,4 +1,12 @@
 const routes = [
-  { path: "/", name: "Home", component: Home },
-  { path: '/test', name: "Test", component: Test },
+  {
+    path: '/test',
+    name: "Test",
+    component: Test
+  },
+  {
+    path: "/",
+    name: "Home",
+    component: Home
+  },
 ];

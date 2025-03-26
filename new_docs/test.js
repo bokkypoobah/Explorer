@@ -1,8 +1,5 @@
 const Test = {
-  template: `
-    <div><h1>Test</h1><p>This is a test page</p></div>
-  `,
-  <!-- props: ['testProp'], -->
+  template: "<div><h1>Test</h1><p>This is a test page</p></div>",
   data: function () {
     return {};
   },

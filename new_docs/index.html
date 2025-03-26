@@ -44,7 +44,14 @@
 
       <br />
       <br />
-      router-view: <router-view />
+      router-view:
+
+      <!-- <router-view /> -->
+
+      <router-view v-slot="{ Component }">
+        <component :is="Component" />
+      </router-view>
+
       <!-- {{ testData }} -->
       <!-- {{ name }} -->
     </div>
