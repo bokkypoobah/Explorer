@@ -33,7 +33,9 @@ const Block = {
               <v-text-field v-if="block" readonly v-model="extraData" label="Extra Data:"></v-text-field>
             </v-col>
           </v-row>
-          <p>{{ block }}</p>
+          <v-data-table v-if="block" :items="transactions" density="compact" style="position: relative;">
+          </v-data-table>
+          <!-- <p>{{ block }}</p> -->
         </v-card-text>
         <!-- <v-card-actions>
           <v-btn>Action 1</v-btn>
@@ -75,8 +77,27 @@ const Block = {
         return this.block && ethers.utils.toUtf8String(this.block.extraData) || null;
       },
     },
+    transactions() {
+      const results = [];
+      for (const tx of (this.block && this.block.transactions || [])) {
+        results.push({
+          txIndex: tx.transactionIndex,
+          txHash: tx.hash,
+          from: tx.from,
+          to: tx.to,
+          value: this.formatETH(tx.value),
+        });
+      }
+      return results;
+    },
   },
   methods: {
+    formatETH(e) {
+      if (e) {
+        return ethers.utils.formatEther(e).replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+      }
+      return null;
+    },
     formatTimestamp(ts) {
       if (ts != null) {
         return moment.unix(ts).format("YYYY-MM-DD HH:mm:ss");
