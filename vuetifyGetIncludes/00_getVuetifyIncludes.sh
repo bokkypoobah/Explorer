@@ -1,13 +1,15 @@
 #!/bin/sh
 
-# # Get vue[.min].js 3.5.13
-# SOURCE=https://cdn.jsdelivr.net/npm/vue@3.5.13/dist/vue.global.js
-# DEST=../new_docs/js/vue_3.5.13.js
-# wget $SOURCE -O $DEST
-# SOURCE=https://cdn.jsdelivr.net/npm/vue@3.5.13/dist/vue.global.min.js
-# DEST=../new_docs/js/vue_3.5.13.min.js
-# wget $SOURCE -O $DEST
-#
+# Get vue[.prod].js 3.5.13
+SOURCE=https://cdn.jsdelivr.net/npm/vue@3.5.13/dist/vue.global.js
+# SOURCE=https://unpkg.com/vue@3.5.13/dist/vue.global.js
+DEST=../new_docs/js/vue_3.5.13.js
+wget $SOURCE -O $DEST
+SOURCE=https://cdn.jsdelivr.net/npm/vue@3.5.13/dist/vue.global.prod.js
+# SOURCE=https://unpkg.com/vue@3.5.13/dist/vue.global.prod.js
+DEST=../new_docs/js/vue_3.5.13.prod.js
+wget $SOURCE -O $DEST
+
 # # Get vuex[.min].js 4.1.0
 # SOURCE=https://cdn.jsdelivr.net/npm/vuex@4.1.0/dist/vuex.global.js
 # DEST=../new_docs/js/vuex_4.1.0.js
@@ -16,13 +18,13 @@
 # DEST=../new_docs/js/vuex_4.1.0.min.js
 # wget $SOURCE -O $DEST
 
-# Get vue-router[.min].js 4.5.0
-SOURCE=https://cdn.jsdelivr.net/npm/vue-router@4.5.0/dist/vue-router.global.js
-DEST=../new_docs/js/vue-router_4.5.0.js
-wget $SOURCE -O $DEST
-SOURCE=https://cdn.jsdelivr.net/npm/vue-router@4.5.0/dist/vue-router.global.min.js
-DEST=../new_docs/js/vuex_4.5.0.min.js
-wget $SOURCE -O $DEST
+# # Get vue-router[.min].js 4.5.0
+# SOURCE=https://cdn.jsdelivr.net/npm/vue-router@4.5.0/dist/vue-router.global.js
+# DEST=../new_docs/js/vue-router_4.5.0.js
+# wget $SOURCE -O $DEST
+# SOURCE=https://cdn.jsdelivr.net/npm/vue-router@4.5.0/dist/vue-router.global.min.js
+# DEST=../new_docs/js/vuex_4.5.0.min.js
+# wget $SOURCE -O $DEST
 
 # # Get vuetify[.min].css 3.7.18
 # SOURCE=https://cdn.jsdelivr.net/npm/vuetify@3.7.18/dist/vuetify.css

@@ -17,7 +17,7 @@
 
     <link type="text/css" rel="stylesheet" href="css/vuetify_3.7.18.css" />
 
-    <script src="js/vue_3.5.13.js"></script>
+    <script src="js/vue_3.5.13.js"></script> <!-- or .prod.js -->
     <script src="js/vue-router_4.5.0.js"></script>
     <script src="js/vuex_4.1.0.js"></script>
     <script src="js/vuetify_3.7.18.js"></script>
@@ -30,30 +30,31 @@
   </head>
   <body>
     <div id="app">
+      <v-app>
+        <v-btn small to="/" color="primary">Click me</v-btn>
 
-      <v-btn small to="/" color="primary">Click me</v-btn>
+        router: {{ router }}
 
-      router: {{ router }}
+        <br />
+        <br />
+        router-link:
+        <router-link to="/">Go to Home</router-link>
+        <br />
+        <router-link to="/test">Go to Test</router-link>
 
-      <br />
-      <br />
-      router-link:
-      <router-link to="/">Go to Home</router-link>
-      <br />
-      <router-link to="/test">Go to Test</router-link>
+        <br />
+        <br />
+        router-view:
 
-      <br />
-      <br />
-      router-view:
+        <!-- <router-view /> -->
 
-      <!-- <router-view /> -->
-
-      <router-view v-slot="{ Component }">
-        <component :is="Component" />
-      </router-view>
-
-      <!-- {{ testData }} -->
-      <!-- {{ name }} -->
+        <router-view v-slot="{ Component }">
+          <component :is="Component" />
+        </router-view>
+        <v-footer app fixed>Hi hi</v-footer>
+        <!-- {{ testData }} -->
+        <!-- {{ name }} -->
+      </v-app>
     </div>
     <script src="index.js"></script>
   </body>
