@@ -3,9 +3,33 @@ const Block = {
     <div>
       <v-card>
         <v-card-text>
-          <!-- <h1>Block</h1>
-          <p>TODO</p>
-          <p>{{ inputBlockNumber }}</p> -->
+          <v-row>
+            <v-col cols="2">
+              <v-text-field v-if="block" readonly v-model="block.number" label="Number:"></v-text-field>
+            </v-col>
+            <v-col cols="6">
+              <v-text-field v-if="block" readonly v-model="block.hash" label="Block Hash:"></v-text-field>
+            </v-col>
+            <v-col cols="3">
+              <v-text-field v-if="block" readonly v-model="timestamp" label="Timestamp:"></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="4">
+              <v-text-field v-if="block" readonly v-model="block.miner" label="Miner:"></v-text-field>
+            </v-col>
+            <v-col cols="6">
+              <v-text-field v-if="block" readonly v-model="block.parentHash" label="Parent Block Hash:"></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="2">
+              <v-text-field v-if="block" readonly v-model="gasLimit" label="Gas Limit:"></v-text-field>
+            </v-col>
+            <v-col cols="2">
+              <v-text-field v-if="block" readonly v-model="gasUsed" label="Gas Used:"></v-text-field>
+            </v-col>
+          </v-row>
           <p>{{ block }}</p>
         </v-card-text>
         <!-- <v-card-actions>
@@ -25,8 +49,32 @@ const Block = {
     block() {
       return store.getters['block/block'];
     },
+    timestamp: {
+      get: function() {
+        return this.block && this.formatTimestamp(this.block.timestamp);
+      },
+      // set: function(timestamp) {
+      //   store.dispatch('setTimestamp', timestamp);
+      // },
+    },
+    gasLimit: {
+      get: function() {
+        return this.block && parseInt(this.block.gasLimit);
+      },
+    },
+    gasUsed: {
+      get: function() {
+        return this.block && parseInt(this.block.gasUsed);
+      },
+    },
   },
   methods: {
+    formatTimestamp(ts) {
+      if (ts != null) {
+        return moment.unix(ts).format("YYYY-MM-DD HH:mm:ss");
+      }
+      return null;
+    },
   },
   beforeCreate() {
     console.log(now() + " Block - beforeCreate");
