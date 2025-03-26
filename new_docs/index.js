@@ -126,6 +126,7 @@ const store = new Vuex.Store({
   },
   modules: {
     connection: connectionModule,
+    block: blockModule,
   },
   plugins: [
     function persistSettings(store) {
@@ -166,12 +167,14 @@ const app = Vue.createApp({
   // router,
   // store,
   // vuetify,
-  // data() {
-  //   return {
+  data() {
+    return {
+      searchString: null,
+      _timerId: null,
   //     testData: 'Hellooo',
   //     name: "Testing"
-  //   }
-  // },
+    }
+  },
   computed: {
     connected() {
       return store.getters['web3'].connected;
@@ -189,6 +192,30 @@ const app = Vue.createApp({
     },
     disconnect(connected) {
       store.dispatch('connection/disconnect');
+    },
+    searchDebounced() {
+      console.log(now() + " index.js - methods.searchDebounced - this.searchString: " + JSON.stringify(this.searchString));
+      clearTimeout(this._timerId)
+      this._timerId = setTimeout(() => {
+        this.search()
+      }, 500)
+    },
+    search() {
+      const blockRegex = /^\d+$/;
+      const txRegex = /^0x[a-fA-F0-9]{64}$/;
+      const addressRegex = /^0x[a-fA-F0-9]{40}$/;
+      console.log(now() + " index.js - methods.search - this.searchString: " + JSON.stringify(this.searchString));
+      if (this.searchString) {
+        if (blockRegex.test(this.searchString)) {
+          console.log(now() + " index.js - methods.search - BLOCK this.searchString: " + JSON.stringify(this.searchString));
+          this.$router.push({ name: 'Block', params: { inputBlockNumber: this.searchString } });
+          store.dispatch('block/loadBlock', this.searchString);
+        } else if (txRegex.test(this.searchString)) {
+          console.log(now() + " index.js - methods.search - TX this.searchString: " + JSON.stringify(this.searchString));
+        } else if (addressRegex.test(this.searchString)) {
+          console.log(now() + " index.js - methods.search - ADDRESS this.searchString: " + JSON.stringify(this.searchString));
+        }
+      }
     },
   //   testClick() {
   //     console.log('this is a test click from component', this.$store.state.test);
