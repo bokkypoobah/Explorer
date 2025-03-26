@@ -1,14 +1,44 @@
 const Config = {
   template: `
     <div>
-      <v-form ref="formConfig">
-        <!-- <h2>Config</h2> -->
-        <br />
-        <v-text-field v-model="etherscanAPIKey" label="Etherscan API Key:"></v-text-field>
-        <br />
-        <v-data-table :items="chains"></v-data-table>
-        <v-btn @click="importChainlistFromEtherscan();" text>Import from Etherscan</v-btn>
-      </v-form>
+      <v-card>
+        <v-card-text>
+          <v-form ref="formConfig">
+            <v-card-title>API Keys</v-card-title>
+            <v-row>
+              <v-col cols="4">
+                <v-text-field v-model="etherscanAPIKey" label="Etherscan API Key:" placeholder="See https://etherscan.io/apis"></v-text-field>
+              </v-col>
+            </v-row>
+            <v-card-title>Chains</v-card-title>
+            <v-data-table :items="chains" density="compact" style="position: relative;">
+              <template v-slot:footer.prepend>
+                <v-btn @click="importChainlistFromEtherscan();" text>Import from Etherscan</v-btn>
+                <v-spacer></v-spacer>
+              </template>
+            </v-data-table>
+          </v-form>
+        </v-card-text>
+        <!-- <v-card-actions>
+          <v-btn>Action 1</v-btn>
+          <v-btn>Action 2</v-btn>
+        </v-card-actions> -->
+      </v-card>
+
+      <!-- <v-form ref="formConfig">
+        <v-subheader>Personal Information</v-subheader>
+        <v-layout>
+          <v-text-field v-model="etherscanAPIKey" label="Etherscan API Key:"></v-text-field>
+        </v-layout>
+        <v-layout>
+          <v-data-table :items="chains" density="compact" style="position: relative;">
+            <template v-slot:footer.prepend>
+              <v-btn @click="importChainlistFromEtherscan();" text>Import from Etherscan</v-btn>
+              <v-spacer></v-spacer>
+            </template>
+          </v-data-table>
+        </v-layout>
+      </v-form> -->
     </div>
   `,
   data: function () {
@@ -37,7 +67,7 @@ const Config = {
       console.log(now() + " Config - methods.importChainlistFromEtherscan()");
       const url = "https://api.etherscan.io/v2/chainlist";
       const data = await fetch(url).then(response => response.json());
-      console.log(JSON.stringify(data));
+      // console.log(JSON.stringify(data));
       if (data && data.result) {
         for (const item of data.result) {
           if (!(item.chainid in store.getters['config'].chains)) {
