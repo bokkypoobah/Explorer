@@ -17,41 +17,42 @@
 
     <link type="text/css" rel="stylesheet" href="css/vuetify_3.7.18.css" />
 
-    <script src="js/vue_3.5.13.js"></script> <!-- or .prod.js -->
+    <script src="js/dexie_3.0.3.js"></script>
+    <script src="js/ethers_5.8.0.umd.js"></script>
+    <script src="js/moment_2.24.0.js"></script>
+    <script src="js/vue_3.5.13.js"></script>
     <script src="js/vue-router_4.5.0.js"></script>
-    <script src="js/vuex_4.1.0.js"></script>
     <script src="js/vuetify_3.7.18.js"></script>
+    <script src="js/vuex_4.1.0.js"></script>
 
     <script src="home.js"></script>
     <script src="test.js"></script>
 
     <script src="routes.js"></script>
 
+    <link rel="icon" type="image/png" href="/images/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg" />
+    <link rel="shortcut icon" href="/images/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png" />
+    <link rel="manifest" href="/images/site.webmanifest" />
   </head>
   <body>
     <div id="app">
       <v-app>
+
+        <v-toolbar fixed>
+          <v-avatar image="images/fknchad_FkqVTzBaUAAiE8x_nobg.png"></v-avatar>
+        </v-toolbar>
+
+        <router-link to="/">Home</router-link> <router-link to="/test">Test</router-link>
+        <br />
         <v-btn small to="/" color="primary">Click me</v-btn>
-
-        router: {{ router }}
-
         <br />
-        <br />
-        router-link:
-        <router-link to="/">Go to Home</router-link>
-        <br />
-        <router-link to="/test">Go to Test</router-link>
-
-        <br />
-        <br />
-        router-view:
-
-        <!-- <router-view /> -->
 
         <router-view v-slot="{ Component }">
           <component :is="Component" />
         </router-view>
-        <v-footer app fixed>Hi hi</v-footer>
+        <v-footer app fixed border>Hi hi</v-footer>
         <!-- {{ testData }} -->
         <!-- {{ name }} -->
       </v-app>

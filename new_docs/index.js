@@ -62,9 +62,9 @@ const app = Vue.createApp({
   // },
 });
 
-router.beforeEach((to, from) => {
-  console.log("router.beforeEach - to: " + JSON.stringify(to) + ", from: " + JSON.stringify(from));
-})
+// router.beforeEach((to, from) => {
+//   console.log("router.beforeEach - to: " + JSON.stringify(to) + ", from: " + JSON.stringify(from));
+// })
 
 app.use(router);
 app.use(store);
