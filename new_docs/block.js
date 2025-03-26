@@ -29,6 +29,9 @@ const Block = {
             <v-col cols="2">
               <v-text-field v-if="block" readonly v-model="gasUsed" label="Gas Used:"></v-text-field>
             </v-col>
+            <v-col cols="4">
+              <v-text-field v-if="block" readonly v-model="extraData" label="Extra Data:"></v-text-field>
+            </v-col>
           </v-row>
           <p>{{ block }}</p>
         </v-card-text>
@@ -51,7 +54,7 @@ const Block = {
     },
     timestamp: {
       get: function() {
-        return this.block && this.formatTimestamp(this.block.timestamp);
+        return this.block && this.formatTimestamp(this.block.timestamp) || null;
       },
       // set: function(timestamp) {
       //   store.dispatch('setTimestamp', timestamp);
@@ -59,12 +62,17 @@ const Block = {
     },
     gasLimit: {
       get: function() {
-        return this.block && parseInt(this.block.gasLimit);
+        return this.block && parseInt(this.block.gasLimit) || null;
       },
     },
     gasUsed: {
       get: function() {
-        return this.block && parseInt(this.block.gasUsed);
+        return this.block && parseInt(this.block.gasUsed) || null;
+      },
+    },
+    extraData: {
+      get: function() {
+        return this.block && ethers.utils.toUtf8String(this.block.extraData) || null;
       },
     },
   },
