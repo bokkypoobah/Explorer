@@ -53,9 +53,8 @@
   </head>
   <body>
     <div id="app">
-      <v-app>
-
-        <v-app-bar app>
+      <v-app>        
+        <v-app-bar app> <!-- <v-toolbar fixed>...</v-toolbar> -->
           <v-avatar image="images/fknchad_FkqVTzBaUAAiE8x_nobg.png" class="ps-4"></v-avatar>
           <v-toolbar-title>Explorer</v-toolbar-title>
           <v-spacer></v-spacer>
@@ -66,12 +65,10 @@
           <v-btn to="/block" text>BLOCK</v-btn>
           <v-btn to="/transaction" text>TRANSACTION</v-btn>
           <v-btn to="/address/" :active="!!addressButtonActive" text>ADDRESS</v-btn>
-          <!-- <v-btn to="/contract" text>CONTRACT</v-btn> -->
           <v-btn to="/config" text>
             <!-- <span class="mdi mdi-tools"></span> -->
             CONFIG
           </v-btn>
-          <!-- <v-spacer></v-spacer> -->
           <v-btn v-if="!connected" @click="connect();" text>CONNECT</v-btn>
           <v-tooltip v-else :text="coinbase">
             <template v-slot:activator="{ props }">
@@ -79,20 +76,6 @@
             </template>
           </v-tooltip>
         </v-app-bar>
-
-        <!-- <v-toolbar fixed>
-          <v-avatar image="images/fknchad_FkqVTzBaUAAiE8x_nobg.png"></v-avatar>
-          <v-toolbar-title>Explorer</v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-btn to="/" text>HOME</v-btn>
-          <v-btn to="/block" text>BLOCK</v-btn>
-          <v-btn to="/transaction" text>TRANSACTION</v-btn>
-          <v-btn to="/address" text>ADDRESS</v-btn>
-          <v-btn to="/contract" text>CONTRACT</v-btn>
-          <v-btn to="/config" text>CONFIG</v-btn>
-          <v-spacer></v-spacer>
-          <v-btn text>CONNECT</v-btn>
-        </v-toolbar> -->
 
         <v-main>
           <v-container fluid>
