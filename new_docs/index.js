@@ -128,6 +128,7 @@ const store = new Vuex.Store({
     connection: connectionModule,
     block: blockModule,
     transaction: transactionModule,
+    address: addressModule,
   },
   plugins: [
     function persistSettings(store) {
@@ -217,6 +218,8 @@ const app = Vue.createApp({
           store.dispatch('transaction/loadTransaction', this.searchString);
         } else if (addressRegex.test(this.searchString)) {
           console.log(now() + " index.js - methods.search - ADDRESS this.searchString: " + JSON.stringify(this.searchString));
+          this.$router.push({ name: 'Address', params: { inputBlockNumber: this.searchString } });
+          store.dispatch('address/loadAddress', this.searchString);
         }
       }
     },
