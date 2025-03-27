@@ -8,7 +8,7 @@ const Block = {
               <v-text-field v-if="block" readonly v-model="block.number" label="Number:"></v-text-field>
             </v-col>
             <v-col cols="3">
-              <v-text-field v-if="block" readonly v-model="timestamp" label="Timestamp:"></v-text-field>
+              <v-text-field v-if="block" readonly v-model="timestampString" label="Timestamp:"></v-text-field>
             </v-col>
             <v-col cols="6">
               <v-text-field v-if="block" readonly v-model="block.hash" label="Block Hash:"></v-text-field>
@@ -75,7 +75,7 @@ const Block = {
     block() {
       return store.getters['block/block'];
     },
-    timestamp: {
+    timestampString: {
       get: function() {
         return this.block && this.formatTimestamp(this.block.timestamp) || null;
       },

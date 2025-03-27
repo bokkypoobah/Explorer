@@ -1,11 +1,19 @@
 const Transaction = {
   template: `
     <div>
-      timestampString: {{ timestampString }}
-      <br />
-      tx: {{ tx }}
-      <br />
-      txReceipt: {{ txReceipt }}
+      <v-card>
+        <v-card-text>
+          timestampString: {{ timestampString }}
+          <v-textarea :model-value="tx && JSON.stringify(tx, null, 2)" label="Tx" rows="10">
+          </v-textarea>
+          <v-textarea :model-value="txReceipt && JSON.stringify(txReceipt, null, 2)" label="Tx Receipt" rows="10">
+          </v-textarea>
+        </v-card-text>
+        <!-- <v-card-actions>
+          <v-btn>Action 1</v-btn>
+          <v-btn>Action 2</v-btn>
+        </v-card-actions> -->
+      </v-card>
     </div>
   `,
   props: ['inputTxHash'],
