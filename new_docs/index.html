@@ -94,7 +94,9 @@
         <v-main>
           <v-container fluid>
             <v-toolbar v-if="addressButtonActive">
-              <v-tabs align-tabs="end" color="deep-purple-accent-4">
+              <v-text-field v-model="addressPathInputAddress" variant="plain" class="ms-2" style="width: 100px;"></v-text-field>
+              <v-spacer></v-spacer>
+              <v-tabs right color="deep-purple-accent-4">
                 <v-tab :to="'/address/' + addressPathInputAddress">Summary</v-tab>
                 <v-tab :to="'/address/' + addressPathInputAddress + '/contract'">Contract</v-tab>
                 <v-tab :to="'/address/' + addressPathInputAddress + '/tokens'">Tokens</v-tab>
