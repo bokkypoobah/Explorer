@@ -33,7 +33,10 @@
     <script src="block.js"></script>
     <script src="transaction.js"></script>
     <script src="address.js"></script>
-    <script src="contract.js"></script>
+    <script src="addressContract.js"></script>
+    <script src="addressTokens.js"></script>
+    <script src="addressTransactions.js"></script>
+    <script src="addressEvents.js"></script>
     <script src="config.js"></script>
     <script src="connectionModule.js"></script>
 
@@ -90,13 +93,15 @@
 
         <v-main>
           <v-container fluid>
-            <v-tabs v-if="addressButtonActive" align-tabs="end" color="deep-purple-accent-4">
-              <v-tab :to="'/address/' + addressPathInputAddress">Summary</v-tab>
-              <v-tab :to="'/address/' + addressPathInputAddress + '/contract'">Contract</v-tab>
-              <v-tab :to="'/address/' + addressPathInputAddress + '/tokens'">Tokens</v-tab>
-              <v-tab :to="'/address/' + addressPathInputAddress + '/transactions'">Transactions</v-tab>
-              <v-tab :to="'/address/' + addressPathInputAddress + '/events'">Events</v-tab>
-            </v-tabs>
+            <v-toolbar v-if="addressButtonActive">
+              <v-tabs align-tabs="end" color="deep-purple-accent-4">
+                <v-tab :to="'/address/' + addressPathInputAddress">Summary</v-tab>
+                <v-tab :to="'/address/' + addressPathInputAddress + '/contract'">Contract</v-tab>
+                <v-tab :to="'/address/' + addressPathInputAddress + '/tokens'">Tokens</v-tab>
+                <v-tab :to="'/address/' + addressPathInputAddress + '/transactions'">Transactions</v-tab>
+                <v-tab :to="'/address/' + addressPathInputAddress + '/events'">Events</v-tab>
+              </v-tabs>
+            </v-toolbar>
             <router-view v-slot="{ Component }">
               <component :is="Component" />
             </router-view>

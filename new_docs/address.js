@@ -2,9 +2,7 @@ const Address = {
   template: `
     <div>
       <v-card>
-
-        inputAddress: {{ inputAddress }}
-        tab: {{ tab }}
+        <h3 class="ms-2 mt-2">Address {{ inputAddress }} Summary</h3>
 
         <!-- <v-tabs
           v-model="tab"

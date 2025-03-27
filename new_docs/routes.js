@@ -19,26 +19,26 @@ const routes = [
   },
   {
     path: '/address/:inputAddress?/contract',
-    name: "Contract",
-    component: Contract,
+    name: "AddressContract",
+    component: AddressContract,
     props: true,
   },
   {
     path: '/address/:inputAddress?/tokens',
     name: "Tokens",
-    component: Contract,
+    component: AddressTokens,
     props: true,
   },
   {
     path: '/address/:inputAddress?/transactions',
     name: "Transactions",
-    component: Contract,
+    component: AddressTransactions,
     props: true,
   },
   {
     path: '/address/:inputAddress?/events',
     name: "Events",
-    component: Contract,
+    component: AddressEvents,
     props: true,
   },
   {

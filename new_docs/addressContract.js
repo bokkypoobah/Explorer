@@ -1,7 +1,7 @@
-const Contract = {
+const AddressContract = {
   template: `
     <div>
-      <h1>Contract</h1>
+      <h3 class="ms-2 mt-2">Address Contract</h3>
       <p>TODO</p>
       <p>{{ inputAddress }}</p>
     </div>
@@ -19,15 +19,15 @@ const Contract = {
 
   },
   beforeCreate() {
-    console.log(now() + " Contract - beforeCreate");
+    console.log(now() + " AddressContract - beforeCreate");
 	},
   mounted() {
-    console.log(now() + " Contract - mounted");
+    console.log(now() + " AddressContract - mounted");
 	},
   unmounted() {
-    console.log(now() + " Contract - unmounted");
+    console.log(now() + " AddressContract - unmounted");
 	},
   destroyed() {
-    console.log(now() + " Contract - destroyed");
+    console.log(now() + " AddressContract - destroyed");
 	},
 };
