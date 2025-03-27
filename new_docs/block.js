@@ -139,7 +139,6 @@ const Block = {
     setTimeout(function() {
       store.dispatch('block/loadBlock', t.inputBlockNumber);
     }, 1000);
-
 	},
   unmounted() {
     console.log(now() + " Block - unmounted");
