@@ -184,9 +184,21 @@ const app = Vue.createApp({
     coinbase() {
       return store.getters['web3'].coinbase;
     },
-    // router() {
-    //   return this.$router;
-    // },
+    router() {
+      return this.$router && this.$router.currentRoute; // && ("(" + JSON.stringify(this.$router.currentRoute) + ")") || null;
+    },
+    addressButtonActive() {
+      return this.$route.path.substring(0, 8) == "/address";
+    },
+    addressPathInputAddress() {
+      if (this.$route.path.substring(0, 8) == "/address") {
+        // console.log(now() + " index.js - computed.addressPathInputAddress - this.$route: " + JSON.stringify(this.$route, null, 2));
+        const inputAddress = this.$route.params && this.$route.params.inputAddress || null;
+        console.log(now() + " index.js - computed.addressPathInputAddress - inputAddress: " + JSON.stringify(inputAddress, null, 2));
+        return inputAddress;
+      }
+      return null;
+    },
   },
   methods: {
     connect(connected) {
@@ -218,7 +230,7 @@ const app = Vue.createApp({
           store.dispatch('transaction/loadTransaction', this.searchString);
         } else if (addressRegex.test(this.searchString)) {
           console.log(now() + " index.js - methods.search - ADDRESS this.searchString: " + JSON.stringify(this.searchString));
-          this.$router.push({ name: 'Address', params: { inputBlockNumber: this.searchString } });
+          this.$router.push({ name: 'Address', params: { inputAddress: this.searchString } });
           store.dispatch('address/loadAddress', this.searchString);
         }
       }

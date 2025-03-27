@@ -19,15 +19,15 @@ const Contract = {
 
   },
   beforeCreate() {
-    console.log(now() + " Contract - app:beforeCreate");
+    console.log(now() + " Contract - beforeCreate");
 	},
   mounted() {
-    console.log(now() + " Contract - app:mounted");
+    console.log(now() + " Contract - mounted");
 	},
   unmounted() {
-    console.log(now() + " Contract - app:unmounted");
+    console.log(now() + " Contract - unmounted");
 	},
   destroyed() {
-    console.log(now() + " Contract - app:destroyed");
+    console.log(now() + " Contract - destroyed");
 	},
 };

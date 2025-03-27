@@ -95,7 +95,11 @@ const Block = {
     },
     extraData: {
       get: function() {
-        return this.block && ethers.utils.toUtf8String(this.block.extraData) || null;
+        try {
+          return this.block && ethers.utils.toUtf8String(this.block.extraData) || null;
+        } catch (e) {
+        }
+        return this.block.extraData;
       },
     },
     transactions() {

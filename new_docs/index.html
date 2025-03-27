@@ -59,7 +59,7 @@
           <v-btn to="/" text>HOME</v-btn>
           <v-btn to="/block" text>BLOCK</v-btn>
           <v-btn to="/transaction" text>TRANSACTION</v-btn>
-          <v-btn to="/address" text>ADDRESS</v-btn>
+          <v-btn to="/address/" :active="!!addressButtonActive" text>ADDRESS</v-btn>
           <!-- <v-btn to="/contract" text>CONTRACT</v-btn> -->
           <v-btn to="/config" text>
             <!-- <span class="mdi mdi-tools"></span> -->
@@ -90,6 +90,13 @@
 
         <v-main>
           <v-container fluid>
+            <v-tabs v-if="addressButtonActive" align-tabs="end" color="deep-purple-accent-4">
+              <v-tab :to="'/address/' + addressPathInputAddress">Summary</v-tab>
+              <v-tab :to="'/address/' + addressPathInputAddress + '/contract'">Contract</v-tab>
+              <v-tab :to="'/address/' + addressPathInputAddress + '/tokens'">Tokens</v-tab>
+              <v-tab :to="'/address/' + addressPathInputAddress + '/transactions'">Transactions</v-tab>
+              <v-tab :to="'/address/' + addressPathInputAddress + '/events'">Events</v-tab>
+            </v-tabs>
             <router-view v-slot="{ Component }">
               <component :is="Component" />
             </router-view>
