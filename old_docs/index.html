@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Explorer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta name="description" content="Explorer (c) Bok Consulting Pty Ltd 2025" />
+    <meta name="author" content="BokkyPooBah" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@BokkyPooBah" />
+    <meta name="twitter:creator" content="@BokkyPooBah" />
+    <meta property="og:url" content="https://github.com/bokkypoobah/Explorer/" />
+    <meta property="og:title" content="Explorer (c) Bok Consulting Pty Ltd 2024" />
+    <meta property="og:description" content="Explorer (c) Bok Consulting Pty Ltd 2024" />
+    <meta property="og:image" content="https://bokkypoobah.github.io/Explorer/images/fknchad_FkqVTzBaUAAiE8x_nobg.png" />
+    <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet" href="css/bootstrap-vue.min.css"/>
+    <link type="text/css" rel="stylesheet" href="css/bootstrap-vue-icons.min.css"/>
+    <!-- <link type="text/css" rel="stylesheet" href="css/app.css"/> -->
+    <script src="js/vue.js"></script>
+    <script src="js/bootstrap-vue.min.js"></script>
+    <script src="js/bootstrap-vue-icons.min.js"></script>
+    <script src="js/vue-router.min.js"></script>
+    <script src="js/vuex.js"></script>
+    <!-- TODO: Check if below still necessary -->
+    <script src="js/vuex-router-sync.js"></script>
+
+    <script src="js/ethers-5.8.0.umd.min.js" type="application/javascript"></script>
+    <script src="js/moment.min.js"></script>
+    <script src="js/dexie.js"></script>
+
+    <script src="abis.js"></script>
+    <script src="globals.js"></script>
+    <script src="functions.js"></script>
+    <script src="config.js"></script>
+    <script src="samples.js"></script>
+    <script src="block.js"></script>
+    <script src="transaction.js"></script>
+    <script src="address.js"></script>
+    <script src="contract.js"></script>
+    <script src="welcome.js"></script>
+    <script src="connectionModule.js"></script>
+
+    <script src="routes.js"></script>
+
+    <link rel="icon" type="image/png" href="/images/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg" />
+    <link rel="shortcut icon" href="/images/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png" />
+    <link rel="manifest" href="/images/site.webmanifest" />
+  </head>
+  <body>
+    <div id="app">
+      <b-container fluid class="m-0 p-1">
+        <b-navbar variant="light" variant="light" class="mx-1 my-0 p-0">
+          <b-navbar-brand href="https://bokkypoobah.github.io/Explorer/" variant="primary">
+            <b-avatar rounded variant="light" size="3.0rem" src="images/fknchad_FkqVTzBaUAAiE8x_nobg.png" v-b-popover.hover.bottom="'gm'" class="ml-0"></b-avatar>
+            <em v-b-popover.hover.bottom="'gm gm gm'">Explorer</em>
+          </b-navbar-brand>
+          <b-navbar-nav class="ml-auto">
+            <b-nav-item size="sm" to="/home" active-class="active" v-b-popover.hover="'Welcome'">Home</b-nav-item>
+            <b-nav-item size="sm" to="/block/" active-class="active" v-b-popover.hover="'View block'">Block</b-nav-item>
+            <b-nav-item size="sm" to="/tx/" active-class="active" v-b-popover.hover="'View transaction'">Transaction</b-nav-item>
+            <b-nav-item size="sm" to="/address/" active-class="active" v-b-popover.hover="'View address'">Address</b-nav-item>
+            <b-nav-item size="sm" to="/contract/" active-class="active" v-b-popover.hover="'View contract'">Contract</b-nav-item>
+            <b-nav-item size="sm" to="/config" active-class="active" v-b-popover.hover="'Configuration'">Config</b-nav-item>
+            <b-button v-if="!connected" size="sm" variant="outline-primary" class="ml-5 mr-1" @click="connect();" v-b-popover.hover.bottom="'Connect to web3'">Connect</b-button>
+            <b-button v-if="connected" size="sm" variant="outline-primary" class="ml-5 mr-1" @click="disconnect();" v-b-popover.hover.bottom="'Connected to ' + info.coinbase + '. Click to disconnect'">Connected</b-button>
+          </b-navbar-nav>
+        </b-navbar>
+        <div style="min-height: 600px;">
+          <router-view></router-view>
+        </div>
+        <div no-header body-class="m-0 p-0" class="fixed-bottom m-0 p-0 border-top border-top-5 bg-light">
+          <div class="d-flex flex-wrap m-0 p-0">
+            <div class="ml-0 mt-0 pl-1">
+              <connection></connection>
+            </div>
+            <div class="mt-0 flex-grow-1">
+            </div>
+            <div class="mt-0 pl-1 pr-1">
+              <font size="-2" class="text-muted">
+                gm, and enjoy! <i>Explorer</i> &copy; Bok Consulting Pty Ltd 2025. The MIT Licence
+              </font>
+            </div>
+          </div>
+        </div>
+      </b-container>
+    </div>
+    <div>
+    </div>
+    <script src="index.js"></script>
+  </body>
+</html>

@@ -1,22 +1,14 @@
-Vue.use(Vuex);
+// Vue.component('connection', Connection);
 
-Vue.component('connection', Connection);
-
-const router = new VueRouter({
-  // mode: 'history', // https://stackoverflow.com/questions/45201014/how-to-handle-anchors-bookmarks-with-vue-router
-  routes: routes,
+// Create the router
+const router = VueRouter.createRouter({
+  history: VueRouter.createWebHashHistory(),
+  routes,
 });
 
-// router.afterEach((to) => {
-  // console.log(now() + " index.js:router - to: " + JSON.stringify(to));
-  // document.title = to.meta.title || 'Default Title';
-// });
-
-const storeVersion = 1;
 const store = new Vuex.Store({
-  strict: false, // TODO Set to true to test, false to disable _showDetails & vuex mutations
   state: {
-    settings: {
+    config: {
       etherscanAPIKey: null,
       chains: {
         1: {
@@ -32,7 +24,7 @@ const store = new Vuex.Store({
       },
       version: 1,
     },
-    web3Connection: {
+    web3: {
       connected: false,
       error: false,
       chainId: null,
@@ -42,91 +34,85 @@ const store = new Vuex.Store({
       version: 0,
     },
     db: {
-      name: "explorer088a",
+      name: "new_explorer088a",
       version: 1,
       schemaDefinition: {
         cache: '&objectName',
       },
     },
+    // testData: 'Hellooo',
+    // name: 'Test'
   },
   getters: {
-    settings: state => state.settings,
-    web3Connection: state => state.web3Connection,
+    config: state => state.config,
+    web3: state => state.web3,
     db: state => state.db,
-    connection(state) {
-      const chain = state.web3Connection.chainId && state.settings.chains[state.web3Connection.chainId] || null;
-      return {
-        ...state.web3Connection,
-        name: chain && chain.name || null,
-        explorer: chain && chain.explorer || "https://etherscan.io",
-        api: chain && chain.api || "https://api.etherscan.io/v2/api?chainid=1",
-      };
-    },
     chainId(state) {
-      return state.web3Connection.chainId;
+      return state.web3.chainId;
     },
     supportedNetwork(state) {
-      const chain = state.web3Connection.chainId && state.settings.chains[state.web3Connection.chainId] || null;
+      const chain = state.web3.chainId && state.config.chains[state.web3.chainId] || null;
       return !!chain;
     },
     networkName(state) {
-      const chain = state.web3Connection.chainId && state.settings.chains[state.web3Connection.chainId] || null;
-      return chain && chain.name || "Unknown chainId: " + state.web3Connection.chainId;
+      const chain = state.web3.chainId && state.config.chains[state.web3.chainId] || null;
+      return chain && chain.name || "Unknown chainId: " + state.web3.chainId;
     },
     explorer(state) {
-      const chain = state.web3Connection.chainId && state.settings.chains[state.web3Connection.chainId] || null;
+      const chain = state.web3.chainId && state.config.chains[state.web3.chainId] || null;
       return chain && chain.explorer || null;
     },
   },
   mutations: {
-    setSettings(state, settings) {
-      state.settings = settings;
+    setConfig(state, config) {
+      state.config = config;
+    },
+    setEtherscanAPIKey(state, apiKey) {
+      state.config.etherscanAPIKey = apiKey;
     },
     addChain(state, chain) {
-      if (!(chain.chainId in state.settings.chains)) {
-        Vue.set(state.settings.chains, chain.chainId, {
+      if (!(chain.chainId in state.config.chains)) {
+        state.config.chains[chain.chainId] = {
           name: chain.name,
           explorer: chain.explorer,
           api: chain.api,
-        });
-        // state.settings.chains[chain.chainId] = {
-        //   name: chain.name,
-        //   explorer: chain.explorer,
-        //   api: chain.api,
-        // };
+        };
       }
     },
-    setWeb3Connection(state, web3Connection) {
-      state.web3Connection.connected = web3Connection.connected;
-      state.web3Connection.error = web3Connection.error;
-      state.web3Connection.chainId = web3Connection.chainId;
-      state.web3Connection.blockNumber = web3Connection.blockNumber;
-      state.web3Connection.timestamp = web3Connection.timestamp;
-      state.web3Connection.coinbase = web3Connection.coinbase;
+    setWeb3Info(state, info) {
+      state.web3.connected = info.connected;
+      state.web3.error = info.error;
+      state.web3.chainId = info.chainId;
+      state.web3.blockNumber = info.blockNumber;
+      state.web3.timestamp = info.timestamp;
+      state.web3.coinbase = info.coinbase;
     },
     setWeb3Connected(state, connected) {
-      state.web3Connection.connected = connected;
+      state.web3.connected = connected;
     },
     setWeb3Coinbase(state, coinbase) {
-      state.web3Connection.coinbase = coinbase;
+      state.web3.coinbase = coinbase;
     },
     setWeb3BlockInfo(state, blockInfo) {
-      state.web3Connection.blockNumber = blockInfo.blockNumber;
-      state.web3Connection.timestamp = blockInfo.timestamp;
-    },
-    setEtherscanAPIKey(state, apiKey) {
-      state.settings.etherscanAPIKey = apiKey;
+      state.web3.blockNumber = blockInfo.blockNumber;
+      state.web3.timestamp = blockInfo.timestamp;
     },
   },
   actions: {
-    setSettings(context, settings) {
-      context.commit('setSettings', settings);
+    // pretendUpdate({ commit }) {
+    //   commit('setName', 'Updated Name');
+    // }
+    setConfig(context, config) {
+      context.commit('setConfig', config);
+    },
+    setEtherscanAPIKey(context, apiKey) {
+      context.commit('setEtherscanAPIKey', apiKey);
     },
     addChain(context, chain) {
       context.commit('addChain', chain);
     },
-    setWeb3Connection(context, web3Connection) {
-      context.commit('setWeb3Connection', web3Connection);
+    setWeb3Info(context, info) {
+      context.commit('setWeb3Info', info);
     },
     setWeb3Connected(context, connected) {
       context.commit('setWeb3Connected', connected);
@@ -137,87 +123,81 @@ const store = new Vuex.Store({
     setWeb3BlockInfo(context, blockInfo) {
       context.commit('setWeb3BlockInfo', blockInfo);
     },
-    setEtherscanAPIKey(context, apiKey) {
-      context.commit('setEtherscanAPIKey', apiKey);
-    },
   },
   modules: {
     connection: connectionModule,
-    config: configModule,
     block: blockModule,
     transaction: transactionModule,
     address: addressModule,
-    contract: contractModule,
   },
   plugins: [
     function persistSettings(store) {
       store.subscribe((mutation, state) => {
         if (mutation.type == "setEtherscanAPIKey" || mutation.type == "addChain") {
-          localStorage.explorerSettings = JSON.stringify(state.settings);
+          localStorage.explorerConfig = JSON.stringify(state.config);
         } else if (mutation.type.substring(0, 7) == "setWeb3") {
-          localStorage.explorerWeb3Connection = JSON.stringify(state.web3Connection);
+          localStorage.explorerWeb3 = JSON.stringify(state.web3);
         }
       });
 
-      if (localStorage.explorerSettings) {
-        const tempSettings = JSON.parse(localStorage.explorerSettings);
-        if ('version' in tempSettings && tempSettings.version == store.getters["settings"].version) {
-          store.dispatch('setSettings', tempSettings);
+      if (localStorage.explorerConfig) {
+        const tempConfig = JSON.parse(localStorage.explorerConfig);
+        if ('version' in tempConfig && tempConfig.version == store.getters["config"].version) {
+          store.dispatch('setConfig', tempConfig);
         }
       }
-      if (localStorage.explorerWeb3Connection) {
-        const tempWeb3Connection = JSON.parse(localStorage.explorerWeb3Connection);
-        if ('version' in tempWeb3Connection && tempWeb3Connection.version == store.getters["web3Connection"].version) {
-          store.dispatch('setWeb3Connection', tempWeb3Connection);
+      if (localStorage.explorerWeb3) {
+        const tempWeb3Info = JSON.parse(localStorage.explorerWeb3);
+        if ('version' in tempWeb3Info && tempWeb3Info.version == store.getters["web3"].version) {
+          store.dispatch('setWeb3Info', tempWeb3Info);
         }
       }
     },
   ],
 });
 
-// Subscribe to store updates
-// store.subscribe((mutation, state) => {
-//   // console.log(now() + " store.subscribe-handler - mutation: " + JSON.stringify(mutation) + ", state: " + JSON.stringify(state));
-//   // let store = {
-// 	// 	version: storeVersion,
-// 	// 	state: state,
-// 	// };
-//   // console.log(now() + " store.subscribe-handler - mutation.type: " + mutation.type);
-//   // console.log(now() + " store.subscribe-handler - mutation.payload: " + JSON.stringify(mutation.payload).substring(0, 200));
-//   // console.table(mutation);
-//   // console.table(state);
-//   // logDebug("store.updated", JSON.stringify(store, null, 4));
-// 	// TODO: Save to IndexedDB here? localStorage.setItem('store', JSON.stringify(store));
-// });
+// console.table(Vuetify);
+const vuetify = Vuetify.createVuetify({
+  // components,
+  // directives,
+});
 
-// sync store and router by using `vuex-router-sync`
-sync(store, router);
-
-const app = new Vue({
-  router,
-  store,
-  beforeCreate() {
-    console.log(now() + " index.js - app:beforeCreate");
-	},
+const app = Vue.createApp({
+  // icons: {
+  //   iconfont: 'mdiSvg', // 'mdi' || 'mdiSvg' || 'md' || 'fa' || 'fa4' || 'faSvg'
+  // },
+  // router,
+  // store,
+  // vuetify,
   data() {
     return {
-      count: 0,
-      name: 'BootstrapVue',
-      show: true,
-    };
+      searchString: null,
+      _timerId: null,
+  //     testData: 'Hellooo',
+  //     name: "Testing"
+    }
   },
   computed: {
     connected() {
-      return store.getters['web3Connection'].connected;
+      return store.getters['web3'].connected;
     },
-    chainId() {
-      return store.getters['connection/chainId'];
+    coinbase() {
+      return store.getters['web3'].coinbase;
     },
-    info() {
-      return store.getters['web3Connection'];
+    router() {
+      return this.$router && this.$router.currentRoute; // && ("(" + JSON.stringify(this.$router.currentRoute) + ")") || null;
     },
-    moduleName () {
-      return this.$route.name;
+    addressButtonActive() {
+      return this.$route.path.substring(0, 8) == "/address";
+    },
+    addressPathInputAddress() {
+      if (this.$route.path.substring(0, 8) == "/address") {
+        // console.log(now() + " index.js - computed.addressPathInputAddress - this.$route: " + JSON.stringify(this.$route, null, 2));
+        const inputAddress = this.$route.params && this.$route.params.inputAddress || null;
+        console.log(now() + " index.js - computed.addressPathInputAddress - inputAddress: " + JSON.stringify(inputAddress, null, 2));
+        return inputAddress;
+      }
+      return null;
     },
   },
   methods: {
@@ -227,13 +207,59 @@ const app = new Vue({
     disconnect(connected) {
       store.dispatch('connection/disconnect');
     },
+    searchDebounced() {
+      console.log(now() + " index.js - methods.searchDebounced - this.searchString: " + JSON.stringify(this.searchString));
+      clearTimeout(this._timerId)
+      this._timerId = setTimeout(() => {
+        this.search()
+      }, 500)
+    },
+    search() {
+      const blockRegex = /^\d+$/;
+      const txRegex = /^0x[a-fA-F0-9]{64}$/;
+      const addressRegex = /^0x[a-fA-F0-9]{40}$/;
+      console.log(now() + " index.js - methods.search - this.searchString: " + JSON.stringify(this.searchString));
+      if (this.searchString) {
+        if (blockRegex.test(this.searchString)) {
+          console.log(now() + " index.js - methods.search - BLOCK this.searchString: " + JSON.stringify(this.searchString));
+          this.$router.push({ name: 'Block', params: { inputBlockNumber: this.searchString } });
+          store.dispatch('block/loadBlock', this.searchString);
+        } else if (txRegex.test(this.searchString)) {
+          console.log(now() + " index.js - methods.search - TX this.searchString: " + JSON.stringify(this.searchString));
+          this.$router.push({ name: 'Transaction', params: { inputTxHash: this.searchString } });
+          store.dispatch('transaction/loadTransaction', this.searchString);
+        } else if (addressRegex.test(this.searchString)) {
+          console.log(now() + " index.js - methods.search - ADDRESS this.searchString: " + JSON.stringify(this.searchString));
+          this.$router.push({ name: 'Address', params: { inputAddress: this.searchString } });
+          store.dispatch('address/loadAddress', this.searchString);
+        }
+      }
+    },
+  //   testClick() {
+  //     console.log('this is a test click from component', this.$store.state.test);
+  //     this.$store.dispatch('pretendUpdate');
+  //   },
+  //   submitClick() {
+  //     console.log('Name in store', this.$store.state.name);
+  //   }
   },
-  components: {
-  },
+  beforeCreate() {
+    console.log(now() + " index.js - app:beforeCreate");
+	},
   mounted() {
     console.log(now() + " index.js - app.mounted");
   },
   destroyed() {
     console.log(now() + " index.js - app.destroyed");
   },
-}).$mount('#app');
+});
+
+// router.beforeEach((to, from) => {
+//   console.log("router.beforeEach - to: " + JSON.stringify(to) + ", from: " + JSON.stringify(from));
+// })
+
+app.use(router);
+app.use(store);
+app.use(vuetify);
+app.component("connection", Connection);
+app.mount('#app');

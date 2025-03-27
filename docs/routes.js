@@ -1,33 +1,54 @@
-const routes = [{
-    path: '/block/:blockNumber?',
+const routes = [
+  {
+    path: '/block/:inputBlockNumber?',
+    name: "Block",
     component: Block,
-    name: 'Block',
     props: true,
-  }, {
-    path: '/tx/:txHash?',
+  },
+  {
+    path: '/transaction/:inputTxHash?',
+    name: "Transaction",
     component: Transaction,
-    name: 'Transaction',
     props: true,
-  }, {
+  },
+  {
     path: '/address/:inputAddress?',
+    name: "Address",
     component: Address,
-    name: 'Address',
     props: true,
-  }, {
-    path: '/contract/:inputAddress?',
-    component: Contract,
-    name: 'Contract',
+  },
+  {
+    path: '/address/:inputAddress?/contract',
+    name: "AddressContract",
+    component: AddressContract,
     props: true,
-  }, {
+  },
+  {
+    path: '/address/:inputAddress?/tokens',
+    name: "Tokens",
+    component: AddressTokens,
+    props: true,
+  },
+  {
+    path: '/address/:inputAddress?/transactions',
+    name: "Transactions",
+    component: AddressTransactions,
+    props: true,
+  },
+  {
+    path: '/address/:inputAddress?/events',
+    name: "Events",
+    component: AddressEvents,
+    props: true,
+  },
+  {
     path: '/config',
+    name: "Config",
     component: Config,
-    name: 'Config',
-  }, {
-    path: '/home',
-    component: Welcome,
-    name: ''
-  }, {
-    path: '*',
-    redirect: '/home',
-  }
+  },
+  {
+    path: "/",
+    name: "Home",
+    component: Home,
+  },
 ];

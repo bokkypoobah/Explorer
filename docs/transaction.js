@@ -1,227 +1,48 @@
 const Transaction = {
   template: `
-    <div class="m-0 p-0">
-
-      <b-card no-body no-header class="border-0">
-        <b-card no-body class="border-0 m-0 mt-0">
-
-          <div class="d-flex flex-wrap m-0 p-0 px-1 bg-white">
-            <div class="m-0 mt-1 p-0" style="width: 36.0rem;">
-              <b-form-input type="text" size="sm" :value="txHash" @change="loadTransaction($event);" debounce="600" v-b-popover.hover.bottom="'Transaction hash'" placeholder="🔍 tx hash, e.g., 0x1234...abcd"></b-form-input>
-            </div>
-            <div class="mt-1 pr-1">
-              <b-dropdown size="sm" right text="" variant="link" class="m-0 p-0">
-                <b-dropdown-text>Sample Transactions</b-dropdown-text>
-                <b-dropdown-divider></b-dropdown-divider>
-                <b-dropdown-item @click="loadTransaction('0x00cf367c9ee21dc9538355d1da4ebac9b83645b790b07dd2c9d15ae7f9aed6d2');">0x00cf367c - EF: DeFi Multisig Safe v1.4.1 transaction</b-dropdown-item>
-                <b-dropdown-item @click="loadTransaction('0x7c74738e01721782e92f277afad75245bcb637f7e49bbf61bd67a46b7e568f3c');">0x7c74738e - EF: DeFi Multisig Safe v1.4.1 deployment by proxy</b-dropdown-item>
-                <b-dropdown-item @click="loadTransaction('0xa3f23edc79ae0aa3052a0b5a5fb81f9e13729adb338592d970ffe4a8f5ee3766');">0xa3f23edc - TURBO deployment</b-dropdown-item>
-                <b-dropdown-item @click="loadTransaction('0xe6030c80c06283197ec49ef8fa6f22ee57e07fab776136310801415db5ccc389');">0xe6030c80 - Random EOA to EOA ETH transfer</b-dropdown-item>
-                <b-dropdown-item @click="loadTransaction('0xce56f56bd3712611e360b4ebd8071aa3246f2eff3042eef81c3f24dedab77915');">0xce56f56b - Random failed transaction</b-dropdown-item>
-                <b-dropdown-item @click="loadTransaction('0x6afbe0f0ea3613edd6b84b71260836c03bddce81604f05c81a070cd671d3d765');">0x6afbe0f0 - Random older transaction</b-dropdown-item>
-              </b-dropdown>
-            </div>
-            <!-- <div class="mt-0 flex-grow-1">
-            </div> -->
-          </div>
-
-          <b-card no-body no-header bg-variant="light" class="m-1 p-1">
-            <b-form-group label-cols-lg="2" label="Transaction" label-size="md" label-class="font-weight-bold pt-0" class="mt-3 mb-0">
-              <b-form-group label="Hash:" label-for="transaction-hash" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-input-group>
-                  <b-button v-if="tx && tx.hash" :href="'https://etherscan.io/tx/' + tx.hash" variant="link" target="_blank" class="m-0 p-0 pt-1">
-                    {{ tx.hash }}
-                  </b-button>
-                  <b-input-group-append>
-                    <b-button v-if="tx && tx.hash" size="sm" @click="copyToClipboard(tx.hash);" variant="link">
-                      <b-icon-clipboard shift-v="-1" font-scale="1.1"></b-icon-clipboard>
-                    </b-button>
-                  </b-input-group-append>
-                </b-input-group>
-              </b-form-group>
-
-              <b-form-group v-if="txReceipt && txReceipt.status != null" label="Status:" label-for="transaction-status" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0" :description="txReceipt && txReceipt.byzantium && ('Byzantium: ' + txReceipt.byzantium)">
-                <b-form-input type="text" plaintext size="sm" id="transaction-status" :value="txReceipt.status == 1 ? 'SUCCESS' : 'FAIL'"></b-form-input>
-              </b-form-group>
-
-              <b-form-group label="Block:" label-for="transaction-block" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0" :description="timestamp && formatTimestamp(timestamp) || ''">
-                <b-input-group>
-                  <!-- <b-button v-if="tx && tx.blockNumber" :href="'https://etherscan.io/block/' + tx.blockNumber" variant="link" target="_blank" class="m-0 p-0 pt-1"> -->
-                  <!-- <b-button v-if="tx && tx.blockNumber" to="{ path: '/block', params: { blockNumber: tx.blockNumber } }" variant="link" class="m-0 p-0 pt-1"> -->
-                  <!-- <b-button v-if="tx && tx.blockNumber" @click="$router.push({ path: '/block/', params: { blockNumber: tx.blockNumber } })" variant="link" class="m-0 p-0 pt-1"> -->
-                  <b-button v-if="tx && tx.blockNumber" :href="'#/block/' + tx.blockNumber" variant="link" class="m-0 p-0 pt-1">
-                    {{ tx && tx.blockNumber && commify0(tx.blockNumber) || '' }}
-                  </b-button>
-                  <b-input-group-append>
-                    <b-button v-if="tx && tx.blockNumber" :href="'https://etherscan.io/block/' + tx.blockNumber" variant="link" target="_blank" class="m-0 ml-2 p-0 pt-1">
-                      <b-icon-link-45deg shift-v="-1" font-scale="1.1"></b-icon-link-45deg>
-                    </b-button>
-                    <b-button v-if="tx && tx.blockNumber" size="sm" @click="copyToClipboard(tx.blockNumber);" variant="link">
-                      <b-icon-clipboard shift-v="-1" font-scale="1.1"></b-icon-clipboard>
-                    </b-button>
-                  </b-input-group-append>
-                </b-input-group>
-              </b-form-group>
-
-              <b-form-group label="From:" label-for="transaction-from" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0" :description="tx && tx.nonce && ('Nonce: ' + tx.nonce) || ''">
-                <b-input-group>
-                  <!-- <b-button v-if="tx && tx.from" :href="'https://etherscan.io/address/' + tx.from" variant="link" target="_blank" class="m-0 p-0 pt-1"> -->
-                  <b-button v-if="tx && tx.from" :href="'#/address/' + tx.from" variant="link" class="m-0 p-0 pt-1">
-                    {{ tx.from }}
-                  </b-button>
-                  <b-input-group-append>
-                    <b-button v-if="tx && tx.from" :href="'https://etherscan.io/address/' + tx.from" variant="link" target="_blank" class="m-0 ml-2 p-0 pt-1">
-                      <b-icon-link-45deg shift-v="-1" font-scale="1.1"></b-icon-link-45deg>
-                    </b-button>
-                    <b-button v-if="tx && tx.from" size="sm" @click="copyToClipboard(tx.from);" variant="link">
-                      <b-icon-clipboard shift-v="-1" font-scale="1.1"></b-icon-clipboard>
-                    </b-button>
-                  </b-input-group-append>
-                </b-input-group>
-              </b-form-group>
-
-              <b-form-group label="To:" label-for="transaction-to" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-input-group>
-                  <b-button v-if="tx && tx.to" :href="'#/address/' + tx.to" variant="link" class="m-0 p-0 pt-1">
-                    {{ tx.to }}
-                  </b-button>
-                  <b-input-group-append>
-                    <b-button v-if="tx && tx.to" :href="'https://etherscan.io/address/' + tx.to" variant="link" target="_blank" class="m-0 ml-2 p-0 pt-1">
-                      <b-icon-link-45deg shift-v="-1" font-scale="1.1"></b-icon-link-45deg>
-                    </b-button>
-                    <b-button v-if="tx && tx.to" size="sm" @click="copyToClipboard(tx.to);" variant="link">
-                      <b-icon-clipboard shift-v="-1" font-scale="1.1"></b-icon-clipboard>
-                    </b-button>
-                  </b-input-group-append>
-                </b-input-group>
-              </b-form-group>
-
-              <b-form-group v-if="txReceipt && txReceipt.contractAddress" label="Deployed contract:" label-for="transaction-contractaddress" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-input-group>
-                  <b-button v-if="txReceipt && txReceipt.contractAddress" :href="'https://etherscan.io/address/' + txReceipt.contractAddress" variant="link" target="_blank" class="m-0 p-0 pt-1">
-                    {{ txReceipt.contractAddress }}
-                  </b-button>
-                  <b-input-group-append>
-                    <b-button v-if="txReceipt && txReceipt.contractAddress" size="sm" @click="copyToClipboard(txReceipt.contractAddress);" variant="link">
-                      <b-icon-clipboard shift-v="-1" font-scale="1.1"></b-icon-clipboard>
-                    </b-button>
-                  </b-input-group-append>
-                </b-input-group>
-              </b-form-group>
-
-              <b-form-group label="Value:" label-for="transaction-value" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-form-input type="text" plaintext size="sm" id="transaction-value" :value="tx && tx.value && (formatETH(tx.value) + ' ETH')"></b-form-input>
-              </b-form-group>
-
-              <b-form-group label="Fee:" label-for="transaction-fee" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-form-input type="text" plaintext size="sm" id="transaction-fee" :value="fee && (formatETH(fee) + ' ETH')"></b-form-input>
-              </b-form-group>
-
-              <b-form-group label="Data:" label-for="transaction-data" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-input-group class="align-items-start">
-                  <b-form-textarea plaintext size="sm" id="transaction-data" :value="tx && tx.data && tx.data != '0x' && tx.data || ''" rows="3" max-rows="10"></b-form-textarea>
-                  <b-input-group-append>
-                    <b-button v-if="tx && tx.data" :disabled="tx.data == '0x'" size="sm" @click="copyToClipboard(tx.data);" variant="link">
-                      <b-icon-clipboard shift-v="-1" font-scale="1.1"></b-icon-clipboard>
-                    </b-button>
-                  </b-input-group-append>
-                </b-input-group>
-              </b-form-group>
-
-              <b-form-group label="Gas Limit:" label-for="transaction-gaslimit" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-form-input type="text" plaintext size="sm" id="transaction-gaslimit" :value="tx && tx.gasLimit && commify0(tx.gasLimit) || ''"></b-form-input>
-              </b-form-group>
-              <b-form-group label="Gas Used:" label-for="transaction-gasused" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-form-input type="text" plaintext size="sm" id="transaction-gasused" :value="txReceipt && txReceipt.gasUsed && commify0(txReceipt.gasUsed) || ''"></b-form-input>
-              </b-form-group>
-              <b-form-group label="Gas Price:" label-for="transaction-gasprice" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-form-input type="text" plaintext size="sm" id="transaction-gasprice" :value="tx && tx.gasPrice && (formatGas(tx.gasPrice) + ' gwei') || ''"></b-form-input>
-              </b-form-group>
-              <b-form-group label="Max Fee Per Gas:" label-for="transaction-maxfeepergas" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-form-input type="text" plaintext size="sm" id="transaction-maxfeepergas" :value="tx && tx.maxFeePerGas && (formatGas(tx.maxFeePerGas) + ' gwei') || ''"></b-form-input>
-              </b-form-group>
-              <b-form-group label="Max Priority Fee Per Gas:" label-for="transaction-maxpriorityfeepergas" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-form-input type="text" plaintext size="sm" id="transaction-maxpriorityfeepergas" :value="tx && tx.maxPriorityFeePerGas && (formatGas(tx.maxPriorityFeePerGas) + ' gwei') || ''"></b-form-input>
-              </b-form-group>
-              <b-form-group label="Effective Gas Price:" label-for="transaction-effectivegasprice" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-form-input type="text" plaintext size="sm" id="transaction-effectivegasprice" :value="txReceipt && txReceipt.effectiveGasPrice && (formatGas(txReceipt.effectiveGasPrice) + ' gwei') || ''"></b-form-input>
-              </b-form-group>
-
-              <b-form-group label="Logs (temp):" label-for="transaction-logs" label-size="sm" label-cols-sm="2" label-align-sm="right" class="mx-0 my-1 p-0">
-                <b-form-textarea plaintext size="sm" id="transaction-logs" :value="txReceipt && txReceipt.logs && JSON.stringify(txReceipt.logs) || ''" rows="3" max-rows="10"></b-form-textarea>
-              </b-form-group>
-
-            </b-form-group>
-          </b-card>
-          <!-- <b-card-body class="p-0">
-            <b-card class="mb-2 border-0">
-              <b-card-text>
-                <h5>Transaction</h5>
-                error: {{ error }}
-                <br />
-                tx: {{ tx }}
-                <br />
-                txReceipt: {{ txReceipt }}
-                <br />
-                timestamp: {{ timestamp }}
-              </b-card-text>
-            </b-card>
-          </b-card-body> -->
-        </b-card>
-      </b-card>
+    <div>
+      <v-card>
+        <v-card-text>
+          timestampString: {{ timestampString }}
+          <v-textarea :model-value="tx && JSON.stringify(tx, null, 2)" label="Tx" rows="10">
+          </v-textarea>
+          <v-textarea :model-value="txReceipt && JSON.stringify(txReceipt, null, 2)" label="Tx Receipt" rows="10">
+          </v-textarea>
+        </v-card-text>
+        <!-- <v-card-actions>
+          <v-btn>Action 1</v-btn>
+          <v-btn>Action 2</v-btn>
+        </v-card-actions> -->
+      </v-card>
     </div>
   `,
-  props: ['txHash'],
+  props: ['inputTxHash'],
   data: function () {
     return {
-      count: 0,
-      reschedule: true,
-    }
+      txHash: null,
+    };
   },
   computed: {
-    error() {
-      return store.getters['transaction/error'];
-    },
     tx() {
       return store.getters['transaction/tx'];
     },
-    txReceipt () {
+    txReceipt() {
       return store.getters['transaction/txReceipt'];
     },
-    timestamp () {
+    timestamp() {
       return store.getters['transaction/timestamp'];
     },
-    fee() {
-      if (this.tx && this.txReceipt && this.txReceipt.gasUsed && this.txReceipt.effectiveGasPrice) {
-        return ethers.BigNumber.from(this.txReceipt.gasUsed).mul(this.txReceipt.effectiveGasPrice);
-      }
-      return null;
+    timestampString: {
+      get: function() {
+        return this.timestamp && this.formatTimestamp(this.timestamp) || null;
+      },
     },
+
   },
   methods: {
-    loadTransaction(txHash) {
-      console.log(now() + " Transaction - loadTransaction - txHash: " + txHash);
-      this.$router.push({ name: 'Transaction', params: { txHash } })
-      store.dispatch('transaction/loadTransaction', txHash);
-    },
-    copyToClipboard(str) {
-      navigator.clipboard.writeText(str);
-    },
-    commify0(n) {
-      if (n != null) {
-        return Number(n).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-      }
-      return null;
-    },
     formatETH(e) {
       if (e) {
         return ethers.utils.formatEther(e).replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
-      }
-      return null;
-    },
-    formatGas(e) {
-      if (e) {
-        return ethers.utils.formatUnits(e, "gwei").replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
       }
       return null;
     },
@@ -232,24 +53,22 @@ const Transaction = {
       return null;
     },
   },
-  // beforeRouteUpdate(to, from) {
-  //   console.log(now() + " Transaction - beforeRouteUpdate");
-  //   console.table(to);
-  //   console.table(from);
-  // },
-  beforeDestroy() {
-    console.log(now() + " Transaction - beforeDestroy()");
-  },
+  beforeCreate() {
+    console.log(now() + " Transaction - beforeCreate");
+	},
   mounted() {
-    console.log(now() + " Transaction - mounted() $route.params: " + JSON.stringify(this.$route.params));
+    console.log(now() + " Transaction - mounted - inputTxHash: " + this.inputTxHash);
     const t = this;
     setTimeout(function() {
-      store.dispatch('transaction/loadTransaction', t.txHash);
+      store.dispatch('transaction/loadTransaction', t.inputTxHash);
     }, 1000);
-  },
+	},
+  unmounted() {
+    console.log(now() + " Transaction - unmounted");
+	},
   destroyed() {
-    this.reschedule = false;
-  },
+    console.log(now() + " Transaction - destroyed");
+	},
 };
 
 const transactionModule = {
@@ -279,7 +98,7 @@ const transactionModule = {
       console.log(now() + " transactionModule - actions.loadTransaction - txHash: " + txHash);
       let [error, tx, txReceipt, timestamp] = [null, null, null, null];
       if (txHash) {
-        if (!store.getters['web3Connection'].connected || !window.ethereum) {
+        if (!store.getters['web3'].connected || !window.ethereum) {
           error = "Not connected";
         }
         if (!error && !(/^0x([A-Fa-f0-9]{64})$/.test(txHash))) {

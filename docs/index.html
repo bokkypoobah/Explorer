@@ -14,32 +14,30 @@
     <meta property="og:title" content="Explorer (c) Bok Consulting Pty Ltd 2024" />
     <meta property="og:description" content="Explorer (c) Bok Consulting Pty Ltd 2024" />
     <meta property="og:image" content="https://bokkypoobah.github.io/Explorer/images/fknchad_FkqVTzBaUAAiE8x_nobg.png" />
-    <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css" />
-    <link type="text/css" rel="stylesheet" href="css/bootstrap-vue.min.css"/>
-    <link type="text/css" rel="stylesheet" href="css/bootstrap-vue-icons.min.css"/>
-    <!-- <link type="text/css" rel="stylesheet" href="css/app.css"/> -->
-    <script src="js/vue.js"></script>
-    <script src="js/bootstrap-vue.min.js"></script>
-    <script src="js/bootstrap-vue-icons.min.js"></script>
-    <script src="js/vue-router.min.js"></script>
-    <script src="js/vuex.js"></script>
-    <!-- TODO: Check if below still necessary -->
-    <script src="js/vuex-router-sync.js"></script>
 
-    <script src="js/ethers-5.8.0.umd.min.js" type="application/javascript"></script>
-    <script src="js/moment.min.js"></script>
-    <script src="js/dexie.js"></script>
+    <link type="text/css" rel="stylesheet" href="css/vuetify_3.7.18.css" />
+    <link type="text/css" rel="stylesheet" href="css/materialdesignicons_7.4.47.css" />
+    <link type="font/woff2" href="new_docs/css/materialdesignicons-webfont.woff2" />
 
-    <script src="abis.js"></script>
+    <script src="js/dexie_3.0.3.js"></script>
+    <script src="js/ethers_5.8.0.umd.js"></script>
+    <script src="js/moment_2.24.0.js"></script>
+    <script src="js/vue_3.5.13.js"></script>
+    <script src="js/vue-router_4.5.0.js"></script>
+    <script src="js/vuetify_3.7.18.js"></script>
+    <script src="js/vuex_4.1.0.js"></script>
+
     <script src="globals.js"></script>
-    <script src="functions.js"></script>
-    <script src="config.js"></script>
-    <script src="samples.js"></script>
+
+    <script src="home.js"></script>
     <script src="block.js"></script>
     <script src="transaction.js"></script>
     <script src="address.js"></script>
-    <script src="contract.js"></script>
-    <script src="welcome.js"></script>
+    <script src="addressContract.js"></script>
+    <script src="addressTokens.js"></script>
+    <script src="addressTransactions.js"></script>
+    <script src="addressEvents.js"></script>
+    <script src="config.js"></script>
     <script src="connectionModule.js"></script>
 
     <script src="routes.js"></script>
@@ -52,43 +50,78 @@
   </head>
   <body>
     <div id="app">
-      <b-container fluid class="m-0 p-1">
-        <b-navbar variant="light" variant="light" class="mx-1 my-0 p-0">
-          <b-navbar-brand href="https://bokkypoobah.github.io/Explorer/" variant="primary">
-            <b-avatar rounded variant="light" size="3.0rem" src="images/fknchad_FkqVTzBaUAAiE8x_nobg.png" v-b-popover.hover.bottom="'gm'" class="ml-0"></b-avatar>
-            <em v-b-popover.hover.bottom="'gm gm gm'">Explorer</em>
-          </b-navbar-brand>
-          <b-navbar-nav class="ml-auto">
-            <b-nav-item size="sm" to="/home" active-class="active" v-b-popover.hover="'Welcome'">Home</b-nav-item>
-            <b-nav-item size="sm" to="/block/" active-class="active" v-b-popover.hover="'View block'">Block</b-nav-item>
-            <b-nav-item size="sm" to="/tx/" active-class="active" v-b-popover.hover="'View transaction'">Transaction</b-nav-item>
-            <b-nav-item size="sm" to="/address/" active-class="active" v-b-popover.hover="'View address'">Address</b-nav-item>
-            <b-nav-item size="sm" to="/contract/" active-class="active" v-b-popover.hover="'View contract'">Contract</b-nav-item>
-            <b-nav-item size="sm" to="/config" active-class="active" v-b-popover.hover="'Configuration'">Config</b-nav-item>
-            <b-button v-if="!connected" size="sm" variant="outline-primary" class="ml-5 mr-1" @click="connect();" v-b-popover.hover.bottom="'Connect to web3'">Connect</b-button>
-            <b-button v-if="connected" size="sm" variant="outline-primary" class="ml-5 mr-1" @click="disconnect();" v-b-popover.hover.bottom="'Connected to ' + info.coinbase + '. Click to disconnect'">Connected</b-button>
-          </b-navbar-nav>
-        </b-navbar>
-        <div style="min-height: 600px;">
-          <router-view></router-view>
-        </div>
-        <div no-header body-class="m-0 p-0" class="fixed-bottom m-0 p-0 border-top border-top-5 bg-light">
-          <div class="d-flex flex-wrap m-0 p-0">
-            <div class="ml-0 mt-0 pl-1">
+      <v-app>
+
+        <v-app-bar app>
+          <v-avatar image="images/fknchad_FkqVTzBaUAAiE8x_nobg.png"></v-avatar>
+          <v-toolbar-title>Explorer</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-text-field v-model="searchString" @input="searchDebounced();" hide-details label="🔍" variant="underlined" style="width: 300px;" placeholder="block #, tx hash or address">
+          </v-text-field>
+          <v-spacer></v-spacer>
+          <v-btn to="/" text>HOME</v-btn>
+          <v-btn to="/block" text>BLOCK</v-btn>
+          <v-btn to="/transaction" text>TRANSACTION</v-btn>
+          <v-btn to="/address/" :active="!!addressButtonActive" text>ADDRESS</v-btn>
+          <!-- <v-btn to="/contract" text>CONTRACT</v-btn> -->
+          <v-btn to="/config" text>
+            <!-- <span class="mdi mdi-tools"></span> -->
+            CONFIG
+          </v-btn>
+          <!-- <v-spacer></v-spacer> -->
+          <v-btn v-if="!connected" @click="connect();" text>CONNECT</v-btn>
+          <v-tooltip v-else :text="coinbase">
+            <template v-slot:activator="{ props }">
+              <v-btn v-bind="props" @click="disconnect();" text>DISCONNECT</v-btn>
+            </template>
+          </v-tooltip>
+        </v-app-bar>
+
+        <!-- <v-toolbar fixed>
+          <v-avatar image="images/fknchad_FkqVTzBaUAAiE8x_nobg.png"></v-avatar>
+          <v-toolbar-title>Explorer</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn to="/" text>HOME</v-btn>
+          <v-btn to="/block" text>BLOCK</v-btn>
+          <v-btn to="/transaction" text>TRANSACTION</v-btn>
+          <v-btn to="/address" text>ADDRESS</v-btn>
+          <v-btn to="/contract" text>CONTRACT</v-btn>
+          <v-btn to="/config" text>CONFIG</v-btn>
+          <v-spacer></v-spacer>
+          <v-btn text>CONNECT</v-btn>
+        </v-toolbar> -->
+
+        <v-main>
+          <v-container fluid>
+            <v-toolbar v-if="addressButtonActive">
+              <v-text-field v-model="addressPathInputAddress" variant="plain" class="ms-2" style="width: 100px;"></v-text-field>
+              <v-spacer></v-spacer>
+              <v-tabs right color="deep-purple-accent-4">
+                <v-tab :to="'/address/' + addressPathInputAddress">Summary</v-tab>
+                <v-tab :to="'/address/' + addressPathInputAddress + '/contract'">Contract</v-tab>
+                <v-tab :to="'/address/' + addressPathInputAddress + '/tokens'">Tokens</v-tab>
+                <v-tab :to="'/address/' + addressPathInputAddress + '/transactions'">Transactions</v-tab>
+                <v-tab :to="'/address/' + addressPathInputAddress + '/events'">Events</v-tab>
+              </v-tabs>
+            </v-toolbar>
+            <router-view v-slot="{ Component }">
+              <component :is="Component" />
+            </router-view>
+          </v-container>
+        </v-main>
+        <v-footer app fixed border>
+          <v-row justify="space-between" align="center">
+            <v-col class="text-left">
               <connection></connection>
-            </div>
-            <div class="mt-0 flex-grow-1">
-            </div>
-            <div class="mt-0 pl-1 pr-1">
-              <font size="-2" class="text-muted">
+            </v-col>
+            <v-col class="text-right">
+              <p class="text-caption text--disabled">
                 gm, and enjoy! <i>Explorer</i> &copy; Bok Consulting Pty Ltd 2025. The MIT Licence
-              </font>
-            </div>
-          </div>
-        </div>
-      </b-container>
-    </div>
-    <div>
+              </p>
+            </v-col>
+          </v-row>
+        </v-footer>
+      </v-app>
     </div>
     <script src="index.js"></script>
   </body>

@@ -4,18 +4,29 @@
 const Connection = {
   template: `
     <div>
-      <font size="-2" class="text-muted">
-        {{ connected ? "Connected" : "Disconnected" }}
-        <b-link v-if="info.chainId" :href="explorer" v-b-popover.hover.bottom="'Network'" target="_blank">
+      <!-- <v-btn small :href="explorer + (coinbase && ('address/' + coinbase))" target="_blank" variant="plain">
+        <span v-if="connected" class="mdi mdi-network"></span>
+        <span v-if="!connected" class="mdi mdi-network-outline"></span>
+      </v-btn> -->
+      <span class="text-caption text--disabled">
+        <span v-if="coinbase">
+          <a :href="explorer + 'address/' + coinbase" target="_blank" >
+            {{ connected ? "CONNECTED" : "DISCONNECTED" }}
+          </a>
+        </span>
+        <span v-else>
+          {{ connected ? "CONNECTED" : "DISCONNECTED" }}
+        </span>
+        <a v-if="info.chainId" :href="explorer" target="_blank" class="ml-1">
           {{ networkName }}
-        </b-link>
-        <b-link v-if="info.blockNumber" :href="'#/block/' + info.blockNumber" v-b-popover.hover.bottom="'Latest block'">
+        </a>
+        <a v-if="info.blockNumber" :href="explorer + 'block/' + info.blockNumber" target="_blank" class="ml-1">
           {{ '#' + commify0(info.blockNumber) }}
-        </b-link>
-        <span v-if="info.timestamp" v-b-popover.hover.bottom="formatTimestamp(info.timestamp)">
+        </a>
+        <span v-if="info.timestamp" class="ml-1">
           {{ formatTimeDiff(info.timestamp) }}
         </span>
-      </font>
+      </span>
     </div>
   `,
   data: function () {
@@ -25,10 +36,13 @@ const Connection = {
   },
   computed: {
     connected() {
-      return store.getters['web3Connection'].connected;
+      return store.getters['web3'].connected;
+    },
+    coinbase() {
+      return store.getters['web3'].coinbase;
     },
     info() {
-      return store.getters['web3Connection'];
+      return store.getters['web3'];
     },
     supportedNetwork() {
       return store.getters['supportedNetwork'];
@@ -138,7 +152,7 @@ const connectionModule = {
         if (connected) {
           // TODO: ethers.js fires duplicated new block events sometimes
           async function handleNewBlock(blockNumber) {
-            const lastBlockNumber = store.getters['web3Connection'].blockNumber;
+            const lastBlockNumber = store.getters['web3'].blockNumber;
             if (!lastBlockNumber || blockNumber > lastBlockNumber) {
               const block = await provider.getBlock("latest");
               if (block.number > lastBlockNumber) {
@@ -155,16 +169,16 @@ const connectionModule = {
       } else {
         error = "This app requires a web3 enabled browser";
       }
-      store.dispatch('setWeb3Connection', { connected, error, chainId, blockNumber, timestamp, coinbase });
+      store.dispatch('setWeb3Info', { connected, error, chainId, blockNumber, timestamp, coinbase });
       context.commit('setProvider', provider);
     },
     restore(context) {
-      if (store.getters['web3Connection'].connected) {
+      if (store.getters['web3'].connected) {
         context.dispatch('connect');
       }
     },
     disconnect(context) {
-      if (store.getters['web3Connection'].connected) {
+      if (store.getters['web3'].connected) {
         if (context.state.provider) {
           context.state.provider.removeAllListeners();
           window.ethereum.removeAllListeners();
