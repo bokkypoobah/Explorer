@@ -193,7 +193,8 @@ async function dbGetCachedData(db, name, empty) {
 async function dbSaveCacheData(db, name, data) {
   console.log(now() + " functions.js:dbSaveCacheData - name: " + name + ", data: " + JSON.stringify(data));
   await db.cache.put({ objectName: name, object: data }).then (function() {
-    }).catch(function(error) {
-      console.error(now() + " functions.js:dbSaveCacheData - ERROR name: " + name + ", data: " + JSON.stringify(data));
+    }).catch(function(e) {
+      // console.error(now() + " functions.js:dbSaveCacheData - ERROR name: " + name + ", data: " + JSON.stringify(data));
+      console.error(now() + " functions.js:dbSaveCacheData - ERROR: " + e.message);
     });
 }

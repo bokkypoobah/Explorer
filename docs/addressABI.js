@@ -6,10 +6,12 @@ const AddressABI = {
           <h3 class="ms-2 mt-2">ABI</h3>
           <v-textarea v-model="abi" :rules="jsonRules" label="ABI" rows="10">
           </v-textarea>
-          <h3 class="ms-2 mt-2">Functions</h3>
+          <v-btn @click="importABIFromEtherscan();" class="ms-2 mt-0" text>Import ABI From Etherscan
+          </v-btn>
+          <h3 class="ms-2 mt-5">Functions</h3>
           <v-data-table :items="functionsList" :headers="functionsHeaders" @click:row="handleFunctionsClick" density="compact">
           </v-data-table>
-          <h3 class="ms-2 mt-2">Events</h3>
+          <h3 class="ms-2 mt-5">Events</h3>
           <v-data-table :items="eventsList" :headers="eventsHeaders" @click:row="handleEventsClick" density="compact">
           </v-data-table>
         </v-card-text>
@@ -91,6 +93,25 @@ const AddressABI = {
     },
     handleEventsClick(event, row) {
       console.log(now() + " AddressABI - handleEventsClick - event: " + JSON.stringify(event, null, 2) + ", row: " + JSON.stringify(row, null, 2));
+    },
+    async importABIFromEtherscan() {
+      console.log(now() + " AddressABI - methods.importABIFromEtherscan");
+      const chainId = store.getters["chainId"];
+      // const db = new Dexie(this.dbInfo.name);
+      // db.version(this.dbInfo.version).stores(this.dbInfo.schemaDefinition);
+      const url = "https://api.etherscan.io/v2/api?chainid=" + chainId + "&module=contract&action=getabi&address=" + (this.info.implementation ? this.info.implementation : this.info.address) + "&apikey=" + store.getters['config'].etherscanAPIKey;
+      console.log(now() + " AddressABI - url: " + url);
+      const data = await fetch(url).then(response => response.json());
+      console.log(now() + " AddressABI - data: " + JSON.stringify(data, null, 2));
+      if (data && data.status == 1 && data.message == "OK") {
+        const abi = JSON.parse(data.result);
+        console.log(now() + " AddressABI - abi: " + JSON.stringify(abi, null, 2).substring(0, 1000) + "...");
+        store.dispatch('address/updateABI', { address: this.info.address, abi: data.result });
+      //   console.log(now() + " AddressABI - methods.importABIFromEtherscan - this.info: " + JSON.stringify(this.info).substring(0, 1000) + "...");
+      //   // Vue.set(this.info, 'abi', abi);
+      //   // await dbSaveCacheData(db, this.info.address + "_" + this.chainId + "_contract", this.info);
+      }
+      // db.close();
     },
   },
   beforeCreate() {
