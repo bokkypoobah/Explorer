@@ -4,9 +4,11 @@ const Address = {
       <v-card>
         <h3 class="ms-2 mt-2">Address {{ inputAddress }} Summary</h3>
         <v-card-text>
-          <v-textarea :model-value="JSON.stringify(functions, null, 2)" label="Functions" rows="20">
+          <v-textarea :model-value="JSON.stringify(functions, null, 2)" label="Functions" rows="10">
           </v-textarea>
-          <v-textarea :model-value="JSON.stringify(info, null, 2)" label="Info" rows="20">
+          <v-textarea :model-value="JSON.stringify(events, null, 2)" label="Events" rows="10">
+          </v-textarea>
+          <v-textarea :model-value="JSON.stringify(info, null, 2)" label="Info" rows="10">
           </v-textarea>
           <!-- info: {{ info }}
           <br />
@@ -45,6 +47,9 @@ const Address = {
     },
     functions() {
       return store.getters['address/functions'];
+    },
+    events() {
+      return store.getters['address/events'];
     },
   },
   methods: {

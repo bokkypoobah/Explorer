@@ -31,6 +31,22 @@ const addressModule = {
       }
       return results;
     },
+    events(state) {
+      console.log(now() + " addressModule - computed.events");
+      const results = {};
+      if (state.info.abi) {
+        try {
+          const interface = new ethers.utils.Interface(state.info.abi);
+          for (const [fullName, fragment] of Object.entries(interface.events)) {
+            const signature = interface.getEventTopic(fragment);
+            results[signature] = { fullName, ...fragment };
+          }
+        } catch (e) {
+          console.error(now() + " addressModule - computed.events - ERROR info.abi: " + e.message);
+        }
+      }
+      return results;
+    },
     // ensName: state => state.ensName,
     // transactions: state => state.transactions,
   },
