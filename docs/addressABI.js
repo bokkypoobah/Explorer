@@ -1,0 +1,37 @@
+const AddressABI = {
+  template: `
+    <div>
+      <h3 class="ms-2 mt-2">Address ABI</h3>
+      <p>TODO</p>
+      <p>{{ inputAddress }}</p>
+    </div>
+  `,
+  props: ['inputAddress'],
+  data: function () {
+    return {
+      address: null,
+    };
+  },
+  computed: {
+
+  },
+  methods: {
+
+  },
+  beforeCreate() {
+    console.log(now() + " AddressABI - beforeCreate");
+	},
+  mounted() {
+    console.log(now() + " AddressABI - mounted");
+    const t = this;
+    setTimeout(function() {
+      store.dispatch('address/loadAddress', t.inputAddress);
+    }, 1000);
+	},
+  unmounted() {
+    console.log(now() + " AddressABI - unmounted");
+	},
+  destroyed() {
+    console.log(now() + " AddressABI - destroyed");
+	},
+};

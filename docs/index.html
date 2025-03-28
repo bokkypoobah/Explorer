@@ -40,6 +40,7 @@
     <script src="block.js"></script>
     <script src="transaction.js"></script>
     <script src="address.js"></script>
+    <script src="addressABI.js"></script>
     <script src="addressContract.js"></script>
     <script src="addressTokens.js"></script>
     <script src="addressTransactions.js"></script>
@@ -95,6 +96,7 @@
               <v-spacer></v-spacer>
               <v-tabs right color="deep-purple-accent-4">
                 <v-tab :to="'/address/' + addressPathInputAddress">Summary</v-tab>
+                <v-tab :to="'/address/' + addressPathInputAddress + '/abi'">ABI</v-tab>
                 <v-tab :to="'/address/' + addressPathInputAddress + '/contract'">Contract</v-tab>
                 <v-tab :to="'/address/' + addressPathInputAddress + '/tokens'">Tokens</v-tab>
                 <v-tab :to="'/address/' + addressPathInputAddress + '/transactions'">Transactions</v-tab>

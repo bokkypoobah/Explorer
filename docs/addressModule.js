@@ -21,10 +21,17 @@ const addressModule = {
       if (state.info.abi) {
         try {
           const interface = new ethers.utils.Interface(state.info.abi);
-          for (const [fullName, fragment] of Object.entries(interface.functions)) {
-            const methodId = interface.getSighash(fragment);
-            results[methodId] = { fullName, ...fragment };
+          for (const fullName of interface.format(ethers.utils.FormatTypes.full)) {
+            if (fullName.substring(0, 8) == "function") {
+              const fragment = interface.getFunction(fullName.substring(9,));
+              const methodId = interface.getSighash(fragment);
+              results[methodId] = { fullName, ...fragment };
+            }
           }
+          // for (const [fullName, fragment] of Object.entries(interface.functions)) {
+          //   const sighash = interface.getSighash(fragment);
+          //   results[sighash] = { fullName, ...fragment };
+          // }
         } catch (e) {
           console.error(now() + " addressModule - computed.functions - ERROR info.abi: " + e.message);
         }
@@ -37,10 +44,20 @@ const addressModule = {
       if (state.info.abi) {
         try {
           const interface = new ethers.utils.Interface(state.info.abi);
-          for (const [fullName, fragment] of Object.entries(interface.events)) {
-            const signature = interface.getEventTopic(fragment);
-            results[signature] = { fullName, ...fragment };
+          for (const fullName of interface.format(ethers.utils.FormatTypes.full)) {
+            if (fullName.substring(0, 5) == "event") {
+              const fragment = interface.getEvent(fullName.substring(6,));
+              const topicCount = fragment.inputs.filter(e => e.indexed).length + 1;
+              const signature = interface.getEventTopic(fragment);
+              // const parameters = fragment.inputs.map(e => ({ name: e.name, type: e.type, indexed: e.indexed }));
+              results[signature] = { fullName, topicCount, ...fragment };
+            }
           }
+          // const interface = new ethers.utils.Interface(state.info.abi);
+          // for (const [fullName, fragment] of Object.entries(interface.events)) {
+          //   const eventTopic = interface.getEventTopic(fragment);
+          //   results[eventTopic] = { fullName, ...fragment };
+          // }
         } catch (e) {
           console.error(now() + " addressModule - computed.events - ERROR info.abi: " + e.message);
         }
