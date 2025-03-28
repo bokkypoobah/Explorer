@@ -106,7 +106,7 @@ const AddressABI = {
       if (data && data.status == 1 && data.message == "OK") {
         const abi = JSON.parse(data.result);
         console.log(now() + " AddressABI - abi: " + JSON.stringify(abi, null, 2).substring(0, 1000) + "...");
-        store.dispatch('address/updateABI', { address: this.info.address, abi: data.result });
+        store.dispatch('address/updateABI', { address: this.info.address, abi: JSON.stringify(abi) });
       //   console.log(now() + " AddressABI - methods.importABIFromEtherscan - this.info: " + JSON.stringify(this.info).substring(0, 1000) + "...");
       //   // Vue.set(this.info, 'abi', abi);
       //   // await dbSaveCacheData(db, this.info.address + "_" + this.chainId + "_contract", this.info);

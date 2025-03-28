@@ -144,12 +144,13 @@ const addressModule = {
       if (validatedAddress && validatedAddress == context.state.info.address) {
         console.log(now() + " addressModule - actions.updateABI - UPDATING info: " + JSON.stringify(info));
         context.commit('updateABI', info);
-        try {
-          new ethers.utils.Interface(info.abi);
-          await dbSaveCacheData(db, validatedAddress + "_" + chainId + "_address", context.state.info);
-        } catch (e) {
-          console.error(now() + " addressModule - actions.updateABI - ERROR: " + e.message);
-        }
+        // TODO: Move to addresses module
+        // try {
+        //   new ethers.utils.Interface(info.abi);
+        //   await dbSaveCacheData(db, validatedAddress + "_" + chainId + "_address", context.state.info);
+        // } catch (e) {
+        //   console.error(now() + " addressModule - actions.updateABI - ERROR: " + e.message);
+        // }
       }
       db.close();
     },
