@@ -22,10 +22,6 @@ Web3 dapp: https://bokkypoobah.github.io/Explorer/ connected to Ethereum Mainnet
 
 <kbd><img src="images/SampleScreen07.png" width="800" /></kbd>
 
-<kbd><img src="images/SampleScreen08.png" width="800" /></kbd>
-
-<kbd><img src="images/SampleScreen09.png" width="800" /></kbd>
-
 <br />
 
 ---
