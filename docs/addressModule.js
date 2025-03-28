@@ -40,10 +40,9 @@ const addressModule = {
 
       const validatedAddress = validateAddress(inputAddress);
       if (validatedAddress) {
-        const info = await dbGetCachedData(db, validatedAddress + "_" + this.chainId + "_contract", {});
+        const info = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_address", {});
         console.log(now() + " addressModule - actions.loadAddress - info: " + JSON.stringify(info));
       }
-
 
       let [error, address, transactionCount, balance, ensName, transactions, block] = [null, null, null, null, null, null, null];
       if (inputAddress) {

@@ -47,9 +47,7 @@ const store = new Vuex.Store({
     config: state => state.config,
     web3: state => state.web3,
     db: state => state.db,
-    chainId(state) {
-      return state.web3.chainId;
-    },
+    chainId: state => state.web3.chainId,
     supportedNetwork(state) {
       const chain = state.web3.chainId && state.config.chains[state.web3.chainId] || null;
       return !!chain;
@@ -192,9 +190,8 @@ const app = Vue.createApp({
     },
     addressPathInputAddress() {
       if (this.$route.path.substring(0, 8) == "/address") {
-        // console.log(now() + " index.js - computed.addressPathInputAddress - this.$route: " + JSON.stringify(this.$route, null, 2));
         const inputAddress = this.$route.params && this.$route.params.inputAddress || null;
-        console.log(now() + " index.js - computed.addressPathInputAddress - inputAddress: " + JSON.stringify(inputAddress, null, 2));
+        // console.log(now() + " index.js - computed.addressPathInputAddress - inputAddress: " + JSON.stringify(inputAddress, null, 2));
         return inputAddress;
       }
       return null;
