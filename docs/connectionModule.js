@@ -10,12 +10,18 @@ const Connection = {
       </v-btn> -->
       <span class="text-caption text--disabled">
         <span v-if="coinbase">
-          <a :href="explorer + 'address/' + coinbase" target="_blank" >
-            {{ connected ? "CONNECTED" : "DISCONNECTED" }}
-          </a>
+          <v-tooltip :text="coinbase">
+            <template v-slot:activator="{ props }">
+              <a v-bind="props" :href="explorer + 'address/' + coinbase" target="_blank" >
+                <span v-if="connected" class="mdi mdi-network"></span>
+                <span v-if="!connected" class="mdi mdi-network-outline"></span>
+              </a>
+            </template>
+          </v-tooltip>
         </span>
         <span v-else>
-          {{ connected ? "CONNECTED" : "DISCONNECTED" }}
+          <span v-if="connected" class="mdi mdi-network"></span>
+          <span v-if="!connected" class="mdi mdi-network-outline"></span>
         </span>
         <a v-if="info.chainId" :href="explorer" target="_blank" class="ml-1">
           {{ networkName }}
@@ -23,13 +29,12 @@ const Connection = {
         <a v-if="info.blockNumber" :href="explorer + 'block/' + info.blockNumber" target="_blank" class="ml-1">
           {{ '#' + commify0(info.blockNumber) }}
         </a>
-        <span v-if="info.timestamp" class="ml-1">          
-          <v-tooltip v-else :text="formatTimestamp(info.timestamp)">
+        <span v-if="info.timestamp" class="ml-1">
+          <v-tooltip :text="formatTimestamp(info.timestamp)">
             <template v-slot:activator="{ props }">
               <span v-bind="props">{{ formatTimeDiff(info.timestamp) }}</span>
             </template>
           </v-tooltip>
-
         </span>
       </span>
     </div>

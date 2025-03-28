@@ -34,7 +34,7 @@ const store = new Vuex.Store({
       version: 0,
     },
     db: {
-      name: "new_explorer088a",
+      name: "explorer088b",
       version: 1,
       schemaDefinition: {
         cache: '&objectName',

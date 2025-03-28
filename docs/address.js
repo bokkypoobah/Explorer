@@ -4,33 +4,6 @@ const Address = {
       <v-card>
         <h3 class="ms-2 mt-2">Address {{ inputAddress }} Summary</h3>
 
-        <!-- <v-tabs
-          v-model="tab"
-          align-tabs="end"
-          color="deep-purple-accent-4"
-        >
-          <v-tab value="one">Item One</v-tab>
-          <v-tab value="two">Item Two</v-tab>
-          <v-tab value="three">Item Three</v-tab>
-        </v-tabs>
-
-        <v-card-text>
-          <v-tabs-window v-model="tab">
-            <v-tabs-window-item value="one">
-              One
-            </v-tabs-window-item>
-
-            <v-tabs-window-item value="two">
-              Two
-            </v-tabs-window-item>
-
-            <v-tabs-window-item value="three">
-              Three
-            </v-tabs-window-item>
-          </v-tabs-window>
-        </v-card-text> -->
-
-
         <v-card-text>
           address: {{ address }}
           <br />
@@ -70,7 +43,7 @@ const Address = {
     console.log(now() + " Address - beforeCreate");
 	},
   mounted() {
-    console.log(now() + " Address - mounted - inputAddress: " + this.inputAddress + ", tab: " + this.tab);
+    console.log(now() + " Address - mounted - inputAddress: " + this.inputAddress);
     const t = this;
     setTimeout(function() {
       store.dispatch('address/loadAddress', t.inputAddress);

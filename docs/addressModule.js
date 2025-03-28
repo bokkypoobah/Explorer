@@ -30,6 +30,21 @@ const addressModule = {
   actions: {
     async loadAddress(context, inputAddress) {
       console.log(now() + " addressModule - actions.loadAddress - inputAddress: " + inputAddress);
+
+      const chainId = store.getters["chainId"];
+      console.log(now() + " addressModule - actions.loadAddress - chainId: " + JSON.stringify(chainId));
+      const dbInfo = store.getters["db"];
+      console.log(now() + " addressModule - actions.loadAddress - dbInfo: " + JSON.stringify(dbInfo));
+      const db = new Dexie(dbInfo.name);
+      db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
+
+      const validatedAddress = validateAddress(inputAddress);
+      if (validatedAddress) {
+        const info = await dbGetCachedData(db, validatedAddress + "_" + this.chainId + "_contract", {});
+        console.log(now() + " addressModule - actions.loadAddress - info: " + JSON.stringify(info));
+      }
+
+
       let [error, address, transactionCount, balance, ensName, transactions, block] = [null, null, null, null, null, null, null];
       if (inputAddress) {
         if (!store.getters['web3'].connected || !window.ethereum) {
@@ -55,6 +70,7 @@ const addressModule = {
       }
       console.log("error: " + error);
       context.commit('setData', { error, address, transactionCount, balance });
+      db.close();
     }
   },
 };
