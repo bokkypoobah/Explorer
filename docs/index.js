@@ -188,6 +188,10 @@ const app = Vue.createApp({
     router() {
       return this.$router && this.$router.currentRoute; // && ("(" + JSON.stringify(this.$router.currentRoute) + ")") || null;
     },
+    mainPath() {
+      const parts = this.$route.path.split("/");
+      return parts.length >= 2 && ("/" + parts[1]) || null;
+    },
     addressButtonActive() {
       return this.$route.path.substring(0, 8) == "/address";
     },

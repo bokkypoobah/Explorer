@@ -73,11 +73,11 @@
             </template>
           </v-combobox>
           <v-spacer></v-spacer>
-          <v-btn to="/" text>HOME</v-btn>
-          <v-btn to="/block" text>BLOCK</v-btn>
-          <v-btn to="/transaction" text>TRANSACTION</v-btn>
-          <v-btn to="/address/" :active="!!addressButtonActive" text>ADDRESS</v-btn>
-          <v-btn to="/config" text>
+          <v-btn to="/" :active="mainPath == '/'" text>HOME</v-btn>
+          <v-btn to="/block" :active="mainPath == '/block'" text>BLOCK</v-btn>
+          <v-btn to="/transaction" :active="mainPath == '/transaction'" text>TRANSACTION</v-btn>
+          <v-btn to="/address/" :active="mainPath == '/address'" text>ADDRESS</v-btn>
+          <v-btn to="/config" :active="mainPath == '/config'" text>
             <!-- <span class="mdi mdi-tools"></span> -->
             CONFIG
           </v-btn>
@@ -91,7 +91,7 @@
 
         <v-main>
           <v-container fluid class="pa-2">
-            <v-toolbar v-if="addressButtonActive" density="compact">
+            <v-toolbar v-if="mainPath == '/address'" density="compact">
               <v-text-field v-model="addressPathInputAddress" variant="plain" class="ms-2" style="width: 100px;"></v-text-field>
               <v-spacer></v-spacer>
               <v-tabs right color="deep-purple-accent-4">
