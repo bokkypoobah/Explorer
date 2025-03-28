@@ -4,10 +4,6 @@
 const Connection = {
   template: `
     <div>
-      <!-- <v-btn small :href="explorer + (coinbase && ('address/' + coinbase))" target="_blank" variant="plain">
-        <span v-if="connected" class="mdi mdi-network"></span>
-        <span v-if="!connected" class="mdi mdi-network-outline"></span>
-      </v-btn> -->
       <span class="text-caption text--disabled">
         <span v-if="coinbase">
           <v-tooltip :text="coinbase">
