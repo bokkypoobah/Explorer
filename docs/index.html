@@ -53,12 +53,12 @@
   </head>
   <body>
     <div id="app">
-      <v-app>        
-        <v-app-bar app> <!-- <v-toolbar fixed>...</v-toolbar> -->
+      <v-app>
+        <v-app-bar app density="comfortable"> <!-- <v-toolbar fixed>...</v-toolbar> -->
           <v-avatar image="images/fknchad_FkqVTzBaUAAiE8x_nobg.png" class="ps-4"></v-avatar>
           <v-toolbar-title>Explorer</v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-text-field v-model="searchString" @input="searchDebounced();" hide-details label="🔍" variant="underlined" style="width: 300px;" placeholder="block #, tx hash or address">
+          <v-text-field v-model="searchString" @input="searchDebounced();" hide-details label="🔍" variant="underlined" style="width: 330px;" placeholder="block #, tx hash or address">
           </v-text-field>
           <v-spacer></v-spacer>
           <v-btn to="/" text>HOME</v-btn>
@@ -78,8 +78,8 @@
         </v-app-bar>
 
         <v-main>
-          <v-container fluid>
-            <v-toolbar v-if="addressButtonActive">
+          <v-container fluid class="pa-2">
+            <v-toolbar v-if="addressButtonActive" density="compact">
               <v-text-field v-model="addressPathInputAddress" variant="plain" class="ms-2" style="width: 100px;"></v-text-field>
               <v-spacer></v-spacer>
               <v-tabs right color="deep-purple-accent-4">

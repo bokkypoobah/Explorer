@@ -23,8 +23,13 @@ const Connection = {
         <a v-if="info.blockNumber" :href="explorer + 'block/' + info.blockNumber" target="_blank" class="ml-1">
           {{ '#' + commify0(info.blockNumber) }}
         </a>
-        <span v-if="info.timestamp" class="ml-1">
-          {{ formatTimeDiff(info.timestamp) }}
+        <span v-if="info.timestamp" class="ml-1">          
+          <v-tooltip v-else :text="formatTimestamp(info.timestamp)">
+            <template v-slot:activator="{ props }">
+              <span v-bind="props">{{ formatTimeDiff(info.timestamp) }}</span>
+            </template>
+          </v-tooltip>
+
         </span>
       </span>
     </div>
