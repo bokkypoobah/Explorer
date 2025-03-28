@@ -15,6 +15,22 @@ const addressModule = {
     transactionCount: state => state.transactionCount,
     balance: state => state.balance,
     info: state => state.info,
+    functions(state) {
+      console.log(now() + " addressModule - computed.functions");
+      const results = {};
+      if (state.info.abi) {
+        try {
+          const interface = new ethers.utils.Interface(state.info.abi);
+          for (const [fullName, fragment] of Object.entries(interface.functions)) {
+            const methodId = interface.getSighash(fragment);
+            results[methodId] = { fullName, ...fragment };
+          }
+        } catch (e) {
+          console.error(now() + " addressModule - computed.functions - ERROR info.abi: " + e.message);
+        }
+      }
+      return results;
+    },
     // ensName: state => state.ensName,
     // transactions: state => state.transactions,
   },
@@ -40,7 +56,7 @@ const addressModule = {
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
 
-      const forceUpdate = true;
+      const forceUpdate = false; // true;
       const validatedAddress = validateAddress(inputAddress);
       let info = {};
       if (validatedAddress) {
