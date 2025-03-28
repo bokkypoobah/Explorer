@@ -31,7 +31,7 @@ async function getAddressInfo(inputAddress, provider) {
   // EOA or contract?
   if (results.address) {
     try {
-      results.code = (await provider.getCode(results.address) || "").substring(0, 80) + "...";
+      results.code = await provider.getCode(results.address);
       results.type = !results.code || results.code == "0x" ? "eoa" : "contract"
       results.abi = null;
       results.sourceCode = null;

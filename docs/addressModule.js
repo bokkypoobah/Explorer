@@ -5,6 +5,7 @@ const addressModule = {
     address: null,
     transactionCount: null,
     balance: null,
+    info: {},
     // ensName: null,
     // transactions: [],
   },
@@ -13,6 +14,7 @@ const addressModule = {
     address: state => state.address,
     transactionCount: state => state.transactionCount,
     balance: state => state.balance,
+    info: state => state.info,
     // ensName: state => state.ensName,
     // transactions: state => state.transactions,
   },
@@ -23,6 +25,7 @@ const addressModule = {
       state.address = data.address;
       state.transactionCount = data.transactionCount;
       state.balance = data.balance;
+      state.info = data.info;
       // state.ensName = data.ensName;
       // state.transactions = data.transactions;
     },
@@ -30,18 +33,24 @@ const addressModule = {
   actions: {
     async loadAddress(context, inputAddress) {
       console.log(now() + " addressModule - actions.loadAddress - inputAddress: " + inputAddress);
-
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
       const chainId = store.getters["chainId"];
-      console.log(now() + " addressModule - actions.loadAddress - chainId: " + JSON.stringify(chainId));
       const dbInfo = store.getters["db"];
       console.log(now() + " addressModule - actions.loadAddress - dbInfo: " + JSON.stringify(dbInfo));
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
 
+      const forceUpdate = true;
       const validatedAddress = validateAddress(inputAddress);
+      let info = {};
       if (validatedAddress) {
-        const info = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_address", {});
+        info = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_address", {});
         console.log(now() + " addressModule - actions.loadAddress - info: " + JSON.stringify(info));
+        if (Object.keys(info).length == 0 || forceUpdate) {
+          info = await getAddressInfo(validatedAddress, provider);
+          console.log(now() + " addressModule - actions.loadAddress - info: " + JSON.stringify(info));
+          await dbSaveCacheData(db, validatedAddress + "_" + chainId + "_address", info);
+        }
       }
 
       let [error, address, transactionCount, balance, ensName, transactions, block] = [null, null, null, null, null, null, null];
@@ -68,7 +77,7 @@ const addressModule = {
         }
       }
       console.log("error: " + error);
-      context.commit('setData', { error, address, transactionCount, balance });
+      context.commit('setData', { error, address, transactionCount, balance, info });
       db.close();
     }
   },

@@ -5,6 +5,8 @@ const Address = {
         <h3 class="ms-2 mt-2">Address {{ inputAddress }} Summary</h3>
 
         <v-card-text>
+          info: {{ info }}
+          <br />
           address: {{ address }}
           <br />
           transactionCount: {{ transactionCount }}
@@ -34,6 +36,9 @@ const Address = {
     },
     balance() {
       return store.getters['address/balance'];
+    },
+    info() {
+      return store.getters['address/info'];
     },
   },
   methods: {
