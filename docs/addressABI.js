@@ -4,7 +4,7 @@ const AddressABI = {
       <v-card>
         <v-card-text>
           <h3 class="ms-2 mt-2">ABI</h3>
-          <v-textarea v-model="abi" label="ABI" rows="10">
+          <v-textarea v-model="abi" :rules="jsonRules" label="ABI" rows="10">
           </v-textarea>
           <h3 class="ms-2 mt-2">Functions</h3>
           <v-data-table :items="functionsList" :headers="functionsHeaders" @click:row="handleFunctionsClick" density="compact">
@@ -19,7 +19,19 @@ const AddressABI = {
   props: ['inputAddress'],
   data: function () {
     return {
-      address: null, // TODO: Delete
+      // address: null, // TODO: Delete
+      // abi: null,
+      jsonRules: [
+        (v) => (v || '').length > 0 || 'ABI is required',
+        (v) => {
+          try {
+            new ethers.utils.Interface(v);
+            return true;
+          } catch (e) {
+            return 'Invalid ABI';
+          }
+        },
+      ],
       _timerId: null,
       functionsHeaders: [
         { title: 'Method Id', value: 'methodId', align: 'end', sortable: true },
@@ -37,7 +49,7 @@ const AddressABI = {
     },
     abi: {
       get: function() {
-        return JSON.stringify(store.getters['address/info'].abi);
+        return store.getters['address/info'].abi;
       },
       set: function(abiString) {
         console.log(now() + " AddressABI - computed.abi.set - abiString: " + abiString);

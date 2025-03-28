@@ -113,7 +113,7 @@ async function getAddressInfo(inputAddress, provider) {
       if (results.owners && results.threshold && results.nonce) {
         // TODO: Should check that result.implementation a valid safe contract
         results.type = "safe";
-        results.abi = SAFE_ABIS["safe_" + results.version];
+        results.abi = JSON.stringify(SAFE_ABIS["safe_" + results.version]);
       }
     }
   }
@@ -142,7 +142,7 @@ async function getAddressInfo(inputAddress, provider) {
     }
     if (results.name && results.decimals) {
       results.type = "erc20";
-      results.abi = ERC20ABI;
+      results.abi = JSON.stringify(ERC20ABI);
       try {
         results.symbol = await tokensContract.symbol();
         console.log(now() + " functions.js:getAddressInfo - results.symbol: " + results.symbol);
@@ -160,7 +160,7 @@ async function getAddressInfo(inputAddress, provider) {
       try {
         if (await tokensContract.supportsInterface(ERC721_INTERFACE)) {
           results.type = "erc721";
-          results.abi = ERC721ABI;
+          results.abi = JSON.stringify(ERC721ABI);
         }
       } catch (e) {
         console.error(now() + " functions.js:getAddressInfo - ERROR tokensContract.supportsInterface(ERC721_INTERFACE): " + e.message);
@@ -170,7 +170,7 @@ async function getAddressInfo(inputAddress, provider) {
       try {
         if (await tokensContract.supportsInterface(ERC1155_INTERFACE)) {
           results.type = "erc1155";
-          results.abi = ERC1155ABI;
+          results.abi = JSON.stringify(ERC1155ABI);
         }
       } catch (e) {
         console.error(now() + " functions.js:getAddressInfo - ERROR tokensContract.supportsInterface(ERC1155_INTERFACE): " + e.message);

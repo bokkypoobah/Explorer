@@ -89,7 +89,7 @@ const addressModule = {
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
 
-      const forceUpdate = false; // true;
+      const forceUpdate = true;
       const validatedAddress = validateAddress(inputAddress);
       let info = {};
       if (validatedAddress) {
