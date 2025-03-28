@@ -78,6 +78,10 @@ const addressModule = {
       // state.ensName = data.ensName;
       // state.transactions = data.transactions;
     },
+    updateABI(state, info) {
+      console.log(now() + " addressModule - mutations.updateABI - data: " + JSON.stringify(info));
+      state.info.abi = info.abi;
+    },
   },
   actions: {
     async loadAddress(context, inputAddress) {
@@ -131,17 +135,18 @@ const addressModule = {
     },
     async updateABI(context, info) {
       console.log(now() + " addressModule - actions.updateABI - info: " + JSON.stringify(info));
-      // TODO
-      // console.log(now() + " addressModule - methods.updateABI - address: " + address + ", abi: " + abi);
-      // const db = new Dexie(this.dbInfo.name);
-      // db.version(this.dbInfo.version).stores(this.dbInfo.schemaDefinition);
-      // const validatedAddress = validateAddress(address);
-      // if (validatedAddress && validatedAddress == this.info.address) {
-      //   console.log(now() + " addressModule - methods.updateABI - this.info: " + JSON.stringify(this.info).substring(0, 1000) + "...");
-      //   Vue.set(this.info, 'abi', abi);
-      //   await dbSaveCacheData(db, this.info.address + "_" + this.chainId + "_contract", this.info);
-      // }
-      // db.close();
+      const chainId = store.getters["chainId"];
+      const dbInfo = store.getters["db"];
+      console.log(now() + " addressModule - actions.updateABI - dbInfo: " + JSON.stringify(dbInfo));
+      const db = new Dexie(dbInfo.name);
+      db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
+      const validatedAddress = validateAddress(info.address);
+      if (validatedAddress && validatedAddress == context.state.info.address) {
+        console.log(now() + " addressModule - actions.updateABI - UPDATING info: " + JSON.stringify(info));
+        context.commit('updateABI', info);
+        await dbSaveCacheData(db, validatedAddress + "_" + chainId + "_address", context.state.info);
+      }
+      db.close();
     },
   },
 };
