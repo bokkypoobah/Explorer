@@ -23,6 +23,10 @@ const AddressTokens = {
 	},
   mounted() {
     console.log(now() + " AddressTokens - mounted");
+    const t = this;
+    setTimeout(function() {
+      store.dispatch('address/loadAddress', t.inputAddress);
+    }, 1000);
 	},
   unmounted() {
     console.log(now() + " AddressTokens - unmounted");

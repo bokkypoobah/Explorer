@@ -23,6 +23,10 @@ const AddressTransactions = {
 	},
   mounted() {
     console.log(now() + " AddressTransactions - mounted");
+    const t = this;
+    setTimeout(function() {
+      store.dispatch('address/loadAddress', t.inputAddress);
+    }, 1000);
 	},
   unmounted() {
     console.log(now() + " AddressTransactions - unmounted");

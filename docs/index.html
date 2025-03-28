@@ -63,11 +63,11 @@
           </v-text-field> -->
           <v-combobox v-model="searchString" @update:model-value="searchDebounced();" :items="samples" item-title="title" item-value="value" hide-details label="🔍" density="compact" variant="underlined" style="width: 330px;" placeholder="block #, tx hash or address">
             <template v-slot:item="{ item, props }">
-              <v-list-item-content>
+              <!-- <v-list-item-content> -->
                 <v-list-item v-bind="props">
                   <v-list-item-title>{{ item.raw.subtitle }}</v-list-item-title>
                 </v-list-item>
-              </v-list-item-content>
+              <!-- </v-list-item-content> -->
             </template>
           </v-combobox>
           <v-spacer></v-spacer>

@@ -23,6 +23,10 @@ const AddressContract = {
 	},
   mounted() {
     console.log(now() + " AddressContract - mounted");
+    const t = this;
+    setTimeout(function() {
+      store.dispatch('address/loadAddress', t.inputAddress);
+    }, 1000);
 	},
   unmounted() {
     console.log(now() + " AddressContract - unmounted");
