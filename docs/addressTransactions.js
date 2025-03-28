@@ -1,9 +1,13 @@
 const AddressTransactions = {
   template: `
     <div>
-      <h3 class="ms-2 mt-2">Address Transactions</h3>
-      <p>TODO</p>
-      <p>{{ inputAddress }}</p>
+      <v-card>
+        <h3 class="ms-2 mt-2">Address {{ inputAddress }} Transactions</h3>
+        <v-card-text>
+          <p>TODO</p>
+          <p>{{ inputAddress }}</p>
+        </v-card-text>
+      </v-card>
     </div>
   `,
   props: ['inputAddress'],

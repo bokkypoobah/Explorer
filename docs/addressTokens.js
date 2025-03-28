@@ -1,9 +1,13 @@
 const AddressTokens = {
   template: `
     <div>
-      <h3 class="ms-2 mt-2">Address Tokens</h3>
-      <p>TODO</p>
-      <p>{{ inputAddress }}</p>
+      <v-card>
+        <h3 class="ms-2 mt-2">Address {{ inputAddress }} Tokens</h3>
+        <v-card-text>
+          <p>TODO</p>
+          <p>{{ inputAddress }}</p>
+        </v-card-text>
+      </v-card>
     </div>
   `,
   props: ['inputAddress'],

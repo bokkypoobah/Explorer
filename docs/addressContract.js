@@ -1,9 +1,13 @@
 const AddressContract = {
   template: `
     <div>
-      <h3 class="ms-2 mt-2">Address Contract</h3>
-      <p>TODO</p>
-      <p>{{ inputAddress }}</p>
+      <v-card>
+        <h3 class="ms-2 mt-2">Address {{ inputAddress }} Contract</h3>
+        <v-card-text>
+          <p>TODO</p>
+          <p>{{ inputAddress }}</p>
+        </v-card-text>
+      </v-card>
     </div>
   `,
   props: ['inputAddress'],
