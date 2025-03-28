@@ -2,12 +2,15 @@ const AddressABI = {
   template: `
     <div>
       <v-card>
-        <h3 class="ms-2 mt-2">Address {{ inputAddress }} ABI</h3>
         <v-card-text>
-          <v-textarea v-model="abi" label="ABI" rows="5">
+          <h3 class="ms-2 mt-2">ABI</h3>
+          <v-textarea v-model="abi" label="ABI" rows="10">
           </v-textarea>
-          <!-- <v-data-table :items="functionsList" :headers="headers" @click:row="handleClick" density="compact"> -->
-          <v-data-table :items="functionsList" :headers="headers">
+          <h3 class="ms-2 mt-2">Functions</h3>
+          <v-data-table :items="functionsList" :headers="functionsHeaders" @click:row="handleFunctionsClick" density="compact">
+          </v-data-table>
+          <h3 class="ms-2 mt-2">Events</h3>
+          <v-data-table :items="eventsList" :headers="eventsHeaders" @click:row="handleEventsClick" density="compact">
           </v-data-table>
         </v-card-text>
       </v-card>
@@ -18,9 +21,13 @@ const AddressABI = {
     return {
       address: null, // TODO: Delete
       _timerId: null,
-      headers: [
+      functionsHeaders: [
         { title: 'Method Id', value: 'methodId', align: 'end', sortable: true },
-        { title: 'Full Function Name', value: 'fullName', sortable: true },
+        { title: 'Function', value: 'fullName', sortable: true },
+      ],
+      eventsHeaders: [
+        { title: 'Signature', value: 'signature', align: 'end', sortable: true },
+        { title: 'Event', value: 'fullName', sortable: true },
       ],
     };
   },
@@ -36,6 +43,7 @@ const AddressABI = {
         console.log(now() + " AddressABI - computed.abi.set - abiString: " + abiString);
         clearTimeout(this._timerId)
         this._timerId = setTimeout(() => {
+          // TODO:
           // store.dispatch('setABI', abiString);
           console.log(now() + " AddressABI - computed.abi.set - DEBOUNCED abiString: " + abiString);
         }, 1000)
@@ -50,16 +58,24 @@ const AddressABI = {
     functionsList() {
       const results = [];
       for (const [methodId, functionData] of Object.entries(this.functions)) {
-        // results.push({ methodId, fullName: functionData.fullName });
-        results.push({ methodId, fullName: functionData.fullName, ...functionData });
+        results.push({ methodId, ...functionData });
       }
       return results;
     },
-
+    eventsList() {
+      const results = [];
+      for (const [signature, eventData] of Object.entries(this.events)) {
+        results.push({ signature, ...eventData });
+      }
+      return results;
+    },
   },
   methods: {
-    handleClick(event, row) {
-      console.log(now() + " AddressABI - handleClick - event: " + JSON.stringify(event, null, 2) + ", row: " + JSON.stringify(row, null, 2));
+    handleFunctionsClick(event, row) {
+      console.log(now() + " AddressABI - handleFunctionsClick - event: " + JSON.stringify(event, null, 2) + ", row: " + JSON.stringify(row, null, 2));
+    },
+    handleEventsClick(event, row) {
+      console.log(now() + " AddressABI - handleEventsClick - event: " + JSON.stringify(event, null, 2) + ", row: " + JSON.stringify(row, null, 2));
     },
   },
   beforeCreate() {
