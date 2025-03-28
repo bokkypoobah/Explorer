@@ -128,6 +128,20 @@ const addressModule = {
       console.log("error: " + error);
       context.commit('setData', { error, address, transactionCount, balance, info });
       db.close();
-    }
+    },
+    async updateABI(context, info) {
+      console.log(now() + " addressModule - actions.updateABI - info: " + JSON.stringify(info));
+      // TODO
+      // console.log(now() + " addressModule - methods.updateABI - address: " + address + ", abi: " + abi);
+      // const db = new Dexie(this.dbInfo.name);
+      // db.version(this.dbInfo.version).stores(this.dbInfo.schemaDefinition);
+      // const validatedAddress = validateAddress(address);
+      // if (validatedAddress && validatedAddress == this.info.address) {
+      //   console.log(now() + " addressModule - methods.updateABI - this.info: " + JSON.stringify(this.info).substring(0, 1000) + "...");
+      //   Vue.set(this.info, 'abi', abi);
+      //   await dbSaveCacheData(db, this.info.address + "_" + this.chainId + "_contract", this.info);
+      // }
+      // db.close();
+    },
   },
 };

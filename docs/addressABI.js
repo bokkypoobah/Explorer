@@ -44,6 +44,9 @@ const AddressABI = {
     };
   },
   computed: {
+    address() {
+      return store.getters['address/address'];
+    },
     info() {
       return store.getters['address/info'];
     },
@@ -51,13 +54,13 @@ const AddressABI = {
       get: function() {
         return store.getters['address/info'].abi;
       },
-      set: function(abiString) {
-        console.log(now() + " AddressABI - computed.abi.set - abiString: " + abiString);
-        clearTimeout(this._timerId)
+      set: function(abi) {
+        console.log(now() + " AddressABI - computed.abi.set - abi: " + abi);
+        clearTimeout(this._timerId);
+        const t = this;
         this._timerId = setTimeout(() => {
-          // TODO:
-          // store.dispatch('setABI', abiString);
-          console.log(now() + " AddressABI - computed.abi.set - DEBOUNCED abiString: " + abiString);
+          console.log(now() + " AddressABI - computed.abi.set - DEBOUNCED abi: " + abi);
+          store.dispatch('address/updateABI', { address: t.address, abi });
         }, 1000)
       },
     },
