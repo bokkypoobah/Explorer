@@ -59,8 +59,17 @@
           <v-avatar image="images/fknchad_FkqVTzBaUAAiE8x_nobg.png" class="ps-4"></v-avatar>
           <v-toolbar-title>Explorer</v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-text-field v-model="searchString" @input="searchDebounced();" hide-details label="🔍" variant="underlined" style="width: 330px;" placeholder="block #, tx hash or address">
-          </v-text-field>
+          <!-- <v-text-field v-model="searchString" @input="searchDebounced();" hide-details label="🔍" density="compact" variant="underlined" style="width: 330px;" placeholder="block #, tx hash or address">
+          </v-text-field> -->
+          <v-combobox v-model="searchString" @update:model-value="searchDebounced();" :items="samples" item-title="title" item-value="value" hide-details label="🔍" density="compact" variant="underlined" style="width: 330px;" placeholder="block #, tx hash or address">
+            <template v-slot:item="{ item, props }">
+              <v-list-item-content>
+                <v-list-item v-bind="props">
+                  <v-list-item-title>{{ item.raw.subtitle }}</v-list-item-title>
+                </v-list-item>
+              </v-list-item-content>
+            </template>
+          </v-combobox>
           <v-spacer></v-spacer>
           <v-btn to="/" text>HOME</v-btn>
           <v-btn to="/block" text>BLOCK</v-btn>

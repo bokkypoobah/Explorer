@@ -196,6 +196,14 @@ const app = Vue.createApp({
       }
       return null;
     },
+    samples() {
+      const results = [];
+      console.log(now() + " index.js - computed.samples");
+      results.push({ value: "0x9fC3dc011b461664c835F2527fffb1169b3C213e", title: "0x9fC3dc011b461664c835F2527fffb1169b3C213e", subtitle: "EF: DeFi Multisig - Safe v1.4.1" });
+      results.push({ value: "0x2823589Ae095D99bD64dEeA80B4690313e2fB519", title: "0x2823589Ae095D99bD64dEeA80B4690313e2fB519", subtitle: "ERC-20: WEENUS" });
+      results.push({ value: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", title: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", subtitle: "ERC-20: WETH" });
+      return results;
+    },
   },
   methods: {
     connect(connected) {
@@ -217,18 +225,20 @@ const app = Vue.createApp({
       const addressRegex = /^0x[a-fA-F0-9]{40}$/;
       console.log(now() + " index.js - methods.search - this.searchString: " + JSON.stringify(this.searchString));
       if (this.searchString) {
-        if (blockRegex.test(this.searchString)) {
-          console.log(now() + " index.js - methods.search - BLOCK this.searchString: " + JSON.stringify(this.searchString));
-          this.$router.push({ name: 'Block', params: { inputBlockNumber: this.searchString } });
-          store.dispatch('block/loadBlock', this.searchString);
-        } else if (txRegex.test(this.searchString)) {
-          console.log(now() + " index.js - methods.search - TX this.searchString: " + JSON.stringify(this.searchString));
-          this.$router.push({ name: 'Transaction', params: { inputTxHash: this.searchString } });
-          store.dispatch('transaction/loadTransaction', this.searchString);
-        } else if (addressRegex.test(this.searchString)) {
-          console.log(now() + " index.js - methods.search - ADDRESS this.searchString: " + JSON.stringify(this.searchString));
-          this.$router.push({ name: 'Address', params: { inputAddress: this.searchString } });
-          store.dispatch('address/loadAddress', this.searchString);
+        const searchString = this.searchString.value || this.searchString;
+        console.log(now() + " index.js - methods.search - searchString: " + JSON.stringify(searchString));
+        if (blockRegex.test(searchString)) {
+          console.log(now() + " index.js - methods.search - BLOCK searchString: " + JSON.stringify(searchString));
+          this.$router.push({ name: 'Block', params: { inputBlockNumber: searchString } });
+          store.dispatch('block/loadBlock', searchString);
+        } else if (txRegex.test(searchString)) {
+          console.log(now() + " index.js - methods.search - TX searchString: " + JSON.stringify(searchString));
+          this.$router.push({ name: 'Transaction', params: { inputTxHash: searchString } });
+          store.dispatch('transaction/loadTransaction', searchString);
+        } else if (addressRegex.test(searchString)) {
+          console.log(now() + " index.js - methods.search - ADDRESS searchString: " + JSON.stringify(searchString));
+          this.$router.push({ name: 'Address', params: { inputAddress: searchString } });
+          store.dispatch('address/loadAddress', searchString);
         }
       }
     },
