@@ -3,15 +3,16 @@ const Address = {
     <div>
       <v-card>
         <h3 class="ms-2 mt-2">Address {{ inputAddress }} Summary</h3>
-
         <v-card-text>
-          info: {{ info }}
+          <v-textarea :model-value="JSON.stringify(info, null, 2)" label="Info" rows="20">
+          </v-textarea>
+          <!-- info: {{ info }}
           <br />
           address: {{ address }}
           <br />
           transactionCount: {{ transactionCount }}
           <br />
-          balance: {{ balance }}
+          balance: {{ balance }} -->
         </v-card-text>
         <!-- <v-card-actions>
           <v-btn>Action 1</v-btn>
