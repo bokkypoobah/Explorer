@@ -179,6 +179,9 @@ const app = Vue.createApp({
     connected() {
       return store.getters['web3'].connected;
     },
+    chainId() {
+      return store.getters['web3'].chainId;
+    },
     coinbase() {
       return store.getters['web3'].coinbase;
     },
@@ -199,9 +202,9 @@ const app = Vue.createApp({
     samples() {
       const results = [];
       console.log(now() + " index.js - computed.samples");
-      results.push({ value: "0x9fC3dc011b461664c835F2527fffb1169b3C213e", title: "0x9fC3dc011b461664c835F2527fffb1169b3C213e", subtitle: "EF: DeFi Multisig - Safe v1.4.1" });
-      results.push({ value: "0x2823589Ae095D99bD64dEeA80B4690313e2fB519", title: "0x2823589Ae095D99bD64dEeA80B4690313e2fB519", subtitle: "ERC-20: WEENUS" });
-      results.push({ value: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", title: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", subtitle: "ERC-20: WETH" });
+      for (const sample of (SAMPLES[this.chainId] || [])) {
+        results.push({ value: sample.address, title: sample.address, subtitle: sample.info });
+      }
       return results;
     },
   },
