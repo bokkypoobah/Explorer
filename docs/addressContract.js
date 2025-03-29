@@ -22,7 +22,7 @@ const AddressContract = {
                     <div v-if="selectedFunctionInputs.length == 0">
                       No inputs
                     </div>
-                    <v-row v-for="(item, inputIndex) of selectedFunctionInputs">
+                    <v-row v-for="(item, inputIndex) of selectedFunctionInputs" no-gutters dense>
                       <v-col>
                         {{ inputIndex + 1}}
                       </v-col>
@@ -31,7 +31,7 @@ const AddressContract = {
                           <v-text-field :model-value="getInput(inputIndex)" @update:modelValue="setInput(inputIndex, $event)" :label="item.name || '(unnamed)'" :placeholder="item.type" :hint="item.type" density="compact"></v-text-field>
                         </div>
                         <div v-else>
-                          <v-row v-for="(arrayItem, arrayIndex) of getInput(inputIndex)">
+                          <v-row v-for="(arrayItem, arrayIndex) of getInput(inputIndex)" no-gutters dense>
                             <v-col>
                               {{ arrayIndex + 1}}
                             </v-col>
@@ -40,10 +40,16 @@ const AddressContract = {
                               <!-- {{ arrayItem }} -->
                             </v-col>
                             <v-col cols="2">
-                              <v-btn v-if="item.arrayLength == -1" @click="removeInputArrayElement(inputIndex, arrayIndex);" text>Delete Row</v-btn>
+                              <v-btn v-if="item.arrayLength == -1" @click="removeInputArrayElement(inputIndex, arrayIndex);" text class="ms-2">Delete Row</v-btn>
                             </v-col>
                           </v-row>
-                          <v-btn v-if="item.arrayLength == -1" @click="addNewInputArrayItem(inputIndex);" text>Add New Row</v-btn>
+                          <v-row no-gutters dense>
+                            <v-col cols="10">
+                            </v-col>
+                            <v-col cols="2">
+                              <v-btn v-if="item.arrayLength == -1" @click="addNewInputArrayItem(inputIndex);" text class="ms-2 mb-2">Add New Row</v-btn>
+                            </v-col>
+                          </v-row>
                           <!-- <pre>
 array: {{ getInput(inputIndex) }}
                           </pre> -->
@@ -55,7 +61,7 @@ array: {{ getInput(inputIndex) }}
                 </v-card>
                 <!-- <v-btn @click="importABIFromEtherscan();" class="ms-2 mt-0 mb-2" text>Import ABI From Etherscan -->
                 <v-btn class="ms-2 mt-2 mb-2" text>Call</v-btn>
-                <v-card title="Outputs">
+                <v-card title="Outputs" class="mt-1">
                   <v-card-text>
                     <div v-if="selectedFunctionOutputs.length == 0">
                       No outputs
