@@ -15,32 +15,30 @@ const AddressContract = {
               </v-tabs>
               </v-col>
               <v-col cols="10">
-                <!-- <v-select v-model="selected" :items="functionList" item-title="fullName" item-value="methodId" label="Select an item"> -->
-                <!-- <v-select v-model="selected" :items="functionList" @update:modelValue="saveSettings();" label="Select a function"> -->
                 <v-select v-model="selectedMethodId" :items="functionList" label="Select a function">
-                  <!-- <template v-slot:item="{ item, props }">
-                    <v-list-item v-bind="props">
-                      <v-list-item-content>
-                        <v-list-item-title>
-                          <span>{{ item.raw.fullName }}</span>
-                        </v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </template> -->
-                  <!-- <template v-slot:selection="{ item }">
-                    <span>{{ item.raw.fullName }}</span>
-                  </template> -->
                 </v-select>
-                selectedFunctionInputs: {{ selectedFunctionInputs }}
-                <br />
-                selectedFunctionOutputs: {{ selectedFunctionOutputs }}
+                <v-card title="Inputs">
+                  <v-card-text v-if="selectedFunctionInputs.length == 0">
+                    No inputs
+                  </v-card-text>
+                  <v-card-text v-if="selectedFunctionInputs.length > 0">
+                    selectedFunctionInputs: {{ selectedFunctionInputs }}
+                  </v-card-text>
+                </v-card>
+                <!-- <v-btn @click="importABIFromEtherscan();" class="ms-2 mt-0 mb-2" text>Import ABI From Etherscan -->
+                <v-btn class="ms-2 mt-2 mb-2" text>Call</v-btn>
+                <v-card title="Outputs">
+                  <v-card-text v-if="selectedFunctionOutputs.length == 0">
+                    No outputs
+                  </v-card-text>
+                  <v-card-text v-if="selectedFunctionOutputs.length > 0">
+                    selectedFunctionOutputs: {{ selectedFunctionOutputs }}
+                  </v-card-text>
+                </v-card>
                 <br />
                 selectedFunction: {{ selectedFunction }}
                 <br />
                 selectedMethodId: {{ selectedMethodId }}
-                <!-- <h3 class="ms-2 mt-2">Address {{ inputAddress }} Contract</h3>
-                <p>TODO</p>
-                <p>{{ inputAddress }}</p> -->
               </v-col>
             </v-row>
           </div>
