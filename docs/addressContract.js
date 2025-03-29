@@ -34,6 +34,9 @@ const AddressContract = {
                             <div v-if="item.type == 'address'">
                               <v-text-field :model-value="getInput(inputIndex)" :rules="addressRules" @update:modelValue="setInput(inputIndex, $event)" :label="item.name || '(unnamed)'" :placeholder="item.type" :hint="item.type" density="compact"></v-text-field>
                             </div>
+                            <div v-else-if="item.type == 'uint256'">
+                              <v-text-field :model-value="getInput(inputIndex)" :rules="uintRules" @update:modelValue="setInput(inputIndex, $event)" :label="item.name || '(unnamed)'" :placeholder="item.type" :hint="item.type" density="compact"></v-text-field>
+                            </div>
                             <div v-else>
                               <v-text-field :model-value="getInput(inputIndex)" @update:modelValue="setInput(inputIndex, $event)" :label="item.name || '(unnamed)'" :placeholder="item.type" :hint="item.type" density="compact"></v-text-field>
                             </div>
@@ -132,6 +135,21 @@ const AddressContract = {
           }
         },
       ],
+      uintRules: [
+        (v) => (v || '').length > 0 || 'Uint is required',
+        (v) => {
+          try {
+            const value = ethers.BigNumber.from(v);
+            console.log("uintRules: " + value);
+            if (value >= 0) {
+              return true;
+            }
+            return 'Invalid Uint';
+          } catch (e) {
+            return 'Invalid Uint';
+          }
+        },
+      ],
       error: null,
       _timerIds: {}, // TODO: Delete
     };
@@ -159,7 +177,7 @@ const AddressContract = {
             this.settings.selectedMethodIds[this.address] = {};
           }
           this.settings.selectedMethodIds[this.address][this.settings.tab] = methodId;
-          console.log(now() + " AddressContract - computed.selectedMethodId.set - this.settings: " + JSON.stringify(this.settings));
+          // console.log(now() + " AddressContract - computed.selectedMethodId.set - this.settings: " + JSON.stringify(this.settings));
         }
         this.saveSettings();
       },
