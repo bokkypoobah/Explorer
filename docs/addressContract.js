@@ -31,8 +31,13 @@ const AddressContract = {
                     <span>{{ item.raw.fullName }}</span>
                   </template> -->
                 </v-select>
-                {{ selectedFunction }}
-                {{ selectedMethodId }}
+                selectedFunctionInputs: {{ selectedFunctionInputs }}
+                <br />
+                selectedFunctionOutputs: {{ selectedFunctionOutputs }}
+                <br />
+                selectedFunction: {{ selectedFunction }}
+                <br />
+                selectedMethodId: {{ selectedMethodId }}
                 <!-- <h3 class="ms-2 mt-2">Address {{ inputAddress }} Contract</h3>
                 <p>TODO</p>
                 <p>{{ inputAddress }}</p> -->
@@ -84,14 +89,18 @@ const AddressContract = {
       },
     },
     selectedFunction() {
-      // const results = {};
       console.log(now() + " AddressContract - computed.selectedFunction");
-      // return results;
       return this.selectedMethodId && this.functions[this.selectedMethodId] || {};
     },
+    selectedFunctionInputs() {
+      return this.selectedFunction.inputs || [];
+    },
+    selectedFunctionOutputs() {
+      return this.selectedFunction.outputs || [];
+    },
     functionList() {
-      // const addressInfo = store.getters["addresses/getAddressInfo"](this.address);
       // console.log(now() + " AddressContract - computed.functionList - this.functions: " + JSON.stringify(this.functions));
+      // const addressInfo = store.getters["addresses/getAddressInfo"](this.address);
       const results = [];
       for (const [methodId, functionData] of Object.entries(this.functions)) {
         if (this.settings.tab == "call") {
@@ -112,7 +121,7 @@ const AddressContract = {
   },
   methods: {
     saveSettings() {
-      console.log(now() + " AddressContract - saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
+      // console.log(now() + " AddressContract - saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
       if (this.initialised) {
         localStorage.explorerAddressContractSettings = JSON.stringify(this.settings);
       }
@@ -125,7 +134,7 @@ const AddressContract = {
     console.log(now() + " AddressContract - mounted");
     if ('explorerAddressContractSettings' in localStorage) {
       const tempSettings = JSON.parse(localStorage.explorerAddressContractSettings);
-      console.log(now() + " AddressContract - mounted - tempSettings: " + JSON.stringify(tempSettings));
+      // console.log(now() + " AddressContract - mounted - tempSettings: " + JSON.stringify(tempSettings));
       if ('version' in tempSettings && tempSettings.version == this.settings.version) {
         this.settings = tempSettings;
       }
