@@ -18,27 +18,41 @@ const AddressContract = {
                 <v-select v-model="selectedMethodId" :items="functionList" label="Select a function">
                 </v-select>
                 <v-card title="Inputs">
-                  <v-card-text v-if="selectedFunctionInputs.length == 0">
-                    No inputs
-                  </v-card-text>
-                  <v-card-text v-if="selectedFunctionInputs.length > 0">
-                    selectedFunctionInputs: {{ selectedFunctionInputs }}
+                  <v-card-text>
+                    <div v-if="selectedFunctionInputs.length == 0">
+                      No inputs
+                    </div>
+                    <v-row v-for="(item, index) of selectedFunctionInputs">
+                      <v-col>
+                        {{ index + 1}}
+                      </v-col>
+                      <v-col cols="11">
+                        {{ item }}
+                      </v-col>
+                    </v-row>
                   </v-card-text>
                 </v-card>
                 <!-- <v-btn @click="importABIFromEtherscan();" class="ms-2 mt-0 mb-2" text>Import ABI From Etherscan -->
                 <v-btn class="ms-2 mt-2 mb-2" text>Call</v-btn>
                 <v-card title="Outputs">
-                  <v-card-text v-if="selectedFunctionOutputs.length == 0">
-                    No outputs
-                  </v-card-text>
-                  <v-card-text v-if="selectedFunctionOutputs.length > 0">
-                    selectedFunctionOutputs: {{ selectedFunctionOutputs }}
+                  <v-card-text>
+                    <div v-if="selectedFunctionOutputs.length == 0">
+                      No outputs
+                    </div>
+                    <v-row v-for="(item, index) of selectedFunctionOutputs">
+                      <v-col>
+                        {{ index + 1}}
+                      </v-col>
+                      <v-col cols="11">
+                        {{ item }}
+                      </v-col>
+                    </v-row>
                   </v-card-text>
                 </v-card>
-                <br />
+                <!-- <br />
                 selectedFunction: {{ selectedFunction }}
                 <br />
-                selectedMethodId: {{ selectedMethodId }}
+                selectedMethodId: {{ selectedMethodId }} -->
               </v-col>
             </v-row>
           </div>
