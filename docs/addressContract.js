@@ -15,7 +15,23 @@ const AddressContract = {
               </v-tabs>
               </v-col>
               <v-col cols="10">
-                {{ functionList }}
+                <!-- <v-select v-model="selected" :items="functionList" item-title="fullName" item-value="methodId" label="Select an item"> -->
+                <!-- <v-select v-model="selected" :items="functionList" @update:modelValue="saveSettings();" label="Select a function"> -->
+                <v-select v-model="selectedMethodId" :items="functionList" label="Select a function">
+                  <!-- <template v-slot:item="{ item, props }">
+                    <v-list-item v-bind="props">
+                      <v-list-item-content>
+                        <v-list-item-title>
+                          <span>{{ item.raw.fullName }}</span>
+                        </v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </template> -->
+                  <!-- <template v-slot:selection="{ item }">
+                    <span>{{ item.raw.fullName }}</span>
+                  </template> -->
+                </v-select>
+                {{ selectedMethodId }}
                 <!-- <h3 class="ms-2 mt-2">Address {{ inputAddress }} Contract</h3>
                 <p>TODO</p>
                 <p>{{ inputAddress }}</p> -->
@@ -32,8 +48,10 @@ const AddressContract = {
       initialised: false,
       settings: {
         tab: null,
+        selectedMethodIds: {},
         version: 0,
       },
+      selected: null,
     };
   },
   computed: {
@@ -49,27 +67,39 @@ const AddressContract = {
     events() {
       return store.getters['address/events'];
     },
+    selectedMethodId: {
+      get: function() {
+        return this.address && this.settings.selectedMethodIds[this.address] && this.settings.selectedMethodIds[this.address][this.settings.tab] || null;
+      },
+      set: function(methodId) {
+        if (this.address) {
+          if (!(this.address in this.settings.selectedMethodIds)) {
+            this.settings.selectedMethodIds[this.address] = {};
+          }
+          this.settings.selectedMethodIds[this.address][this.settings.tab] = methodId;
+          console.log(now() + " AddressContract - computed.selectedMethodId.set - this.settings: " + JSON.stringify(this.settings));
+        }
+        this.saveSettings();
+      },
+    },
     functionList() {
-      // console.log(now() + " AddressContract - computed.functionList");
-      const addressInfo = store.getters["addresses/getAddressInfo"](this.address);
-      // console.log(now() + " AddressContract - computed.functionList - addressInfo: " + JSON.stringify(addressInfo));
-      console.log(now() + " AddressContract - computed.functionList - this.functions: " + JSON.stringify(this.functions));
-      // console.log(now() + " AddressContract - computed.functionList - this.events: " + JSON.stringify(this.events));
+      // const addressInfo = store.getters["addresses/getAddressInfo"](this.address);
+      // console.log(now() + " AddressContract - computed.functionList - this.functions: " + JSON.stringify(this.functions));
       const results = [];
       for (const [methodId, functionData] of Object.entries(this.functions)) {
-        console.log(methodId + " => " + JSON.stringify(functionData));
         if (this.settings.tab == "call") {
           if (functionData.constant) {
-            results.push({ methodId, ...functionData });
+            results.push({ value: methodId, title: functionData.fullName });
           }
         } else if (this.settings.tab == "execute") {
           if (!functionData.constant) {
-            results.push({ methodId, ...functionData });
+            results.push({ value: methodId, title: functionData.fullName });
           }
         }
       }
-      results.push("One");
-      results.push("Two");
+      results.sort((a, b) => {
+        return ('' + a.fullName).localeCompare(b.fullName);
+      });
       return results;
     },
   },
