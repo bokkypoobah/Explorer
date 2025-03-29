@@ -27,6 +27,12 @@ const AddressContract = {
                         {{ index + 1}}
                       </v-col>
                       <v-col cols="11">
+                        <div v-if="item.arrayLength == null">
+                          <v-text-field :value="getInput(index)" @update:modelValue="setInput(index, $event)" :label="item.name || '(unnamed)'" :placeholder="item.type" :hint="item.type" density="compact"></v-text-field>
+                        </div>
+                        <div v-else>
+                          array: {{ getInput(index) }}
+                        </div>
                         {{ item }}
                       </v-col>
                     </v-row>
@@ -67,9 +73,12 @@ const AddressContract = {
       settings: {
         tab: null,
         selectedMethodIds: {},
-        version: 0,
+        inputs: {},
+        outputs: {},
+        version: 1,
       },
       selected: null,
+      _timerIds: {},
     };
   },
   computed: {
@@ -132,6 +141,39 @@ const AddressContract = {
     },
   },
   methods: {
+    getInput(index) {
+      console.log(now() + " AddressContract - getInput - index: " + index);
+      console.log(now() + " AddressContract - getInput - selectedFunctionInputs[index]: " + JSON.stringify());
+      if (this.address && this.settings.inputs[this.address] && this.settings.inputs[this.address][this.selectedMethodId]) {
+        return this.settings.inputs[this.address][this.selectedMethodId][index];
+      }
+      if (this.selectedFunctionInputs[index].arrayLength == -1) {
+        return [];
+      } else if (this.selectedFunctionInputs[index].arrayLength > 0) {
+        return new Array(this.selectedFunctionInputs[index].arrayLength).fill(null);
+      }
+      return null;
+    },
+    // setInput(index, value) {
+    //   console.log(now() + " AddressContract - setInput - index: " + index + ", value: " + JSON.stringify(value));
+    //   clearTimeout(this._timerIds[index] || null);
+    //   const t = this;
+    //   this._timerIds[index] = setTimeout(() => {
+    //     console.log(now() + " AddressABI - setInput - DEBOUNCED");
+    //     t.setInputDEBOUNCED(index, value);
+    //   }, 1000)
+    // },
+    setInput(index, value) {
+      console.log(now() + " AddressContract - setInput - index: " + index + ", value: " + JSON.stringify(value));
+      if (!(this.address in this.settings.inputs)) {
+        this.settings.inputs[this.address] = {};
+      }
+      if (!(this.selectedMethodId in this.settings.inputs[this.address])) {
+        this.settings.inputs[this.address][this.selectedMethodId] = {};
+      }
+      this.settings.inputs[this.address][this.selectedMethodId][index] = value;
+      this.saveSettings();
+    },
     saveSettings() {
       // console.log(now() + " AddressContract - saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
       if (this.initialised) {
