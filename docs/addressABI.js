@@ -148,30 +148,20 @@ const AddressABI = {
         localStorage.explorerAddressABISettings = JSON.stringify(this.settings);
       }
     },
-    initialise() {
-      // console.log(now() + " AddressABI - initialise - settings: " + JSON.stringify(this.settings, null, 2));
-      if ('explorerAddressABISettings' in localStorage) {
-        const tempSettings = JSON.parse(localStorage.explorerAddressABISettings);
-        if ('version' in tempSettings && tempSettings.version == this.settings.version) {
-          this.settings = tempSettings;
-        }
-      }
-      this.initialised = true;
-    },
   },
   beforeCreate() {
     console.log(now() + " AddressABI - beforeCreate");
 	},
   mounted() {
     console.log(now() + " AddressABI - mounted");
-    // if ('explorerAddressABISettings' in localStorage) {
-    //   const tempSettings = JSON.parse(localStorage.explorerAddressABISettings);
-    //   console.log(now() + " AddressABI - mounted - tempSettings: " + JSON.stringify(tempSettings));
-    //   if ('version' in tempSettings && tempSettings.version == this.settings.version) {
-    //     this.settings = tempSettings;
-    //   }
-    // }
-    this.initialise();
+    if ('explorerAddressABISettings' in localStorage) {
+      const tempSettings = JSON.parse(localStorage.explorerAddressABISettings);
+      console.log(now() + " AddressABI - mounted - tempSettings: " + JSON.stringify(tempSettings));
+      if ('version' in tempSettings && tempSettings.version == this.settings.version) {
+        this.settings = tempSettings;
+      }
+    }
+    this.initialised = true;
     console.log(now() + " AddressABI - mounted - this.settings: " + JSON.stringify(this.settings));
     const t = this;
     setTimeout(function() {
