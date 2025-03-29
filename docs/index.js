@@ -190,6 +190,10 @@ const app = Vue.createApp({
       return this.$router && this.$router.currentRoute; // && ("(" + JSON.stringify(this.$router.currentRoute) + ")") || null;
     },
     mainPath() {
+      // console.log(now() + " index.js - computed.addressPathInputAddress - mainPath - this.$route.path: " + this.$route.path);
+      if (this.$route.path == "/") {
+        return "/";
+      }
       const parts = this.$route.path.split("/");
       return parts.length >= 2 && ("/" + parts[1]) || null;
     },

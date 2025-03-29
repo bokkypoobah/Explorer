@@ -3,6 +3,9 @@ const Block = {
     <div>
       <v-card>
         <v-card-text>
+          <div v-if="!block">
+            Enter block number in the search field above
+          </div>
           <v-row dense>
             <v-col cols="2">
               <v-text-field v-if="block" readonly v-model="block.number" label="Number:"></v-text-field>

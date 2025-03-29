@@ -2,7 +2,14 @@
 
 const Home = {
   template: `
-    <div><h1>Home</h1><p>This is home page</p></div>
+    <div>
+      <v-card>
+        <v-card-text>
+          <h1>Home</h1>
+          <p>TODO</p>
+        </v-card-text>
+      </v-card>
+    </div>
   `,
   <!-- props: ['testProp'], -->
   data: function () {

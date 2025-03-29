@@ -3,10 +3,15 @@ const Transaction = {
     <div>
       <v-card>
         <v-card-text>
-          timestampString: {{ timestampString }}
-          <v-textarea :model-value="tx && JSON.stringify(tx, null, 2)" label="Tx" rows="10">
+          <div v-if="!tx">
+            Enter transaction hash in the search field above
+          </div>
+          <div v-if="timestampString">
+            timestampString: {{ timestampString }}
+          </div>
+          <v-textarea v-if="tx" :model-value="JSON.stringify(tx, null, 2)" label="Tx" rows="10">
           </v-textarea>
-          <v-textarea :model-value="txReceipt && JSON.stringify(txReceipt, null, 2)" label="Tx Receipt" rows="10">
+          <v-textarea v-if="txReceipt" :model-value="JSON.stringify(txReceipt, null, 2)" label="Tx Receipt" rows="10">
           </v-textarea>
         </v-card-text>
         <!-- <v-card-actions>
