@@ -3,17 +3,39 @@ const AddressABI = {
     <div>
       <v-card>
         <v-card-text>
-          <h3 class="ms-2 mt-2">ABI</h3>
-          <v-textarea v-model="abi" :rules="jsonRules" label="ABI" rows="10">
-          </v-textarea>
-          <v-btn @click="importABIFromEtherscan();" class="ms-2 mt-0" text>Import ABI From Etherscan
-          </v-btn>
+
+          <!-- <div class="d-flex flex-row"> -->
+          <v-row>
+            <v-col cols="2">
+            <v-tabs v-model="tab" color="primary" direction="vertical">
+              <v-tab prepend-icon="mdi-code-json" text="ABI" value="abi"></v-tab>
+              <v-tab prepend-icon="mdi-function" text="Functions" value="functions"></v-tab>
+              <v-tab prepend-icon="mdi-math-log" text="Events" value="events"></v-tab>
+            </v-tabs>
+            </v-col>
+            <v-col cols="10">
+            <v-tabs-window v-model="tab">
+              <v-tabs-window-item value="abi">
+                <v-textarea v-model="abi" :rules="jsonRules" label="ABI" rows="10">
+                </v-textarea>
+                <v-btn @click="importABIFromEtherscan();" class="ms-2 mt-0 mb-2" text>Import ABI From Etherscan
+                </v-btn>
+              </v-tabs-window-item>
+              <v-tabs-window-item value="functions">
+                <v-data-table :items="functionsList" :headers="functionsHeaders" @click:row="handleFunctionsClick" density="compact">
+                </v-data-table>
+              </v-tabs-window-item>
+              <v-tabs-window-item value="events">
+                <v-data-table :items="eventsList" :headers="eventsHeaders" @click:row="handleEventsClick" density="compact">
+                </v-data-table>
+              </v-tabs-window-item>
+            </v-tabs-window>
+            </v=col>
+          </v-row>
+          <!-- </div> -->
+          <!-- <h3 class="ms-2 mt-2">ABI</h3>
           <h3 class="ms-2 mt-5">Functions</h3>
-          <v-data-table :items="functionsList" :headers="functionsHeaders" @click:row="handleFunctionsClick" density="compact">
-          </v-data-table>
-          <h3 class="ms-2 mt-5">Events</h3>
-          <v-data-table :items="eventsList" :headers="eventsHeaders" @click:row="handleEventsClick" density="compact">
-          </v-data-table>
+          <h3 class="ms-2 mt-5">Events</h3> -->
         </v-card-text>
       </v-card>
     </div>
@@ -23,6 +45,7 @@ const AddressABI = {
     return {
       // address: null, // TODO: Delete
       // abi: null,
+      tab: null,
       jsonRules: [
         (v) => (v || '').length > 0 || 'ABI is required',
         (v) => {
