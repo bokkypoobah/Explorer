@@ -157,7 +157,7 @@ array: {{ getInput(inputIndex) }}
   },
   methods: {
     getInput(index) {
-      console.log(now() + " AddressContract - getInput - selectedFunctionInputs[" + index + "]: " + JSON.stringify(this.selectedFunctionInputs[index]));
+      // console.log(now() + " AddressContract - getInput - selectedFunctionInputs[" + index + "]: " + JSON.stringify(this.selectedFunctionInputs[index]));
       if (this.address && this.settings.inputs[this.address] && this.settings.inputs[this.address][this.selectedMethodId] && (index in this.settings.inputs[this.address][this.selectedMethodId])) {
         return this.settings.inputs[this.address][this.selectedMethodId][index];
       }
@@ -178,7 +178,7 @@ array: {{ getInput(inputIndex) }}
     //   }, 1000)
     // },
     addNewInputArrayItem(index) {
-      console.log(now() + " AddressContract - addNewInputArrayItem - index: " + index);
+      // console.log(now() + " AddressContract - addNewInputArrayItem - index: " + index);
       if (!(this.address in this.settings.inputs)) {
         this.settings.inputs[this.address] = {};
       }
@@ -192,7 +192,7 @@ array: {{ getInput(inputIndex) }}
       this.saveSettings();
     },
     setInputArrayElement(inputIndex, arrayIndex, elementValue) {
-      console.log(now() + " AddressContract - setInputArrayElement - inputIndex: " + inputIndex + ", arrayIndex: " + arrayIndex + ", elementValue: " + elementValue);
+      // console.log(now() + " AddressContract - setInputArrayElement - inputIndex: " + inputIndex + ", arrayIndex: " + arrayIndex + ", elementValue: " + elementValue);
       if (this.address && this.settings.inputs[this.address] && this.settings.inputs[this.address][this.selectedMethodId]) {
         if (!(inputIndex in this.settings.inputs[this.address][this.selectedMethodId])) {
           this.settings.inputs[this.address][this.selectedMethodId][inputIndex] = new Array(this.selectedFunctionInputs[inputIndex].arrayLength).fill(null);
@@ -202,10 +202,18 @@ array: {{ getInput(inputIndex) }}
       this.saveSettings();
     },
     removeInputArrayElement(inputIndex, arrayIndex) {
-      console.log(now() + " AddressContract - removeInputArrayElement - inputIndex: " + inputIndex + ", arrayIndex: " + arrayIndex);
+      // console.log(now() + " AddressContract - removeInputArrayElement - inputIndex: " + inputIndex + ", arrayIndex: " + arrayIndex);
+      if (this.address && this.settings.inputs[this.address] && this.settings.inputs[this.address][this.selectedMethodId]) {
+        if (inputIndex in this.settings.inputs[this.address][this.selectedMethodId]) {
+          const array = this.settings.inputs[this.address][this.selectedMethodId][inputIndex];
+          array.splice(arrayIndex, 1);
+          this.settings.inputs[this.address][this.selectedMethodId][inputIndex] = array;
+        }
+      }
+      this.saveSettings();
     },
     setInput(index, value) {
-      console.log(now() + " AddressContract - setInput - index: " + index + ", value: " + JSON.stringify(value));
+      // console.log(now() + " AddressContract - setInput - index: " + index + ", value: " + JSON.stringify(value));
       if (!(this.address in this.settings.inputs)) {
         this.settings.inputs[this.address] = {};
       }
