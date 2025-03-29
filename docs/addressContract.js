@@ -39,7 +39,10 @@ const AddressContract = {
                               {{ arrayItem }}
                             </v-col>
                           </v-row>
-                          array: {{ getInput(inputIndex) }}
+                          <v-btn v-if="item.arrayLength == -1" @click="addNewInputArrayItem(inputIndex);" text>Add New Row</v-btn>
+                          <pre>
+array: {{ getInput(inputIndex) }}
+                          </pre>
                         </div>
                         {{ item }}
                       </v-col>
@@ -150,9 +153,8 @@ const AddressContract = {
   },
   methods: {
     getInput(index) {
-      console.log(now() + " AddressContract - getInput - index: " + index);
-      console.log(now() + " AddressContract - getInput - selectedFunctionInputs[index]: " + JSON.stringify());
-      if (this.address && this.settings.inputs[this.address] && this.settings.inputs[this.address][this.selectedMethodId]) {
+      console.log(now() + " AddressContract - getInput - selectedFunctionInputs[" + index + "]: " + JSON.stringify(this.selectedFunctionInputs[index]));
+      if (this.address && this.settings.inputs[this.address] && this.settings.inputs[this.address][this.selectedMethodId] && (index in this.settings.inputs[this.address][this.selectedMethodId])) {
         return this.settings.inputs[this.address][this.selectedMethodId][index];
       }
       if (this.selectedFunctionInputs[index].arrayLength == -1) {
@@ -171,6 +173,20 @@ const AddressContract = {
     //     t.setInputDEBOUNCED(index, value);
     //   }, 1000)
     // },
+    addNewInputArrayItem(index) {
+      console.log(now() + " AddressContract - addNewInputArrayItem - index: " + index);
+      if (!(this.address in this.settings.inputs)) {
+        this.settings.inputs[this.address] = {};
+      }
+      if (!(this.selectedMethodId in this.settings.inputs[this.address])) {
+        this.settings.inputs[this.address][this.selectedMethodId] = {};
+      }
+      if (!(index in this.settings.inputs[this.address][this.selectedMethodId])) {
+        this.settings.inputs[this.address][this.selectedMethodId][index] = [];
+      }
+      this.settings.inputs[this.address][this.selectedMethodId][index].push(null);
+      this.saveSettings();
+    },
     setInput(index, value) {
       console.log(now() + " AddressContract - setInput - index: " + index + ", value: " + JSON.stringify(value));
       if (!(this.address in this.settings.inputs)) {
