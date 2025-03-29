@@ -17,10 +17,12 @@ const addressModule = {
     info: state => state.info,
     functions(state) {
       console.log(now() + " addressModule - computed.functions");
+      const addressInfo = store.getters["addresses/getAddressInfo"](state.info.address);
+      console.log(now() + " addressModule - computed.functions - addressInfo: " + JSON.stringify(addressInfo));
       const results = {};
-      if (state.info.abi) {
+      if (addressInfo.abi) {
         try {
-          const interface = new ethers.utils.Interface(state.info.abi);
+          const interface = new ethers.utils.Interface(addressInfo.abi);
           for (const fullName of interface.format(ethers.utils.FormatTypes.full)) {
             if (fullName.substring(0, 8) == "function") {
               const fragment = interface.getFunction(fullName.substring(9,));
@@ -28,22 +30,20 @@ const addressModule = {
               results[methodId] = { fullName, ...fragment };
             }
           }
-          // for (const [fullName, fragment] of Object.entries(interface.functions)) {
-          //   const sighash = interface.getSighash(fragment);
-          //   results[sighash] = { fullName, ...fragment };
-          // }
         } catch (e) {
-          console.error(now() + " addressModule - computed.functions - ERROR info.abi: " + e.message);
+          console.error(now() + " addressModule - computed.functions - ERROR: " + e.message);
         }
       }
       return results;
     },
     events(state) {
       console.log(now() + " addressModule - computed.events");
+      const addressInfo = store.getters["addresses/getAddressInfo"](state.info.address);
+      console.log(now() + " addressModule - computed.functions - addressInfo: " + JSON.stringify(addressInfo));
       const results = {};
-      if (state.info.abi) {
+      if (addressInfo.abi) {
         try {
-          const interface = new ethers.utils.Interface(state.info.abi);
+          const interface = new ethers.utils.Interface(addressInfo.abi);
           for (const fullName of interface.format(ethers.utils.FormatTypes.full)) {
             if (fullName.substring(0, 5) == "event") {
               const fragment = interface.getEvent(fullName.substring(6,));
@@ -53,13 +53,8 @@ const addressModule = {
               results[signature] = { fullName, topicCount, ...fragment };
             }
           }
-          // const interface = new ethers.utils.Interface(state.info.abi);
-          // for (const [fullName, fragment] of Object.entries(interface.events)) {
-          //   const eventTopic = interface.getEventTopic(fragment);
-          //   results[eventTopic] = { fullName, ...fragment };
-          // }
         } catch (e) {
-          console.error(now() + " addressModule - computed.events - ERROR info.abi: " + e.message);
+          console.error(now() + " addressModule - computed.events - ERROR: " + e.message);
         }
       }
       return results;
@@ -69,7 +64,7 @@ const addressModule = {
   },
   mutations: {
     setData(state, data) {
-      console.log(now() + " addressModule - mutations.setData - data: " + JSON.stringify(data));
+      // console.log(now() + " addressModule - mutations.setData - data: " + JSON.stringify(data));
       state.error = data.error;
       state.address = data.address;
       state.transactionCount = data.transactionCount;
@@ -89,7 +84,7 @@ const addressModule = {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const chainId = store.getters["chainId"];
       const dbInfo = store.getters["db"];
-      console.log(now() + " addressModule - actions.loadAddress - dbInfo: " + JSON.stringify(dbInfo));
+      // console.log(now() + " addressModule - actions.loadAddress - dbInfo: " + JSON.stringify(dbInfo));
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
 
@@ -98,10 +93,10 @@ const addressModule = {
       let info = {};
       if (validatedAddress) {
         info = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_address", {});
-        console.log(now() + " addressModule - actions.loadAddress - info: " + JSON.stringify(info));
+        // console.log(now() + " addressModule - actions.loadAddress - info: " + JSON.stringify(info));
         if (Object.keys(info).length == 0 || forceUpdate) {
           info = await getAddressInfo(validatedAddress, provider);
-          console.log(now() + " addressModule - actions.loadAddress - info: " + JSON.stringify(info));
+          // console.log(now() + " addressModule - actions.loadAddress - info: " + JSON.stringify(info));
           await dbSaveCacheData(db, validatedAddress + "_" + chainId + "_address", info);
         }
       }
@@ -130,9 +125,20 @@ const addressModule = {
         }
       }
       console.log("error: " + error);
+      // if (info.abi) {
+        // const addresssesWithDefaultABIs = store.getters["addresses/addresssesWithDefaultABIs"];
+        // console.log(now() + " addressModule - actions.loadAddress - addresssesWithDefaultABIs: " + JSON.stringify(addresssesWithDefaultABIs));
+        // if (!(address in addresssesWithDefaultABIs)) {
+        const addressInfo = store.getters["addresses/getAddressInfo"](address);
+        console.log(now() + " addressModule - actions.loadAddress - addressInfo: " + JSON.stringify(addressInfo));
+        if (!addressInfo.type) {
+          store.dispatch("addresses/addAddress", { address, abi: info.abi, type: info.type, version: info.version });
+        }
+      // }
       context.commit('setData', { error, address, transactionCount, balance, info });
       db.close();
     },
+    // TODO: Delete
     async updateABI(context, info) {
       console.log(now() + " addressModule - actions.updateABI - info: " + JSON.stringify(info));
       const chainId = store.getters["chainId"];
@@ -141,16 +147,9 @@ const addressModule = {
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
       const validatedAddress = validateAddress(info.address);
-      if (validatedAddress && validatedAddress == context.state.info.address) {
+      if (validatedAddress) {
         console.log(now() + " addressModule - actions.updateABI - UPDATING info: " + JSON.stringify(info));
         context.commit('updateABI', info);
-        // TODO: Move to addresses module
-        // try {
-        //   new ethers.utils.Interface(info.abi);
-        //   await dbSaveCacheData(db, validatedAddress + "_" + chainId + "_address", context.state.info);
-        // } catch (e) {
-        //   console.error(now() + " addressModule - actions.updateABI - ERROR: " + e.message);
-        // }
       }
       db.close();
     },

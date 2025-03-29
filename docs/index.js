@@ -127,6 +127,7 @@ const store = new Vuex.Store({
     block: blockModule,
     transaction: transactionModule,
     address: addressModule,
+    addresses: addressesModule,
   },
   plugins: [
     function persistSettings(store) {
@@ -259,6 +260,7 @@ const app = Vue.createApp({
 	},
   mounted() {
     console.log(now() + " index.js - app.mounted");
+    store.dispatch('addresses/loadAddresses');
   },
   destroyed() {
     console.log(now() + " index.js - app.destroyed");

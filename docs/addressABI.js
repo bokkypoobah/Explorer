@@ -54,7 +54,9 @@ const AddressABI = {
     },
     abi: {
       get: function() {
-        return store.getters['address/info'].abi;
+        // return store.getters['address/info'].abi;
+        const addressInfo = store.getters["addresses/getAddressInfo"](this.address);
+        return addressInfo.abi;
       },
       set: function(abi) {
         console.log(now() + " AddressABI - computed.abi.set - abi: " + abi);
@@ -62,7 +64,7 @@ const AddressABI = {
         const t = this;
         this._timerId = setTimeout(() => {
           console.log(now() + " AddressABI - computed.abi.set - DEBOUNCED abi: " + abi);
-          store.dispatch('address/updateABI', { address: t.address, abi });
+          store.dispatch('addresses/updateABI', { address: t.address, abi });
         }, 1000)
       },
     },
@@ -106,7 +108,7 @@ const AddressABI = {
       if (data && data.status == 1 && data.message == "OK") {
         const abi = JSON.parse(data.result);
         console.log(now() + " AddressABI - abi: " + JSON.stringify(abi, null, 2).substring(0, 1000) + "...");
-        store.dispatch('address/updateABI', { address: this.info.address, abi: JSON.stringify(abi) });
+        store.dispatch('addresses/updateABI', { address: this.info.address, abi: JSON.stringify(abi) });
       //   console.log(now() + " AddressABI - methods.importABIFromEtherscan - this.info: " + JSON.stringify(this.info).substring(0, 1000) + "...");
       //   // Vue.set(this.info, 'abi', abi);
       //   // await dbSaveCacheData(db, this.info.address + "_" + this.chainId + "_contract", this.info);
