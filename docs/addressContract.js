@@ -60,11 +60,25 @@ array: {{ getInput(inputIndex) }}
                     <div v-if="selectedFunctionOutputs.length == 0">
                       No outputs
                     </div>
-                    <v-row v-for="(item, index) of selectedFunctionOutputs">
+                    <v-row v-for="(item, outputIndex) of selectedFunctionOutputs">
                       <v-col>
-                        {{ index + 1}}
+                        {{ outputIndex + 1 }}
                       </v-col>
                       <v-col cols="11">
+                        <div v-if="item.arrayLength == null">
+                          <v-text-field :model-value="getOutput(outputIndex)" :label="item.name || '(unnamed)'" :placeholder="item.type" :hint="item.type" density="compact"></v-text-field>
+                        </div>
+                        <div v-else>
+                          <v-row v-for="(arrayItem, arrayIndex) of getOutput(outputIndex)">
+                            <v-col>
+                              {{ arrayIndex + 1 }}
+                            </v-col>
+                            <v-col cols="11">
+                              <v-text-field :model-value="getOutput(outputIndex)[arrayIndex]" :label="(item.name || '(unnamed)') + '[' + arrayIndex + ']'" :placeholder="item.arrayChildren.type" :hint="item.arrayChildren.type" density="compact"></v-text-field>
+                              {{ arrayItem }}
+                            </v-col>
+                          </v-row>
+                        </div>
                         {{ item }}
                       </v-col>
                     </v-row>
@@ -222,6 +236,18 @@ array: {{ getInput(inputIndex) }}
       }
       this.settings.inputs[this.address][this.selectedMethodId][index] = value;
       this.saveSettings();
+    },
+    getOutput(index) {
+      console.log(now() + " AddressContract - getOutput - selectedFunctionOutputs[" + index + "]: " + JSON.stringify(this.selectedFunctionOutputs[index]));
+      if (this.address && this.settings.outputs[this.address] && this.settings.outputs[this.address][this.selectedMethodId] && (index in this.settings.outputs[this.address][this.selectedMethodId])) {
+        return this.settings.outputs[this.address][this.selectedMethodId][index];
+      }
+      if (this.selectedFunctionOutputs[index].arrayLength == -1) {
+        return [];
+      } else if (this.selectedFunctionOutputs[index].arrayLength > 0) {
+        return new Array(this.selectedFunctionOutputs[index].arrayLength).fill(null);
+      }
+      return null;
     },
     saveSettings() {
       // console.log(now() + " AddressContract - saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
