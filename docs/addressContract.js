@@ -31,6 +31,7 @@ const AddressContract = {
                     <span>{{ item.raw.fullName }}</span>
                   </template> -->
                 </v-select>
+                {{ selectedFunction }}
                 {{ selectedMethodId }}
                 <!-- <h3 class="ms-2 mt-2">Address {{ inputAddress }} Contract</h3>
                 <p>TODO</p>
@@ -81,6 +82,12 @@ const AddressContract = {
         }
         this.saveSettings();
       },
+    },
+    selectedFunction() {
+      // const results = {};
+      console.log(now() + " AddressContract - computed.selectedFunction");
+      // return results;
+      return this.selectedMethodId && this.functions[this.selectedMethodId] || {};
     },
     functionList() {
       // const addressInfo = store.getters["addresses/getAddressInfo"](this.address);
