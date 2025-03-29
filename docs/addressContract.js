@@ -22,16 +22,24 @@ const AddressContract = {
                     <div v-if="selectedFunctionInputs.length == 0">
                       No inputs
                     </div>
-                    <v-row v-for="(item, index) of selectedFunctionInputs">
+                    <v-row v-for="(item, inputIndex) of selectedFunctionInputs">
                       <v-col>
-                        {{ index + 1}}
+                        {{ inputIndex + 1}}
                       </v-col>
                       <v-col cols="11">
                         <div v-if="item.arrayLength == null">
-                          <v-text-field :value="getInput(index)" @update:modelValue="setInput(index, $event)" :label="item.name || '(unnamed)'" :placeholder="item.type" :hint="item.type" density="compact"></v-text-field>
+                          <v-text-field :value="getInput(inputIndex)" @update:modelValue="setInput(inputIndex, $event)" :label="item.name || '(unnamed)'" :placeholder="item.type" :hint="item.type" density="compact"></v-text-field>
                         </div>
                         <div v-else>
-                          array: {{ getInput(index) }}
+                          <v-row v-for="(arrayItem, arrayIndex) of getInput(inputIndex)">
+                            <v-col>
+                              {{ arrayIndex + 1}}
+                            </v-col>
+                            <v-col cols="11">
+                              {{ arrayItem }}
+                            </v-col>
+                          </v-row>
+                          array: {{ getInput(inputIndex) }}
                         </div>
                         {{ item }}
                       </v-col>
