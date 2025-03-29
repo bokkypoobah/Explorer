@@ -15,9 +15,10 @@ const AddressContract = {
               </v-tabs>
               </v-col>
               <v-col cols="10">
-                <h3 class="ms-2 mt-2">Address {{ inputAddress }} Contract</h3>
+                {{ functionList }}
+                <!-- <h3 class="ms-2 mt-2">Address {{ inputAddress }} Contract</h3>
                 <p>TODO</p>
-                <p>{{ inputAddress }}</p>
+                <p>{{ inputAddress }}</p> -->
               </v-col>
             </v-row>
           </div>
@@ -41,6 +42,35 @@ const AddressContract = {
     },
     info() {
       return store.getters['address/info'];
+    },
+    functions() {
+      return store.getters['address/functions'];
+    },
+    events() {
+      return store.getters['address/events'];
+    },
+    functionList() {
+      // console.log(now() + " AddressContract - computed.functionList");
+      const addressInfo = store.getters["addresses/getAddressInfo"](this.address);
+      // console.log(now() + " AddressContract - computed.functionList - addressInfo: " + JSON.stringify(addressInfo));
+      console.log(now() + " AddressContract - computed.functionList - this.functions: " + JSON.stringify(this.functions));
+      // console.log(now() + " AddressContract - computed.functionList - this.events: " + JSON.stringify(this.events));
+      const results = [];
+      for (const [methodId, functionData] of Object.entries(this.functions)) {
+        console.log(methodId + " => " + JSON.stringify(functionData));
+        if (this.settings.tab == "call") {
+          if (functionData.constant) {
+            results.push({ methodId, ...functionData });
+          }
+        } else if (this.settings.tab == "execute") {
+          if (!functionData.constant) {
+            results.push({ methodId, ...functionData });
+          }
+        }
+      }
+      results.push("One");
+      results.push("Two");
+      return results;
     },
   },
   methods: {
