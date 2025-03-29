@@ -9,14 +9,14 @@ const AddressABI = {
           <div v-if="info && info.type != 'eoa'">
             <v-row>
               <v-col cols="2">
-              <v-tabs v-model="tab" color="primary" direction="vertical">
+              <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" color="primary" direction="vertical">
                 <v-tab prepend-icon="mdi-code-json" text="ABI" value="abi"></v-tab>
                 <v-tab prepend-icon="mdi-function" text="Functions" value="functions"></v-tab>
                 <v-tab prepend-icon="mdi-math-log" text="Events" value="events"></v-tab>
               </v-tabs>
               </v-col>
               <v-col cols="10">
-              <v-tabs-window v-model="tab">
+              <v-tabs-window v-model="settings.tab">
                 <v-tabs-window-item value="abi">
                   <v-textarea v-model="abi" :rules="jsonRules" label="ABI" rows="10">
                   </v-textarea>
@@ -45,9 +45,11 @@ const AddressABI = {
   props: ['inputAddress'],
   data: function () {
     return {
-      // address: null, // TODO: Delete
-      // abi: null,
-      tab: null,
+      initialised: false,
+      settings: {
+        tab: null,
+        version: 0,
+      },
       jsonRules: [
         (v) => (v || '').length > 0 || 'ABI is required',
         (v) => {
@@ -140,12 +142,37 @@ const AddressABI = {
       }
       // db.close();
     },
+    saveSettings() {
+      // console.log(now() + " AddressABI - saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
+      if (this.initialised) {
+        localStorage.explorerAddressABISettings = JSON.stringify(this.settings);
+      }
+    },
+    initialise() {
+      // console.log(now() + " AddressABI - initialise - settings: " + JSON.stringify(this.settings, null, 2));
+      if ('explorerAddressABISettings' in localStorage) {
+        const tempSettings = JSON.parse(localStorage.explorerAddressABISettings);
+        if ('version' in tempSettings && tempSettings.version == this.settings.version) {
+          this.settings = tempSettings;
+        }
+      }
+      this.initialised = true;
+    },
   },
   beforeCreate() {
     console.log(now() + " AddressABI - beforeCreate");
 	},
   mounted() {
     console.log(now() + " AddressABI - mounted");
+    // if ('explorerAddressABISettings' in localStorage) {
+    //   const tempSettings = JSON.parse(localStorage.explorerAddressABISettings);
+    //   console.log(now() + " AddressABI - mounted - tempSettings: " + JSON.stringify(tempSettings));
+    //   if ('version' in tempSettings && tempSettings.version == this.settings.version) {
+    //     this.settings = tempSettings;
+    //   }
+    // }
+    this.initialise();
+    console.log(now() + " AddressABI - mounted - this.settings: " + JSON.stringify(this.settings));
     const t = this;
     setTimeout(function() {
       store.dispatch('address/loadAddress', t.inputAddress);

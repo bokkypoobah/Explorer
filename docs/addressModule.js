@@ -18,7 +18,7 @@ const addressModule = {
     functions(state) {
       console.log(now() + " addressModule - computed.functions");
       const addressInfo = store.getters["addresses/getAddressInfo"](state.info.address);
-      console.log(now() + " addressModule - computed.functions - addressInfo: " + JSON.stringify(addressInfo));
+      // console.log(now() + " addressModule - computed.functions - addressInfo: " + JSON.stringify(addressInfo));
       const results = {};
       if (addressInfo.abi) {
         try {
@@ -39,7 +39,7 @@ const addressModule = {
     events(state) {
       console.log(now() + " addressModule - computed.events");
       const addressInfo = store.getters["addresses/getAddressInfo"](state.info.address);
-      console.log(now() + " addressModule - computed.functions - addressInfo: " + JSON.stringify(addressInfo));
+      // console.log(now() + " addressModule - computed.functions - addressInfo: " + JSON.stringify(addressInfo));
       const results = {};
       if (addressInfo.abi) {
         try {
@@ -130,7 +130,7 @@ const addressModule = {
         // console.log(now() + " addressModule - actions.loadAddress - addresssesWithDefaultABIs: " + JSON.stringify(addresssesWithDefaultABIs));
         // if (!(address in addresssesWithDefaultABIs)) {
         const addressInfo = store.getters["addresses/getAddressInfo"](address);
-        console.log(now() + " addressModule - actions.loadAddress - addressInfo: " + JSON.stringify(addressInfo));
+        // console.log(now() + " addressModule - actions.loadAddress - addressInfo: " + JSON.stringify(addressInfo));
         if (!addressInfo.type) {
           store.dispatch("addresses/addAddress", { address, abi: info.abi, type: info.type, version: info.version });
         }

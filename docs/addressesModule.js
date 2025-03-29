@@ -6,7 +6,7 @@ const addressesModule = {
   getters: {
     addresses: state => state.addresses,
     getAddressInfo: (state) => (address) => {
-      console.log(now() + " addressModule - getters.getAddressInfo(" + address + ")");
+      // console.log(now() + " addressModule - getters.getAddressInfo(" + address + ")");
       let results = {};
       if (address in state.addresses) {
         results = state.addresses[address];
@@ -24,7 +24,7 @@ const addressesModule = {
         } else {
           results.defaultABIUsed = false;
         }
-        console.log(now() + " addressModule - getters.getAddressInfo(" + address + ") - data: " + JSON.stringify(results));
+        // console.log(now() + " addressModule - getters.getAddressInfo(" + address + ") - data: " + JSON.stringify(results));
       }
       return results;
     },
@@ -60,11 +60,11 @@ const addressesModule = {
   },
   mutations: {
     setAddresses(state, addresses) {
-      console.log(now() + " addressesModule - mutations.setAddresses - addresses: " + JSON.stringify(addresses));
+      // console.log(now() + " addressesModule - mutations.setAddresses - addresses: " + JSON.stringify(addresses));
       state.addresses = addresses;
     },
     addAddress(state, info) {
-      console.log(now() + " addressesModule - mutations.addAddress - info: " + JSON.stringify(info));
+      // console.log(now() + " addressesModule - mutations.addAddress - info: " + JSON.stringify(info));
       if (!(info.address in state.addresses)) {
         state.addresses[info.address] = {
           type: info.type || null,
@@ -99,7 +99,7 @@ const addressesModule = {
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
       const addresses = await dbGetCachedData(db, "addresses", {});
-      console.log(now() + " addressesModule - actions.loadAddresses - addresses: " + JSON.stringify(addresses));
+      // console.log(now() + " addressesModule - actions.loadAddresses - addresses: " + JSON.stringify(addresses));
       context.commit('setAddresses', addresses);
       db.close();
     },
