@@ -28,23 +28,27 @@ const AddressContract = {
                       </v-col>
                       <v-col cols="11">
                         <div v-if="item.arrayLength == null">
-                          <v-text-field :value="getInput(inputIndex)" @update:modelValue="setInput(inputIndex, $event)" :label="item.name || '(unnamed)'" :placeholder="item.type" :hint="item.type" density="compact"></v-text-field>
+                          <v-text-field :model-value="getInput(inputIndex)" @update:modelValue="setInput(inputIndex, $event)" :label="item.name || '(unnamed)'" :placeholder="item.type" :hint="item.type" density="compact"></v-text-field>
                         </div>
                         <div v-else>
                           <v-row v-for="(arrayItem, arrayIndex) of getInput(inputIndex)">
                             <v-col>
                               {{ arrayIndex + 1}}
                             </v-col>
-                            <v-col cols="11">
-                              {{ arrayItem }}
+                            <v-col cols="9">
+                              <v-text-field :model-value="getInput(inputIndex)[arrayIndex]" @update:modelValue="setInputArrayElement(inputIndex, arrayIndex, $event)" :label="(item.name || '(unnamed)') + '[' + arrayIndex + ']'" :placeholder="item.arrayChildren.type" :hint="item.arrayChildren.type" density="compact"></v-text-field>
+                              <!-- {{ arrayItem }} -->
+                            </v-col>
+                            <v-col cols="2">
+                              <v-btn v-if="item.arrayLength == -1" @click="removeInputArrayElement(inputIndex, arrayIndex);" text>Delete Row</v-btn>
                             </v-col>
                           </v-row>
                           <v-btn v-if="item.arrayLength == -1" @click="addNewInputArrayItem(inputIndex);" text>Add New Row</v-btn>
-                          <pre>
+                          <!-- <pre>
 array: {{ getInput(inputIndex) }}
-                          </pre>
+                          </pre> -->
                         </div>
-                        {{ item }}
+                        <!-- {{ item }} -->
                       </v-col>
                     </v-row>
                   </v-card-text>
@@ -186,6 +190,19 @@ array: {{ getInput(inputIndex) }}
       }
       this.settings.inputs[this.address][this.selectedMethodId][index].push(null);
       this.saveSettings();
+    },
+    setInputArrayElement(inputIndex, arrayIndex, elementValue) {
+      console.log(now() + " AddressContract - setInputArrayElement - inputIndex: " + inputIndex + ", arrayIndex: " + arrayIndex + ", elementValue: " + elementValue);
+      if (this.address && this.settings.inputs[this.address] && this.settings.inputs[this.address][this.selectedMethodId]) {
+        if (!(inputIndex in this.settings.inputs[this.address][this.selectedMethodId])) {
+          this.settings.inputs[this.address][this.selectedMethodId][inputIndex] = new Array(this.selectedFunctionInputs[inputIndex].arrayLength).fill(null);
+        }
+        this.settings.inputs[this.address][this.selectedMethodId][inputIndex][arrayIndex] = elementValue;
+      }
+      this.saveSettings();
+    },
+    removeInputArrayElement(inputIndex, arrayIndex) {
+      console.log(now() + " AddressContract - removeInputArrayElement - inputIndex: " + inputIndex + ", arrayIndex: " + arrayIndex);
     },
     setInput(index, value) {
       console.log(now() + " AddressContract - setInput - index: " + index + ", value: " + JSON.stringify(value));
