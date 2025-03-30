@@ -35,7 +35,17 @@ const addressesModule = {
         const data = state.addresses[address].sourceCode || [];
         for (const item of (state.addresses[address].sourceCode || [])) {
           console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - item: " + JSON.stringify(item));
-          results.push(JSON.stringify(item));
+          let [sourceCode, metadata] = [null, []];
+          for (const [key, value] of Object.entries(item)) {
+            // console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - " + key + " => " + JSON.stringify(value));
+            if (key == "SourceCode") {
+              sourceCode = value;
+              console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - SOURCE CODE: " + JSON.stringify(value));
+            } else {
+              metadata.push({ key, value });
+            }
+          }
+          results.push({ sourceCode, metadata });
         }
       }
       return results;
