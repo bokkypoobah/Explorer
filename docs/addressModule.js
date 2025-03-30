@@ -124,7 +124,7 @@ const addressModule = {
           console.log(now() + " addressModule - actions.loadAddress - balance: " + balance);
         }
       }
-      console.log("error: " + error);
+      // console.log("error: " + error);
       // if (info.abi) {
         // const addresssesWithDefaultABIs = store.getters["addresses/addresssesWithDefaultABIs"];
         // console.log(now() + " addressModule - actions.loadAddress - addresssesWithDefaultABIs: " + JSON.stringify(addresssesWithDefaultABIs));

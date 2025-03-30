@@ -32,15 +32,6 @@ const AddressContract = {
                           <div v-if="item.arrayLength == null">
                             {{ item }}
                             <v-text-field :model-value="getInput(inputIndex)" :rules="[getRuleFunction(item)]" @update:modelValue="setInput(inputIndex, $event)" :label="item.name || '(unnamed)'" :placeholder="item.type" :hint="item.type" density="compact"></v-text-field>
-                            <!-- <div v-if="item.type == 'address'">
-                              <v-text-field :model-value="getInput(inputIndex)" :rules="addressRules" @update:modelValue="setInput(inputIndex, $event)" :label="item.name || '(unnamed)'" :placeholder="item.type" :hint="item.type" density="compact"></v-text-field>
-                            </div>
-                            <div v-else-if="item.type == 'uint256'">
-                              <v-text-field :model-value="getInput(inputIndex)" :rules="uintRules" @update:modelValue="setInput(inputIndex, $event)" :label="item.name || '(unnamed)'" :placeholder="item.type" :hint="item.type" density="compact"></v-text-field>
-                            </div>
-                            <div v-else>
-                              <v-text-field :model-value="getInput(inputIndex)" @update:modelValue="setInput(inputIndex, $event)" :label="item.name || '(unnamed)'" :placeholder="item.type" :hint="item.type" density="compact"></v-text-field>
-                            </div> -->
                           </div>
                           <div v-else>
                             <v-row v-for="(arrayItem, arrayIndex) of getInput(inputIndex)" no-gutters dense>
@@ -125,32 +116,6 @@ const AddressContract = {
         outputs: {},
         version: 1,
       },
-      addressRules: [
-        (v) => (v || '').length > 0 || 'Address is required',
-        (v) => {
-          try {
-            ethers.utils.getAddress(v);
-            return true;
-          } catch (e) {
-            return 'Invalid Address';
-          }
-        },
-      ],
-      uintRules: [
-        (v) => (v || '').length > 0 || 'Uint is required',
-        (v) => {
-          try {
-            const value = ethers.BigNumber.from(v);
-            console.log("uintRules: " + value);
-            if (value >= 0) {
-              return true;
-            }
-            return 'Invalid Uint';
-          } catch (e) {
-            return 'Invalid Uint';
-          }
-        },
-      ],
       error: null,
       _timerIds: {}, // TODO: Delete
     };
