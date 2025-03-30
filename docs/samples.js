@@ -17,7 +17,7 @@ const SAMPLES = {
   "11155111": [
     { type: "contract", address: "0x7439E9Bb6D8a84dd3A23fe621A30F95403F87fB9", info: "ERC-20: WEENUS" },
     { type: "contract", address: "0x07391dbE03e7a0DEa0fce6699500da081537B6c3", info: "ERC-20: WETH" },
-    { type: "contract", address: "0xFD8609Efb8A768A8ef559Cba94Ec21E7Bf8801c4", info: "Explorer: TestExplorer" },
+    { type: "contract", address: "0xd873a572631cD837B03218369974C26b7A82f245", info: "Explorer: TestExplorer" },
   ],
   // Arbitrum One Mainnet
   "42161": [

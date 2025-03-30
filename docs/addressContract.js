@@ -185,6 +185,15 @@ const AddressContract = {
   },
   methods: {
     getRuleFunction(inputParameter) {
+      // bool: true or false
+      // int/uint: 8 to 256 bits
+      // address
+      // bytesX: X = 1 to 32
+      // string
+      // enums
+      // user defined types
+      // arrays
+      // structs
       const max = 10;
       if (inputParameter.baseType == "address") {
         // console.log(now() + " AddressContract - methods.getRuleFunction - ADDRESS inputParameter: " + JSON.stringify(inputParameter));
