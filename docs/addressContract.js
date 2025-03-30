@@ -31,16 +31,16 @@ const AddressContract = {
                         <v-col cols="11">
                           <div v-if="item.arrayLength == null">
                             {{ item }}
-                            <div v-if="item.type == 'address'">
-                              <!-- <v-text-field :model-value="getInput(inputIndex)" :rules="addressRules" @update:modelValue="setInput(inputIndex, $event)" :label="item.name || '(unnamed)'" :placeholder="item.type" :hint="item.type" density="compact"></v-text-field> -->
-                              <v-text-field :model-value="getInput(inputIndex)" :rules="[getRuleFunction(item)]" @update:modelValue="setInput(inputIndex, $event)" :label="item.name || '(unnamed)'" :placeholder="item.type" :hint="item.type" density="compact"></v-text-field>
+                            <v-text-field :model-value="getInput(inputIndex)" :rules="[getRuleFunction(item)]" @update:modelValue="setInput(inputIndex, $event)" :label="item.name || '(unnamed)'" :placeholder="item.type" :hint="item.type" density="compact"></v-text-field>
+                            <!-- <div v-if="item.type == 'address'">
+                              <v-text-field :model-value="getInput(inputIndex)" :rules="addressRules" @update:modelValue="setInput(inputIndex, $event)" :label="item.name || '(unnamed)'" :placeholder="item.type" :hint="item.type" density="compact"></v-text-field>
                             </div>
                             <div v-else-if="item.type == 'uint256'">
                               <v-text-field :model-value="getInput(inputIndex)" :rules="uintRules" @update:modelValue="setInput(inputIndex, $event)" :label="item.name || '(unnamed)'" :placeholder="item.type" :hint="item.type" density="compact"></v-text-field>
                             </div>
                             <div v-else>
                               <v-text-field :model-value="getInput(inputIndex)" @update:modelValue="setInput(inputIndex, $event)" :label="item.name || '(unnamed)'" :placeholder="item.type" :hint="item.type" density="compact"></v-text-field>
-                            </div>
+                            </div> -->
                           </div>
                           <div v-else>
                             <v-row v-for="(arrayItem, arrayIndex) of getInput(inputIndex)" no-gutters dense>
@@ -220,20 +220,75 @@ const AddressContract = {
     // },
   },
   methods: {
-    getRuleFunction(item) {
-      if (item.baseType == "address") {
-        console.log(now() + " AddressContract - methods.getRuleFunction - ADDRESS item: " + JSON.stringify(item));
-      } else if (item.baseType.substring(0, 4) == "uint") {
-        console.log(now() + " AddressContract - methods.getRuleFunction - UINT item: " + JSON.stringify(item));
-      } else if (item.baseType.substring(0, 3) == "int") {
-        console.log(now() + " AddressContract - methods.getRuleFunction - INT item: " + JSON.stringify(item));
-      } else {
-        console.log(now() + " AddressContract - methods.getRuleFunction - OTHER item: " + JSON.stringify(item));
-      }
+    getRuleFunction(inputParameter) {
       const max = 10;
-      return function(value) {
-        return value && value.length <= max || `Max length exceeded (max ${max})`;
+      if (inputParameter.baseType == "address") {
+        // console.log(now() + " AddressContract - methods.getRuleFunction - ADDRESS inputParameter: " + JSON.stringify(inputParameter));
+        return function(value) {
+          console.log(now() + " AddressContract - methods.getRuleFunction.function - ADDRESS inputParameter: " + JSON.stringify(inputParameter));
+          if (!value || value.length == 0) {
+            return "Address is required";
+          } else {
+            try {
+              ethers.utils.getAddress(value);
+              return true;
+            } catch (e) {
+              return "Invalid address";
+            }
+          }
+        }
+      } else if (inputParameter.baseType.substring(0, 4) == "uint") {
+        // console.log(now() + " AddressContract - methods.getRuleFunction - UINT inputParameter: " + JSON.stringify(inputParameter));
+        const bits = parseInt(inputParameter.baseType.substring(4,));
+        return function(value) {
+          console.log(now() + " AddressContract - methods.getRuleFunction.function - UINT inputParameter: " + JSON.stringify(inputParameter) + ", bits: " + bits);
+          if (!value || value.length == 0) {
+            return "Number is required";
+          } else {
+            try {
+              const v = ethers.BigNumber.from(value);
+              const maxNumber = ethers.BigNumber.from(2).pow(bits);
+              if (v.gt(maxNumber)) {
+                return "Number exceed limit " + maxNumber.toString();
+              } else if (v.isNegative()) {
+                return "Number cannot be negative";
+              }
+              return true;
+            } catch (e) {
+              return "Invalid number";
+            }
+          }
+        }
+      } else if (inputParameter.baseType.substring(0, 3) == "int") {
+        // console.log(now() + " AddressContract - methods.getRuleFunction - INT inputParameter: " + JSON.stringify(inputParameter));
+        const bits = parseInt(inputParameter.baseType.substring(3,));
+        return function(value) {
+          console.log(now() + " AddressContract - methods.getRuleFunction.function - INT inputParameter: " + JSON.stringify(inputParameter) + ", bits: " + bits);
+          if (!value || value.length == 0) {
+            return "Number is required";
+          } else {
+            try {
+              const v = ethers.BigNumber.from(value);
+              const minNumber = ethers.BigNumber.from(0).sub(ethers.BigNumber.from(2).pow(bits - 1));
+              const maxNumber = ethers.BigNumber.from(2).pow(bits - 1).sub(1);
+              if (v.lt(minNumber)) {
+                return "Number below minimum " + minNumber.toString();
+              } else if (v.gt(maxNumber)) {
+                return "Number above maximum " + maxNumber.toString();
+              }
+              return true;
+            } catch (e) {
+              return "Invalid number";
+            }
+          }
+        }
+      } else {
+        // console.log(now() + " AddressContract - methods.getRuleFunction - OTHER inputParameter: " + JSON.stringify(inputParameter));
       }
+      // return function(value) {
+      //   return value && value.length <= max || `Max length exceeded (max ${max})`;
+      // }
+      return null;
     },
     getInput(index) {
       // console.log(now() + " AddressContract - methods.getInput - selectedFunctionInputs[" + index + "]: " + JSON.stringify(this.selectedFunctionInputs[index]));
