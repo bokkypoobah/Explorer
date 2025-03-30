@@ -33,9 +33,11 @@ const AddressContract = {
                   </v-data-table>
                 </v-tabs-window-item>
                 <v-tabs-window-item value="sourcecode">
-                  {{ sourceCode() }}
-                  <v-textarea v-model="abi" :rules="jsonRules" label="Source Code" rows="10">
-                  </v-textarea>
+                  <div v-for="(item, itemIndex) of sourceCode">
+                    <!-- {{ item }} -->
+                    <v-textarea v-model="item.sourceCode" :label="item.name" rows="10">
+                    </v-textarea>
+                  </div>
                   <v-btn @click="importSourceCodeFromEtherscan();" class="ms-2 mt-0 mb-2" text>Import Source Code From Etherscan</v-btn>
                   <v-btn @click="importSourceCodeFromSourcify();" class="ms-2 mt-0 mb-2" text>Import Source Code From Sourcify</v-btn>
                 </v-tabs-window-item>
@@ -123,30 +125,30 @@ const AddressContract = {
       }
       return results;
     },
-  },
-  methods: {
     sourceCode() {
       console.log(now() + " AddressContract - sourceCode");
       const results = store.getters["addresses/getSourceCode"](this.address);
       // console.log(now() + " AddressContract - sourceCode - results: " + JSON.stringify(results));
       return results;
     },
+  },
+  methods: {
     handleFunctionsClick(event, row) {
-      console.log(now() + " AddressContract - handleFunctionsClick - event: " + JSON.stringify(event, null, 2) + ", row: " + JSON.stringify(row, null, 2));
+      console.log(now() + " AddressContract - methods.handleFunctionsClick - event: " + JSON.stringify(event, null, 2) + ", row: " + JSON.stringify(row, null, 2));
     },
     handleEventsClick(event, row) {
-      console.log(now() + " AddressContract - handleEventsClick - event: " + JSON.stringify(event, null, 2) + ", row: " + JSON.stringify(row, null, 2));
+      console.log(now() + " AddressContract - methods.handleEventsClick - event: " + JSON.stringify(event, null, 2) + ", row: " + JSON.stringify(row, null, 2));
     },
     async importABIFromEtherscan() {
       console.log(now() + " AddressContract - methods.importABIFromEtherscan");
       const chainId = store.getters["chainId"];
       const url = "https://api.etherscan.io/v2/api?chainid=" + chainId + "&module=contract&action=getabi&address=" + (this.info.implementation ? this.info.implementation : this.info.address) + "&apikey=" + store.getters['config'].etherscanAPIKey;
-      console.log(now() + " AddressContract - url: " + url);
+      console.log(now() + " AddressContract - methods.importABIFromEtherscan - url: " + url);
       const data = await fetch(url).then(response => response.json());
       // console.log(now() + " AddressContract - data: " + JSON.stringify(data, null, 2));
       if (data && data.status == 1 && data.message == "OK") {
         const abi = JSON.parse(data.result);
-        console.log(now() + " AddressContract - abi: " + JSON.stringify(abi, null, 2).substring(0, 1000) + "...");
+        console.log(now() + " AddressContract - methods.importABIFromEtherscan - abi: " + JSON.stringify(abi, null, 2).substring(0, 1000) + "...");
         store.dispatch('addresses/updateABI', { address: this.info.address, abi: JSON.stringify(abi) });
       }
     },
@@ -176,7 +178,7 @@ const AddressContract = {
       }
     },
     saveSettings() {
-      // console.log(now() + " AddressContract - saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
+      // console.log(now() + " AddressContract - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
       if (this.initialised) {
         localStorage.explorerAddressContractSettings = JSON.stringify(this.settings);
       }
