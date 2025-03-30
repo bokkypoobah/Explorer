@@ -10,17 +10,17 @@ const AddressSourceCode = {
             <v-row>
               <v-col cols="2">
               <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" color="primary" direction="vertical">
-                <v-tab prepend-icon="mdi-code-json" text="ABI" value="abi"></v-tab>
-                <v-tab prepend-icon="mdi-function" text="Functions" value="functions"></v-tab>
-                <v-tab prepend-icon="mdi-math-log" text="Events" value="events"></v-tab>
+                <v-tab prepend-icon="mdi-text-box" text="Source Code" value="sourcecode"></v-tab>
+                <!-- <v-tab prepend-icon="mdi-function" text="Functions" value="functions"></v-tab>
+                <v-tab prepend-icon="mdi-math-log" text="Events" value="events"></v-tab> -->
               </v-tabs>
               </v-col>
               <v-col cols="10">
               <v-tabs-window v-model="settings.tab">
-                <v-tabs-window-item value="abi">
-                  <v-textarea v-model="abi" :rules="jsonRules" label="ABI" rows="10">
+                <v-tabs-window-item value="sourcecode">
+                  <v-textarea v-model="abi" :rules="jsonRules" label="Source Code" rows="10">
                   </v-textarea>
-                  <v-btn @click="importABIFromEtherscan();" class="ms-2 mt-0 mb-2" text>Import ABI From Etherscan
+                  <v-btn @click="importABIFromEtherscan();" class="ms-2 mt-0 mb-2" text>Import Source Code From Etherscan
                   </v-btn>
                 </v-tabs-window-item>
                 <v-tabs-window-item value="functions">
