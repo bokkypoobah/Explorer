@@ -1,4 +1,4 @@
-const AddressContract = {
+const AddressFunctions = {
   template: `
     <div>
       <v-card>
@@ -143,13 +143,13 @@ const AddressContract = {
             this.settings.selectedMethodIds[this.address] = {};
           }
           this.settings.selectedMethodIds[this.address][this.settings.tab] = methodId;
-          // console.log(now() + " AddressContract - computed.selectedMethodId.set - this.settings: " + JSON.stringify(this.settings));
+          // console.log(now() + " AddressFunctions - computed.selectedMethodId.set - this.settings: " + JSON.stringify(this.settings));
         }
         this.saveSettings();
       },
     },
     selectedFunction() {
-      // console.log(now() + " AddressContract - computed.selectedFunction");
+      // console.log(now() + " AddressFunctions - computed.selectedFunction");
       return this.selectedMethodId && this.functions[this.selectedMethodId] || {};
     },
     selectedFunctionInputs() {
@@ -159,7 +159,7 @@ const AddressContract = {
       return this.selectedFunction.outputs || [];
     },
     functionList() {
-      // console.log(now() + " AddressContract - computed.functionList - this.functions: " + JSON.stringify(this.functions));
+      // console.log(now() + " AddressFunctions - computed.functionList - this.functions: " + JSON.stringify(this.functions));
       // const addressInfo = store.getters["addresses/getAddressInfo"](this.address);
       const results = [];
       for (const [methodId, functionData] of Object.entries(this.functions)) {
@@ -200,9 +200,9 @@ const AddressContract = {
       // structs
       const max = 10;
       if (inputParameter.baseType == "address") {
-        // console.log(now() + " AddressContract - methods.getRuleFunction - ADDRESS inputParameter: " + JSON.stringify(inputParameter));
+        // console.log(now() + " AddressFunctions - methods.getRuleFunction - ADDRESS inputParameter: " + JSON.stringify(inputParameter));
         return function(value) {
-          console.log(now() + " AddressContract - methods.getRuleFunction.function - ADDRESS inputParameter: " + JSON.stringify(inputParameter));
+          console.log(now() + " AddressFunctions - methods.getRuleFunction.function - ADDRESS inputParameter: " + JSON.stringify(inputParameter));
           if (!value || value.length == 0) {
             return "Address is required";
           } else {
@@ -215,10 +215,10 @@ const AddressContract = {
           }
         }
       } else if (inputParameter.baseType.substring(0, 4) == "uint") {
-        // console.log(now() + " AddressContract - methods.getRuleFunction - UINT inputParameter: " + JSON.stringify(inputParameter));
+        // console.log(now() + " AddressFunctions - methods.getRuleFunction - UINT inputParameter: " + JSON.stringify(inputParameter));
         const bits = parseInt(inputParameter.baseType.substring(4,));
         return function(value) {
-          console.log(now() + " AddressContract - methods.getRuleFunction.function - UINT inputParameter: " + JSON.stringify(inputParameter) + ", bits: " + bits);
+          console.log(now() + " AddressFunctions - methods.getRuleFunction.function - UINT inputParameter: " + JSON.stringify(inputParameter) + ", bits: " + bits);
           if (!value || value.length == 0) {
             return "Number is required";
           } else {
@@ -237,10 +237,10 @@ const AddressContract = {
           }
         }
       } else if (inputParameter.baseType.substring(0, 3) == "int") {
-        // console.log(now() + " AddressContract - methods.getRuleFunction - INT inputParameter: " + JSON.stringify(inputParameter));
+        // console.log(now() + " AddressFunctions - methods.getRuleFunction - INT inputParameter: " + JSON.stringify(inputParameter));
         const bits = parseInt(inputParameter.baseType.substring(3,));
         return function(value) {
-          console.log(now() + " AddressContract - methods.getRuleFunction.function - INT inputParameter: " + JSON.stringify(inputParameter) + ", bits: " + bits);
+          console.log(now() + " AddressFunctions - methods.getRuleFunction.function - INT inputParameter: " + JSON.stringify(inputParameter) + ", bits: " + bits);
           if (!value || value.length == 0) {
             return "Number is required";
           } else {
@@ -260,7 +260,7 @@ const AddressContract = {
           }
         }
       } else {
-        // console.log(now() + " AddressContract - methods.getRuleFunction - OTHER inputParameter: " + JSON.stringify(inputParameter));
+        // console.log(now() + " AddressFunctions - methods.getRuleFunction - OTHER inputParameter: " + JSON.stringify(inputParameter));
       }
       // return function(value) {
       //   return value && value.length <= max || `Max length exceeded (max ${max})`;
@@ -269,7 +269,7 @@ const AddressContract = {
       return true;
     },
     getInput(index) {
-      // console.log(now() + " AddressContract - methods.getInput - selectedFunctionInputs[" + index + "]: " + JSON.stringify(this.selectedFunctionInputs[index]));
+      // console.log(now() + " AddressFunctions - methods.getInput - selectedFunctionInputs[" + index + "]: " + JSON.stringify(this.selectedFunctionInputs[index]));
       if (this.address && this.settings.inputs[this.address] && this.settings.inputs[this.address][this.selectedMethodId] && (index in this.settings.inputs[this.address][this.selectedMethodId])) {
         return this.settings.inputs[this.address][this.selectedMethodId][index];
       }
@@ -281,7 +281,7 @@ const AddressContract = {
       return null;
     },
     // setInput(index, value) {
-    //   console.log(now() + " AddressContract - setInput - index: " + index + ", value: " + JSON.stringify(value));
+    //   console.log(now() + " AddressFunctions - setInput - index: " + index + ", value: " + JSON.stringify(value));
     //   clearTimeout(this._timerIds[index] || null);
     //   const t = this;
     //   this._timerIds[index] = setTimeout(() => {
@@ -290,7 +290,7 @@ const AddressContract = {
     //   }, 1000)
     // },
     addNewInputArrayItem(index) {
-      // console.log(now() + " AddressContract - methods.addNewInputArrayItem - index: " + index);
+      // console.log(now() + " AddressFunctions - methods.addNewInputArrayItem - index: " + index);
       if (!(this.address in this.settings.inputs)) {
         this.settings.inputs[this.address] = {};
       }
@@ -304,7 +304,7 @@ const AddressContract = {
       this.saveSettings();
     },
     setInputArrayElement(inputIndex, arrayIndex, elementValue) {
-      // console.log(now() + " AddressContract - methods.setInputArrayElement - inputIndex: " + inputIndex + ", arrayIndex: " + arrayIndex + ", elementValue: " + elementValue);
+      // console.log(now() + " AddressFunctions - methods.setInputArrayElement - inputIndex: " + inputIndex + ", arrayIndex: " + arrayIndex + ", elementValue: " + elementValue);
       if (this.address && this.settings.inputs[this.address] && this.settings.inputs[this.address][this.selectedMethodId]) {
         if (!(inputIndex in this.settings.inputs[this.address][this.selectedMethodId])) {
           this.settings.inputs[this.address][this.selectedMethodId][inputIndex] = new Array(this.selectedFunctionInputs[inputIndex].arrayLength).fill(null);
@@ -314,7 +314,7 @@ const AddressContract = {
       this.saveSettings();
     },
     removeInputArrayElement(inputIndex, arrayIndex) {
-      // console.log(now() + " AddressContract - methods.removeInputArrayElement - inputIndex: " + inputIndex + ", arrayIndex: " + arrayIndex);
+      // console.log(now() + " AddressFunctions - methods.removeInputArrayElement - inputIndex: " + inputIndex + ", arrayIndex: " + arrayIndex);
       if (this.address && this.settings.inputs[this.address] && this.settings.inputs[this.address][this.selectedMethodId]) {
         if (inputIndex in this.settings.inputs[this.address][this.selectedMethodId]) {
           const array = this.settings.inputs[this.address][this.selectedMethodId][inputIndex];
@@ -325,7 +325,7 @@ const AddressContract = {
       this.saveSettings();
     },
     setInput(index, value) {
-      // console.log(now() + " AddressContract - methods.setInput - index: " + index + ", value: " + JSON.stringify(value));
+      // console.log(now() + " AddressFunctions - methods.setInput - index: " + index + ", value: " + JSON.stringify(value));
       if (!(this.address in this.settings.inputs)) {
         this.settings.inputs[this.address] = {};
       }
@@ -336,7 +336,7 @@ const AddressContract = {
       this.saveSettings();
     },
     getOutput(index) {
-      // console.log(now() + " AddressContract - methods.getOutput - selectedFunctionOutputs[" + index + "]: " + JSON.stringify(this.selectedFunctionOutputs[index]));
+      // console.log(now() + " AddressFunctions - methods.getOutput - selectedFunctionOutputs[" + index + "]: " + JSON.stringify(this.selectedFunctionOutputs[index]));
       if (this.address && this.settings.outputs[this.address] && this.settings.outputs[this.address][this.selectedMethodId] && (index in this.settings.outputs[this.address][this.selectedMethodId])) {
         return this.settings.outputs[this.address][this.selectedMethodId][index];
       }
@@ -348,7 +348,7 @@ const AddressContract = {
       return null;
     },
     setOutputs(outputs) {
-      console.log(now() + " AddressContract - methods.setOutputs - outputs: " + JSON.stringify(outputs));
+      console.log(now() + " AddressFunctions - methods.setOutputs - outputs: " + JSON.stringify(outputs));
       if (!(this.address in this.settings.outputs)) {
         this.settings.outputs[this.address] = {};
       }
@@ -357,7 +357,7 @@ const AddressContract = {
     },
     async callFunction() {
       const validationStatus = await this.$refs.form.validate();
-      console.log(now() + " AddressContract - methods.callFunction - validationStatus: " + JSON.stringify(validationStatus, null, 2));
+      console.log(now() + " AddressFunctions - methods.callFunction - validationStatus: " + JSON.stringify(validationStatus, null, 2));
       if (!validationStatus.valid) {
         this.error = "One or more fields failed the validation check";
       } else {
@@ -365,20 +365,20 @@ const AddressContract = {
       }
 
       const provider = new ethers.providers.Web3Provider(window.ethereum);
-      // console.log(now() + " AddressContract - callFunction - selectedFunction: " + JSON.stringify(this.selectedFunction, null, 2));
+      // console.log(now() + " AddressFunctions - callFunction - selectedFunction: " + JSON.stringify(this.selectedFunction, null, 2));
       const addressInfo = store.getters["addresses/getAddressInfo"](this.address);
-      // console.log(now() + " AddressContract - callFunction - addressInfo: " + JSON.stringify(addressInfo, null, 2));
+      // console.log(now() + " AddressFunctions - callFunction - addressInfo: " + JSON.stringify(addressInfo, null, 2));
       const parameters = [];
       for (const [index, input] of this.selectedFunctionInputs.entries()) {
-        console.log(now() + " AddressContract - callFunction - input[" + index + "]: " + " => " + JSON.stringify(input));
+        console.log(now() + " AddressFunctions - callFunction - input[" + index + "]: " + " => " + JSON.stringify(input));
         const value = this.getInput(index);
         parameters.push(value);
       }
-      console.log(now() + " AddressContract - callFunction - parameters: " + JSON.stringify(parameters, null, 2));
+      console.log(now() + " AddressFunctions - callFunction - parameters: " + JSON.stringify(parameters, null, 2));
       const contract = new ethers.Contract(this.address, addressInfo.abi, provider);
       try {
         const results = await contract[this.selectedFunction.name](...parameters);
-        console.log(now() + " AddressContract - methods.callFunction - results: " + JSON.stringify(results));
+        console.log(now() + " AddressFunctions - methods.callFunction - results: " + JSON.stringify(results));
         const outputs = [];
         for (const [index, output] of this.selectedFunction.outputs.entries()) {
           // console.log(index + " => " + typeof output + " " + JSON.stringify(output));
@@ -394,27 +394,27 @@ const AddressContract = {
             outputs.push(value);
           }
         }
-        console.log(now() + " AddressContract - methods.callFunction - outputs: " + JSON.stringify(outputs));
+        console.log(now() + " AddressFunctions - methods.callFunction - outputs: " + JSON.stringify(outputs));
         this.setOutputs(outputs);
       } catch (e) {
-        console.error(now() + " AddressContract - methods.callFunction - ERROR: " + e.message);
+        console.error(now() + " AddressFunctions - methods.callFunction - ERROR: " + e.message);
       }
     },
     saveSettings() {
-      // console.log(now() + " AddressContract - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
+      // console.log(now() + " AddressFunctions - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
       if (this.initialised) {
-        localStorage.explorerAddressContractSettings = JSON.stringify(this.settings);
+        localStorage.explorerAddressFunctionsSettings = JSON.stringify(this.settings);
       }
     },
   },
   beforeCreate() {
-    console.log(now() + " AddressContract - beforeCreate");
+    console.log(now() + " AddressFunctions - beforeCreate");
 	},
   mounted() {
-    console.log(now() + " AddressContract - mounted");
-    if ('explorerAddressContractSettings' in localStorage) {
-      const tempSettings = JSON.parse(localStorage.explorerAddressContractSettings);
-      // console.log(now() + " AddressContract - mounted - tempSettings: " + JSON.stringify(tempSettings));
+    console.log(now() + " AddressFunctions - mounted");
+    if ('explorerAddressFunctionsSettings' in localStorage) {
+      const tempSettings = JSON.parse(localStorage.explorerAddressFunctionsSettings);
+      // console.log(now() + " AddressFunctions - mounted - tempSettings: " + JSON.stringify(tempSettings));
       if ('version' in tempSettings && tempSettings.version == this.settings.version) {
         this.settings = tempSettings;
       }
@@ -426,9 +426,9 @@ const AddressContract = {
     }, 1000);
 	},
   unmounted() {
-    console.log(now() + " AddressContract - unmounted");
+    console.log(now() + " AddressFunctions - unmounted");
 	},
   destroyed() {
-    console.log(now() + " AddressContract - destroyed");
+    console.log(now() + " AddressFunctions - destroyed");
 	},
 };

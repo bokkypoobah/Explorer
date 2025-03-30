@@ -30,9 +30,9 @@ const routes = [
     props: true,
   },
   {
-    path: '/address/:inputAddress?/contract',
-    name: "AddressContract",
-    component: AddressContract,
+    path: '/address/:inputAddress?/functions',
+    name: "AddressFunctions",
+    component: AddressFunctions,
     props: true,
   },
   {
