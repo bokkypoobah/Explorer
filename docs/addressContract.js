@@ -36,8 +36,8 @@ const AddressContract = {
                   {{ sourceCode() }}
                   <v-textarea v-model="abi" :rules="jsonRules" label="Source Code" rows="10">
                   </v-textarea>
-                  <v-btn @click="importSourceCodeFromEtherscan();" class="ms-2 mt-0 mb-2" text>Import Source Code From Etherscan
-                  </v-btn>
+                  <v-btn @click="importSourceCodeFromEtherscan();" class="ms-2 mt-0 mb-2" text>Import Source Code From Etherscan</v-btn>
+                  <v-btn @click="importSourceCodeFromSourcify();" class="ms-2 mt-0 mb-2" text>Import Source Code From Sourcify</v-btn>
                 </v-tabs-window-item>
               </v-tabs-window>
               </v-col>
@@ -160,19 +160,25 @@ const AddressContract = {
       console.log(now() + " AddressContract - methods.importSourceCodeFromEtherscan");
       const chainId = store.getters["chainId"];
       const url = "https://api.etherscan.io/v2/api?chainid=" + chainId + "&module=contract&action=getsourcecode&address=" + (this.info.implementation ? this.info.implementation : this.info.address) + "&apikey=" + store.getters['config'].etherscanAPIKey;
-      console.log(now() + " AddressContract - url: " + url);
+      console.log(now() + " AddressContract - methods.importSourceCodeFromEtherscan - url: " + url);
       const data = await fetch(url).then(response => response.json());
-      // console.log(now() + " AddressContract - data: " + JSON.stringify(data, null, 2));
-      // const sourceCode = [];
+      // console.log(now() + " AddressContract - methods.importSourceCodeFromEtherscan - data: " + JSON.stringify(data, null, 2));
       if (data && data.status == 1 && data.message == "OK") {
-        console.log(now() + " AddressContract - data.result: " + JSON.stringify(data.result, null, 2));
-        // for (const [index, item] of data.result.entries()) {
-        //   console.log(index + " => " + JSON.stringify(item));
-        //   for (const [key, value] of Object.entries(item)) {
-        //     console.log(index + ". " + key + " => " + value);
-        //   }
-        // }
-        store.dispatch('addresses/updateSourceCode', { address: this.info.address, sourceCode: data.result });
+        console.log(now() + " AddressContract - methods.importSourceCodeFromEtherscan - data.result: " + JSON.stringify(data.result, null, 2));
+        store.dispatch('addresses/updateSourceCode', { address: this.info.address, sourceCode: data.result[0] });
+      }
+    },
+    async importSourceCodeFromSourcify() {
+      console.log(now() + " AddressContract - methods.importSourceCodeFromSourcify");
+      const chainId = store.getters["chainId"];
+      // const url = "https://sourcify.dev/server/v2/contract/" + chainId + "/" + (this.info.implementation ? this.info.implementation : this.info.address) + "?fields=all";
+      const url = "https://sourcify.dev/server/v2/contract/" + chainId + "/" + (this.info.implementation ? this.info.implementation : this.info.address) + "?omit=creationBytecode,runtimeBytecode,abi,metadata,sources";
+      console.log(now() + " AddressContract - methods.importSourceCodeFromSourcify - url: " + url);
+      const data = await fetch(url).then(response => response.json());
+      console.log(now() + " AddressContrac - methods.importSourceCodeFromSourcify - data: " + JSON.stringify(data, null, 2));
+      if (data && data.matchId && data.runtimeMatch == "match") {
+        // console.log(now() + " AddressContract - methods.importSourceCodeFromSourcify - data.result: " + JSON.stringify(data.result, null, 2));
+        store.dispatch('addresses/updateSourceCode', { address: this.info.address, sourceCode: data });
       }
     },
     saveSettings() {

@@ -32,27 +32,45 @@ const addressesModule = {
       console.log(now() + " addressesModule - getters.getSourceCode(" + address + ")");
       let results = [];
       if (address in state.addresses) {
-        const data = state.addresses[address].sourceCode || [];
-        for (const item of (state.addresses[address].sourceCode || [])) {
-          // console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - item: " + JSON.stringify(item));
-          let [sourceCode, metadata] = [null, []];
-          for (const [key, value] of Object.entries(item)) {
-            // console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - " + key + " => " + JSON.stringify(value));
-            if (key == "SourceCode") {
-              sourceCode = value;
-              // console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - SOURCE CODE: " + JSON.stringify(value));
-              if (value.substring(0, 2) == "{{" && value.slice(-2) == "}}") {
-                const jsonString = value.substring(1, value.length - 1);
-                // console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - SOURCE CODE - jsonString: " + jsonString);
-                const json = JSON.parse(jsonString);
-                console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - SOURCE CODE - json: " + JSON.stringify(json, null, 2));
-              }
-            } else {
-              metadata.push({ key, value });
+        const data = state.addresses[address].sourceCode || null;
+        if (data && data.SourceCode && data.SourceCode.substring(0, 2) == "{{" && data.SourceCode.slice(-2) == "}}") {
+          console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - ETHERSCAN MULTIPART data: " + JSON.stringify(data));
+        } else if (data && data.SourceCode && typeof data.SourceCode == "string") {
+          console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - ETHERSCAN SINGLE data: " + JSON.stringify(data));
+          // const info = { ...data, SourceCode: undefined, ABI: undefined };
+          results.push({ name: data.ContractName || "(unknown)", sourceCode: data.SourceCode });
+        } else if (data && data.matchId && data.runtimeMatch == "match") {
+          console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - SOURCIFY data: " + JSON.stringify(data, null, 2));
+          if (data.stdJsonInput.sources) {
+            console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - SOURCIFY data.stdJsonInput.sources: " + JSON.stringify(data.stdJsonInput.sources, null, 2));
+            for (const [source, sourceData] of Object.entries(data.stdJsonInput.sources || {})) {
+              // console.log(source + " => " + JSON.stringify(sourceData, null, 2));
+              results.push({ name: source, sourceCode: sourceData.content });
             }
           }
-          results.push({ sourceCode, metadata });
+        } else {
+          console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - UNKNOWN data: " + JSON.stringify(data));
         }
+        // for (const item of (state.addresses[address].sourceCode || [])) {
+        //   // console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - item: " + JSON.stringify(item));
+        //   let [sourceCode, metadata] = [null, []];
+        //   for (const [key, value] of Object.entries(item)) {
+        //     // console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - " + key + " => " + JSON.stringify(value));
+        //     if (key == "SourceCode") {
+        //       sourceCode = value;
+        //       // console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - SOURCE CODE: " + JSON.stringify(value));
+        //       if (value.substring(0, 2) == "{{" && value.slice(-2) == "}}") {
+        //         const jsonString = value.substring(1, value.length - 1);
+        //         // console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - SOURCE CODE - jsonString: " + jsonString);
+        //         const json = JSON.parse(jsonString);
+        //         console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - SOURCE CODE - json: " + JSON.stringify(json, null, 2));
+        //       }
+        //     } else {
+        //       metadata.push({ key, value });
+        //     }
+        //   }
+        //   results.push({ sourceCode, metadata });
+        // }
       }
       return results;
     },
