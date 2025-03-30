@@ -28,10 +28,14 @@ const store = new Vuex.Store({
       connected: false,
       error: false,
       chainId: null,
+      coinbase: null,
       blockNumber: null,
       timestamp: null,
-      coinbase: null,
-      version: 0,
+      lastBaseFeePerGas: null,
+      maxFeePerGas: null,
+      maxPriorityFeePerGas: null,
+      gasPrice: null,
+      version: 1,
     },
     db: {
       name: "explorer088b",
@@ -84,6 +88,10 @@ const store = new Vuex.Store({
       state.web3.blockNumber = info.blockNumber;
       state.web3.timestamp = info.timestamp;
       state.web3.coinbase = info.coinbase;
+      state.web3.lastBaseFeePerGas = info.lastBaseFeePerGas;
+      state.web3.maxFeePerGas = info.maxFeePerGas;
+      state.web3.maxPriorityFeePerGas = info.maxPriorityFeePerGas;
+      state.web3.gasPrice = info.gasPrice;
     },
     setWeb3Connected(state, connected) {
       state.web3.connected = connected;
@@ -94,6 +102,10 @@ const store = new Vuex.Store({
     setWeb3BlockInfo(state, blockInfo) {
       state.web3.blockNumber = blockInfo.blockNumber;
       state.web3.timestamp = blockInfo.timestamp;
+      state.web3.lastBaseFeePerGas = blockInfo.lastBaseFeePerGas;
+      state.web3.maxFeePerGas = blockInfo.maxFeePerGas;
+      state.web3.maxPriorityFeePerGas = blockInfo.maxPriorityFeePerGas;
+      state.web3.gasPrice = blockInfo.gasPrice;
     },
   },
   actions: {

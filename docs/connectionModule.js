@@ -32,6 +32,13 @@ const Connection = {
             </template>
           </v-tooltip>
         </span>
+        <span v-if="info.gasPrice" class="ml-1">
+          <v-tooltip :text="'gasPrice ' + formatGas(info.gasPrice) + ', maxFeePerGas ' + formatGas(info.maxFeePerGas) + ', maxPriorityFeePerGas ' + formatGas(info.maxPriorityFeePerGas) + ', lastBaseFeePerGas ' + formatGas(info.lastBaseFeePerGas) + ' gwei'">
+            <template v-slot:activator="{ props }">
+              <span v-bind="props">{{ formatGas(info.gasPrice) + 'g'}}</span>
+            </template>
+          </v-tooltip>
+        </span>
       </span>
     </div>
   `,
@@ -83,7 +90,12 @@ const Connection = {
       }
       return null;
     },
-
+    formatGas(e) {
+      if (e) {
+        return parseFloat(ethers.utils.formatUnits(e, "gwei")).toFixed(4); // .replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+      }
+      return null;
+    },
   },
   mounted() {
     console.log(now() + " Connection - mounted");
@@ -109,7 +121,7 @@ const connectionModule = {
   },
   actions: {
     async connect(context) {
-      let [provider, connected, error, chainId, blockNumber, timestamp, coinbase] = [null, false, null, null, null, null, null];
+      let [provider, connected, error, chainId, blockNumber, timestamp, coinbase, feeData] = [null, false, null, null, null, null, null, null];
       if (window.ethereum) {
         if (!window.ethereum.isConnected() || !window.ethereum['isUnlocked']) {
           try {
@@ -130,6 +142,7 @@ const connectionModule = {
           timestamp = block.timestamp;
           const signer = provider.getSigner();
           coinbase = await signer.getAddress();
+          feeData = await provider.getFeeData();
         }
 
         if (connected) {
@@ -162,9 +175,16 @@ const connectionModule = {
             if (!lastBlockNumber || blockNumber > lastBlockNumber) {
               const block = await provider.getBlock("latest");
               const feeData = await provider.getFeeData();
-              console.log(now() + " connectionModule - actions.connect.handleNewBlock - feeData: " + JSON.stringify(feeData));
+              // console.log(now() + " connectionModule - actions.connect.handleNewBlock - feeData: " + JSON.stringify(feeData));
               if (block.number > lastBlockNumber) {
-                store.dispatch('setWeb3BlockInfo', { blockNumber: block.number, timestamp: block.timestamp });
+                store.dispatch('setWeb3BlockInfo', {
+                  blockNumber: block.number,
+                  timestamp: block.timestamp,
+                  lastBaseFeePerGas: ethers.BigNumber.from(feeData.lastBaseFeePerGas).toString(),
+                  maxFeePerGas: ethers.BigNumber.from(feeData.maxFeePerGas).toString(),
+                  maxPriorityFeePerGas: ethers.BigNumber.from(feeData.maxPriorityFeePerGas).toString(),
+                  gasPrice: ethers.BigNumber.from(feeData.gasPrice).toString(),
+                });
                 console.log(now() + " connectionModule - actions.connect.handleNewBlock - blockNumber: " + block.number);
               }
             }
@@ -177,7 +197,18 @@ const connectionModule = {
       } else {
         error = "This app requires a web3 enabled browser";
       }
-      store.dispatch('setWeb3Info', { connected, error, chainId, blockNumber, timestamp, coinbase });
+      store.dispatch('setWeb3Info', {
+        connected,
+        error,
+        chainId,
+        blockNumber,
+        timestamp,
+        coinbase,
+        lastBaseFeePerGas: ethers.BigNumber.from(feeData.lastBaseFeePerGas).toString(),
+        maxFeePerGas: ethers.BigNumber.from(feeData.maxFeePerGas).toString(),
+        maxPriorityFeePerGas: ethers.BigNumber.from(feeData.maxPriorityFeePerGas).toString(),
+        gasPrice: ethers.BigNumber.from(feeData.gasPrice).toString(),
+      });
       context.commit('setProvider', provider);
     },
     restore(context) {

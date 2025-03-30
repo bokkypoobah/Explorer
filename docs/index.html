@@ -95,7 +95,24 @@
         <v-main>
           <v-container fluid class="pa-2">
             <v-toolbar v-if="mainPath == '/address'" density="compact">
-              <v-text-field v-model="addressPathInputAddress" variant="plain" class="ms-2" style="width: 100px;"></v-text-field>
+              <v-text-field v-model="addressPathInputAddress" variant="plain" density="compact" class="ms-2 mt-2" style="width: 100px;"></v-text-field>
+
+              <v-menu v-if="false">
+                <template v-slot:activator="{ props }">
+                  <v-btn color="primary" v-bind="props" icon>
+                    <v-icon>mdi-menu</v-icon>
+                  </v-btn>
+                </template>
+                <v-list>
+                  <v-list-item @click="doSomething();">
+                    <v-list-item-title>Blah</v-list-item-title>
+                  </v-list-item>
+                  <!-- <v-list-item v-for="(item, index) in items" :key="index" :value="index">
+                    <v-list-item-title>{{ item.title }}</v-list-item-title>
+                  </v-list-item> -->
+                </v-list>
+              </v-menu>
+
               <v-spacer></v-spacer>
               <v-tabs right color="deep-purple-accent-4">
                 <v-tab :to="'/address/' + addressPathInputAddress">Summary</v-tab>
