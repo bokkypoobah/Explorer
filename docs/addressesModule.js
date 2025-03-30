@@ -34,13 +34,19 @@ const addressesModule = {
       if (address in state.addresses) {
         const data = state.addresses[address].sourceCode || [];
         for (const item of (state.addresses[address].sourceCode || [])) {
-          console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - item: " + JSON.stringify(item));
+          // console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - item: " + JSON.stringify(item));
           let [sourceCode, metadata] = [null, []];
           for (const [key, value] of Object.entries(item)) {
             // console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - " + key + " => " + JSON.stringify(value));
             if (key == "SourceCode") {
               sourceCode = value;
-              console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - SOURCE CODE: " + JSON.stringify(value));
+              // console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - SOURCE CODE: " + JSON.stringify(value));
+              if (value.substring(0, 2) == "{{" && value.slice(-2) == "}}") {
+                const jsonString = value.substring(1, value.length - 1);
+                // console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - SOURCE CODE - jsonString: " + jsonString);
+                const json = JSON.parse(jsonString);
+                console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - SOURCE CODE - json: " + JSON.stringify(json));
+              }
             } else {
               metadata.push({ key, value });
             }
