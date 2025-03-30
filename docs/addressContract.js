@@ -32,7 +32,8 @@ const AddressContract = {
                           <div v-if="item.arrayLength == null">
                             {{ item }}
                             <div v-if="item.type == 'address'">
-                              <v-text-field :model-value="getInput(inputIndex)" :rules="addressRules" @update:modelValue="setInput(inputIndex, $event)" :label="item.name || '(unnamed)'" :placeholder="item.type" :hint="item.type" density="compact"></v-text-field>
+                              <!-- <v-text-field :model-value="getInput(inputIndex)" :rules="addressRules" @update:modelValue="setInput(inputIndex, $event)" :label="item.name || '(unnamed)'" :placeholder="item.type" :hint="item.type" density="compact"></v-text-field> -->
+                              <v-text-field :model-value="getInput(inputIndex)" :rules="[getRuleFunction(item)]" @update:modelValue="setInput(inputIndex, $event)" :label="item.name || '(unnamed)'" :placeholder="item.type" :hint="item.type" density="compact"></v-text-field>
                             </div>
                             <div v-else-if="item.type == 'uint256'">
                               <v-text-field :model-value="getInput(inputIndex)" :rules="uintRules" @update:modelValue="setInput(inputIndex, $event)" :label="item.name || '(unnamed)'" :placeholder="item.type" :hint="item.type" density="compact"></v-text-field>
@@ -219,8 +220,23 @@ const AddressContract = {
     // },
   },
   methods: {
+    getRuleFunction(item) {
+      if (item.baseType == "address") {
+        console.log(now() + " AddressContract - methods.getRuleFunction - ADDRESS item: " + JSON.stringify(item));
+      } else if (item.baseType.substring(0, 4) == "uint") {
+        console.log(now() + " AddressContract - methods.getRuleFunction - UINT item: " + JSON.stringify(item));
+      } else if (item.baseType.substring(0, 3) == "int") {
+        console.log(now() + " AddressContract - methods.getRuleFunction - INT item: " + JSON.stringify(item));
+      } else {
+        console.log(now() + " AddressContract - methods.getRuleFunction - OTHER item: " + JSON.stringify(item));
+      }
+      const max = 10;
+      return function(value) {
+        return value && value.length <= max || `Max length exceeded (max ${max})`;
+      }
+    },
     getInput(index) {
-      // console.log(now() + " AddressContract - getInput - selectedFunctionInputs[" + index + "]: " + JSON.stringify(this.selectedFunctionInputs[index]));
+      // console.log(now() + " AddressContract - methods.getInput - selectedFunctionInputs[" + index + "]: " + JSON.stringify(this.selectedFunctionInputs[index]));
       if (this.address && this.settings.inputs[this.address] && this.settings.inputs[this.address][this.selectedMethodId] && (index in this.settings.inputs[this.address][this.selectedMethodId])) {
         return this.settings.inputs[this.address][this.selectedMethodId][index];
       }
@@ -241,7 +257,7 @@ const AddressContract = {
     //   }, 1000)
     // },
     addNewInputArrayItem(index) {
-      // console.log(now() + " AddressContract - addNewInputArrayItem - index: " + index);
+      // console.log(now() + " AddressContract - methods.addNewInputArrayItem - index: " + index);
       if (!(this.address in this.settings.inputs)) {
         this.settings.inputs[this.address] = {};
       }
@@ -255,7 +271,7 @@ const AddressContract = {
       this.saveSettings();
     },
     setInputArrayElement(inputIndex, arrayIndex, elementValue) {
-      // console.log(now() + " AddressContract - setInputArrayElement - inputIndex: " + inputIndex + ", arrayIndex: " + arrayIndex + ", elementValue: " + elementValue);
+      // console.log(now() + " AddressContract - methods.setInputArrayElement - inputIndex: " + inputIndex + ", arrayIndex: " + arrayIndex + ", elementValue: " + elementValue);
       if (this.address && this.settings.inputs[this.address] && this.settings.inputs[this.address][this.selectedMethodId]) {
         if (!(inputIndex in this.settings.inputs[this.address][this.selectedMethodId])) {
           this.settings.inputs[this.address][this.selectedMethodId][inputIndex] = new Array(this.selectedFunctionInputs[inputIndex].arrayLength).fill(null);
@@ -265,7 +281,7 @@ const AddressContract = {
       this.saveSettings();
     },
     removeInputArrayElement(inputIndex, arrayIndex) {
-      // console.log(now() + " AddressContract - removeInputArrayElement - inputIndex: " + inputIndex + ", arrayIndex: " + arrayIndex);
+      // console.log(now() + " AddressContract - methods.removeInputArrayElement - inputIndex: " + inputIndex + ", arrayIndex: " + arrayIndex);
       if (this.address && this.settings.inputs[this.address] && this.settings.inputs[this.address][this.selectedMethodId]) {
         if (inputIndex in this.settings.inputs[this.address][this.selectedMethodId]) {
           const array = this.settings.inputs[this.address][this.selectedMethodId][inputIndex];
@@ -276,7 +292,7 @@ const AddressContract = {
       this.saveSettings();
     },
     setInput(index, value) {
-      // console.log(now() + " AddressContract - setInput - index: " + index + ", value: " + JSON.stringify(value));
+      // console.log(now() + " AddressContract - methods.setInput - index: " + index + ", value: " + JSON.stringify(value));
       if (!(this.address in this.settings.inputs)) {
         this.settings.inputs[this.address] = {};
       }
@@ -287,7 +303,7 @@ const AddressContract = {
       this.saveSettings();
     },
     getOutput(index) {
-      console.log(now() + " AddressContract - getOutput - selectedFunctionOutputs[" + index + "]: " + JSON.stringify(this.selectedFunctionOutputs[index]));
+      // console.log(now() + " AddressContract - methods.getOutput - selectedFunctionOutputs[" + index + "]: " + JSON.stringify(this.selectedFunctionOutputs[index]));
       if (this.address && this.settings.outputs[this.address] && this.settings.outputs[this.address][this.selectedMethodId] && (index in this.settings.outputs[this.address][this.selectedMethodId])) {
         return this.settings.outputs[this.address][this.selectedMethodId][index];
       }
@@ -299,7 +315,7 @@ const AddressContract = {
       return null;
     },
     setOutputs(outputs) {
-      console.log(now() + " AddressContract - setOutputs - outputs: " + JSON.stringify(outputs));
+      console.log(now() + " AddressContract - methods.setOutputs - outputs: " + JSON.stringify(outputs));
       if (!(this.address in this.settings.outputs)) {
         this.settings.outputs[this.address] = {};
       }
@@ -308,7 +324,7 @@ const AddressContract = {
     },
     async callFunction() {
       const validationStatus = await this.$refs.form.validate();
-      console.log(now() + " AddressContract - callFunction - validationStatus: " + JSON.stringify(validationStatus, null, 2));
+      console.log(now() + " AddressContract - methods.callFunction - validationStatus: " + JSON.stringify(validationStatus, null, 2));
       if (!validationStatus.valid) {
         this.error = "One or more fields failed the validation check";
       } else {
@@ -329,7 +345,7 @@ const AddressContract = {
       const contract = new ethers.Contract(this.address, addressInfo.abi, provider);
       try {
         const results = await contract[this.selectedFunction.name](...parameters);
-        console.log(now() + " AddressContract - callFunction - results: " + JSON.stringify(results));
+        console.log(now() + " AddressContract - methods.callFunction - results: " + JSON.stringify(results));
         const outputs = [];
         for (const [index, output] of this.selectedFunction.outputs.entries()) {
           // console.log(index + " => " + typeof output + " " + JSON.stringify(output));
@@ -345,14 +361,14 @@ const AddressContract = {
             outputs.push(value);
           }
         }
-        console.log(now() + " AddressContract - callFunction - outputs: " + JSON.stringify(outputs));
+        console.log(now() + " AddressContract - methods.callFunction - outputs: " + JSON.stringify(outputs));
         this.setOutputs(outputs);
       } catch (e) {
-        console.error(now() + " AddressContract - callFunction - ERROR: " + e.message);
+        console.error(now() + " AddressContract - methods.callFunction - ERROR: " + e.message);
       }
     },
     saveSettings() {
-      // console.log(now() + " AddressContract - saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
+      // console.log(now() + " AddressContract - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
       if (this.initialised) {
         localStorage.explorerAddressContractSettings = JSON.stringify(this.settings);
       }
