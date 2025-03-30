@@ -262,7 +262,8 @@ const AddressContract = {
       // return function(value) {
       //   return value && value.length <= max || `Max length exceeded (max ${max})`;
       // }
-      return null;
+      // return "Not handled";
+      return true;
     },
     getInput(index) {
       // console.log(now() + " AddressContract - methods.getInput - selectedFunctionInputs[" + index + "]: " + JSON.stringify(this.selectedFunctionInputs[index]));
@@ -366,11 +367,11 @@ const AddressContract = {
       // console.log(now() + " AddressContract - callFunction - addressInfo: " + JSON.stringify(addressInfo, null, 2));
       const parameters = [];
       for (const [index, input] of this.selectedFunctionInputs.entries()) {
-        console.log(index + " => " + JSON.stringify(input));
+        console.log(now() + " AddressContract - callFunction - input[" + index + "]: " + " => " + JSON.stringify(input));
         const value = this.getInput(index);
         parameters.push(value);
       }
-      // TODO
+      console.log(now() + " AddressContract - callFunction - parameters: " + JSON.stringify(parameters, null, 2));
       const contract = new ethers.Contract(this.address, addressInfo.abi, provider);
       try {
         const results = await contract[this.selectedFunction.name](...parameters);
