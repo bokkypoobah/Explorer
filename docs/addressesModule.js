@@ -19,7 +19,7 @@ const addressesModule = {
           } else if (results.type == "erc1155") {
             results.abi = JSON.stringify(ERC1155ABI);
           } else if (results.type == "safe") {
-            results.abi = JSON.stringify(SAFE_ABIS["safe_" + addressData.version]);
+            results.abi = JSON.stringify(SAFE_ABIS["safe_" + results.version]);
           }
         } else {
           results.defaultABIUsed = false;
