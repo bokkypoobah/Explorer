@@ -16,7 +16,7 @@ const AddressContract = {
               </v-tabs>
               </v-col>
               <v-col cols="10">
-                <v-select v-model="selectedMethodId" :items="functionList" label="Select a function">
+                <v-select v-model="selectedMethodId" :items="functionList" label="Function">
                 </v-select>
                 <v-card title="Inputs">
                   <v-card-text>
@@ -31,7 +31,7 @@ const AddressContract = {
                         <v-col cols="11">
                           <div v-if="item.arrayLength == null">
                             <!-- {{ item }} -->
-                            <v-text-field :model-value="getInput(inputIndex)" :rules="[getRuleFunction(item)]" @update:modelValue="setInput(inputIndex, $event)" :label="item.name || '(unnamed)'" :placeholder="item.type" :hint="item.type" density="compact"></v-text-field>
+                            <v-text-field :model-value="getInput(inputIndex)" :rules="[getRulesRulesRules(item), getRuleFunction(item)]" @update:modelValue="setInput(inputIndex, $event)" :label="item.name || '(unnamed)'" :placeholder="item.type" :hint="item.type" density="compact"></v-text-field>
                           </div>
                           <div v-else>
                             <v-row v-for="(arrayItem, arrayIndex) of getInput(inputIndex)" no-gutters dense>
@@ -39,7 +39,7 @@ const AddressContract = {
                                 {{ arrayIndex + 1}}
                               </v-col>
                               <v-col cols="9">
-                                <v-text-field :model-value="getInput(inputIndex)[arrayIndex]" :rules="[getRuleFunction(item.arrayChildren)]" @update:modelValue="setInputArrayElement(inputIndex, arrayIndex, $event)" :label="(item.name || '(unnamed)') + '[' + arrayIndex + ']'" :placeholder="item.arrayChildren.type" :hint="item.arrayChildren.type" density="compact"></v-text-field>
+                                <v-text-field :model-value="getInput(inputIndex)[arrayIndex]" :rules="[getRulesRulesRules(item.arrayChildren), getRuleFunction(item.arrayChildren)]" @update:modelValue="setInputArrayElement(inputIndex, arrayIndex, $event)" :label="(item.name || '(unnamed)') + '[' + arrayIndex + ']'" :placeholder="item.arrayChildren.type" :hint="item.arrayChildren.type" density="compact"></v-text-field>
                               </v-col>
                               <v-col cols="2">
                                 <v-btn v-if="item.arrayLength == -1" @click="removeInputArrayElement(inputIndex, arrayIndex);" text class="ms-2">Delete Row</v-btn>
@@ -185,6 +185,9 @@ const AddressContract = {
     // },
   },
   methods: {
+    getRulesRulesRules(inputParameter) {
+      return rulesRulesRules(inputParameter);
+    },
     getRuleFunction(inputParameter) {
       // bool: true or false
       // int/uint: 8 to 256 bits

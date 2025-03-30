@@ -161,6 +161,8 @@ const connectionModule = {
             const lastBlockNumber = store.getters['web3'].blockNumber;
             if (!lastBlockNumber || blockNumber > lastBlockNumber) {
               const block = await provider.getBlock("latest");
+              const feeData = await provider.getFeeData();
+              console.log(now() + " connectionModule - actions.connect.handleNewBlock - feeData: " + JSON.stringify(feeData));
               if (block.number > lastBlockNumber) {
                 store.dispatch('setWeb3BlockInfo', { blockNumber: block.number, timestamp: block.timestamp });
                 console.log(now() + " connectionModule - actions.connect.handleNewBlock - blockNumber: " + block.number);
