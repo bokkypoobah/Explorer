@@ -70,6 +70,7 @@ const addressesModule = {
           type: info.type || null,
           version: info.version || null,
           abi: info.abi || null,
+          sourceCode: info.sourceCode || null,
           name: info.name || null,
           ensName: info.ensName || null,
         };
@@ -83,6 +84,7 @@ const addressesModule = {
           type: null,
           version: null,
           abi: info.abi || null,
+          sourceCode: null,
           name: null,
           ensName: null,
         };
@@ -90,6 +92,22 @@ const addressesModule = {
         state.addresses[info.address].abi = info.abi;
       }
       console.log(now() + " addressesModule - mutations.updateABI - state.addresses: " + JSON.stringify(state.addresses));
+    },
+    updateSourceCode(state, info) {
+      console.log(now() + " addressesModule - mutations.updateSourceCode - info: " + JSON.stringify(info));
+      if (!(info.address in state.addresses)) {
+        state.addresses[info.address] = {
+          type: null,
+          version: null,
+          abi: null,
+          sourceCode: info.sourceCode || null,
+          name: null,
+          ensName: null,
+        };
+      } else {
+        state.addresses[info.address].sourceCode = info.sourceCode;
+      }
+      console.log(now() + " addressesModule - mutations.updateSourceCode - state.addresses: " + JSON.stringify(state.addresses));
     },
   },
   actions: {
@@ -127,8 +145,21 @@ const addressesModule = {
       if (validatedAddress) {
         context.commit('updateABI', info);
         const addresses = JSON.parse(JSON.stringify(context.state.addresses));
-        // const addresses = context.state.addresses;
         console.log(now() + " addressesModule - actions.updateABI - UPDATING addresses: " + JSON.stringify(addresses, null, 2));
+        await dbSaveCacheData(db, "addresses", addresses);
+      }
+      db.close();
+    },
+    async updateSourceCode(context, info) {
+      console.log(now() + " addressesModule - actions.updateSourceCode - info: " + JSON.stringify(info));
+      const dbInfo = store.getters["db"];
+      const db = new Dexie(dbInfo.name);
+      db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
+      const validatedAddress = validateAddress(info.address);
+      if (validatedAddress) {
+        context.commit('updateSourceCode', info);
+        const addresses = JSON.parse(JSON.stringify(context.state.addresses));
+        console.log(now() + " addressesModule - actions.updateSourceCode - UPDATING addresses: " + JSON.stringify(addresses, null, 2));
         await dbSaveCacheData(db, "addresses", addresses);
       }
       db.close();

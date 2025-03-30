@@ -155,18 +155,17 @@ const AddressContract = {
       const url = "https://api.etherscan.io/v2/api?chainid=" + chainId + "&module=contract&action=getsourcecode&address=" + (this.info.implementation ? this.info.implementation : this.info.address) + "&apikey=" + store.getters['config'].etherscanAPIKey;
       console.log(now() + " AddressContract - url: " + url);
       const data = await fetch(url).then(response => response.json());
-      console.log(now() + " AddressContract - data: " + JSON.stringify(data, null, 2));
-      const sourceCode = [];
+      // console.log(now() + " AddressContract - data: " + JSON.stringify(data, null, 2));
+      // const sourceCode = [];
       if (data && data.status == 1 && data.message == "OK") {
-        for (const [index, item] of data.result.entries()) {
-          console.log(index + " => " + JSON.stringify(item));
-          for (const [key, value] of Object.entries(item)) {
-            console.log(index + ". " + key + " => " + value);
-          }
-        }
-        // const abi = JSON.parse(data.result);
-        // console.log(now() + " AddressContract - abi: " + JSON.stringify(abi, null, 2).substring(0, 1000) + "...");
-        // store.dispatch('addresses/updateABI', { address: this.info.address, abi: JSON.stringify(abi) });
+        console.log(now() + " AddressContract - data.result: " + JSON.stringify(data.result, null, 2));
+        // for (const [index, item] of data.result.entries()) {
+        //   console.log(index + " => " + JSON.stringify(item));
+        //   for (const [key, value] of Object.entries(item)) {
+        //     console.log(index + ". " + key + " => " + value);
+        //   }
+        // }
+        store.dispatch('addresses/updateSourceCode', { address: this.info.address, sourceCode: data.result });
       }
     },
     saveSettings() {
