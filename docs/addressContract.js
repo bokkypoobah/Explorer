@@ -75,20 +75,21 @@ const AddressContract = {
                       </v-col>
                       <v-col cols="11">
                         <div v-if="item.arrayLength == null">
-                          <v-text-field :model-value="getOutput(outputIndex)" :label="item.name || '(unnamed)'" :placeholder="item.type" :hint="item.type" density="compact"></v-text-field>
+                          <v-text-field readonly :model-value="getOutput(outputIndex)" :label="item.name || '(unnamed)'" :placeholder="item.type" :hint="item.type" density="compact"></v-text-field>
                         </div>
                         <div v-else>
+                          <!-- {{ getOutput(outputIndex) }} -->
                           <v-row v-for="(arrayItem, arrayIndex) of getOutput(outputIndex)">
                             <v-col>
                               {{ arrayIndex + 1 }}
                             </v-col>
                             <v-col cols="11">
-                              <v-text-field :model-value="getOutput(outputIndex)[arrayIndex]" :label="(item.name || '(unnamed)') + '[' + arrayIndex + ']'" :placeholder="item.arrayChildren.type" :hint="item.arrayChildren.type" density="compact"></v-text-field>
-                              {{ arrayItem }}
+                              <v-text-field readonly :model-value="getOutput(outputIndex)[arrayIndex]" :label="(item.name || '(unnamed)') + '[' + arrayIndex + ']'" :placeholder="item.arrayChildren.type" :hint="item.arrayChildren.type" density="compact"></v-text-field>
+                              <!-- {{ arrayItem }} -->
                             </v-col>
                           </v-row>
                         </div>
-                        {{ item }}
+                        <!-- {{ item }} -->
                       </v-col>
                     </v-row>
                   </v-card-text>
