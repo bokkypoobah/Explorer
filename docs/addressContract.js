@@ -1,4 +1,4 @@
-const AddressABI = {
+const AddressContract = {
   template: `
     <div>
       <v-card>
@@ -13,6 +13,7 @@ const AddressABI = {
                 <v-tab prepend-icon="mdi-code-json" text="ABI" value="abi"></v-tab>
                 <v-tab prepend-icon="mdi-function" text="Functions" value="functions"></v-tab>
                 <v-tab prepend-icon="mdi-math-log" text="Events" value="events"></v-tab>
+                <v-tab prepend-icon="mdi-text-box" text="Source Code" value="sourcecode"></v-tab>
               </v-tabs>
               </v-col>
               <v-col cols="10">
@@ -30,6 +31,12 @@ const AddressABI = {
                 <v-tabs-window-item value="events">
                   <v-data-table :items="eventsList" :headers="eventsHeaders" @click:row="handleEventsClick" density="compact">
                   </v-data-table>
+                </v-tabs-window-item>
+                <v-tabs-window-item value="sourcecode">
+                  <v-textarea v-model="abi" :rules="jsonRules" label="Source Code" rows="10">
+                  </v-textarea>
+                  <v-btn @click="importSourceCodeFromEtherscan();" class="ms-2 mt-0 mb-2" text>Import Source Code From Etherscan
+                  </v-btn>
                 </v-tabs-window-item>
               </v-tabs-window>
               </v-col>
@@ -86,11 +93,11 @@ const AddressABI = {
         return addressInfo.abi;
       },
       set: function(abi) {
-        console.log(now() + " AddressABI - computed.abi.set - abi: " + abi);
+        console.log(now() + " AddressContract - computed.abi.set - abi: " + abi);
         clearTimeout(this._timerId);
         const t = this;
         this._timerId = setTimeout(() => {
-          console.log(now() + " AddressABI - computed.abi.set - DEBOUNCED abi: " + abi);
+          console.log(now() + " AddressContract - computed.abi.set - DEBOUNCED abi: " + abi);
           store.dispatch('addresses/updateABI', { address: t.address, abi });
         }, 1000)
       },
@@ -118,60 +125,80 @@ const AddressABI = {
   },
   methods: {
     handleFunctionsClick(event, row) {
-      console.log(now() + " AddressABI - handleFunctionsClick - event: " + JSON.stringify(event, null, 2) + ", row: " + JSON.stringify(row, null, 2));
+      console.log(now() + " AddressContract - handleFunctionsClick - event: " + JSON.stringify(event, null, 2) + ", row: " + JSON.stringify(row, null, 2));
     },
     handleEventsClick(event, row) {
-      console.log(now() + " AddressABI - handleEventsClick - event: " + JSON.stringify(event, null, 2) + ", row: " + JSON.stringify(row, null, 2));
+      console.log(now() + " AddressContract - handleEventsClick - event: " + JSON.stringify(event, null, 2) + ", row: " + JSON.stringify(row, null, 2));
     },
     async importABIFromEtherscan() {
-      console.log(now() + " AddressABI - methods.importABIFromEtherscan");
+      console.log(now() + " AddressContract - methods.importABIFromEtherscan");
       const chainId = store.getters["chainId"];
       // const db = new Dexie(this.dbInfo.name);
       // db.version(this.dbInfo.version).stores(this.dbInfo.schemaDefinition);
       const url = "https://api.etherscan.io/v2/api?chainid=" + chainId + "&module=contract&action=getabi&address=" + (this.info.implementation ? this.info.implementation : this.info.address) + "&apikey=" + store.getters['config'].etherscanAPIKey;
-      console.log(now() + " AddressABI - url: " + url);
+      console.log(now() + " AddressContract - url: " + url);
       const data = await fetch(url).then(response => response.json());
-      console.log(now() + " AddressABI - data: " + JSON.stringify(data, null, 2));
+      console.log(now() + " AddressContract - data: " + JSON.stringify(data, null, 2));
       if (data && data.status == 1 && data.message == "OK") {
         const abi = JSON.parse(data.result);
-        console.log(now() + " AddressABI - abi: " + JSON.stringify(abi, null, 2).substring(0, 1000) + "...");
+        console.log(now() + " AddressContract - abi: " + JSON.stringify(abi, null, 2).substring(0, 1000) + "...");
         store.dispatch('addresses/updateABI', { address: this.info.address, abi: JSON.stringify(abi) });
-      //   console.log(now() + " AddressABI - methods.importABIFromEtherscan - this.info: " + JSON.stringify(this.info).substring(0, 1000) + "...");
+      //   console.log(now() + " AddressContract - methods.importABIFromEtherscan - this.info: " + JSON.stringify(this.info).substring(0, 1000) + "...");
       //   // Vue.set(this.info, 'abi', abi);
       //   // await dbSaveCacheData(db, this.info.address + "_" + this.chainId + "_contract", this.info);
       }
       // db.close();
     },
+    async importSourceCodeFromEtherscan() {
+      console.log(now() + " AddressContract - methods.importSourceCodeFromEtherscan");
+      const chainId = store.getters["chainId"];
+      const url = "https://api.etherscan.io/v2/api?chainid=" + chainId + "&module=contract&action=getsourcecode&address=" + (this.info.implementation ? this.info.implementation : this.info.address) + "&apikey=" + store.getters['config'].etherscanAPIKey;
+      console.log(now() + " AddressContract - url: " + url);
+      const data = await fetch(url).then(response => response.json());
+      console.log(now() + " AddressContract - data: " + JSON.stringify(data, null, 2));
+      const sourceCode = [];
+      if (data && data.status == 1 && data.message == "OK") {
+        for (const [index, item] of data.result.entries()) {
+          console.log(index + " => " + JSON.stringify(item));
+          for (const [key, value] of Object.entries(item)) {
+            console.log(index + ". " + key + " => " + value);
+          }
+        }
+        // const abi = JSON.parse(data.result);
+        // console.log(now() + " AddressContract - abi: " + JSON.stringify(abi, null, 2).substring(0, 1000) + "...");
+        // store.dispatch('addresses/updateABI', { address: this.info.address, abi: JSON.stringify(abi) });
+      }
+    },
     saveSettings() {
-      // console.log(now() + " AddressABI - saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
+      // console.log(now() + " AddressContract - saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
       if (this.initialised) {
-        localStorage.explorerAddressABISettings = JSON.stringify(this.settings);
+        localStorage.explorerAddressContractSettings = JSON.stringify(this.settings);
       }
     },
   },
   beforeCreate() {
-    console.log(now() + " AddressABI - beforeCreate");
+    console.log(now() + " AddressContract - beforeCreate");
 	},
   mounted() {
-    console.log(now() + " AddressABI - mounted");
-    if ('explorerAddressABISettings' in localStorage) {
-      const tempSettings = JSON.parse(localStorage.explorerAddressABISettings);
-      console.log(now() + " AddressABI - mounted - tempSettings: " + JSON.stringify(tempSettings));
+    console.log(now() + " AddressContract - mounted");
+    if ('explorerAddressContractSettings' in localStorage) {
+      const tempSettings = JSON.parse(localStorage.explorerAddressContractSettings);
+      console.log(now() + " AddressContract - mounted - tempSettings: " + JSON.stringify(tempSettings));
       if ('version' in tempSettings && tempSettings.version == this.settings.version) {
         this.settings = tempSettings;
       }
     }
     this.initialised = true;
-    console.log(now() + " AddressABI - mounted - this.settings: " + JSON.stringify(this.settings));
+    console.log(now() + " AddressContract - mounted - this.settings: " + JSON.stringify(this.settings));
     const t = this;
     setTimeout(function() {
       store.dispatch('address/loadAddress', t.inputAddress);
     }, 1000);
 	},
   unmounted() {
-    console.log(now() + " AddressABI - unmounted");
+    console.log(now() + " AddressContract - unmounted");
 	},
   destroyed() {
-    console.log(now() + " AddressABI - destroyed");
+    console.log(now() + " AddressContract - destroyed");
 	},
 };

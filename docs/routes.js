@@ -18,9 +18,9 @@ const routes = [
     props: true,
   },
   {
-    path: '/address/:inputAddress?/abi',
-    name: "AddressABI",
-    component: AddressABI,
+    path: '/address/:inputAddress?/contract',
+    name: "AddressContract",
+    component: AddressContract,
     props: true,
   },
   {
