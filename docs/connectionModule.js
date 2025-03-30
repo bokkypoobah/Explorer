@@ -33,7 +33,7 @@ const Connection = {
           </v-tooltip>
         </span>
         <span v-if="info.gasPrice" class="ml-1">
-          <v-tooltip :text="'gasPrice ' + formatGas(info.gasPrice) + ', maxFeePerGas ' + formatGas(info.maxFeePerGas) + ', maxPriorityFeePerGas ' + formatGas(info.maxPriorityFeePerGas) + ', lastBaseFeePerGas ' + formatGas(info.lastBaseFeePerGas) + ' gwei'">
+          <v-tooltip :text="'gasPrice ' + formatGas(info.gasPrice) + ', lastBaseFeePerGas ' + formatGas(info.lastBaseFeePerGas) + ', maxPriorityFeePerGas ' + formatGas(info.maxPriorityFeePerGas) + ', maxFeePerGas ' + formatGas(info.maxFeePerGas) + ' gwei'">
             <template v-slot:activator="{ props }">
               <span v-bind="props">{{ formatGas(info.gasPrice) + 'g'}}</span>
             </template>
