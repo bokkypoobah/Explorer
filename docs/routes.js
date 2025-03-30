@@ -24,6 +24,12 @@ const routes = [
     props: true,
   },
   {
+    path: '/address/:inputAddress?/sourcecode',
+    name: "AddressSourceCode",
+    component: AddressSourceCode,
+    props: true,
+  },
+  {
     path: '/address/:inputAddress?/contract',
     name: "AddressContract",
     component: AddressContract,
