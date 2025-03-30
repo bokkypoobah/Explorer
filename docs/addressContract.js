@@ -140,21 +140,15 @@ const AddressContract = {
     async importABIFromEtherscan() {
       console.log(now() + " AddressContract - methods.importABIFromEtherscan");
       const chainId = store.getters["chainId"];
-      // const db = new Dexie(this.dbInfo.name);
-      // db.version(this.dbInfo.version).stores(this.dbInfo.schemaDefinition);
       const url = "https://api.etherscan.io/v2/api?chainid=" + chainId + "&module=contract&action=getabi&address=" + (this.info.implementation ? this.info.implementation : this.info.address) + "&apikey=" + store.getters['config'].etherscanAPIKey;
       console.log(now() + " AddressContract - url: " + url);
       const data = await fetch(url).then(response => response.json());
-      console.log(now() + " AddressContract - data: " + JSON.stringify(data, null, 2));
+      // console.log(now() + " AddressContract - data: " + JSON.stringify(data, null, 2));
       if (data && data.status == 1 && data.message == "OK") {
         const abi = JSON.parse(data.result);
         console.log(now() + " AddressContract - abi: " + JSON.stringify(abi, null, 2).substring(0, 1000) + "...");
         store.dispatch('addresses/updateABI', { address: this.info.address, abi: JSON.stringify(abi) });
-      //   console.log(now() + " AddressContract - methods.importABIFromEtherscan - this.info: " + JSON.stringify(this.info).substring(0, 1000) + "...");
-      //   // Vue.set(this.info, 'abi', abi);
-      //   // await dbSaveCacheData(db, this.info.address + "_" + this.chainId + "_contract", this.info);
       }
-      // db.close();
     },
     async importSourceCodeFromEtherscan() {
       console.log(now() + " AddressContract - methods.importSourceCodeFromEtherscan");

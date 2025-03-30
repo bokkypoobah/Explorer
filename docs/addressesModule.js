@@ -34,7 +34,15 @@ const addressesModule = {
       if (address in state.addresses) {
         const data = state.addresses[address].sourceCode || null;
         if (data && data.SourceCode && data.SourceCode.substring(0, 2) == "{{" && data.SourceCode.slice(-2) == "}}") {
-          console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - ETHERSCAN MULTIPART data: " + JSON.stringify(data));
+          // console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - ETHERSCAN MULTIPART data: " + JSON.stringify(data));
+          const jsonString = data.SourceCode.substring(1, data.SourceCode.length - 1);
+          // console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - ETHERSCAN MULTIPART jsonString: " + JSON.stringify(jsonString));
+          const json = JSON.parse(jsonString);
+          console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - ETHERSCAN MULTIPART json: " + JSON.stringify(json, null, 2));
+          for (const [source, sourceData] of Object.entries(json.sources || {})) {
+            console.log(source + " => " + JSON.stringify(sourceData, null, 2));
+            results.push({ name: source, sourceCode: sourceData.content });
+          }
         } else if (data && data.SourceCode && typeof data.SourceCode == "string") {
           console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - ETHERSCAN SINGLE data: " + JSON.stringify(data));
           // const info = { ...data, SourceCode: undefined, ABI: undefined };
