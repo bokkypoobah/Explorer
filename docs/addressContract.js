@@ -33,6 +33,7 @@ const AddressContract = {
                   </v-data-table>
                 </v-tabs-window-item>
                 <v-tabs-window-item value="sourcecode">
+                  {{ sourceCode() }}
                   <v-textarea v-model="abi" :rules="jsonRules" label="Source Code" rows="10">
                   </v-textarea>
                   <v-btn @click="importSourceCodeFromEtherscan();" class="ms-2 mt-0 mb-2" text>Import Source Code From Etherscan
@@ -124,6 +125,12 @@ const AddressContract = {
     },
   },
   methods: {
+    sourceCode() {
+      console.log(now() + " AddressContract - sourceCode");
+      const results = store.getters["addresses/getSourceCode"](this.address);
+      // console.log(now() + " AddressContract - sourceCode - results: " + JSON.stringify(results));
+      return results;
+    },
     handleFunctionsClick(event, row) {
       console.log(now() + " AddressContract - handleFunctionsClick - event: " + JSON.stringify(event, null, 2) + ", row: " + JSON.stringify(row, null, 2));
     },

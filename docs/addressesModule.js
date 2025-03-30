@@ -6,7 +6,7 @@ const addressesModule = {
   getters: {
     addresses: state => state.addresses,
     getAddressInfo: (state) => (address) => {
-      // console.log(now() + " addressModule - getters.getAddressInfo(" + address + ")");
+      // console.log(now() + " addressesModule - getters.getAddressInfo(" + address + ")");
       let results = {};
       if (address in state.addresses) {
         results = state.addresses[address];
@@ -24,39 +24,51 @@ const addressesModule = {
         } else {
           results.defaultABIUsed = false;
         }
-        // console.log(now() + " addressModule - getters.getAddressInfo(" + address + ") - data: " + JSON.stringify(results));
+        // console.log(now() + " addressesModule - getters.getAddressInfo(" + address + ") - results: " + JSON.stringify(results));
       }
       return results;
     },
-    // TODO: Unused
-    addresssesWithDefaultABIs(state) {
-      const results = {};
-      console.log(now() + " addressModule - getters.addresssesWithDefaultABIs");
-      for (const [address, addressData] of Object.entries(state.addresses)) {
-        console.log(address + " => " + JSON.stringify(addressData));
-        let abi = addressData.abi;
-        if (!abi) {
-          if (addressData.type == "erc20") {
-            abi = JSON.stringify(ERC20ABI);
-          } else if (addressData.type == "erc721") {
-            abi = JSON.stringify(ERC721ABI);
-          } else if (addressData.type == "erc1155") {
-            abi = JSON.stringify(ERC1155ABI);
-          } else if (addressData.type == "safe") {
-            abi = JSON.stringify(SAFE_ABIS["safe_" + addressData.version]);
-          }
+    getSourceCode: (state) => (address) => {
+      console.log(now() + " addressesModule - getters.getSourceCode(" + address + ")");
+      let results = [];
+      if (address in state.addresses) {
+        const data = state.addresses[address].sourceCode || [];
+        for (const item of (state.addresses[address].sourceCode || [])) {
+          console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - item: " + JSON.stringify(item));
+          results.push(JSON.stringify(item));
         }
-        results[address] = {
-          type: addressData.type,
-          version: addressData.version,
-          name: addressData.name,
-          ensName: addressData.ensName,
-          abi,
-        };
       }
-      console.log(now() + " addressModule - getters.addresssesWithDefaultABIs - results: " + JSON.stringify(results, null, 2));
       return results;
     },
+    // // TODO: Unused
+    // addresssesWithDefaultABIs(state) {
+    //   const results = {};
+    //   console.log(now() + " addressesModule - getters.addresssesWithDefaultABIs");
+    //   for (const [address, addressData] of Object.entries(state.addresses)) {
+    //     console.log(address + " => " + JSON.stringify(addressData));
+    //     let abi = addressData.abi;
+    //     if (!abi) {
+    //       if (addressData.type == "erc20") {
+    //         abi = JSON.stringify(ERC20ABI);
+    //       } else if (addressData.type == "erc721") {
+    //         abi = JSON.stringify(ERC721ABI);
+    //       } else if (addressData.type == "erc1155") {
+    //         abi = JSON.stringify(ERC1155ABI);
+    //       } else if (addressData.type == "safe") {
+    //         abi = JSON.stringify(SAFE_ABIS["safe_" + addressData.version]);
+    //       }
+    //     }
+    //     results[address] = {
+    //       type: addressData.type,
+    //       version: addressData.version,
+    //       name: addressData.name,
+    //       ensName: addressData.ensName,
+    //       abi,
+    //     };
+    //   }
+    //   console.log(now() + " addressesModule - getters.addresssesWithDefaultABIs - results: " + JSON.stringify(results, null, 2));
+    //   return results;
+    // },
   },
   mutations: {
     setAddresses(state, addresses) {
