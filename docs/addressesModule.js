@@ -45,7 +45,7 @@ const addressesModule = {
                 const jsonString = value.substring(1, value.length - 1);
                 // console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - SOURCE CODE - jsonString: " + jsonString);
                 const json = JSON.parse(jsonString);
-                console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - SOURCE CODE - json: " + JSON.stringify(json));
+                console.log(now() + " addressesModule - getters.getSourceCode(" + address + ") - SOURCE CODE - json: " + JSON.stringify(json, null, 2));
               }
             } else {
               metadata.push({ key, value });
