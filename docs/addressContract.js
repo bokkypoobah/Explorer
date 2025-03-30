@@ -30,7 +30,7 @@ const AddressContract = {
                         </v-col>
                         <v-col cols="11">
                           <div v-if="item.arrayLength == null">
-                            {{ item }}
+                            <!-- {{ item }} -->
                             <v-text-field :model-value="getInput(inputIndex)" :rules="[getRuleFunction(item)]" @update:modelValue="setInput(inputIndex, $event)" :label="item.name || '(unnamed)'" :placeholder="item.type" :hint="item.type" density="compact"></v-text-field>
                           </div>
                           <div v-else>
@@ -39,8 +39,7 @@ const AddressContract = {
                                 {{ arrayIndex + 1}}
                               </v-col>
                               <v-col cols="9">
-                                <v-text-field :model-value="getInput(inputIndex)[arrayIndex]" @update:modelValue="setInputArrayElement(inputIndex, arrayIndex, $event)" :label="(item.name || '(unnamed)') + '[' + arrayIndex + ']'" :placeholder="item.arrayChildren.type" :hint="item.arrayChildren.type" density="compact"></v-text-field>
-                                <!-- {{ arrayItem }} -->
+                                <v-text-field :model-value="getInput(inputIndex)[arrayIndex]" :rules="[getRuleFunction(item.arrayChildren)]" @update:modelValue="setInputArrayElement(inputIndex, arrayIndex, $event)" :label="(item.name || '(unnamed)') + '[' + arrayIndex + ']'" :placeholder="item.arrayChildren.type" :hint="item.arrayChildren.type" density="compact"></v-text-field>
                               </v-col>
                               <v-col cols="2">
                                 <v-btn v-if="item.arrayLength == -1" @click="removeInputArrayElement(inputIndex, arrayIndex);" text class="ms-2">Delete Row</v-btn>
