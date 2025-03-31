@@ -198,6 +198,9 @@ const app = Vue.createApp({
     coinbase() {
       return store.getters['web3'].coinbase;
     },
+    explorer() {
+      return store.getters['explorer'];
+    },
     router() {
       return this.$router && this.$router.currentRoute; // && ("(" + JSON.stringify(this.$router.currentRoute) + ")") || null;
     },
@@ -262,6 +265,9 @@ const app = Vue.createApp({
           store.dispatch('address/loadAddress', searchString);
         }
       }
+    },
+    copyToClipboard(str) {
+      navigator.clipboard.writeText(str);
     },
   //   testClick() {
   //     console.log('this is a test click from component', this.$store.state.test);
