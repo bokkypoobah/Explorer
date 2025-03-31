@@ -10,21 +10,21 @@ const AddressContract = {
             <v-row>
               <v-col cols="2">
                 <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" color="primary" direction="vertical">
-                  <v-tab prepend-icon="mdi-code-json" text="ABI" value="abi"></v-tab>
-                  <v-tab prepend-icon="mdi-function" text="Functions" value="functions"></v-tab>
-                  <v-tab prepend-icon="mdi-math-log" text="Events" value="events"></v-tab>
-                  <v-tab prepend-icon="mdi-text-box" text="Source Code" value="sourcecode"></v-tab>
+                  <v-tab prepend-icon="mdi-code-json" text="ABI" value="abi" style="text-transform: none !important;"></v-tab>
+                  <v-tab prepend-icon="mdi-function" text="Functions" value="functions" style="text-transform: none !important;"></v-tab>
+                  <v-tab prepend-icon="mdi-math-log" text="Events" value="events" style="text-transform: none !important;"></v-tab>
+                  <v-tab prepend-icon="mdi-text-box" text="Source Code" value="sourcecode" style="text-transform: none !important;"></v-tab>
                 </v-tabs>
               </v-col>
               <v-col cols="10">
-                <div v-if="info && info.type == 'safe'">
-                  NOTE: The source code below is from the Safe v{{ info.version }} implementation at {{ info.implementation }}, used by this Gnosis Safe wallet at {{ info.address }}.
+                <div v-if="info && info.type == 'safe'" class="mb-3">
+                  NOTE: The ABI and source code below is from the Safe v{{ info.version }} implementation at {{ info.implementation }}, used by this Gnosis Safe wallet at {{ info.address }}.
                 </div>
                 <v-tabs-window v-model="settings.tab">
                   <v-tabs-window-item value="abi">
                     <v-textarea v-model="abi" :rules="jsonRules" label="ABI" rows="10">
                     </v-textarea>
-                    <v-btn @click="importABIFromEtherscan();" class="ms-2 mt-0 mb-2" text>Import ABI From Etherscan
+                    <v-btn @click="importABIFromEtherscan();" class="ms-2 mt-0 mb-2" style="text-transform: none !important;" text>Import ABI From Etherscan
                     </v-btn>
                   </v-tabs-window-item>
                   <v-tabs-window-item value="functions">
@@ -41,8 +41,8 @@ const AddressContract = {
                       <v-textarea v-model="item.sourceCode" :label="item.name" rows="10">
                       </v-textarea>
                     </div>
-                    <v-btn @click="importSourceCodeFromEtherscan();" class="ms-2 mt-0 mb-2" text>Import Source Code From Etherscan</v-btn>
-                    <v-btn @click="importSourceCodeFromSourcify();" class="ms-2 mt-0 mb-2" text>Import Source Code From Sourcify</v-btn>
+                    <v-btn @click="importSourceCodeFromEtherscan();" class="ms-2 mt-0 mb-2" style="text-transform: none !important;" text>Import Source Code From Etherscan</v-btn>
+                    <v-btn @click="importSourceCodeFromSourcify();" class="ms-2 mt-0 mb-2" style="text-transform: none !important;" text>Import Source Code From Sourcify</v-btn>
                   </v-tabs-window-item>
                 </v-tabs-window>
               </v-col>

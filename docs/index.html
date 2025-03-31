@@ -114,13 +114,12 @@
 
               <v-spacer></v-spacer>
               <v-tabs right color="deep-purple-accent-4">
-                <v-tab :to="'/address/' + addressPathInputAddress">Summary</v-tab>
-                <v-tab :to="'/address/' + addressPathInputAddress + '/contract'">Contract</v-tab>
-                <!-- <v-tab :to="'/address/' + addressPathInputAddress + '/sourcecode'">Source Code</v-tab> -->
-                <v-tab :to="'/address/' + addressPathInputAddress + '/functions'">Functions</v-tab>
-                <v-tab :to="'/address/' + addressPathInputAddress + '/tokens'">Tokens</v-tab>
-                <v-tab :to="'/address/' + addressPathInputAddress + '/transactions'">Transactions</v-tab>
-                <v-tab :to="'/address/' + addressPathInputAddress + '/events'">Events</v-tab>
+                <v-tab :to="'/address/' + addressPathInputAddress" style="text-transform: none !important;">Summary</v-tab>
+                <v-tab :to="'/address/' + addressPathInputAddress + '/contract'" style="text-transform: none !important;">Contract</v-tab>
+                <v-tab :to="'/address/' + addressPathInputAddress + '/functions'" style="text-transform: none !important;">Functions</v-tab>
+                <v-tab :to="'/address/' + addressPathInputAddress + '/tokens'" style="text-transform: none !important;">Tokens</v-tab>
+                <v-tab :to="'/address/' + addressPathInputAddress + '/transactions'" style="text-transform: none !important;">Transactions</v-tab>
+                <v-tab :to="'/address/' + addressPathInputAddress + '/events'" style="text-transform: none !important;">Events</v-tab>
               </v-tabs>
             </v-toolbar>
             <router-view v-slot="{ Component }">
