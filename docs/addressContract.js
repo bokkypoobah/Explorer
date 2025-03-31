@@ -10,10 +10,10 @@ const AddressContract = {
             <v-row>
               <v-col cols="2">
                 <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" color="primary" direction="vertical">
-                  <v-tab prepend-icon="mdi-code-json" text="ABI" value="abi" style="text-transform: none !important;"></v-tab>
-                  <v-tab prepend-icon="mdi-function" text="Functions" value="functions" style="text-transform: none !important;"></v-tab>
-                  <v-tab prepend-icon="mdi-math-log" text="Events" value="events" style="text-transform: none !important;"></v-tab>
-                  <v-tab prepend-icon="mdi-text-box" text="Source Code" value="sourcecode" style="text-transform: none !important;"></v-tab>
+                  <v-tab prepend-icon="mdi-code-json" text="ABI" value="abi" class="lowercase-btn"></v-tab>
+                  <v-tab prepend-icon="mdi-function" text="Functions" value="functions" class="lowercase-btn"></v-tab>
+                  <v-tab prepend-icon="mdi-math-log" text="Events" value="events" class="lowercase-btn"></v-tab>
+                  <v-tab prepend-icon="mdi-text-box" text="Source Code" value="sourcecode" class="lowercase-btn"></v-tab>
                 </v-tabs>
               </v-col>
               <v-col cols="10">

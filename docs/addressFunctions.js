@@ -11,8 +11,8 @@ const AddressFunctions = {
             <v-row>
               <v-col cols="2">
                 <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" color="primary" direction="vertical">
-                  <v-tab prepend-icon="mdi-function" text="Call" value="call" style="text-transform: none !important;"></v-tab>
-                  <v-tab prepend-icon="mdi-send" text="Execute" value="execute" style="text-transform: none !important;"></v-tab>
+                  <v-tab prepend-icon="mdi-function" text="Call" value="call" class="lowercase-btn"></v-tab>
+                  <v-tab prepend-icon="mdi-send" text="Execute" value="execute" class="lowercase-btn"></v-tab>
                 </v-tabs>
               </v-col>
               <v-col cols="10">
@@ -65,8 +65,8 @@ const AddressFunctions = {
                     </v-form>
                   </v-card-text>
                 </v-card>
-                <v-btn v-if="settings.tab == 'call'" @click="callFunction();" class="ms-2 mt-2 mb-2" style="text-transform: none !important;" text>Call</v-btn>
-                <v-btn v-if="settings.tab == 'execute'" disabled @click="callFunction();" class="ms-2 mt-2 mb-2" style="text-transform: none !important;" text>Execute</v-btn>
+                <v-btn v-if="settings.tab == 'call'" @click="callFunction();" class="ms-2 mt-2 mb-2" class="lowercase-btn" text>Call</v-btn>
+                <v-btn v-if="settings.tab == 'execute'" disabled @click="callFunction();" class="ms-2 mt-2 mb-2" class="lowercase-btn" text>Execute</v-btn>
                 <p v-if="error" class="text-error ms-2">{{ error }}</p>
                 <v-card title="Outputs" class="mt-1">
                   <v-card-text>

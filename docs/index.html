@@ -19,6 +19,8 @@
     <link type="text/css" rel="stylesheet" href="css/materialdesignicons_7.4.47.css" />
     <link type="font/woff2" href="new_docs/css/materialdesignicons-webfont.woff2" />
 
+    <link type="text/css" rel="stylesheet" href="css/app.css" />
+
     <script src="js/dexie_3.0.3.js"></script>
     <script src="js/ethers_5.8.0.umd.js"></script>
     <script src="js/moment_2.24.0.js"></script>
@@ -114,12 +116,12 @@
 
               <v-spacer></v-spacer>
               <v-tabs right color="deep-purple-accent-4">
-                <v-tab :to="'/address/' + addressPathInputAddress" style="text-transform: none !important;">Summary</v-tab>
-                <v-tab :to="'/address/' + addressPathInputAddress + '/contract'" style="text-transform: none !important;">Contract</v-tab>
-                <v-tab :to="'/address/' + addressPathInputAddress + '/functions'" style="text-transform: none !important;">Functions</v-tab>
-                <v-tab :to="'/address/' + addressPathInputAddress + '/tokens'" style="text-transform: none !important;">Tokens</v-tab>
-                <v-tab :to="'/address/' + addressPathInputAddress + '/transactions'" style="text-transform: none !important;">Transactions</v-tab>
-                <v-tab :to="'/address/' + addressPathInputAddress + '/events'" style="text-transform: none !important;">Events</v-tab>
+                <v-tab :to="'/address/' + addressPathInputAddress" class="lowercase-btn">Summary</v-tab>
+                <v-tab :to="'/address/' + addressPathInputAddress + '/contract'" class="lowercase-btn">Contract</v-tab>
+                <v-tab :to="'/address/' + addressPathInputAddress + '/functions'" class="lowercase-btn">Functions</v-tab>
+                <v-tab :to="'/address/' + addressPathInputAddress + '/tokens'" class="lowercase-btn">Tokens</v-tab>
+                <v-tab :to="'/address/' + addressPathInputAddress + '/transactions'" class="lowercase-btn">Transactions</v-tab>
+                <v-tab :to="'/address/' + addressPathInputAddress + '/events'" class="lowercase-btn">Events</v-tab>
               </v-tabs>
             </v-toolbar>
             <router-view v-slot="{ Component }">
