@@ -29,7 +29,7 @@ const AddressTokens = {
     console.log(now() + " AddressTokens - mounted");
     const t = this;
     setTimeout(function() {
-      store.dispatch('address/loadAddress', t.inputAddress);
+      store.dispatch('address/loadAddress', { inputAddress: t.inputAddress, forceUpdate: false });
     }, 1000);
 	},
   unmounted() {

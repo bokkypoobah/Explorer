@@ -65,8 +65,8 @@ const AddressFunctions = {
                     </v-form>
                   </v-card-text>
                 </v-card>
-                <v-btn v-if="settings.tab == 'call'" @click="callFunction();" class="ms-2 mt-2 mb-2" class="lowercase-btn" text>Call</v-btn>
-                <v-btn v-if="settings.tab == 'execute'" disabled @click="callFunction();" class="ms-2 mt-2 mb-2" class="lowercase-btn" text>Execute</v-btn>
+                <v-btn v-if="settings.tab == 'call'" @click="callFunction();" class="ms-2 mt-2 mb-2 lowercase-btn" text>Call</v-btn>
+                <v-btn v-if="settings.tab == 'execute'" disabled @click="callFunction();" class="ms-2 mt-2 mb-2 lowercase-btn" text>Execute</v-btn>
                 <p v-if="error" class="text-error ms-2">{{ error }}</p>
                 <v-card title="Outputs" class="mt-1">
                   <v-card-text>
@@ -426,7 +426,7 @@ const AddressFunctions = {
     this.initialised = true;
     const t = this;
     setTimeout(function() {
-      store.dispatch('address/loadAddress', t.inputAddress);
+      store.dispatch('address/loadAddress', { inputAddress: t.inputAddress, forceUpdate: false });
     }, 1000);
 	},
   unmounted() {

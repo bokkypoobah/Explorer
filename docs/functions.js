@@ -33,8 +33,8 @@ async function getAddressInfo(inputAddress, provider) {
     try {
       results.code = await provider.getCode(results.address);
       results.type = !results.code || results.code == "0x" ? "eoa" : "contract"
-      results.abi = null;
-      results.sourceCode = null;
+      // results.abi = null;
+      // results.sourceCode = null;
       // console.log(now() + " functions.js:getAddressInfo - results.code: " + results.code);
     } catch (e) {
       console.error(now() + " functions.js:getAddressInfo - provider.getCode: " + e.message);

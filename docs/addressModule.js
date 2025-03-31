@@ -79,8 +79,8 @@ const addressModule = {
     },
   },
   actions: {
-    async loadAddress(context, inputAddress) {
-      console.log(now() + " addressModule - actions.loadAddress - inputAddress: " + inputAddress);
+    async loadAddress(context, { inputAddress, forceUpdate }) {
+      console.log(now() + " addressModule - actions.loadAddress - inputAddress: " + inputAddress + ", forceUpdate: " + forceUpdate);
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const chainId = store.getters["chainId"];
       const dbInfo = store.getters["db"];
@@ -88,7 +88,6 @@ const addressModule = {
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
 
-      const forceUpdate = false; // TODO
       const validatedAddress = validateAddress(inputAddress);
       let info = {};
       if (validatedAddress) {

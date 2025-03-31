@@ -262,9 +262,15 @@ const app = Vue.createApp({
         } else if (addressRegex.test(searchString)) {
           console.log(now() + " index.js - methods.search - ADDRESS searchString: " + JSON.stringify(searchString));
           this.$router.push({ name: 'Address', params: { inputAddress: searchString } });
-          store.dispatch('address/loadAddress', searchString);
+          store.dispatch('address/loadAddress', { inputAddress: searchString, forceUpdate: false });
         }
       }
+    },
+    syncAddress() {
+      console.log(now() + " index.js - methods.syncAddress");
+      const address = store.getters["address/address"];
+      console.log(now() + " index.js - methods.syncAddress - address: " + address);
+      store.dispatch('address/loadAddress', { inputAddress: address, forceUpdate: true });
     },
     copyToClipboard(str) {
       navigator.clipboard.writeText(str);

@@ -109,10 +109,13 @@
                     <v-list-item-title>Copy address to clipboard</v-list-item-title>
                   </v-list-item>
                   <v-list-item :href="explorer + 'address/' + addressPathInputAddress" target="_blank">
-                    <v-list-item-title>View in Etherscan</v-list-item-title>
+                    <v-list-item-title>View in explorer</v-list-item-title>
                   </v-list-item>
                   <v-list-item :href="'https://opensea.io/' + addressPathInputAddress" target="_blank">
-                    <v-list-item-title>View in OpenSea</v-list-item-title>
+                    <v-list-item-title>View in opensea.io</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item :href="'https://app.ens.domains/' + addressPathInputAddress" target="_blank">
+                    <v-list-item-title>View in app.ens.domains</v-list-item-title>
                   </v-list-item>
                   <!-- TODO: If Safe contract, View in Safe app -->
                   <!-- <v-list-item v-for="(item, index) in items" :key="index" @click="selectItem(item)">
@@ -120,6 +123,10 @@
                   </v-list-item> -->
                 </v-list>
               </v-menu>
+              <v-spacer></v-spacer>
+              <v-btn @click="syncAddress();" color="primary" icon>
+                <v-icon>mdi-sync</v-icon>
+              </v-btn>
               <v-spacer></v-spacer>
               <v-tabs right color="deep-purple-accent-4">
                 <v-tab :to="'/address/' + addressPathInputAddress" class="lowercase-btn">Summary</v-tab>

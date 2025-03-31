@@ -62,7 +62,7 @@ const Address = {
     console.log(now() + " Address - mounted - inputAddress: " + this.inputAddress);
     const t = this;
     setTimeout(function() {
-      store.dispatch('address/loadAddress', t.inputAddress);
+      store.dispatch('address/loadAddress', { inputAddress: t.inputAddress, forceUpdate: false });
     }, 1000);
 	},
   unmounted() {
