@@ -140,6 +140,7 @@ const store = new Vuex.Store({
     transaction: transactionModule,
     address: addressModule,
     addresses: addressesModule,
+    name: nameModule,
   },
   plugins: [
     function persistSettings(store) {
@@ -236,33 +237,39 @@ const app = Vue.createApp({
     disconnect(connected) {
       store.dispatch('connection/disconnect');
     },
-    searchDebounced() {
-      console.log(now() + " index.js - methods.searchDebounced - this.searchString: " + JSON.stringify(this.searchString));
+    search() {
+      console.log(now() + " index.js - methods.search - this.searchString: " + JSON.stringify(this.searchString));
       clearTimeout(this._timerId)
       this._timerId = setTimeout(() => {
-        this.search()
+        this.searchDebounced()
       }, 500)
     },
-    search() {
+    searchDebounced() {
       const blockRegex = /^\d+$/;
       const txRegex = /^0x[a-fA-F0-9]{64}$/;
       const addressRegex = /^0x[a-fA-F0-9]{40}$/;
-      console.log(now() + " index.js - methods.search - this.searchString: " + JSON.stringify(this.searchString));
+      // const ensNameRegex = /^([a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*)(\.eth)?$/;
+      console.log(now() + " index.js - methods.searchDebounced - this.searchString: " + JSON.stringify(this.searchString));
       if (this.searchString) {
         const searchString = this.searchString.value || this.searchString;
-        console.log(now() + " index.js - methods.search - searchString: " + JSON.stringify(searchString));
+        console.log(now() + " index.js - methods.searchDebounced - searchString: " + JSON.stringify(searchString));
         if (blockRegex.test(searchString)) {
-          console.log(now() + " index.js - methods.search - BLOCK searchString: " + JSON.stringify(searchString));
+          console.log(now() + " index.js - methods.searchDebounced - BLOCK searchString: " + JSON.stringify(searchString));
           this.$router.push({ name: 'Block', params: { inputBlockNumber: searchString } });
           store.dispatch('block/loadBlock', searchString);
         } else if (txRegex.test(searchString)) {
-          console.log(now() + " index.js - methods.search - TX searchString: " + JSON.stringify(searchString));
+          console.log(now() + " index.js - methods.searchDebounced - TX searchString: " + JSON.stringify(searchString));
           this.$router.push({ name: 'Transaction', params: { inputTxHash: searchString } });
           store.dispatch('transaction/loadTransaction', searchString);
         } else if (addressRegex.test(searchString)) {
-          console.log(now() + " index.js - methods.search - ADDRESS searchString: " + JSON.stringify(searchString));
+          console.log(now() + " index.js - methods.searchDebounced - ADDRESS searchString: " + JSON.stringify(searchString));
           this.$router.push({ name: 'Address', params: { inputAddress: searchString } });
           store.dispatch('address/loadAddress', { inputAddress: searchString, forceUpdate: false });
+        } else {
+          console.log(now() + " index.js - methods.searchDebounced - NAME searchString: " + JSON.stringify(searchString));
+          const inputName = /\.eth$/.test(searchString) ? searchString : (searchString + ".eth");
+          this.$router.push({ name: 'Name', params: { inputName } });
+          store.dispatch('name/loadName', { inputName, forceUpdate: false });
         }
       }
     },

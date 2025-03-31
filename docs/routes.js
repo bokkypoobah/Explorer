@@ -48,6 +48,12 @@ const routes = [
     props: true,
   },
   {
+    path: '/name/:inputName?',
+    name: "Name",
+    component: Name,
+    props: true,
+  },
+  {
     path: '/config',
     name: "Config",
     component: Config,
