@@ -110,18 +110,33 @@
                 </template>
                 <v-list>
                   <v-list-item @click="copyToClipboard(addressPathInputAddress);">
+                    <template v-slot:prepend>
+                      <v-icon>mdi-content-copy</v-icon>
+                    </template>
                     <v-list-item-title>Copy address to clipboard</v-list-item-title>
                   </v-list-item>
                   <v-list-item :href="explorer + 'address/' + addressPathInputAddress" target="_blank">
+                    <template v-slot:prepend>
+                      <v-icon>mdi-link</v-icon>
+                    </template>
                     <v-list-item-title>View in explorer</v-list-item-title>
                   </v-list-item>
                   <v-list-item :href="'https://remix.ethereum.org/address/' + addressPathInputAddress" target="_blank">
+                    <template v-slot:prepend>
+                      <v-icon>mdi-link</v-icon>
+                    </template>
                     <v-list-item-title>View in remix.ethereum.org</v-list-item-title>
                   </v-list-item>
                   <v-list-item :href="'https://opensea.io/' + addressPathInputAddress" target="_blank">
+                    <template v-slot:prepend>
+                      <v-icon>mdi-link</v-icon>
+                    </template>
                     <v-list-item-title>View in opensea.io</v-list-item-title>
                   </v-list-item>
                   <v-list-item :href="'https://app.ens.domains/' + addressPathInputAddress" target="_blank">
+                    <template v-slot:prepend>
+                      <v-icon>mdi-link</v-icon>
+                    </template>
                     <v-list-item-title>View in app.ens.domains</v-list-item-title>
                   </v-list-item>
                   <!-- TODO: If Safe contract, View in Safe app -->
