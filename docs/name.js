@@ -102,8 +102,8 @@ const nameModule = {
     },
   },
   actions: {
-    async loadName(context, inputName) {
-      console.log(now() + " nameModule - actions.loadName - inputName: " + inputName);
+    async loadName(context, { inputName, forceUpdate }) {
+      console.log(now() + " nameModule - actions.loadName - inputName: " + inputName + ", forceUpdate: " + forceUpdate);
       let [error, tx, txReceipt, timestamp] = [null, null, null, null];
       const txHash = false;
       if (txHash) {

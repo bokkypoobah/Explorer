@@ -267,9 +267,11 @@ const app = Vue.createApp({
           store.dispatch('address/loadAddress', { inputAddress: searchString, forceUpdate: false });
         } else {
           console.log(now() + " index.js - methods.searchDebounced - NAME searchString: " + JSON.stringify(searchString));
-          const inputName = /\.eth$/.test(searchString) ? searchString : (searchString + ".eth");
-          this.$router.push({ name: 'Name', params: { inputName } });
-          store.dispatch('name/loadName', { inputName, forceUpdate: false });
+          const inputName = /\.eth$/i.test(searchString) ? searchString.toLowerCase() : (searchString.toLowerCase() + ".eth");
+          if (ethers.utils.isValidName(inputName)) {
+            this.$router.push({ name: 'Name', params: { inputName } });
+            store.dispatch('name/loadName', { inputName, forceUpdate: false });
+          }
         }
       }
     },
