@@ -38,8 +38,10 @@ const AddressContract = {
                   <v-tabs-window-item value="sourcecode">
                     <div v-for="(item, itemIndex) of sourceCode">
                       <!-- {{ item }} -->
-                      <v-textarea v-model="item.sourceCode" :label="item.name" rows="10">
-                      </v-textarea>
+                      <div class="text-h6">{{ item.name }}</div>
+                      <div class="text-caption"><pre><code class="language-solidity">{{ item.sourceCode }}</code></pre></div>
+                      <!-- <v-textarea v-model="item.sourceCode" :label="item.name" rows="10">
+                      </v-textarea> -->
                     </div>
                     <v-btn @click="importSourceCodeFromEtherscan();" class="ms-2 mt-0 mb-2" style="text-transform: none !important;" text>Import Source Code From Etherscan</v-btn>
                     <v-btn @click="importSourceCodeFromSourcify();" class="ms-2 mt-0 mb-2" style="text-transform: none !important;" text>Import Source Code From Sourcify</v-btn>
@@ -205,6 +207,9 @@ const AddressContract = {
     setTimeout(function() {
       store.dispatch('address/loadAddress', { inputAddress: t.inputAddress, forceUpdate: false });
     }, 1000);
+    setTimeout(function() {
+      Prism.highlightAll();
+    }, 3000);
 	},
   unmounted() {
     console.log(now() + " AddressContract - unmounted");

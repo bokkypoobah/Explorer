@@ -43,14 +43,16 @@ DEST=../docs/js/vuetify_3.7.18.min.js
 wget $SOURCE -O $DEST
 
 # Get dexie[.min].js 3.0.3
-SOURCE=https://unpkg.com/dexie@3.0.3/dist/dexie.js
+# SOURCE=https://unpkg.com/dexie@3.0.3/dist/dexie.js
+SOURCE=https://cdn.jsdelivr.net/npm/dexie@3.0.3/dist/dexie.js
 DEST=../docs/js/dexie_3.0.3.js
 wget $SOURCE -O $DEST
-SOURCE=https://unpkg.com/dexie@3.0.3/dist/dexie.min.js
+# SOURCE=https://unpkg.com/dexie@3.0.3/dist/dexie.min.js
+SOURCE=https://cdn.jsdelivr.net/npm/dexie@3.0.3/dist/dexie.min.js
 DEST=../docs/js/dexie_3.0.3.min.js
 wget $SOURCE -O $DEST
 
-# Get dexie[.min].js 3.0.3
+# Get ethers[.min].js 5.8.0
 SOURCE=https://cdnjs.cloudflare.com/ajax/libs/ethers/5.8.0/ethers.umd.js
 DEST=../docs/js/ethers_5.8.0.umd.js
 wget $SOURCE -O $DEST
@@ -59,10 +61,10 @@ DEST=../docs/js/ethers_5.8.0.umd.min.js
 wget $SOURCE -O $DEST
 
 # Get moment[.min].js 2.24.0
-SOURCE=https://unpkg.com/moment@2.24.0/moment.js
+SOURCE=https://cdn.jsdelivr.net/npm/moment@2.24.0/moment.js
 DEST=../docs/js/moment_2.24.0.js
 wget $SOURCE -O $DEST
-SOURCE=https://unpkg.com/moment@2.24.0/min/moment.min.js
+SOURCE=https://cdn.jsdelivr.net/npm/moment@2.24.0/min/moment.min.js
 DEST=../docs/js/moment_2.24.0.min.js
 wget $SOURCE -O $DEST
 
@@ -77,4 +79,28 @@ wget $SOURCE -O $DEST
 # Get materialdesignicons-webfont.woff2 7.4.47
 SOURCE=https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/7.4.47/fonts/materialdesignicons-webfont.woff2
 DEST=../docs/fonts/materialdesignicons-webfont.woff2
+wget $SOURCE -O $DEST
+
+# Get prism[.min].css 1.24.1
+SOURCE=https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism.css
+DEST=../docs/css/prism_1.24.1.css
+wget $SOURCE -O $DEST
+SOURCE=https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism.min.css
+DEST=../docs/css/prism_1.24.1.min.css
+wget $SOURCE -O $DEST
+
+# Get prism[.min].js 1.24.1
+SOURCE=https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.js
+DEST=../docs/js/prism_1.24.1.js
+wget $SOURCE -O $DEST
+SOURCE=https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js
+DEST=../docs/js/prism_1.24.1.min.js
+wget $SOURCE -O $DEST
+
+# Get prism-solidity[.min].js 1.24.1
+SOURCE=https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-solidity.js
+DEST=../docs/js/prism-solidity_1.24.1.js
+wget $SOURCE -O $DEST
+SOURCE=https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-solidity.min.js
+DEST=../docs/js/prism-solidity_1.24.1.min.js
 wget $SOURCE -O $DEST

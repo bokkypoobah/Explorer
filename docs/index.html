@@ -18,6 +18,7 @@
     <link type="text/css" rel="stylesheet" href="css/vuetify_3.7.18.css" />
     <link type="text/css" rel="stylesheet" href="css/materialdesignicons_7.4.47.css" />
     <link type="font/woff2" href="new_docs/css/materialdesignicons-webfont.woff2" />
+    <link type="text/css" rel="stylesheet" href="css/prism_1.24.1.min.css" />
 
     <link type="text/css" rel="stylesheet" href="css/app.css" />
 
@@ -28,6 +29,8 @@
     <script src="js/vue-router_4.5.0.js"></script>
     <script src="js/vuetify_3.7.18.js"></script>
     <script src="js/vuex_4.1.0.js"></script>
+    <script src="js/prism_1.24.1.min.js"></script>
+    <script src="js/prism-solidity_1.24.1.min.js"></script>
 
     <script src="globals.js"></script>
     <script src="functions.js"></script>
@@ -81,6 +84,7 @@
           <v-btn to="/block" :active="mainPath == '/block'" class="lowercase-btn" text>Block</v-btn>
           <v-btn to="/transaction" :active="mainPath == '/transaction'" class="lowercase-btn" text>Transaction</v-btn>
           <v-btn to="/address/" :active="mainPath == '/address'" class="lowercase-btn" text>Address</v-btn>
+          <!-- <v-btn to="/name/" :active="mainPath == '/name'" class="lowercase-btn" text>ENS Name</v-btn> -->
           <v-btn to="/config" :active="mainPath == '/config'" class="lowercase-btn" text>
             <!-- <span class="mdi mdi-tools"></span> -->
             Config
@@ -110,6 +114,9 @@
                   </v-list-item>
                   <v-list-item :href="explorer + 'address/' + addressPathInputAddress" target="_blank">
                     <v-list-item-title>View in explorer</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item :href="'https://remix.ethereum.org/address/' + addressPathInputAddress" target="_blank">
+                    <v-list-item-title>View in remix.ethereum.org</v-list-item-title>
                   </v-list-item>
                   <v-list-item :href="'https://opensea.io/' + addressPathInputAddress" target="_blank">
                     <v-list-item-title>View in opensea.io</v-list-item-title>
