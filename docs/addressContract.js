@@ -172,7 +172,7 @@ const AddressContract = {
       console.log(now() + " AddressContract - methods.importSourceCodeFromSourcify - url: " + url);
       const data = await fetch(url).then(response => response.json());
       console.log(now() + " AddressContrac - methods.importSourceCodeFromSourcify - data: " + JSON.stringify(data, null, 2));
-      if (data && data.matchId && data.runtimeMatch == "match") {
+      if (data && data.matchId && (data.runtimeMatch == "match" || data.runtimeMatch == "exact_match")) {
         // console.log(now() + " AddressContract - methods.importSourceCodeFromSourcify - data.result: " + JSON.stringify(data.result, null, 2));
         store.dispatch('addresses/updateSourceCode', { address: this.info.address, sourceCode: data });
       }
