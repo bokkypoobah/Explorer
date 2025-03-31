@@ -77,18 +77,18 @@
             </template>
           </v-combobox>
           <v-spacer></v-spacer>
-          <v-btn to="/" :active="mainPath == '/'" text>HOME</v-btn>
-          <v-btn to="/block" :active="mainPath == '/block'" text>BLOCK</v-btn>
-          <v-btn to="/transaction" :active="mainPath == '/transaction'" text>TRANSACTION</v-btn>
-          <v-btn to="/address/" :active="mainPath == '/address'" text>ADDRESS</v-btn>
-          <v-btn to="/config" :active="mainPath == '/config'" text>
+          <v-btn to="/" :active="mainPath == '/'" class="lowercase-btn" text>Home</v-btn>
+          <v-btn to="/block" :active="mainPath == '/block'" class="lowercase-btn" text>Block</v-btn>
+          <v-btn to="/transaction" :active="mainPath == '/transaction'" class="lowercase-btn" text>Transaction</v-btn>
+          <v-btn to="/address/" :active="mainPath == '/address'" class="lowercase-btn" text>Address</v-btn>
+          <v-btn to="/config" :active="mainPath == '/config'" class="lowercase-btn" text>
             <!-- <span class="mdi mdi-tools"></span> -->
-            CONFIG
+            Config
           </v-btn>
-          <v-btn v-if="!connected" @click="connect();" text>CONNECT</v-btn>
+          <v-btn v-if="!connected" @click="connect();" class="lowercase-btn" text>Connect</v-btn>
           <v-tooltip v-else :text="coinbase">
             <template v-slot:activator="{ props }">
-              <v-btn v-bind="props" @click="disconnect();" text>DISCONNECT</v-btn>
+              <v-btn v-bind="props" @click="disconnect();" class="lowercase-btn" text>Disconnect</v-btn>
             </template>
           </v-tooltip>
         </v-app-bar>
