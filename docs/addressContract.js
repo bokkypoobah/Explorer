@@ -39,7 +39,11 @@ const AddressContract = {
                     <div v-for="(item, itemIndex) of sourceCode">
                       <!-- {{ item }} -->
                       <div class="text-h6">{{ item.name }}</div>
-                      <div class="text-caption"><pre><code class="language-solidity">{{ item.sourceCode }}</code></pre></div>
+                      <div class="text-caption">
+                        <pre>
+                          <code class="language-solidity">{{ item.sourceCode }}</code>
+                        </pre>
+                      </div>
                       <!-- <v-textarea v-model="item.sourceCode" :label="item.name" rows="10">
                       </v-textarea> -->
                     </div>
