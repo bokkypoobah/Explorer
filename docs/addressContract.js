@@ -41,7 +41,7 @@ const AddressContract = {
                       <div class="text-h6">{{ item.name }}</div>
                       <div class="text-caption">
                         <pre>
-                          <code class="language-solidity">{{ item.sourceCode }}</code>
+<code class="language-solidity">{{ item.sourceCode }}</code>
                         </pre>
                       </div>
                       <!-- <v-textarea v-model="item.sourceCode" :label="item.name" rows="10">
@@ -172,6 +172,9 @@ const AddressContract = {
         console.log(now() + " AddressContract - methods.importSourceCodeFromEtherscan - data.result: " + JSON.stringify(data.result, null, 2));
         store.dispatch('addresses/updateSourceCode', { address: this.info.address, sourceCode: data.result[0] });
       }
+      setTimeout(function() {
+        Prism.highlightAll();
+      }, 5000);
     },
     async importSourceCodeFromSourcify() {
       console.log(now() + " AddressContract - methods.importSourceCodeFromSourcify");
@@ -185,6 +188,9 @@ const AddressContract = {
         // console.log(now() + " AddressContract - methods.importSourceCodeFromSourcify - data.result: " + JSON.stringify(data.result, null, 2));
         store.dispatch('addresses/updateSourceCode', { address: this.info.address, sourceCode: data });
       }
+      setTimeout(function() {
+        Prism.highlightAll();
+      }, 5000);
     },
     saveSettings() {
       // console.log(now() + " AddressContract - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));

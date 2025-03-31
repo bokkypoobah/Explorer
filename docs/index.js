@@ -288,7 +288,6 @@ const app = Vue.createApp({
 	},
   mounted() {
     console.log(now() + " index.js - app.mounted");
-    Prism.highlightAll();
     store.dispatch('addresses/loadAddresses');
   },
   destroyed() {
