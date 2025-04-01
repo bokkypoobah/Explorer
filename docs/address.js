@@ -74,6 +74,12 @@ const Address = {
     address() {
       return store.getters['address/address'];
     },
+    type() {
+      return store.getters['address/info'].type || null;
+    },
+    implementation() {
+      return store.getters['address/info'].implementation || null;
+    },
     explorer() {
       return store.getters['explorer'];
     },
