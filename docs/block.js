@@ -6,51 +6,53 @@ const Block = {
           <div v-if="!block">
             Enter block number in the search field above
           </div>
-          <v-row dense>
-            <v-col cols="2">
-              <v-text-field v-if="block" readonly v-model="block.number" label="Number:"></v-text-field>
-            </v-col>
-            <v-col cols="3">
-              <v-text-field v-if="block" readonly v-model="timestampString" label="Timestamp:"></v-text-field>
-            </v-col>
-            <v-col cols="6">
-              <v-text-field v-if="block" readonly v-model="block.hash" label="Block Hash:"></v-text-field>
-            </v-col>
-          </v-row>
-          <v-row dense>
-            <v-col cols="4">
-              <v-text-field v-if="block" readonly v-model="block.miner" label="Miner:"></v-text-field>
-            </v-col>
-            <v-col cols="1">
-            </v-col>
-            <v-col cols="6">
-              <v-text-field v-if="block" readonly v-model="block.parentHash" label="Parent Block Hash:"></v-text-field>
-            </v-col>
-          </v-row>
-          <v-row dense>
-            <v-col cols="2">
-              <v-text-field v-if="block" readonly v-model="gasLimit" label="Gas Limit:"></v-text-field>
-            </v-col>
-            <v-col cols="2">
-              <v-text-field v-if="block" readonly v-model="gasUsed" label="Gas Used:"></v-text-field>
-            </v-col>
-            <v-col cols="1">
-            </v-col>
-            <v-col cols="4">
-              <v-text-field v-if="block" readonly v-model="extraData" label="Extra Data:"></v-text-field>
-            </v-col>
-          </v-row>
-          <v-data-table v-if="block" :items="transactions" @click:row="handleClick" density="compact">
-            <template v-slot:item.txHash="{ item }">
-              <a :href="'#/transaction/' + item.txHash">{{ item.txHash.substring(0, 20) + "..." + item.txHash.slice(-18) }}</a>
-            </template>
-            <template v-slot:item.from="{ item }">
-              <a :href="'#/address/' + item.from">{{ item.from.substring(0, 10) + "..." + item.from.slice(-8) }}</a>
-            </template>
-            <template v-slot:item.to="{ item }">
-              <a :href="'#/address/' + item.to">{{ item.to.substring(0, 10) + "..." + item.to.slice(-8) }}</a>
-            </template>
-          </v-data-table>
+          <div v-if="block">
+            <v-row dense>
+              <v-col cols="2">
+                <v-text-field v-if="block" readonly v-model="block.number" label="Number:"></v-text-field>
+              </v-col>
+              <v-col cols="3">
+                <v-text-field v-if="block" readonly v-model="timestampString" label="Timestamp:"></v-text-field>
+              </v-col>
+              <v-col cols="6">
+                <v-text-field v-if="block" readonly v-model="block.hash" label="Block Hash:"></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row dense>
+              <v-col cols="4">
+                <v-text-field v-if="block" readonly v-model="block.miner" label="Miner:"></v-text-field>
+              </v-col>
+              <v-col cols="1">
+              </v-col>
+              <v-col cols="6">
+                <v-text-field v-if="block" readonly v-model="block.parentHash" label="Parent Block Hash:"></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row dense>
+              <v-col cols="2">
+                <v-text-field v-if="block" readonly v-model="gasLimit" label="Gas Limit:"></v-text-field>
+              </v-col>
+              <v-col cols="2">
+                <v-text-field v-if="block" readonly v-model="gasUsed" label="Gas Used:"></v-text-field>
+              </v-col>
+              <v-col cols="1">
+              </v-col>
+              <v-col cols="4">
+                <v-text-field v-if="block" readonly v-model="extraData" label="Extra Data:"></v-text-field>
+              </v-col>
+            </v-row>
+            <v-data-table v-if="block" :items="transactions" @click:row="handleClick" density="compact">
+              <template v-slot:item.txHash="{ item }">
+                <a :href="'#/transaction/' + item.txHash">{{ item.txHash.substring(0, 20) + "..." + item.txHash.slice(-18) }}</a>
+              </template>
+              <template v-slot:item.from="{ item }">
+                <a :href="'#/address/' + item.from">{{ item.from.substring(0, 10) + "..." + item.from.slice(-8) }}</a>
+              </template>
+              <template v-slot:item.to="{ item }">
+                <a :href="'#/address/' + item.to">{{ item.to.substring(0, 10) + "..." + item.to.slice(-8) }}</a>
+              </template>
+            </v-data-table>
+          </div>
           <!-- <p>{{ block }}</p> -->
         </v-card-text>
         <!-- <v-card-actions>
