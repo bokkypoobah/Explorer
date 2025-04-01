@@ -19,16 +19,16 @@ const routes = [
     children: [
       {
         path: '',
-        name: "AddressSummary",
-        component: AddressSummary,
+        name: "AddressAddress",
+        component: AddressAddress,
         props: true,
       },
-      {
-        path: 'summary',
-        name: "AddressSummary",
-        component: AddressSummary,
-        props: true,
-      },
+      // {
+      //   path: 'summary',
+      //   name: "AddressAddress",
+      //   component: AddressAddress,
+      //   props: true,
+      // },
       {
         path: 'contract',
         name: "AddressContract",

@@ -1,8 +1,8 @@
-const AddressSummary = {
+const AddressAddress = {
   template: `
     <div>
       <v-card>
-        <h3 class="ms-2 mt-2">AddressSummary {{ inputAddress }} Summary</h3>
+        <h3 class="ms-2 mt-2">Address {{ inputAddress }}</h3>
         <v-card-text>
           <!-- <v-textarea :model-value="JSON.stringify(functions, null, 2)" label="Functions" rows="10">
           </v-textarea>
@@ -56,19 +56,19 @@ const AddressSummary = {
 
   },
   beforeCreate() {
-    console.log(now() + " AddressSummary - beforeCreate");
+    console.log(now() + " AddressAddress - beforeCreate");
 	},
   mounted() {
-    console.log(now() + " AddressSummary - mounted - inputAddress: " + this.inputAddress);
+    console.log(now() + " AddressAddress - mounted - inputAddress: " + this.inputAddress);
     const t = this;
     setTimeout(function() {
       store.dispatch('address/loadAddress', { inputAddress: t.inputAddress, forceUpdate: false });
     }, 1000);
 	},
   unmounted() {
-    console.log(now() + " AddressSummary - unmounted");
+    console.log(now() + " AddressAddress - unmounted");
 	},
   destroyed() {
-    console.log(now() + " AddressSummary - destroyed");
+    console.log(now() + " AddressAddress - destroyed");
 	},
 };
