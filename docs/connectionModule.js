@@ -35,7 +35,9 @@ const Connection = {
         <span v-if="info.gasPrice" class="ml-1">
           <v-tooltip :text="'gasPrice ' + formatGas(info.gasPrice) + ', lastBaseFeePerGas ' + formatGas(info.lastBaseFeePerGas) + ', maxPriorityFeePerGas ' + formatGas(info.maxPriorityFeePerGas) + ', maxFeePerGas ' + formatGas(info.maxFeePerGas) + ' gwei'">
             <template v-slot:activator="{ props }">
-              <span v-bind="props">{{ formatGas(info.gasPrice) + 'g'}}</span>
+              <a href="https://etherscan.io/gastracker" target="_blank" class="ml-1">
+                <span v-bind="props">{{ formatGas(info.gasPrice) + 'g'}}</span>
+              </a>
             </template>
           </v-tooltip>
         </span>
