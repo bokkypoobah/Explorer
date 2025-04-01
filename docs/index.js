@@ -213,14 +213,14 @@ const app = Vue.createApp({
       const parts = this.$route.path.split("/");
       return parts.length >= 2 && ("/" + parts[1]) || null;
     },
-    addressPathInputAddress() {
-      if (this.$route.path.substring(0, 8) == "/address") {
-        const inputAddress = this.$route.params && this.$route.params.inputAddress || null;
-        // console.log(now() + " index.js - computed.addressPathInputAddress - inputAddress: " + JSON.stringify(inputAddress, null, 2));
-        return inputAddress;
-      }
-      return null;
-    },
+    // addressPathInputAddress() {
+    //   if (this.$route.path.substring(0, 8) == "/address") {
+    //     const inputAddress = this.$route.params && this.$route.params.inputAddress || null;
+    //     // console.log(now() + " index.js - computed.addressPathInputAddress - inputAddress: " + JSON.stringify(inputAddress, null, 2));
+    //     return inputAddress;
+    //   }
+    //   return null;
+    // },
     samples() {
       const results = [];
       console.log(now() + " index.js - computed.samples");

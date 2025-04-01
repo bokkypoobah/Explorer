@@ -7,7 +7,15 @@ const Config = {
             <v-card-title>API Keys</v-card-title>
             <v-row>
               <v-col cols="4">
-                <v-text-field v-model="etherscanAPIKey" label="Etherscan API Key:" placeholder="See https://etherscan.io/apis" hint="For API calls to retrieve contract ABI and source, and internal and normal transaction listings by account"></v-text-field>
+                <v-text-field
+                  :type="showAPIKey ? 'text' : 'password'"
+                  v-model="etherscanAPIKey"
+                  label="Etherscan API Key:"
+                  placeholder="See https://etherscan.io/apis"
+                  hint="For API calls to retrieve contract ABI and source, and internal and normal transaction listings by account"
+                  :append-inner-icon="showAPIKey ? 'mdi-eye' : 'mdi-eye-off'"
+                  @click:append-inner="showAPIKey = !showAPIKey"
+                ></v-text-field>
               </v-col>
             </v-row>
             <v-card-title>Chains</v-card-title>
@@ -43,6 +51,7 @@ const Config = {
   `,
   data: function () {
     return {
+      showAPIKey: false,
     };
   },
   computed: {
