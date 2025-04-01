@@ -282,9 +282,6 @@ const app = Vue.createApp({
       console.log(now() + " index.js - methods.syncAddress - address: " + address);
       store.dispatch('address/loadAddress', { inputAddress: address, forceUpdate: true });
     },
-    copyToClipboard(str) {
-      navigator.clipboard.writeText(str);
-    },
   //   testClick() {
   //     console.log('this is a test click from component', this.$store.state.test);
   //     this.$store.dispatch('pretendUpdate');

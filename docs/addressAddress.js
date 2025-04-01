@@ -2,8 +2,7 @@ const AddressAddress = {
   template: `
     <div>
       <v-card>
-        <h3 class="ms-2 mt-2">Address {{ inputAddress }}</h3>
-        address: {{ address }}
+        <h3 class="ms-2 mt-2">Address {{ address }}</h3>
         <v-card-text>
           <!-- <v-textarea :model-value="JSON.stringify(functions, null, 2)" label="Functions" rows="10">
           </v-textarea>

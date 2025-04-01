@@ -5,49 +5,47 @@ const Address = {
         <v-card-text v-if="!inputAddress">
           Enter address in the search field above
         </v-card-text>
-
-        <!-- <div v-if="inputAddress" class="mt-2 mx-2"> -->
         <v-container fluid class="pa-1">
-          <v-toolbar v-if="inputAddress" density="compact" class="mt-1">
-            <!-- <v-menu offset-y>
+          <v-toolbar v-if="address" density="compact" class="mt-1">
+            <v-menu offset-y>
               <template v-slot:activator="{ props }">
                 <v-btn color="primary" dark v-bind="props" class="lowercase-btn">
-                  {{ addressPathInputAddress }}
+                  {{ address }}
                 </v-btn>
               </template>
               <v-list>
-                <v-list-item @click="copyToClipboard(addressPathInputAddress);">
+                <v-list-item @click="copyToClipboard(address);">
                   <template v-slot:prepend>
                     <v-icon>mdi-content-copy</v-icon>
                   </template>
                   <v-list-item-title>Copy address to clipboard</v-list-item-title>
                 </v-list-item>
-                <v-list-item :href="explorer + 'address/' + addressPathInputAddress" target="_blank">
+                <v-list-item :href="explorer + 'address/' + address" target="_blank">
                   <template v-slot:prepend>
                     <v-icon>mdi-link</v-icon>
                   </template>
                   <v-list-item-title>View in explorer</v-list-item-title>
                 </v-list-item>
-                <v-list-item :href="'https://remix.ethereum.org/address/' + addressPathInputAddress" target="_blank">
+                <v-list-item :href="'https://remix.ethereum.org/address/' + address" target="_blank">
                   <template v-slot:prepend>
                     <v-icon>mdi-link</v-icon>
                   </template>
                   <v-list-item-title>View in remix.ethereum.org</v-list-item-title>
                 </v-list-item>
-                <v-list-item :href="'https://opensea.io/' + addressPathInputAddress" target="_blank">
+                <v-list-item :href="'https://opensea.io/' + address" target="_blank">
                   <template v-slot:prepend>
                     <v-icon>mdi-link</v-icon>
                   </template>
                   <v-list-item-title>View in opensea.io</v-list-item-title>
                 </v-list-item>
-                <v-list-item :href="'https://app.ens.domains/' + addressPathInputAddress" target="_blank">
+                <v-list-item :href="'https://app.ens.domains/' + address" target="_blank">
                   <template v-slot:prepend>
                     <v-icon>mdi-link</v-icon>
                   </template>
                   <v-list-item-title>View in app.ens.domains</v-list-item-title>
                 </v-list-item>
               </v-list>
-            </v-menu> -->
+            </v-menu>
             <v-spacer></v-spacer>
             <!-- <v-btn @click="syncAddress();" color="primary" icon>
               <v-icon>mdi-sync</v-icon>
@@ -62,32 +60,28 @@ const Address = {
               <v-tab :disabled="!inputAddress" :to="'/address/' + inputAddress + '/events'" class="lowercase-btn">Events</v-tab>
             </v-tabs>
           </v-toolbar>
-
-          <router-view v-if="inputAddress" />
+          <router-view v-if="address" />
         </v-container>
-        <!-- </div> -->
-
-        <!-- <router-view v-slot="{ Component }">
-          <component :is="Component" />
-        </router-view> -->
-
-        <!-- <v-card-text>
-          <v-textarea :model-value="JSON.stringify(info, null, 2)" label="Info" rows="20">
-          </v-textarea>
-        </v-card-text> -->
       </v-card>
     </div>
   `,
-  props: ['inputAddress', 'tab'],
+  props: ['inputAddress'],
   data: function () {
     return {
-      // tab: null,
-      // address: null,
     };
   },
   computed: {
+    address() {
+      return store.getters['address/address'];
+    },
+    explorer() {
+      return store.getters['explorer'];
+    },
   },
   methods: {
+    copyToClipboard(str) {
+      navigator.clipboard.writeText(str);
+    },
   },
   beforeCreate() {
     console.log(now() + " Address - beforeCreate");
