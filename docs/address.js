@@ -95,9 +95,9 @@ const Address = {
   mounted() {
     console.log(now() + " Address - mounted - inputAddress: " + this.inputAddress);
     const t = this;
-    // setTimeout(function() {
-    //   store.dispatch('address/loadAddress', { inputAddress: t.inputAddress, forceUpdate: false });
-    // }, 1000);
+    setTimeout(function() {
+      store.dispatch('address/loadAddress', { inputAddress: t.inputAddress, forceUpdate: false });
+    }, 1000);
 	},
   unmounted() {
     console.log(now() + " Address - unmounted");

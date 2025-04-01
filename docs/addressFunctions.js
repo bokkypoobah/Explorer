@@ -424,10 +424,10 @@ const AddressFunctions = {
       }
     }
     this.initialised = true;
-    const t = this;
-    setTimeout(function() {
-      store.dispatch('address/loadAddress', { inputAddress: t.inputAddress, forceUpdate: false });
-    }, 1000);
+    // const t = this;
+    // setTimeout(function() {
+    //   store.dispatch('address/loadAddress', { inputAddress: t.inputAddress, forceUpdate: false });
+    // }, 1000);
 	},
   unmounted() {
     console.log(now() + " AddressFunctions - unmounted");

@@ -27,10 +27,10 @@ const AddressEvents = {
 	},
   mounted() {
     console.log(now() + " AddressEvents - mounted");
-    const t = this;
-    setTimeout(function() {
-      store.dispatch('address/loadAddress', { inputAddress: t.inputAddress, forceUpdate: false });
-    }, 1000);
+    // const t = this;
+    // setTimeout(function() {
+    //   store.dispatch('address/loadAddress', { inputAddress: t.inputAddress, forceUpdate: false });
+    // }, 1000);
 	},
   unmounted() {
     console.log(now() + " AddressEvents - unmounted");

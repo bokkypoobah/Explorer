@@ -214,9 +214,9 @@ const AddressContract = {
     this.initialised = true;
     console.log(now() + " AddressContract - mounted - this.settings: " + JSON.stringify(this.settings));
     const t = this;
-    setTimeout(function() {
-      store.dispatch('address/loadAddress', { inputAddress: t.inputAddress, forceUpdate: false });
-    }, 1000);
+    // setTimeout(function() {
+    //   store.dispatch('address/loadAddress', { inputAddress: t.inputAddress, forceUpdate: false });
+    // }, 1000);
     setTimeout(function() {
       Prism.highlightAll();
     }, 3000);

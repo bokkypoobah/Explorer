@@ -27,10 +27,10 @@ const AddressTokens = {
 	},
   mounted() {
     console.log(now() + " AddressTokens - mounted");
-    const t = this;
-    setTimeout(function() {
-      store.dispatch('address/loadAddress', { inputAddress: t.inputAddress, forceUpdate: false });
-    }, 1000);
+    // const t = this;
+    // setTimeout(function() {
+    //   store.dispatch('address/loadAddress', { inputAddress: t.inputAddress, forceUpdate: false });
+    // }, 1000);
 	},
   unmounted() {
     console.log(now() + " AddressTokens - unmounted");

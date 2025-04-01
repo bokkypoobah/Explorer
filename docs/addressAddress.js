@@ -3,6 +3,7 @@ const AddressAddress = {
     <div>
       <v-card>
         <h3 class="ms-2 mt-2">Address {{ inputAddress }}</h3>
+        address: {{ address }}
         <v-card-text>
           <!-- <v-textarea :model-value="JSON.stringify(functions, null, 2)" label="Functions" rows="10">
           </v-textarea>
@@ -60,10 +61,10 @@ const AddressAddress = {
 	},
   mounted() {
     console.log(now() + " AddressAddress - mounted - inputAddress: " + this.inputAddress);
-    const t = this;
-    setTimeout(function() {
-      store.dispatch('address/loadAddress', { inputAddress: t.inputAddress, forceUpdate: false });
-    }, 1000);
+    // const t = this;
+    // setTimeout(function() {
+    //   store.dispatch('address/loadAddress', { inputAddress: t.inputAddress, forceUpdate: false });
+    // }, 1000);
 	},
   unmounted() {
     console.log(now() + " AddressAddress - unmounted");
