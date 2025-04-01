@@ -63,7 +63,7 @@ const Address = {
             </v-tabs>
           </v-toolbar>
 
-          <router-view />
+          <router-view v-if="inputAddress" />
         </v-container>
         <!-- </div> -->
 
