@@ -9,6 +9,7 @@ const Config = {
               <v-col cols="4">
                 <v-text-field
                   :type="showAPIKey ? 'text' : 'password'"
+                  autocomplete
                   v-model="etherscanAPIKey"
                   label="Etherscan API Key:"
                   placeholder="See https://etherscan.io/apis"
