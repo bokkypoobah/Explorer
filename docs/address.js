@@ -45,6 +45,28 @@ const Address = {
                 </template>
                 <v-list-item-title>View in app.ens.domains</v-list-item-title>
               </v-list-item>
+              <div v-if="type == 'safe'">
+                <v-divider inset></v-divider>
+                <v-list-subheader inset>Gnosis Safe v{{ version }}</v-list-subheader>
+                <v-list-item :href="'https://app.safe.global/home?safe=eth:' + address" target="_blank">
+                  <template v-slot:prepend>
+                    <v-icon>mdi-link</v-icon>
+                  </template>
+                  <v-list-item-title>View in app.safe.global</v-list-item-title>
+                </v-list-item>
+                <v-list-item :href="explorer + 'address/' + implementation" target="_blank">
+                  <template v-slot:prepend>
+                    <v-icon>mdi-link</v-icon>
+                  </template>
+                  <v-list-item-title>View implementation in explorer</v-list-item-title>
+                </v-list-item>
+                <v-list-item :href="'https://remix.ethereum.org/address/' + implementation" target="_blank">
+                  <template v-slot:prepend>
+                    <v-icon>mdi-link</v-icon>
+                  </template>
+                  <v-list-item-title>View implementation in remix.ethereum.org</v-list-item-title>
+                </v-list-item>
+              </div>
             </v-list>
           </v-menu>
           <v-spacer></v-spacer>
@@ -76,6 +98,9 @@ const Address = {
     },
     type() {
       return store.getters['address/info'].type || null;
+    },
+    version() {
+      return store.getters['address/info'].version || null;
     },
     implementation() {
       return store.getters['address/info'].implementation || null;
