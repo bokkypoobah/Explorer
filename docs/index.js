@@ -263,7 +263,8 @@ const app = Vue.createApp({
           store.dispatch('transaction/loadTransaction', searchString);
         } else if (addressRegex.test(searchString)) {
           console.log(now() + " index.js - methods.searchDebounced - ADDRESS searchString: " + JSON.stringify(searchString));
-          this.$router.push({ name: 'Address', params: { inputAddress: searchString } });
+          // this.$router.push({ name: 'Address', params: { inputAddress: searchString } });
+          this.$router.push({ name: 'AddressAddress', params: { inputAddress: searchString } });
           store.dispatch('address/loadAddress', { inputAddress: searchString, forceUpdate: false });
         } else {
           console.log(now() + " index.js - methods.searchDebounced - NAME searchString: " + JSON.stringify(searchString));
