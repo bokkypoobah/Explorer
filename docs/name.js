@@ -12,80 +12,97 @@ const Name = {
       <v-container v-if="inputName && name" fluid class="pa-1">
         <v-card>
           <v-card-text>
-            <v-row dense>
-              <v-col cols="6">
-                <v-row dense>
-                  <v-col cols="11">
-                    <!-- append-inner-icon="mdi-content-copy"
-                    @click:append-inner="copyToClipboard(name)" -->
-                    <v-text-field
-                      readonly
-                      v-model="name"
-                      label="ENS Name:"
-                      append-icon="mdi-link"
-                      @click:append="navigateToURL('https://app.ens.domains/' + name)"
-                      density="compact"
-                      hide-details
-                    >
-                    </v-text-field>
-                  </v-col>
-                </v-row>
-                <v-row dense>
-                  <v-col cols="11">
-                    <!-- append-inner-icon="mdi-content-copy"
-                    @click:append-inner="copyToClipboard(resolvedAddress)" -->
-                    <v-text-field
-                      readonly
-                      v-model="resolvedAddress"
-                      label="Resolved Address:"
-                      append-icon="mdi-arrow-right-bold-outline"
-                      @click:append="navigateToAddress(resolvedAddress)"
-                      density="compact"
-                      hide-details
-                    >
-                    </v-text-field>
-                  </v-col>
-                </v-row>
-                <v-row dense>
-                  <v-col cols="11">
-                    <!-- append-inner-icon="mdi-content-copy"
-                    @click:append-inner="copyToClipboard(ethAddress)" -->
-                    <v-text-field
-                      readonly
-                      v-model="ethAddress"
-                      label="ETH Address:"
-                      append-icon="mdi-arrow-right-bold-outline"
-                      @click:append="navigateToAddress(ethAddress)"
-                      density="compact"
-                      hide-details
-                    >
-                    </v-text-field>
-                  </v-col>
-                </v-row>
-                <v-row dense>
-                  <v-col cols="11">
-                    <!-- append-inner-icon="mdi-content-copy"
-                    @click:append-inner="copyToClipboard(avatar)" -->
-                    <v-text-field
-                      readonly
-                      v-model="avatar"
-                      label="Avatar:"
-                      append-icon="mdi-link"
-                      @click:append="navigateToURL(avatar)"
-                      density="compact"
-                      hide-details
-                    >
-                    </v-text-field>
-                  </v-col>
-                </v-row>
+            <v-row>
+              <v-col cols="2">
+                <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" color="primary" direction="vertical">
+                  <v-tab prepend-icon="mdi-card-account-details-outline" text="Name" value="name" class="lowercase-btn"></v-tab>
+                  <v-tab prepend-icon="mdi-calendar" text="History" value="history" class="lowercase-btn"></v-tab>
+                </v-tabs>
               </v-col>
-              <v-col cols="6">
-                <v-img :src="avatar" width="200"></v-img>
+              <v-col cols="10">
+
+                <v-tabs-window v-model="settings.tab">
+                  <v-tabs-window-item value="name">
+                    <v-row dense>
+                      <v-col cols="8">
+                        <v-row dense>
+                          <v-col cols="11">
+                            <!-- append-inner-icon="mdi-content-copy"
+                            @click:append-inner="copyToClipboard(name)" -->
+                            <v-text-field
+                              readonly
+                              v-model="name"
+                              label="ENS Name:"
+                              append-icon="mdi-link"
+                              @click:append="navigateToURL('https://app.ens.domains/' + name)"
+                              density="compact"
+                              hide-details
+                            >
+                            </v-text-field>
+                          </v-col>
+                        </v-row>
+                        <v-row dense>
+                          <v-col cols="11">
+                            <!-- append-inner-icon="mdi-content-copy"
+                            @click:append-inner="copyToClipboard(resolvedAddress)" -->
+                            <v-text-field
+                              readonly
+                              v-model="resolvedAddress"
+                              label="Resolved Address:"
+                              append-icon="mdi-arrow-right-bold-outline"
+                              @click:append="navigateToAddress(resolvedAddress)"
+                              density="compact"
+                              hide-details
+                            >
+                            </v-text-field>
+                          </v-col>
+                        </v-row>
+                        <v-row dense>
+                          <v-col cols="11">
+                            <!-- append-inner-icon="mdi-content-copy"
+                            @click:append-inner="copyToClipboard(ethAddress)" -->
+                            <v-text-field
+                              readonly
+                              v-model="ethAddress"
+                              label="ETH Address:"
+                              append-icon="mdi-arrow-right-bold-outline"
+                              @click:append="navigateToAddress(ethAddress)"
+                              density="compact"
+                              hide-details
+                            >
+                            </v-text-field>
+                          </v-col>
+                        </v-row>
+                        <v-row dense>
+                          <v-col cols="11">
+                            <!-- append-inner-icon="mdi-content-copy"
+                            @click:append-inner="copyToClipboard(avatar)" -->
+                            <v-text-field
+                              readonly
+                              v-model="avatar"
+                              label="Avatar:"
+                              append-icon="mdi-link"
+                              @click:append="navigateToURL(avatar)"
+                              density="compact"
+                              hide-details
+                            >
+                            </v-text-field>
+                          </v-col>
+                        </v-row>
+                      </v-col>
+                      <v-col cols="4">
+                        <v-img :src="avatar" width="200"></v-img>
+                      </v-col>
+                    </v-row>
+                  </v-tabs-window-item>
+                  <v-tabs-window-item value="history">
+                    eventsList: {{ eventsList }}
+                    <br />
+                    info: {{ info }}
+                  </v-tabs-window-item>
+                </v-tabs-window>
               </v-col>
             </v-row>
-            eventsList: {{ eventsList }}
-            <br />
-            info: {{ info }}
           </v-card-text>
         </v-card>
       </v-container>
