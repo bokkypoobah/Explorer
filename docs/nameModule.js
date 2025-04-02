@@ -68,6 +68,8 @@ const nameModule = {
         info.name = inputName;
         info.resolvedAddress = await provider.resolveName(inputName);
         console.log(now() + " nameModule - actions.loadName - resolvedAddress: " + info.resolvedAddress);
+        info.avatar = await provider.getAvatar(inputName);
+        console.log(now() + " nameModule - actions.loadName - avatar: " + info.avatar);
       }
       context.commit('setInfo', info);
       // db.close();

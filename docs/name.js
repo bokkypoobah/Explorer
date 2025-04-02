@@ -1,6 +1,9 @@
 const Name = {
   template: `
     <div>
+      <!-- <v-sheet :height="200" :width="200">
+        Blah
+      </v-sheet> -->
       <v-card v-if="!inputName">
         <v-card-text>
           Enter ENS name in the search field above
@@ -12,6 +15,10 @@ const Name = {
             name: {{ name }}
             <br />
             resolvedAddress: <a :href="'#/address/' + resolvedAddress">{{ resolvedAddress }}</a>
+            <br />
+            avatar: <a :href="avatar" target="_blank">{{ avatar }}</a>
+            <br />
+            <v-img :src="avatar" width="400"></v-img>
           </v-card-text>
         </v-card>
       </v-container>
@@ -28,7 +35,10 @@ const Name = {
       return store.getters['name/name'];
     },
     resolvedAddress() {
-      return store.getters['name/info'].resolvedAddress;
+      return store.getters['name/info'].resolvedAddress || null;
+    },
+    avatar() {
+      return store.getters['name/info'].avatar || null;
     },
     timestamp() {
       return store.getters['name/timestamp'];

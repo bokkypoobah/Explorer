@@ -71,7 +71,7 @@ const Address = {
           </v-menu>
           <v-spacer></v-spacer>
           <v-btn @click="syncAddress();" color="primary" icon>
-            <v-icon>mdi-sync</v-icon>
+            <v-icon>mdi-refresh</v-icon>
           </v-btn>
           <v-spacer></v-spacer>
           <v-tabs right color="deep-purple-accent-4">

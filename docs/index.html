@@ -93,10 +93,10 @@
             <!-- <span class="mdi mdi-tools"></span> -->
             Config
           </v-btn>
-          <v-btn v-if="!connected" @click="connect();" class="lowercase-btn" text>Connect</v-btn>
+          <v-btn v-if="!connected" @click="connect();" variant="outlined" class="lowercase-btn" text>Connect</v-btn>
           <v-tooltip v-else :text="coinbase">
             <template v-slot:activator="{ props }">
-              <v-btn v-bind="props" @click="disconnect();" class="lowercase-btn" text>Disconnect</v-btn>
+              <v-btn v-bind="props" @click="disconnect();" variant="outlined" class="lowercase-btn" text>Disconnect</v-btn>
             </template>
           </v-tooltip>
         </v-app-bar>

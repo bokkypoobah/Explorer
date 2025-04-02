@@ -127,6 +127,7 @@ const addressesModule = {
           sourceCode: info.sourceCode || null,
           name: info.name || null,
           ensName: info.ensName || null,
+          avatar: info.avatar || null,
         };
       }
       console.log(now() + " addressesModule - mutations.addAddress - state.addresses: " + JSON.stringify(state.addresses));
@@ -141,6 +142,7 @@ const addressesModule = {
           sourceCode: null,
           name: null,
           ensName: null,
+          avatar: null,
         };
       } else {
         state.addresses[info.address].abi = info.abi;
@@ -157,6 +159,7 @@ const addressesModule = {
           sourceCode: info.sourceCode || null,
           name: null,
           ensName: null,
+          avatar: null,
         };
       } else {
         state.addresses[info.address].sourceCode = info.sourceCode;
