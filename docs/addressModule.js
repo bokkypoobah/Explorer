@@ -84,7 +84,7 @@ const addressModule = {
         const addressInfo = store.getters["addresses/getAddressInfo"](validatedAddress);
         // console.log(now() + " addressModule - actions.loadAddress - addressInfo: " + JSON.stringify(addressInfo));
         if (!addressInfo.type) {
-          store.dispatch("addresses/addAddress", { address: validatedAddress, type: info.type, version: info.version });
+          store.dispatch("addresses/addAddress", { address: validatedAddress, type: info.type, version: info.version, ensName: info.ensName });
         }
       }
 

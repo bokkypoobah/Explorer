@@ -40,6 +40,14 @@ async function getAddressInfo(inputAddress, provider) {
       console.error(now() + " functions.js:getAddressInfo - provider.getCode: " + e.message);
     }
   }
+  // ENS name
+  if (results.address) {
+    try {
+      results.ensName = await provider.lookupAddress(results.address);
+    } catch (e) {
+      console.error(now() + " functions.js:getAddressInfo - provider.lookupAddress: " + e.message);
+    }
+  }
   if (results.address) {
     try {
       results.balance = ethers.BigNumber.from(await provider.getBalance(results.address)).toString();
