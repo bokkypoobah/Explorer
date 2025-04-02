@@ -46,9 +46,9 @@ async function getNameEvents(inputName, info, provider) {
     [ info.erc721TokenIdHex, info.erc1155TokenIdHex ],
     null
   ];
-  // console.log(now() + " nameInfo.js:getNameEvents - topics: " + JSON.stringify(topics, null, 2));
+  console.log(now() + " nameInfo.js:getNameEvents - topics: " + JSON.stringify(topics, null, 2));
   const logs = await provider.getLogs({ address: null, fromBlock: 0, toBlock: info.blockNumber, topics });
-  // console.log(now() + " nameInfo.js:getNameEvents - logs: " + JSON.stringify(logs, null, 2));
+  console.log(now() + " nameInfo.js:getNameEvents - logs: " + JSON.stringify(logs, null, 2));
   for (const log of logs) {
     if (!log.removed) {
       console.log(now() + " nameInfo.js:getNameEvents - log: " + JSON.stringify(log, null, 2));
