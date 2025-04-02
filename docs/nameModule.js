@@ -66,10 +66,10 @@ const nameModule = {
       let info = {};
       if (ethers.utils.isValidName(inputName)) {
         info = await getNameInfo(inputName, provider);
-        console.log(now() + " nameModule - actions.loadName - info: " + JSON.stringify(info));
+        // console.log(now() + " nameModule - actions.loadName - Without ENS events info: " + JSON.stringify(info));
         context.commit('setInfo', info);
-        info.events = await getNameEvents(inputName, provider);
-        console.log(now() + " nameModule - actions.loadName - With Events info: " + JSON.stringify(info));
+        await getNameEvents(inputName, info, provider);
+        // console.log(now() + " nameModule - actions.loadName - info: " + JSON.stringify(info));
       }
       context.commit('setInfo', info);
       // db.close();
