@@ -53,7 +53,7 @@ const nameModule = {
   },
   mutations: {
     setInfo(state, info) {
-      console.log(now() + " nameModule - mutations.setData - info: " + JSON.stringify(info));
+      // console.log(now() + " nameModule - mutations.setData - info: " + JSON.stringify(info));
       state.info = info;
     },
   },
@@ -67,6 +67,9 @@ const nameModule = {
       if (ethers.utils.isValidName(inputName)) {
         info = await getNameInfo(inputName, provider);
         console.log(now() + " nameModule - actions.loadName - info: " + JSON.stringify(info));
+        context.commit('setInfo', info);
+        info.events = await getNameEvents(inputName, provider);
+        console.log(now() + " nameModule - actions.loadName - With Events info: " + JSON.stringify(info));
       }
       context.commit('setInfo', info);
       // db.close();
