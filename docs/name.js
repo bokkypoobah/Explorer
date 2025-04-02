@@ -21,7 +21,14 @@ const Name = {
                 </v-row>
                 <v-row dense>
                   <v-col cols="11">
-                    <v-text-field readonly v-model="resolvedAddress" label="Resolved Address:"></v-text-field>
+                    <v-text-field
+                      readonly
+                      v-model="resolvedAddress"
+                      label="Resolved Address:"
+                      append-inner-icon="mdi-arrow-right-bold-outline"
+                      @click:append-inner="navigateToAddress(resolvedAddress)"
+                    >
+                    </v-text-field>
                   </v-col>
                 </v-row>
               </v-col>
@@ -61,6 +68,11 @@ const Name = {
 
   },
   methods: {
+    navigateToAddress(link) {
+      console.log(now() + " Name - methods.navigateToAddress - link: " + link);
+      this.$router.push({ name: 'AddressAddress', params: { inputAddress: link } });
+      store.dispatch('address/loadAddress', { inputAddress: link, forceUpdate: false });
+    },
     formatETH(e) {
       if (e) {
         return ethers.utils.formatEther(e).replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
