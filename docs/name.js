@@ -16,12 +16,12 @@ const Name = {
               <v-col cols="6">
                 <v-row dense>
                   <v-col cols="11">
+                    <!-- append-inner-icon="mdi-content-copy"
+                    @click:append-inner="copyToClipboard(name)" -->
                     <v-text-field
                       readonly
                       v-model="name"
                       label="ENS Name:"
-                      append-inner-icon="mdi-content-copy"
-                      @click:append-inner="copyToClipboard(name)"
                       append-icon="mdi-link"
                       @click:append="navigateToURL('https://app.ens.domains/' + name)"
                       density="compact"
@@ -32,12 +32,12 @@ const Name = {
                 </v-row>
                 <v-row dense>
                   <v-col cols="11">
+                    <!-- append-inner-icon="mdi-content-copy"
+                    @click:append-inner="copyToClipboard(resolvedAddress)" -->
                     <v-text-field
                       readonly
                       v-model="resolvedAddress"
                       label="Resolved Address:"
-                      append-inner-icon="mdi-content-copy"
-                      @click:append-inner="copyToClipboard(resolvedAddress)"
                       append-icon="mdi-arrow-right-bold-outline"
                       @click:append="navigateToAddress(resolvedAddress)"
                       density="compact"
@@ -48,12 +48,12 @@ const Name = {
                 </v-row>
                 <v-row dense>
                   <v-col cols="11">
+                    <!-- append-inner-icon="mdi-content-copy"
+                    @click:append-inner="copyToClipboard(ethAddress)" -->
                     <v-text-field
                       readonly
                       v-model="ethAddress"
                       label="ETH Address:"
-                      append-inner-icon="mdi-content-copy"
-                      @click:append-inner="copyToClipboard(ethAddress)"
                       append-icon="mdi-arrow-right-bold-outline"
                       @click:append="navigateToAddress(ethAddress)"
                       density="compact"
@@ -64,12 +64,12 @@ const Name = {
                 </v-row>
                 <v-row dense>
                   <v-col cols="11">
+                    <!-- append-inner-icon="mdi-content-copy"
+                    @click:append-inner="copyToClipboard(avatar)" -->
                     <v-text-field
                       readonly
                       v-model="avatar"
                       label="Avatar:"
-                      append-inner-icon="mdi-content-copy"
-                      @click:append-inner="copyToClipboard(avatar)"
                       append-icon="mdi-link"
                       @click:append="navigateToURL(avatar)"
                       density="compact"
