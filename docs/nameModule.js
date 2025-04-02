@@ -70,6 +70,9 @@ const nameModule = {
         console.log(now() + " nameModule - actions.loadName - resolvedAddress: " + info.resolvedAddress);
         info.avatar = await provider.getAvatar(inputName);
         console.log(now() + " nameModule - actions.loadName - avatar: " + info.avatar);
+        const resolver = await provider.getResolver(inputName);
+        const address = resolver ? await resolver.getAddress() : null;
+        console.log(now() + " nameModule - actions.loadName - address: " + JSON.stringify(address, null, 2));
       }
       context.commit('setInfo', info);
       // db.close();
