@@ -193,6 +193,11 @@ const connectionModule = {
           }
           if (provider._events.length == 0) {
             provider.on("block", handleNewBlock);
+            // TODO: Not working
+            // function handleNewPendingTx(tx) {
+            //   console.log(now() + " connectionModule - actions.connect.handleNewPendingTx - tx: " + JSON.stringify(tx));
+            // }
+            // provider.on("pending", handleNewPendingTx);
           }
         }
 

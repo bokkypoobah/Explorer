@@ -14,13 +14,22 @@ const Block = {
               <v-col cols="3">
                 <v-text-field v-if="block" readonly v-model="timestampString" label="Timestamp:"></v-text-field>
               </v-col>
+              <v-col>
+              </v-col>
               <v-col cols="6">
                 <v-text-field v-if="block" readonly v-model="block.hash" label="Block Hash:"></v-text-field>
               </v-col>
             </v-row>
             <v-row dense>
-              <v-col cols="4">
-                <v-text-field v-if="block" readonly v-model="block.miner" label="Miner:"></v-text-field>
+              <v-col cols="5">
+                <v-text-field
+                  v-if="block"
+                  readonly
+                  v-model="block.miner"
+                  label="Miner:"
+                  append-inner-icon="mdi-arrow-right-bold-outline"
+                  @click:append-inner="navigateToAddress(block.miner)"
+                ></v-text-field>
               </v-col>
               <v-col cols="1">
               </v-col>
@@ -35,7 +44,7 @@ const Block = {
               <v-col cols="2">
                 <v-text-field v-if="block" readonly v-model="gasUsed" label="Gas Used:"></v-text-field>
               </v-col>
-              <v-col cols="1">
+              <v-col cols="2">
               </v-col>
               <v-col cols="4">
                 <v-text-field v-if="block" readonly v-model="extraData" label="Extra Data:"></v-text-field>
@@ -123,8 +132,13 @@ const Block = {
     },
   },
   methods: {
+    navigateToAddress(link) {
+      console.log(now() + " Block - methods.navigateToAddress - link: " + link);
+      this.$router.push({ name: 'AddressAddress', params: { inputAddress: link } });
+      store.dispatch('address/loadAddress', { inputAddress: link, forceUpdate: false });
+    },
     handleClick(event, row) {
-      console.log(now() + " Block - handleClick - event: " + JSON.stringify(event, null, 2) + ", row: " + JSON.stringify(row, null, 2));
+      console.log(now() + " Block - methods.handleClick - event: " + JSON.stringify(event, null, 2) + ", row: " + JSON.stringify(row, null, 2));
     },
     formatETH(e) {
       if (e) {
