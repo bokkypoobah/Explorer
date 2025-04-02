@@ -183,7 +183,7 @@ async function getNameEvents(inputName, info, provider) {
     // results.ethAddress = resolver ? await resolver.getAddress() : null;
     // console.log(now() + " nameInfo.js:getNameEvents - address: " + results.ethAddress);
   }
-  console.log(now() + " nameInfo.js:getNameEvents - inputName: " + inputName + ", info.events: " + JSON.stringify(info.events, null, 2));
+  // console.log(now() + " nameInfo.js:getNameEvents - inputName: " + inputName + ", info.events: " + JSON.stringify(info.events, null, 2));
   // return results;
 }
 

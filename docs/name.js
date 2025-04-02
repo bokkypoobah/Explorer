@@ -80,9 +80,12 @@ const Name = {
                 </v-row>
               </v-col>
               <v-col cols="6">
-                <v-img :src="avatar" width="400"></v-img>
+                <v-img :src="avatar" width="200"></v-img>
               </v-col>
             </v-row>
+            eventsList: {{ eventsList }}
+            <br />
+            info: {{ info }}
           </v-card-text>
         </v-card>
       </v-container>
@@ -98,6 +101,9 @@ const Name = {
     name() {
       return store.getters['name/name'];
     },
+    info() {
+      return store.getters['name/info'];
+    },
     resolvedAddress() {
       return store.getters['name/info'].resolvedAddress || null;
     },
@@ -107,14 +113,17 @@ const Name = {
     avatar() {
       return store.getters['name/info'].avatar || null;
     },
-    timestamp() {
-      return store.getters['name/timestamp'];
+    eventsList() {
+      return store.getters['name/eventsList'];
     },
-    timestampString: {
-      get: function() {
-        return this.timestamp && this.formatTimestamp(this.timestamp) || null;
-      },
-    },
+    // timestamp() {
+    //   return store.getters['name/timestamp'];
+    // },
+    // timestampString: {
+    //   get: function() {
+    //     return this.timestamp && this.formatTimestamp(this.timestamp) || null;
+    //   },
+    // },
 
   },
   methods: {

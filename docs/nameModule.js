@@ -6,50 +6,25 @@ const nameModule = {
   getters: {
     name: state => state.info.name || null,
     info: state => state.info,
-    // functions(state) {
-    //   console.log(now() + " nameModule - computed.functions");
-    //   const addressInfo = store.getters["addresses/getAddressInfo"](state.info.address);
-    //   // console.log(now() + " nameModule - computed.functions - addressInfo: " + JSON.stringify(addressInfo));
-    //   const results = {};
-    //   if (addressInfo.abi) {
-    //     try {
-    //       const interface = new ethers.utils.Interface(addressInfo.abi);
-    //       for (const fullName of interface.format(ethers.utils.FormatTypes.full)) {
-    //         if (fullName.substring(0, 8) == "function") {
-    //           const fragment = interface.getFunction(fullName.substring(9,));
-    //           const methodId = interface.getSighash(fragment);
-    //           results[methodId] = { fullName, ...fragment };
-    //         }
-    //       }
-    //     } catch (e) {
-    //       console.error(now() + " nameModule - computed.functions - ERROR: " + e.message);
-    //     }
-    //   }
-    //   return results;
-    // },
-    // events(state) {
-    //   console.log(now() + " nameModule - computed.events");
-    //   const addressInfo = store.getters["addresses/getAddressInfo"](state.info.address);
-    //   // console.log(now() + " nameModule - computed.functions - addressInfo: " + JSON.stringify(addressInfo));
-    //   const results = {};
-    //   if (addressInfo.abi) {
-    //     try {
-    //       const interface = new ethers.utils.Interface(addressInfo.abi);
-    //       for (const fullName of interface.format(ethers.utils.FormatTypes.full)) {
-    //         if (fullName.substring(0, 5) == "event") {
-    //           const fragment = interface.getEvent(fullName.substring(6,));
-    //           const topicCount = fragment.inputs.filter(e => e.indexed).length + 1;
-    //           const signature = interface.getEventTopic(fragment);
-    //           // const parameters = fragment.inputs.map(e => ({ name: e.name, type: e.type, indexed: e.indexed }));
-    //           results[signature] = { fullName, topicCount, ...fragment };
-    //         }
-    //       }
-    //     } catch (e) {
-    //       console.error(now() + " nameModule - computed.events - ERROR: " + e.message);
-    //     }
-    //   }
-    //   return results;
-    // },
+    eventsList(state) {
+      console.log(now() + " nameModule - computed.eventsList");
+      const results = [];
+      for (const [blockNumber, blockData] of Object.entries(state.info.events || {})) {
+        for (const [txIndex, txIndexData] of Object.entries(blockData)) {
+          for (const [logIndex, logIndexData] of Object.entries(txIndexData.events)) {
+            // console.log(blockNumber + "/" + txIndex + "/" + logIndex + " => " + JSON.stringify(logIndexData));
+            results.push({
+              blockNumber,
+              txIndex,
+              txHash: txIndexData.txHash,
+              logIndex,
+              ...logIndexData,
+            });
+          }
+        }
+      }
+      return results;
+    },
   },
   mutations: {
     setInfo(state, info) {
@@ -66,12 +41,12 @@ const nameModule = {
       let info = {};
       if (ethers.utils.isValidName(inputName)) {
         info = await getNameInfo(inputName, provider);
-        // console.log(now() + " nameModule - actions.loadName - Without ENS events info: " + JSON.stringify(info));
-        context.commit('setInfo', info);
+        console.log(now() + " nameModule - actions.loadName - Without ENS events info: " + JSON.stringify(info));
+        context.commit('setInfo', structuredClone(info));
         await getNameEvents(inputName, info, provider);
         // console.log(now() + " nameModule - actions.loadName - info: " + JSON.stringify(info));
       }
-      context.commit('setInfo', info);
+      context.commit('setInfo', structuredClone(info));
       // db.close();
     },
     // async loadAddress(context, { inputAddress, forceUpdate }) {
