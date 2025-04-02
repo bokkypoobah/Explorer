@@ -46,9 +46,25 @@ async function getNameEvents(inputName, info, provider) {
     [ info.erc721TokenIdHex, info.erc1155TokenIdHex ],
     null
   ];
-  console.log(now() + " nameInfo.js:getNameEvents - topics: " + JSON.stringify(topics, null, 2));
+  // console.log(now() + " nameInfo.js:getNameEvents - topics: " + JSON.stringify(topics, null, 2));
   const logs = await provider.getLogs({ address: null, fromBlock: 0, toBlock: info.blockNumber, topics });
-  console.log(now() + " nameInfo.js:getNameEvents - logs: " + JSON.stringify(logs, null, 2));
+  // console.log(now() + " nameInfo.js:getNameEvents - logs: " + JSON.stringify(logs, null, 2));
+  for (const log of logs) {
+    if (!log.removed) {
+      console.log(now() + " nameInfo.js:getNameEvents - log: " + JSON.stringify(log, null, 2));
+      if (!(log.blockNumber in info.events)) {
+        info.events[log.blockNumber] = {};
+      }
+      if (!(log.transactionIndex in info.events[log.blockNumber])) {
+        info.events[log.blockNumber][log.transactionIndex] = {
+          txHash: log.transactionHash,
+          events: {},
+        };
+        info.events[log.blockNumber][log.transactionIndex].events[log.logIndex] = { ...log, blockNumber: undefined, blockHash: undefined, transactionHash: undefined, transactionIndex: undefined, removed: undefined, logIndex: undefined };
+      }
+    }
+  }
+
 
   if (ethers.utils.isValidName(inputName)) {
 
@@ -61,6 +77,6 @@ async function getNameEvents(inputName, info, provider) {
     // results.ethAddress = resolver ? await resolver.getAddress() : null;
     // console.log(now() + " nameInfo.js:getNameEvents - address: " + results.ethAddress);
   }
-  console.log(now() + " nameInfo.js:getNameEvents - inputName: " + inputName + ", info: " + JSON.stringify(info));
+  console.log(now() + " nameInfo.js:getNameEvents - inputName: " + inputName + ", info.events: " + JSON.stringify(info.events, null, 2));
   // return results;
 }
