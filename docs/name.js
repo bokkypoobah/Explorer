@@ -16,7 +16,18 @@ const Name = {
               <v-col cols="6">
                 <v-row dense>
                   <v-col cols="11">
-                    <v-text-field readonly v-model="name" label="ENS Name:" density="compact" hide-details></v-text-field>
+                    <v-text-field
+                      readonly
+                      v-model="name"
+                      label="ENS Name:"
+                      append-inner-icon="mdi-content-copy"
+                      @click:append-inner="copyToClipboard(name)"
+                      append-icon="mdi-link"
+                      @click:append="navigateToURL('https://app.ens.domains/' + name)"
+                      density="compact"
+                      hide-details
+                    >
+                    </v-text-field>
                   </v-col>
                 </v-row>
                 <v-row dense>
@@ -25,8 +36,26 @@ const Name = {
                       readonly
                       v-model="resolvedAddress"
                       label="Resolved Address:"
-                      append-inner-icon="mdi-arrow-right-bold-outline"
-                      @click:append-inner="navigateToAddress(resolvedAddress)"
+                      append-inner-icon="mdi-content-copy"
+                      @click:append-inner="copyToClipboard(resolvedAddress)"
+                      append-icon="mdi-arrow-right-bold-outline"
+                      @click:append="navigateToAddress(resolvedAddress)"
+                      density="compact"
+                      hide-details
+                    >
+                    </v-text-field>
+                  </v-col>
+                </v-row>
+                <v-row dense>
+                  <v-col cols="11">
+                    <v-text-field
+                      readonly
+                      v-model="ethAddress"
+                      label="ETH Address:"
+                      append-inner-icon="mdi-content-copy"
+                      @click:append-inner="copyToClipboard(ethAddress)"
+                      append-icon="mdi-arrow-right-bold-outline"
+                      @click:append="navigateToAddress(ethAddress)"
                       density="compact"
                       hide-details
                     >
@@ -39,8 +68,10 @@ const Name = {
                       readonly
                       v-model="avatar"
                       label="Avatar:"
-                      append-inner-icon="mdi-link"
-                      @click:append-inner="navigateToURL(avatar)"
+                      append-inner-icon="mdi-content-copy"
+                      @click:append-inner="copyToClipboard(avatar)"
+                      append-icon="mdi-link"
+                      @click:append="navigateToURL(avatar)"
                       density="compact"
                       hide-details
                     >
@@ -70,6 +101,9 @@ const Name = {
     resolvedAddress() {
       return store.getters['name/info'].resolvedAddress || null;
     },
+    ethAddress() {
+      return store.getters['name/info'].ethAddress || null;
+    },
     avatar() {
       return store.getters['name/info'].avatar || null;
     },
@@ -92,6 +126,9 @@ const Name = {
     navigateToURL(link) {
       console.log(now() + " Name - methods.navigateToURL - link: " + link);
       window.open(link, "_blank");
+    },
+    copyToClipboard(str) {
+      navigator.clipboard.writeText(str);
     },
     formatETH(e) {
       if (e) {
