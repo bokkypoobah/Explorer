@@ -213,14 +213,6 @@ const app = Vue.createApp({
       const parts = this.$route.path.split("/");
       return parts.length >= 2 && ("/" + parts[1]) || null;
     },
-    // addressPathInputAddress() {
-    //   if (this.$route.path.substring(0, 8) == "/address") {
-    //     const inputAddress = this.$route.params && this.$route.params.inputAddress || null;
-    //     // console.log(now() + " index.js - computed.addressPathInputAddress - inputAddress: " + JSON.stringify(inputAddress, null, 2));
-    //     return inputAddress;
-    //   }
-    //   return null;
-    // },
     samples() {
       const results = [];
       console.log(now() + " index.js - computed.samples");
@@ -276,19 +268,6 @@ const app = Vue.createApp({
         }
       }
     },
-    syncAddress() {
-      console.log(now() + " index.js - methods.syncAddress");
-      const address = store.getters["address/address"];
-      console.log(now() + " index.js - methods.syncAddress - address: " + address);
-      store.dispatch('address/loadAddress', { inputAddress: address, forceUpdate: true });
-    },
-  //   testClick() {
-  //     console.log('this is a test click from component', this.$store.state.test);
-  //     this.$store.dispatch('pretendUpdate');
-  //   },
-  //   submitClick() {
-  //     console.log('Name in store', this.$store.state.name);
-  //   }
   },
   beforeCreate() {
     console.log(now() + " index.js - app:beforeCreate");

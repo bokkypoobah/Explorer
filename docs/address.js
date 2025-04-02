@@ -70,9 +70,9 @@ const Address = {
             </v-list>
           </v-menu>
           <v-spacer></v-spacer>
-          <!-- <v-btn @click="syncAddress();" color="primary" icon>
+          <v-btn @click="syncAddress();" color="primary" icon>
             <v-icon>mdi-sync</v-icon>
-          </v-btn> -->
+          </v-btn>
           <v-spacer></v-spacer>
           <v-tabs right color="deep-purple-accent-4">
             <v-tab :disabled="!address" :to="'/address/' + address" class="lowercase-btn">Address</v-tab>
@@ -110,6 +110,12 @@ const Address = {
     },
   },
   methods: {
+    syncAddress() {
+      console.log(now() + " Address - methods.syncAddress");
+      const address = store.getters["address/address"];
+      console.log(now() + " Address - methods.syncAddress - address: " + address);
+      store.dispatch('address/loadAddress', { inputAddress: address, forceUpdate: true });
+    },
     copyToClipboard(str) {
       navigator.clipboard.writeText(str);
     },
