@@ -74,7 +74,7 @@
           <v-spacer></v-spacer>
           <!-- <v-text-field v-model="searchString" @input="searchDebounced();" hide-details label="🔍" density="compact" variant="underlined" style="width: 330px;" placeholder="block #, tx hash or address">
           </v-text-field> -->
-          <v-combobox v-model="searchString" @update:model-value="search();" :items="samples" item-title="title" item-value="value" hide-details label="🔍" density="compact" variant="underlined" style="width: 330px;" placeholder="block #, tx hash, address or name[.eth]">
+          <v-combobox v-model="searchString" @update:model-value="search();" :items="samples" item-title="title" item-value="value" hide-details single-line label="🔍" density="compact" variant="underlined" style="width: 330px;" placeholder="block #, tx hash, address or name[.eth]">
             <template v-slot:item="{ item, props }">
               <!-- <v-list-item-content> -->
                 <v-list-item v-bind="props">
