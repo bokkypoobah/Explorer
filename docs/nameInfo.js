@@ -151,10 +151,8 @@ async function getNameEvents(inputName, info, provider) {
         } else {
           console.error(now() + " nameInfo.js:getNameEvents - VALID CONTRACT UNHANDLED log: " + JSON.stringify(log));
         }
-
-
       } else {
-        console.error(now() + " nameInfo.js:getNameEvents - NOT ENS CONTRACT log: " + JSON.stringify(log, null, 2));
+        console.log(now() + " nameInfo.js:getNameEvents - NOT ENS CONTRACT log: " + JSON.stringify(log, null, 2));
       }
       if (event) {
         if (!(log.blockNumber in info.events)) {

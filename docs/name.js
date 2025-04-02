@@ -94,7 +94,10 @@ const Name = {
   props: ['inputName'],
   data: function () {
     return {
-      txHash: null,
+      settings: {
+        tab: null,
+        version: 0,
+      },
     };
   },
   computed: {
@@ -136,6 +139,10 @@ const Name = {
       console.log(now() + " Name - methods.navigateToURL - link: " + link);
       window.open(link, "_blank");
     },
+    saveSettings() {
+      console.log(now() + " Name - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
+      localStorage.explorerNameSettings = JSON.stringify(this.settings);
+    },
     copyToClipboard(str) {
       navigator.clipboard.writeText(str);
     },
@@ -157,6 +164,13 @@ const Name = {
 	},
   mounted() {
     console.log(now() + " Name - mounted - inputName: " + this.inputName);
+    if ('explorerNameSettings' in localStorage) {
+      const tempSettings = JSON.parse(localStorage.explorerNameSettings);
+      console.log(now() + " Name - mounted - tempSettings: " + JSON.stringify(tempSettings));
+      if ('version' in tempSettings && tempSettings.version == this.settings.version) {
+        this.settings = tempSettings;
+      }
+    }
     const t = this;
     setTimeout(function() {
       store.dispatch('name/loadName', { inputName: t.inputName, forceUpdate: false });
