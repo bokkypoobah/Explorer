@@ -33,6 +33,20 @@ const Name = {
                     </v-text-field>
                   </v-col>
                 </v-row>
+                <v-row dense>
+                  <v-col cols="11">
+                    <v-text-field
+                      readonly
+                      v-model="avatar"
+                      label="Avatar:"
+                      append-inner-icon="mdi-link"
+                      @click:append-inner="navigateToURL(avatar)"
+                      density="compact"
+                      hide-details
+                    >
+                    </v-text-field>
+                  </v-col>
+                </v-row>
               </v-col>
               <v-col cols="6">
                 <v-img :src="avatar" width="400"></v-img>
@@ -74,6 +88,10 @@ const Name = {
       console.log(now() + " Name - methods.navigateToAddress - link: " + link);
       this.$router.push({ name: 'AddressAddress', params: { inputAddress: link } });
       store.dispatch('address/loadAddress', { inputAddress: link, forceUpdate: false });
+    },
+    navigateToURL(link) {
+      console.log(now() + " Name - methods.navigateToURL - link: " + link);
+      window.open(link, "_blank");
     },
     formatETH(e) {
       if (e) {

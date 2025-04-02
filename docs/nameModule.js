@@ -63,52 +63,46 @@ const nameModule = {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const chainId = store.getters["chainId"];
       const dbInfo = store.getters["db"];
-      const info = {};
+      let info = {};
       if (ethers.utils.isValidName(inputName)) {
-        info.name = inputName;
-        info.resolvedAddress = await provider.resolveName(inputName);
-        console.log(now() + " nameModule - actions.loadName - resolvedAddress: " + info.resolvedAddress);
-        info.avatar = await provider.getAvatar(inputName);
-        console.log(now() + " nameModule - actions.loadName - avatar: " + info.avatar);
-        const resolver = await provider.getResolver(inputName);
-        const address = resolver ? await resolver.getAddress() : null;
-        console.log(now() + " nameModule - actions.loadName - address: " + JSON.stringify(address, null, 2));
+        info = await getNameInfo(inputName, provider);
+        console.log(now() + " nameModule - actions.loadName - info: " + JSON.stringify(info));
       }
       context.commit('setInfo', info);
       // db.close();
     },
-    async loadAddress(context, { inputAddress, forceUpdate }) {
-      console.log(now() + " nameModule - actions.loadAddress - inputAddress: " + inputAddress + ", forceUpdate: " + forceUpdate);
-      // TODO
-      // if (!store.getters['web3'].connected || !window.ethereum) {
-      //   error = "Not connected";
-      // }
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const chainId = store.getters["chainId"];
-      const dbInfo = store.getters["db"];
-      // console.log(now() + " nameModule - actions.loadAddress - dbInfo: " + JSON.stringify(dbInfo));
-      const db = new Dexie(dbInfo.name);
-      db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
-
-      const validatedAddress = validateAddress(inputAddress);
-      let info = {};
-      if (validatedAddress) {
-        info = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_address", {});
-        // console.log(now() + " nameModule - actions.loadAddress - info: " + JSON.stringify(info));
-        if (Object.keys(info).length == 0 || forceUpdate) {
-          info = await getAddressInfo(validatedAddress, provider);
-          // console.log(now() + " nameModule - actions.loadAddress - info: " + JSON.stringify(info));
-          await dbSaveCacheData(db, validatedAddress + "_" + chainId + "_address", info);
-        }
-        const addressInfo = store.getters["addresses/getAddressInfo"](validatedAddress);
-        // console.log(now() + " nameModule - actions.loadAddress - addressInfo: " + JSON.stringify(addressInfo));
-        if (!addressInfo.type) {
-          store.dispatch("addresses/addAddress", { address: validatedAddress, type: info.type, version: info.version });
-        }
-      }
-
-      context.commit('setInfo', info);
-      db.close();
-    },
+    // async loadAddress(context, { inputAddress, forceUpdate }) {
+    //   console.log(now() + " nameModule - actions.loadAddress - inputAddress: " + inputAddress + ", forceUpdate: " + forceUpdate);
+    //   // TODO
+    //   // if (!store.getters['web3'].connected || !window.ethereum) {
+    //   //   error = "Not connected";
+    //   // }
+    //   const provider = new ethers.providers.Web3Provider(window.ethereum);
+    //   const chainId = store.getters["chainId"];
+    //   const dbInfo = store.getters["db"];
+    //   // console.log(now() + " nameModule - actions.loadAddress - dbInfo: " + JSON.stringify(dbInfo));
+    //   const db = new Dexie(dbInfo.name);
+    //   db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
+    //
+    //   const validatedAddress = validateAddress(inputAddress);
+    //   let info = {};
+    //   if (validatedAddress) {
+    //     info = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_address", {});
+    //     // console.log(now() + " nameModule - actions.loadAddress - info: " + JSON.stringify(info));
+    //     if (Object.keys(info).length == 0 || forceUpdate) {
+    //       info = await getAddressInfo(validatedAddress, provider);
+    //       // console.log(now() + " nameModule - actions.loadAddress - info: " + JSON.stringify(info));
+    //       await dbSaveCacheData(db, validatedAddress + "_" + chainId + "_address", info);
+    //     }
+    //     const addressInfo = store.getters["addresses/getAddressInfo"](validatedAddress);
+    //     // console.log(now() + " nameModule - actions.loadAddress - addressInfo: " + JSON.stringify(addressInfo));
+    //     if (!addressInfo.type) {
+    //       store.dispatch("addresses/addAddress", { address: validatedAddress, type: info.type, version: info.version });
+    //     }
+    //   }
+    //
+    //   context.commit('setInfo', info);
+    //   db.close();
+    // },
   },
 };
