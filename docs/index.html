@@ -42,6 +42,7 @@
     <script src="connectionModule.js"></script>
     <script src="addressModule.js"></script>
     <script src="addressesModule.js"></script>
+    <script src="nameModule.js"></script>
 
     <script src="home.js"></script>
     <script src="block.js"></script>
@@ -87,7 +88,7 @@
           <v-btn to="/block" :active="mainPath == '/block'" class="lowercase-btn" text>Block</v-btn>
           <v-btn to="/transaction" :active="mainPath == '/transaction'" class="lowercase-btn" text>Transaction</v-btn>
           <v-btn to="/address/" :active="mainPath == '/address'" class="lowercase-btn" text>Address</v-btn>
-          <!-- TODO: After NewAddress <v-btn to="/name/" :active="mainPath == '/name'" class="lowercase-btn" text>ENS Name</v-btn> -->
+          <v-btn to="/name/" :active="mainPath == '/name'" class="lowercase-btn" text>ENS Name</v-btn>
           <v-btn to="/config" :active="mainPath == '/config'" class="lowercase-btn" text>
             <!-- <span class="mdi mdi-tools"></span> -->
             Config
