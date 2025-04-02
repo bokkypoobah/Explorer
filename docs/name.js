@@ -11,7 +11,7 @@ const Name = {
           <v-card-text>
             name: {{ name }}
             <br />
-            resolvedAddress: {{ resolvedAddress }}
+            resolvedAddress: <a :href="'#/address/' + resolvedAddress">{{ resolvedAddress }}</a>
           </v-card-text>
         </v-card>
       </v-container>
