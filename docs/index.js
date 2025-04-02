@@ -241,10 +241,10 @@ const app = Vue.createApp({
       const txRegex = /^0x[a-fA-F0-9]{64}$/;
       const addressRegex = /^0x[a-fA-F0-9]{40}$/;
       // const ensNameRegex = /^([a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*)(\.eth)?$/;
-      console.log(now() + " index.js - methods.searchDebounced - this.searchString: " + JSON.stringify(this.searchString));
+      // console.log(now() + " index.js - methods.searchDebounced - this.searchString: " + JSON.stringify(this.searchString));
       if (this.searchString) {
         const searchString = this.searchString.value || this.searchString;
-        console.log(now() + " index.js - methods.searchDebounced - searchString: " + JSON.stringify(searchString));
+        // console.log(now() + " index.js - methods.searchDebounced - searchString: " + JSON.stringify(searchString));
         if (blockRegex.test(searchString)) {
           console.log(now() + " index.js - methods.searchDebounced - BLOCK searchString: " + JSON.stringify(searchString));
           this.$router.push({ name: 'Block', params: { inputBlockNumber: searchString } });

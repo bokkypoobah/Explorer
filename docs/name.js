@@ -16,7 +16,7 @@ const Name = {
               <v-col cols="6">
                 <v-row dense>
                   <v-col cols="11">
-                    <v-text-field readonly v-model="name" label="ENS Name:"></v-text-field>
+                    <v-text-field readonly v-model="name" label="ENS Name:" density="compact" hide-details></v-text-field>
                   </v-col>
                 </v-row>
                 <v-row dense>
@@ -27,6 +27,8 @@ const Name = {
                       label="Resolved Address:"
                       append-inner-icon="mdi-arrow-right-bold-outline"
                       @click:append-inner="navigateToAddress(resolvedAddress)"
+                      density="compact"
+                      hide-details
                     >
                     </v-text-field>
                   </v-col>
