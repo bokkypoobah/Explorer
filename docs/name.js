@@ -12,13 +12,23 @@ const Name = {
       <v-container v-if="inputName && name" fluid class="pa-1">
         <v-card>
           <v-card-text>
-            name: {{ name }}
-            <br />
-            resolvedAddress: <a :href="'#/address/' + resolvedAddress">{{ resolvedAddress }}</a>
-            <br />
-            avatar: <a :href="avatar" target="_blank">{{ avatar }}</a>
-            <br />
-            <v-img :src="avatar" width="400"></v-img>
+            <v-row dense>
+              <v-col cols="6">
+                <v-row dense>
+                  <v-col cols="11">
+                    <v-text-field readonly v-model="name" label="ENS Name:"></v-text-field>
+                  </v-col>
+                </v-row>
+                <v-row dense>
+                  <v-col cols="11">
+                    <v-text-field readonly v-model="resolvedAddress" label="Resolved Address:"></v-text-field>
+                  </v-col>
+                </v-row>
+              </v-col>
+              <v-col cols="6">
+                <v-img :src="avatar" width="400"></v-img>
+              </v-col>
+            </v-row>
           </v-card-text>
         </v-card>
       </v-container>
