@@ -126,8 +126,9 @@ const Name = {
         version: 0,
       },
       eventsHeaders: [
-        { title: 'When', value: 'when', sortable: true, width: "15%" },
-        { title: 'What', value: 'what', sortable: true, width: "85%" },
+        { title: 'When', value: 'when', sortable: false, width: "15%" },
+        { title: 'Contract', value: 'contract', sortable: false, width: "15%" },
+        { title: 'What', value: 'what', sortable: false, width: "70%" },
       ],
     };
   },
