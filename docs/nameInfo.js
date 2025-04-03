@@ -166,7 +166,7 @@ async function getNameEvents(inputName, info, provider) {
             txHash: log.transactionHash,
             events: {},
           };
-          info.events[log.blockNumber].txs[log.transactionIndex].events[log.logIndex] = { address: log.address, ...event };
+          info.events[log.blockNumber].txs[log.transactionIndex].events[log.logIndex] = { address: log.address, addressName: VALID_ENS_CONTRACTS[log.address], ...event };
         }
       }
     }
