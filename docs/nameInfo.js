@@ -59,7 +59,7 @@ async function getNameEvents(inputName, info, provider) {
   ];
   // console.log(now() + " nameInfo.js:getNameEvents - topics: " + JSON.stringify(topics, null, 2));
   const logs = await provider.getLogs({ address: null, fromBlock: 0, toBlock: info.blockNumber, topics });
-  // console.log(now() + " nameInfo.js:getNameEvents - logs: " + JSON.stringify(logs, null, 2));
+  console.log(now() + " nameInfo.js:getNameEvents - logs: " + JSON.stringify(logs, null, 2));
   for (const log of logs) {
     if (!log.removed) {
       // console.log(now() + " nameInfo.js:getNameEvents - log: " + JSON.stringify(log, null, 2));
@@ -152,7 +152,7 @@ async function getNameEvents(inputName, info, provider) {
           console.error(now() + " nameInfo.js:getNameEvents - VALID CONTRACT UNHANDLED log: " + JSON.stringify(log));
         }
       } else {
-        console.log(now() + " nameInfo.js:getNameEvents - NOT ENS CONTRACT log: " + JSON.stringify(log, null, 2));
+        console.error(now() + " nameInfo.js:getNameEvents - NOT ENS CONTRACT log: " + JSON.stringify(log, null, 2));
       }
       if (event) {
         if (!(log.blockNumber in info.events)) {
@@ -166,11 +166,12 @@ async function getNameEvents(inputName, info, provider) {
             txHash: log.transactionHash,
             events: {},
           };
-          info.events[log.blockNumber].txs[log.transactionIndex].events[log.logIndex] = { address: log.address, contract: VALID_ENS_CONTRACTS[log.address], ...event };
         }
+        info.events[log.blockNumber].txs[log.transactionIndex].events[log.logIndex] = { address: log.address, contract: VALID_ENS_CONTRACTS[log.address], ...event };
       }
     }
   }
+  console.log(now() + " nameInfo.js:getNameEvents - info: " + JSON.stringify(info, null, 2));
 }
 
 async function getNameEventsSupplementaryData(info, provider) {

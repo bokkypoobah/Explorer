@@ -96,13 +96,23 @@ const Name = {
                     </v-row>
                   </v-tabs-window-item>
                   <v-tabs-window-item value="history">
-                    <v-data-table :items="eventsList" :headers="eventsHeaders" density="compact">
+                    <v-data-table :items="eventsList" :headers="eventsHeaders" @click:row="handleEventsClick" density="compact">
                       <template v-slot:item.when="{ item }">
-                        {{ item.blockNumber }}
+                        <span v-if="item.timestamp">
+                          {{ formatTimestamp(item.timestamp) }}
+                        </span>
+                        <span v-else>
+                          {{ '#' + item.blockNumber }}
+                        </span>
                         <!-- <a :href="'#/transaction/' + item.txHash">{{ item.txHash.substring(0, 20) + "..." + item.txHash.slice(-18) }}</a> -->
                       </template>
                       <template v-slot:item.what="{ item }">
-                        {{ item }}
+                        <span v-if="item.type == 'TextChanged'">
+                          {{ item.key }} => {{ item.value }}
+                        </span>
+                        <span v-else>
+                          {{ item }}
+                        </span>
                         <!-- <a :href="'#/address/' + item.from">{{ item.from.substring(0, 10) + "..." + item.from.slice(-8) }}</a> -->
                       </template>
                     </v-data-table>
@@ -121,14 +131,16 @@ const Name = {
   props: ['inputName'],
   data: function () {
     return {
+      initialised: false,
       settings: {
         tab: null,
         version: 0,
       },
       eventsHeaders: [
-        { title: 'When', value: 'when', sortable: false, width: "15%" },
-        { title: 'Contract', value: 'contract', sortable: false, width: "15%" },
-        { title: 'What', value: 'what', sortable: false, width: "70%" },
+        { title: 'When', value: 'when', sortable: false, width: "20%" },
+        { title: 'Contract', value: 'contract', sortable: false, width: "20%" },
+        { title: 'Type', value: 'type', sortable: false, width: "20%" },
+        { title: 'What', value: 'what', sortable: false, width: "40%" },
       ],
     };
   },
@@ -162,6 +174,12 @@ const Name = {
 
   },
   methods: {
+    handleEventsClick(event, row) {
+      console.log(now() + " Name - methods.handleEventsClick - event: " + JSON.stringify(event, null, 2) + ", row: " + JSON.stringify(row, null, 2));
+      this.$router.push({ name: 'Transaction', params: { inputTxHash: row.item.txHash } });
+      // store.dispatch('address/loadAddress', { inputTxHash: row.item.txHash, forceUpdate: false });
+      store.dispatch('transaction/loadTransaction', row.item.txHash);
+    },
     navigateToAddress(link) {
       console.log(now() + " Name - methods.navigateToAddress - link: " + link);
       this.$router.push({ name: 'AddressAddress', params: { inputAddress: link } });
@@ -173,7 +191,9 @@ const Name = {
     },
     saveSettings() {
       console.log(now() + " Name - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
-      localStorage.explorerNameSettings = JSON.stringify(this.settings);
+      if (this.initialised) {
+        localStorage.explorerNameSettings = JSON.stringify(this.settings);
+      }
     },
     copyToClipboard(str) {
       navigator.clipboard.writeText(str);
@@ -203,6 +223,7 @@ const Name = {
         this.settings = tempSettings;
       }
     }
+    this.initialised = true;
     const t = this;
     setTimeout(function() {
       store.dispatch('name/loadName', { inputName: t.inputName, forceUpdate: false });

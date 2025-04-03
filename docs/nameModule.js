@@ -51,9 +51,10 @@ const nameModule = {
       let info = {};
       if (ethers.utils.isValidName(inputName)) {
         info = await getNameInfo(inputName, provider);
-        console.log(now() + " nameModule - actions.loadName - Without ENS events info: " + JSON.stringify(info));
+        // console.log(now() + " nameModule - actions.loadName - Without ENS events info: " + JSON.stringify(info));
         context.commit('setInfo', structuredClone(info));
         await getNameEvents(inputName, info, provider);
+        // console.log(now() + " nameModule - actions.loadName - With ENS events info: " + JSON.stringify(info));
         context.commit('setInfo', structuredClone(info));
         await getNameEventsSupplementaryData(info, provider);
         context.commit('setInfo', structuredClone(info));
