@@ -25,9 +25,9 @@ const nameModule = {
       }
       results.sort((a, b) => {
         if (a.blockNumber == b.blockNumber) {
-          return a.logIndex - b.logIndex;
+          return b.logIndex - a.logIndex;
         } else {
-          return a.blockNumber - b.blockNumber;
+          return b.blockNumber - a.blockNumber;
         }
       });
       console.log(now() + " nameModule - computed.eventsList - results: " + JSON.stringify(results, null, 2));

@@ -96,8 +96,15 @@ const Name = {
                     </v-row>
                   </v-tabs-window-item>
                   <v-tabs-window-item value="history">
-                    <!-- <v-data-table :items="functionsList" :headers="functionsHeaders" @click:row="handleFunctionsClick" density="compact"> -->
-                    <v-data-table :items="eventsList" density="compact">
+                    <v-data-table :items="eventsList" :headers="eventsHeaders" density="compact">
+                      <template v-slot:item.when="{ item }">
+                        {{ item.blockNumber }}
+                        <!-- <a :href="'#/transaction/' + item.txHash">{{ item.txHash.substring(0, 20) + "..." + item.txHash.slice(-18) }}</a> -->
+                      </template>
+                      <template v-slot:item.what="{ item }">
+                        {{ item }}
+                        <!-- <a :href="'#/address/' + item.from">{{ item.from.substring(0, 10) + "..." + item.from.slice(-8) }}</a> -->
+                      </template>
                     </v-data-table>
                     <!-- eventsList: {{ eventsList }}
                     <br />
@@ -118,6 +125,10 @@ const Name = {
         tab: null,
         version: 0,
       },
+      eventsHeaders: [
+        { title: 'When', value: 'when', sortable: true, width: "15%" },
+        { title: 'What', value: 'what', sortable: true, width: "85%" },
+      ],
     };
   },
   computed: {
