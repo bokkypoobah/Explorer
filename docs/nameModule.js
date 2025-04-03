@@ -31,7 +31,7 @@ const nameModule = {
           return b.blockNumber - a.blockNumber;
         }
       });
-      console.log(now() + " nameModule - computed.eventsList - results: " + JSON.stringify(results, null, 2));
+      // console.log(now() + " nameModule - computed.eventsList - results: " + JSON.stringify(results, null, 2));
       return results;
     },
   },
@@ -53,6 +53,8 @@ const nameModule = {
         console.log(now() + " nameModule - actions.loadName - Without ENS events info: " + JSON.stringify(info));
         context.commit('setInfo', structuredClone(info));
         await getNameEvents(inputName, info, provider);
+        context.commit('setInfo', structuredClone(info));
+        await getNameEventsTimestamps(info, provider);
         // console.log(now() + " nameModule - actions.loadName - info: " + JSON.stringify(info));
       }
       context.commit('setInfo', structuredClone(info));

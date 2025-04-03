@@ -171,21 +171,10 @@ async function getNameEvents(inputName, info, provider) {
       }
     }
   }
+}
 
-
-  if (ethers.utils.isValidName(inputName)) {
-
-    // results.name = inputName;
-    // results.resolvedAddress = await provider.resolveName(inputName);
-    // console.log(now() + " nameInfo.js:getNameEvents - resolvedAddress: " + results.resolvedAddress);
-    // results.avatar = await provider.getAvatar(inputName);
-    // console.log(now() + " nameInfo.js:getNameEvents - avatar: " + results.avatar);
-    // const resolver = await provider.getResolver(inputName);
-    // results.ethAddress = resolver ? await resolver.getAddress() : null;
-    // console.log(now() + " nameInfo.js:getNameEvents - address: " + results.ethAddress);
-  }
-  // console.log(now() + " nameInfo.js:getNameEvents - inputName: " + inputName + ", info.events: " + JSON.stringify(info.events, null, 2));
-  // return results;
+async function getNameEventsTimestamps(info, provider) {
+  console.log(now() + " nameInfo.js:getNameEventsTimestamps");
 }
 
 // scientific.collections.eth
