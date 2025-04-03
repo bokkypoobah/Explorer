@@ -55,8 +55,10 @@ const nameModule = {
         context.commit('setInfo', structuredClone(info));
         await getNameEvents(inputName, info, provider);
         context.commit('setInfo', structuredClone(info));
+        await getNameEventsSupplementaryData(info, provider);
+        context.commit('setInfo', structuredClone(info));
         await getNameEventsTimestamps(info, provider);
-        console.log(now() + " nameModule - actions.loadName - info: " + JSON.stringify(info));
+        // console.log(now() + " nameModule - actions.loadName - info: " + JSON.stringify(info));
       }
       context.commit('setInfo', structuredClone(info));
       // db.close();

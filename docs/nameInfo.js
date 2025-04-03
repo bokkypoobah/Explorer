@@ -173,13 +173,52 @@ async function getNameEvents(inputName, info, provider) {
   }
 }
 
+async function getNameEventsSupplementaryData(info, provider) {
+  console.log(now() + " nameInfo.js:getNameEventsSupplementaryData");
+  const publicResolver2Interface = new ethers.utils.Interface(ENS_PUBLICRESOLVER2_ABI);
+  for (const [blockNumber, blockData] of Object.entries(info.events)) {
+    // console.log(blockNumber + " => " + JSON.stringify(blockData));
+    for (const [txIndex, txIndexData] of Object.entries(blockData.txs)) {
+      // console.log(blockNumber + "/" + txIndex + " => " + JSON.stringify(txIndexData));
+      for (const [logIndex, logIndexData] of Object.entries(txIndexData.events)) {
+        if (logIndexData.address == ENS_PUBLICRESOLVER2_ADDRESS && logIndexData.type == "TextChanged") {
+          // console.log(blockNumber + "/" + txIndex + "/" + logIndex + " => " + JSON.stringify(logIndexData));
+          const tx = await provider.getTransaction(txIndexData.txHash);
+          const decodedData = publicResolver2Interface.parseTransaction({ data: tx.data, value: tx.value });
+          // console.log(now() + " nameInfo.js:getNameEventsSupplementaryData - decodedData: " + JSON.stringify(decodedData));
+          if (decodedData.functionFragment.name == "setText") {
+            const decodedFunctionArgs = publicResolver2Interface.decodeFunctionData("setText", tx.data);
+            // console.log(now() + " nameInfo.js:getNameEventsSupplementaryData - decodedFunctionArgs: " + JSON.stringify(decodedFunctionArgs));
+            info.events[blockNumber].txs[txIndex].events[logIndex].value = decodedFunctionArgs[2];
+          } else if (decodedData.functionFragment.name == "multicall") {
+            const decodedFunctionArgs = publicResolver2Interface.decodeFunctionData("multicall", tx.data);
+            for (const data1 of decodedFunctionArgs) {
+              for (const data2 of data1) {
+                const decodedArrayData = publicResolver2Interface.parseTransaction({ data: data2, value: tx.value });
+                if (decodedArrayData.functionFragment.name == "setText") {
+                  const decodedFunctionArgs1 = publicResolver2Interface.decodeFunctionData("setText", data2);
+                  info.events[blockNumber].txs[txIndex].events[logIndex].value = decodedFunctionArgs1[2];
+                }
+              }
+            }
+
+          } else {
+            console.log(now() + " nameInfo.js:getNameEventsSupplementaryData - UNHANDLED decodedData.functionFragment.name: " + decodedData.functionFragment.name);
+          }
+
+        }
+      }
+    }
+  }
+}
+
 async function getNameEventsTimestamps(info, provider) {
   console.log(now() + " nameInfo.js:getNameEventsTimestamps");
   for (const [blockNumber, blockData] of Object.entries(info.events)) {
-    console.log(blockNumber + " => " + JSON.stringify(blockData));
+    // console.log(blockNumber + " => " + JSON.stringify(blockData));
     const block = await provider.getBlock(parseInt(blockNumber));
     info.events[blockNumber].timestamp = block.timestamp;
-    console.log(blockNumber + " => " + JSON.stringify(info.events[blockNumber]));
+    // console.log(blockNumber + " => " + JSON.stringify(info.events[blockNumber]));
   }
 }
 
