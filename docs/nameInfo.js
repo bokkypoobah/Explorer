@@ -156,14 +156,17 @@ async function getNameEvents(inputName, info, provider) {
       }
       if (event) {
         if (!(log.blockNumber in info.events)) {
-          info.events[log.blockNumber] = {};
+          info.events[log.blockNumber] = {
+            timestamp: null,
+            txs: {},
+          };
         }
-        if (!(log.transactionIndex in info.events[log.blockNumber])) {
-          info.events[log.blockNumber][log.transactionIndex] = {
+        if (!(log.transactionIndex in info.events[log.blockNumber].txs)) {
+          info.events[log.blockNumber].txs[log.transactionIndex] = {
             txHash: log.transactionHash,
             events: {},
           };
-          info.events[log.blockNumber][log.transactionIndex].events[log.logIndex] = { address: log.address, ...event };
+          info.events[log.blockNumber].txs[log.transactionIndex].events[log.logIndex] = { address: log.address, ...event };
         }
       }
     }

@@ -10,11 +10,12 @@ const nameModule = {
       console.log(now() + " nameModule - computed.eventsList");
       const results = [];
       for (const [blockNumber, blockData] of Object.entries(state.info.events || {})) {
-        for (const [txIndex, txIndexData] of Object.entries(blockData)) {
+        for (const [txIndex, txIndexData] of Object.entries(blockData.txs)) {
           for (const [logIndex, logIndexData] of Object.entries(txIndexData.events)) {
             // console.log(blockNumber + "/" + txIndex + "/" + logIndex + " => " + JSON.stringify(logIndexData));
             results.push({
               blockNumber,
+              timestamp: blockData.timestamp,
               txIndex,
               txHash: txIndexData.txHash,
               logIndex,
