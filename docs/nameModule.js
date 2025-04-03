@@ -23,6 +23,14 @@ const nameModule = {
           }
         }
       }
+      results.sort((a, b) => {
+        if (a.blockNumber == b.blockNumber) {
+          return a.logIndex - b.logIndex;
+        } else {
+          return a.blockNumber - b.blockNumber;
+        }
+      });
+      console.log(now() + " nameModule - computed.eventsList - results: " + JSON.stringify(results, null, 2));
       return results;
     },
   },

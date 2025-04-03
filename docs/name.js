@@ -96,9 +96,12 @@ const Name = {
                     </v-row>
                   </v-tabs-window-item>
                   <v-tabs-window-item value="history">
-                    eventsList: {{ eventsList }}
+                    <!-- <v-data-table :items="functionsList" :headers="functionsHeaders" @click:row="handleFunctionsClick" density="compact"> -->
+                    <v-data-table :items="eventsList" density="compact">
+                    </v-data-table>
+                    <!-- eventsList: {{ eventsList }}
                     <br />
-                    info: {{ info }}
+                    info: {{ info }} -->
                   </v-tabs-window-item>
                 </v-tabs-window>
               </v-col>
