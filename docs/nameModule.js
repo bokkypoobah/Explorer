@@ -10,6 +10,7 @@ const nameModule = {
       console.log(now() + " nameModule - computed.eventsList");
       const results = [];
       for (const [blockNumber, blockData] of Object.entries(state.info.events || {})) {
+        // console.log(blockNumber + " => " + JSON.stringify(blockData));
         for (const [txIndex, txIndexData] of Object.entries(blockData.txs)) {
           for (const [logIndex, logIndexData] of Object.entries(txIndexData.events)) {
             // console.log(blockNumber + "/" + txIndex + "/" + logIndex + " => " + JSON.stringify(logIndexData));
@@ -55,7 +56,7 @@ const nameModule = {
         await getNameEvents(inputName, info, provider);
         context.commit('setInfo', structuredClone(info));
         await getNameEventsTimestamps(info, provider);
-        // console.log(now() + " nameModule - actions.loadName - info: " + JSON.stringify(info));
+        console.log(now() + " nameModule - actions.loadName - info: " + JSON.stringify(info));
       }
       context.commit('setInfo', structuredClone(info));
       // db.close();

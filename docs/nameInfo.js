@@ -175,6 +175,12 @@ async function getNameEvents(inputName, info, provider) {
 
 async function getNameEventsTimestamps(info, provider) {
   console.log(now() + " nameInfo.js:getNameEventsTimestamps");
+  for (const [blockNumber, blockData] of Object.entries(info.events)) {
+    console.log(blockNumber + " => " + JSON.stringify(blockData));
+    const block = await provider.getBlock(parseInt(blockNumber));
+    info.events[blockNumber].timestamp = block.timestamp;
+    console.log(blockNumber + " => " + JSON.stringify(info.events[blockNumber]));
+  }
 }
 
 // scientific.collections.eth
