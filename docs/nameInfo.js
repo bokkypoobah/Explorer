@@ -29,7 +29,9 @@ async function getNameEvents(inputName, info, provider) {
   const nameWrapperInterface = new ethers.utils.Interface(ENS_NAMEWRAPPER_ABI);
   const registryWithFallbackInterface = new ethers.utils.Interface(ENS_REGISTRYWITHFALLBACK_ABI);
   const publicResolverInterface = new ethers.utils.Interface(ENS_PUBLICRESOLVER_ABI);
+  // event TextChanged(bytes32 indexed node, string indexed indexedKey, string key, string value)
   const publicResolver2Interface = new ethers.utils.Interface(ENS_PUBLICRESOLVER2_ABI);
+  // event TextChanged(bytes32 indexed node, string indexed indexedKey, string key)
 
   info.events = {};
   const block = await provider.getBlock();
@@ -38,7 +40,8 @@ async function getNameEvents(inputName, info, provider) {
   const topics = [[
       '0xb3d987963d01b2f68493b4bdb130988f157ea43070d4ad840fee0466ed9370d9', // NameRegistered (index_topic_1 uint256 id, index_topic_2 address owner, uint256 expires)
       '0xca6abbe9d7f11422cb6ca7629fbf6fe9efb1c621f71ce8f02b9f2a230097404f', // NameRegistered (string name, index_topic_1 bytes32 label, index_topic_2 address owner, uint256 cost, uint256 expires)
-      '0x3da24c024582931cfaf8267d8ed24d13a82a8068d5bd337d30ec45cea4e506ae', // NameRenewed (string name, index_topic_1 bytes32 label, uint256 cost, uint256 expires)
+      '0x3da24c024582931cfaf8267d8ed24d13a82a8068d5bd337d30ec45cea4e506ae', //
+      // event TextChanged(bytes32 indexed node, string indexed indexedKey, string key) NameRenewed (string name, index_topic_1 bytes32 label, uint256 cost, uint256 expires)
       '0x8ce7013e8abebc55c3890a68f5a27c67c3f7efa64e584de5fb22363c606fd340', // NameWrapped (index_topic_1 bytes32 node, bytes name, address owner, uint32 fuses, uint64 expiry)
       '0xee2ba1195c65bcf218a83d874335c6bf9d9067b4c672f3c3bf16cf40de7586c4', // NameUnwrapped (index_topic_1 bytes32 node, address owner)
 
@@ -62,9 +65,9 @@ async function getNameEvents(inputName, info, provider) {
   console.log(now() + " nameInfo.js:getNameEvents - logs: " + JSON.stringify(logs, null, 2));
   for (const log of logs) {
     if (!log.removed) {
-      // console.log(now() + " nameInfo.js:getNameEvents - log: " + JSON.stringify(log, null, 2));
+      console.log(now() + " nameInfo.js:getNameEvents - log: " + JSON.stringify(log, null, 2));
       let event = null;
-      if (log.address in VALID_ENS_CONTRACTS) {
+      if (log.address in ENS_ADDRESSES) {
         // event = { ...log, address: undefined, blockNumber: undefined, blockHash: undefined, transactionHash: undefined, transactionIndex: undefined, removed: undefined, logIndex: undefined };
         if (log.topics[0] == "0xb3d987963d01b2f68493b4bdb130988f157ea43070d4ad840fee0466ed9370d9") {
           // NameRegistered (index_topic_1 uint256 id, index_topic_2 address owner, uint256 expires)
@@ -167,7 +170,7 @@ async function getNameEvents(inputName, info, provider) {
             events: {},
           };
         }
-        info.events[log.blockNumber].txs[log.transactionIndex].events[log.logIndex] = { address: log.address, contract: VALID_ENS_CONTRACTS[log.address], ...event };
+        info.events[log.blockNumber].txs[log.transactionIndex].events[log.logIndex] = { address: log.address, contract: ENS_ADDRESSES[log.address], ...event };
       }
     }
   }
