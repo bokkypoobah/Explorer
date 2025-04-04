@@ -165,7 +165,7 @@ async function getNameEvents(inputName, info, provider) {
             events: {},
           };
         }
-        info.events[log.blockNumber].txs[log.transactionIndex].events[log.logIndex] = { address: log.address, contract: ENS_ADDRESSES[log.address], ...event };
+        info.events[log.blockNumber].txs[log.transactionIndex].events[log.logIndex] = { address: log.address, contract: ENS_INFO[log.address].name, ...event };
       }
     }
   }
