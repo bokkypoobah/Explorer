@@ -107,7 +107,42 @@ const Name = {
                         <!-- <a :href="'#/transaction/' + item.txHash">{{ item.txHash.substring(0, 20) + "..." + item.txHash.slice(-18) }}</a> -->
                       </template>
                       <template v-slot:item.what="{ item }">
-                        <span v-if="item.type == 'TextChanged'">
+                        <span v-if="item.type == 'AddrChanged'">
+                          <!-- node: {{ item.node }} -->
+                          a: {{ item.a }}
+                        </span>
+                        <span v-else-if="item.type == 'AddressChanged'">
+                          <!-- node: {{ item.node }} -->
+                          coinType: {{ item.coinType }}
+                          newAddress: {{ item.newAddress }}
+                        </span>
+                        <span v-else-if="item.type == 'ContenthashChanged'">
+                          <!-- node: {{ item.node }} -->
+                          hash: {{ item.hash }}
+                        </span>
+                        <span v-else-if="item.type == 'NameRegistered'">
+                          <span v-if="item.label">label: {{ item.label }}</span>
+                          labelhash: {{ item.labelhash }}
+                          owner: {{ item.owner }}
+                          cost: {{ formatETH(item.cost) }}
+                          expires: {{ formatTimestamp(item.expires) }}
+                        </span>
+                        <span v-else-if="item.type == 'NameRenewed'">
+                          label: {{ item.label }}
+                          cost: {{ formatETH(item.cost) }}
+                          expiry: {{ formatTimestamp(item.expiry) }}
+                        </span>
+                        <span v-else-if="item.type == 'NameWrapped'">
+                          label: {{ item.label }}
+                          owner: {{ item.owner }}
+                          fuses: {{ item.fuses }}
+                          expiry: {{ formatTimestamp(item.expiry) }}
+                        </span>
+                        <span v-else-if="item.type == 'NewResolver'">
+                          <!-- node: {{ item.node }} -->
+                          resolver: {{ item.resolver }}
+                        </span>
+                        <span v-else-if="item.type == 'TextChanged'">
                           {{ item.key }} => {{ item.value }}
                         </span>
                         <span v-else>
