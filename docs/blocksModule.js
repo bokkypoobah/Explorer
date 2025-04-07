@@ -11,7 +11,7 @@ const blocksModule = {
     addBlock(state, block) {
       console.log(now() + " blocksModule - mutations.addBlock - block.number: " + block.number);
       for (const blockNumber of Object.keys(state.blocks)) {
-        if (blockNumber < block.number - state.latestCount) {
+        if (blockNumber <= block.number - state.latestCount) {
           console.log(now() + " blocksModule - mutations.addBlock - DELETING blockNumber: " + blockNumber);
           delete state.blocks[blockNumber];
         }

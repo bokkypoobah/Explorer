@@ -139,7 +139,7 @@ const connectionModule = {
           provider = new ethers.providers.Web3Provider(window.ethereum);
           const network = await provider.getNetwork();
           chainId = parseInt(network.chainId);
-          const block = await provider.getBlock("latest");
+          const block = await provider.getBlockWithTransactions("latest");
           blockNumber = block.number;
           timestamp = block.timestamp;
           const signer = provider.getSigner();
@@ -176,9 +176,9 @@ const connectionModule = {
           async function handleNewBlock(blockNumber) {
             const performance = window.performance;
             const t0 = performance.now();
-            const block = await provider.getBlock(blockNumber);
+            const block = await provider.getBlockWithTransactions(blockNumber);
             const t1 = performance.now();
-            console.log(now() + " connectionModule - actions.connect.handleNewBlock - provider.getBlock(blockNumber) took " + (t1 - t0) + " ms");
+            console.log(now() + " connectionModule - actions.connect.handleNewBlock - provider.getBlockWithTransactions(blockNumber) took " + (t1 - t0) + " ms");
             // const block1 = await provider.getBlockWithTransactions("latest");
             // const t2 = performance.now();
             // console.log(now() + " connectionModule - actions.connect.handleNewBlock - provider.getBlockWithTransactions('latest') took " + (t2 - t0) + " ms");
