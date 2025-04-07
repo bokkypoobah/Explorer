@@ -175,8 +175,19 @@ const connectionModule = {
           async function handleNewBlock(blockNumber) {
             const lastBlockNumber = store.getters['web3'].blockNumber;
             if (!lastBlockNumber || blockNumber > lastBlockNumber) {
+
+              const performance = window.performance;
+              const t0 = performance.now();
               const block = await provider.getBlock("latest");
+              const t1 = performance.now();
+              console.log(now() + " connectionModule - actions.connect.handleNewBlock - provider.getBlock('latest') took " + (t1 - t0) + " ms");
+              // const block1 = await provider.getBlockWithTransactions("latest");
+              // const t2 = performance.now();
+              // console.log(now() + " connectionModule - actions.connect.handleNewBlock - provider.getBlockWithTransactions('latest') took " + (t2 - t0) + " ms");
+              // console.log(now() + " connectionModule - actions.connect.handleNewBlock - block1 " + JSON.stringify(block1, null, 2));
               const feeData = await provider.getFeeData();
+              const t3 = performance.now();
+              console.log(now() + " connectionModule - actions.connect.handleNewBlock - provider.getFeeData() took " + (t3 - t0) + " ms");
               // console.log(now() + " connectionModule - actions.connect.handleNewBlock - feeData: " + JSON.stringify(feeData));
               if (block.number > lastBlockNumber) {
                 store.dispatch('setWeb3BlockInfo', {
