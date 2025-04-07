@@ -15,7 +15,7 @@ const blocksModule = {
       results.sort((a, b) => {
         return b.number - a.number;
       });
-      console.log(now() + " blocksModule - getters.blocksList - results: " + JSON.stringify(results, null, 2));
+      // console.log(now() + " blocksModule - getters.blocksList - results: " + JSON.stringify(results, null, 2));
       return results;
     },
   },
