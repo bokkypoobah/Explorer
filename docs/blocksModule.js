@@ -1,7 +1,7 @@
 const blocksModule = {
   namespaced: true,
   state: {
-    latestCount: 20,
+    latestCount: 100,
     blocks: {},
   },
   getters: {
@@ -16,6 +16,23 @@ const blocksModule = {
         return b.number - a.number;
       });
       // console.log(now() + " blocksModule - getters.blocksList - results: " + JSON.stringify(results, null, 2));
+      return results;
+    },
+    transactionsList(state) {
+      const results = [];
+      for (const [blockNumber, block] of Object.entries(state.blocks)) {
+        for (const tx of block.transactions) {
+          results.push(tx);
+        }
+      }
+      results.sort((a, b) => {
+        if (a.blockNumber == b.blockNumber) {
+          return a.transactionIndex - b.transactionIndex;
+        } else {
+          return b.blockNumber - a.blockNumber;
+        }
+      });
+      // console.log(now() + " blocksModule - getters.transactionsList - results: " + JSON.stringify(results, null, 2));
       return results;
     },
   },

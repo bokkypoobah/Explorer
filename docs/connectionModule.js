@@ -137,6 +137,9 @@ const connectionModule = {
         }
         if (connected) {
           provider = new ethers.providers.Web3Provider(window.ethereum);
+          console.log("OLD POLLING INTERVAL: " + provider.pollingInterval);
+          provider.pollingInterval = 1000;
+          console.log("NEW POLLING INTERVAL: " + provider.pollingInterval);
           const network = await provider.getNetwork();
           chainId = parseInt(network.chainId);
           const block = await provider.getBlockWithTransactions("latest");

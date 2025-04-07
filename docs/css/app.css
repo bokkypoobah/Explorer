@@ -1,3 +1,9 @@
 .lowercase-btn {
   text-transform: none !important;
 }
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
