@@ -1,12 +1,19 @@
-// const Home = { template: '<div>Home Page</div>' };
-
 const Home = {
   template: `
     <div>
       <v-card>
         <v-card-text>
+          <v-row>
+            <v-col cols="6">
+              Latest Blocks
+            </v-col>
+            <v-col cols="6">
+              Latest Transactions
+            </v-col>
+          </v-row>
+
           <h1>Home</h1>
-          <p>TODO</p>
+          {{ blocksList }}
         </v-card-text>
       </v-card>
     </div>
@@ -15,7 +22,9 @@ const Home = {
     return {};
   },
   computed: {
-
+    blocksList() {
+      return store.getters['blocks/blocksList'];
+    },
   },
   methods: {
 

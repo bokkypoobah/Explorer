@@ -1,11 +1,23 @@
 const blocksModule = {
   namespaced: true,
   state: {
-    latestCount: 3,
+    latestCount: 20,
     blocks: {},
   },
   getters: {
+    latestCount: state => state.latestCount,
     blocks: state => state.blocks,
+    blocksList(state) {
+      const results = [];
+      for (const [blockNumber, block] of Object.entries(state.blocks)) {
+        results.push(block);
+      }
+      results.sort((a, b) => {
+        return b.number - a.number;
+      });
+      console.log(now() + " blocksModule - getters.blocksList - results: " + JSON.stringify(results, null, 2));
+      return results;
+    },
   },
   mutations: {
     addBlock(state, block) {
