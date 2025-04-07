@@ -22,12 +22,12 @@ const Home = {
 
   },
   beforeCreate() {
-    console.log(now() + " Home - app:beforeCreate");
+    console.log(now() + " Home - beforeCreate");
 	},
   mounted() {
-    console.log(now() + " Home - app:mounted");
+    console.log(now() + " Home - mounted");
 	},
   destroyed() {
-    console.log(now() + " Home - app:destroyed");
+    console.log(now() + " Home - destroyed");
 	},
 };

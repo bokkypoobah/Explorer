@@ -93,15 +93,15 @@ const Config = {
     },
   },
   beforeCreate() {
-    console.log(now() + " Config - app:beforeCreate");
+    console.log(now() + " Config - beforeCreate");
 	},
   mounted() {
-    console.log(now() + " Config - app:mounted");
+    console.log(now() + " Config - mounted");
 	},
   unmounted() {
-    console.log(now() + " Config - app:unmounted");
+    console.log(now() + " Config - unmounted");
 	},
   destroyed() {
-    console.log(now() + " Config - app:destroyed");
+    console.log(now() + " Config - destroyed");
 	},
 };
