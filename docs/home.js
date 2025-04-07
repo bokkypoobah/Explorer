@@ -11,7 +11,6 @@ const Home = {
       </v-card>
     </div>
   `,
-  <!-- props: ['testProp'], -->
   data: function () {
     return {};
   },
