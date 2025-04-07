@@ -137,6 +137,7 @@ const store = new Vuex.Store({
   modules: {
     connection: connectionModule,
     block: blockModule,
+    blocks: blocksModule,
     transaction: transactionModule,
     address: addressModule,
     addresses: addressesModule,
@@ -275,6 +276,7 @@ const app = Vue.createApp({
   mounted() {
     console.log(now() + " index.js - app.mounted");
     store.dispatch('addresses/loadAddresses');
+    store.dispatch('blocks/startup');
   },
   destroyed() {
     console.log(now() + " index.js - app.destroyed");
