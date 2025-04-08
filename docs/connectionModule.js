@@ -137,12 +137,15 @@ const connectionModule = {
         }
         if (connected) {
           provider = new ethers.providers.Web3Provider(window.ethereum);
-          console.log("OLD POLLING INTERVAL: " + provider.pollingInterval);
-          provider.pollingInterval = 1000;
-          console.log("NEW POLLING INTERVAL: " + provider.pollingInterval);
+          // console.log("OLD POLLING INTERVAL: " + provider.pollingInterval);
+          // provider.pollingInterval = 1000;
+          // console.log("NEW POLLING INTERVAL: " + provider.pollingInterval);
           const network = await provider.getNetwork();
           chainId = parseInt(network.chainId);
+          const t0 = performance.now();
           const block = await provider.getBlockWithTransactions("latest");
+          const t1 = performance.now();
+          console.log(now() + " connectionModule - actions.connect.handleNewBlock - provider.getBlockWithTransactions('latest') took " + (t1 - t0) + " ms");
           blockNumber = block.number;
           timestamp = block.timestamp;
           const signer = provider.getSigner();
@@ -177,18 +180,16 @@ const connectionModule = {
         if (connected) {
           // TODO: ethers.js fires duplicated new block events sometimes
           async function handleNewBlock(blockNumber) {
+            const latestCount = store.getters['blocks/latestCount'];
+            console.log(now() + " connectionModule - actions.connect.handleNewBlock - latestCount: " + latestCount);
             const performance = window.performance;
             const t0 = performance.now();
             const block = await provider.getBlockWithTransactions(blockNumber);
             const t1 = performance.now();
-            console.log(now() + " connectionModule - actions.connect.handleNewBlock - provider.getBlockWithTransactions(blockNumber) took " + (t1 - t0) + " ms");
-            // const block1 = await provider.getBlockWithTransactions("latest");
-            // const t2 = performance.now();
-            // console.log(now() + " connectionModule - actions.connect.handleNewBlock - provider.getBlockWithTransactions('latest') took " + (t2 - t0) + " ms");
-            // console.log(now() + " connectionModule - actions.connect.handleNewBlock - block1 " + JSON.stringify(block1, null, 2));
+            console.log(now() + " connectionModule - actions.connect.handleNewBlock - provider.getBlockWithTransactions(" + blockNumber + ") took " + (t1 - t0) + " ms");
             const feeData = await provider.getFeeData();
-            const t3 = performance.now();
-            console.log(now() + " connectionModule - actions.connect.handleNewBlock - provider.getFeeData() took " + (t3 - t0) + " ms");
+            const t2 = performance.now();
+            console.log(now() + " connectionModule - actions.connect.handleNewBlock - provider.getFeeData() took " + (t2 - t0) + " ms");
             // console.log(now() + " connectionModule - actions.connect.handleNewBlock - feeData: " + JSON.stringify(feeData));
             store.dispatch('setWeb3BlockInfo', {
               blockNumber: block.number,
@@ -199,7 +200,7 @@ const connectionModule = {
               gasPrice: ethers.BigNumber.from(feeData.gasPrice).toString(),
             });
             store.dispatch('blocks/addBlock', block);
-            console.log(now() + " connectionModule - actions.connect.handleNewBlock - blockNumber: " + block.number);
+            // console.log(now() + " connectionModule - actions.connect.handleNewBlock - blockNumber: " + block.number);
           }
           if (provider._events.length == 0) {
             provider.on("block", handleNewBlock);
