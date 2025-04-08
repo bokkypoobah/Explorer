@@ -3,43 +3,63 @@ const Home = {
     <div>
       <v-card>
         <v-card-text>
-          <h4>Latest {{ latestCount }} Blocks</h4>
-          <!-- <v-data-table :items="blocksList" :headers="blocksHeaders" @click:row="handleBlocksClick" density="compact"> -->
-          <v-data-table :items="blocksList" :headers="blocksHeaders" density="compact">
-            <template v-slot:item.timestamp="{ item }">
-              {{ formatTimestamp(item.timestamp) }}
-            </template>
-            <template v-slot:item.number="{ item }">
-              <a :href="'#/block/' + item.number">{{ item.number }}</a>
-            </template>
-            <template v-slot:item.miner="{ item }">
-              <a :href="'#/address/' + item.miner">{{ item.miner }}</a>
-            </template>
-            <template v-slot:item.txs="{ item }">
-              {{ item.transactions.length }}
-            </template>
-          </v-data-table>
-          <h4>Transactions From Latest {{ latestCount }} Blocks</h4>
-          <v-data-table :items="transactionsList" :headers="transactionsHeaders" density="compact" style="max-width: 100%;">
-            <template v-slot:item.hash="{ item }">
-              <a :href="'#/transaction/' + item.hash" class="truncate">{{ item.hash.substring(0, 20) + '...' }}</a>
-            </template>
-            <template v-slot:item.from="{ item }">
-              <a :href="'#/address/' + item.from" class="truncate">{{ item.from.substring(0, 10) + '...' + item.from.slice(-8) }}</a>
-            </template>
-            <template v-slot:item.to="{ item }">
-              <a :href="'#/address/' + item.to" class="truncate">{{ item.to.substring(0, 10) + '...' + item.to.slice(-8) }}</a>
-            </template>
-            <template v-slot:item.value="{ item }">
-              {{ formatETH(item.value) }}
-            </template>
-          </v-data-table>
+          <v-row class="mt-2">
+            <v-col cols="2">
+              <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" color="primary" direction="vertical">
+                <v-tab prepend-icon="mdi-cube-outline" text="Blocks" value="blocks" class="lowercase-btn"></v-tab>
+                <v-tab prepend-icon="mdi-format-list-bulleted" text="Transactions" value="transactions" class="lowercase-btn"></v-tab>
+              </v-tabs>
+            </v-col>
+            <v-col cols="10">
+              <v-tabs-window v-model="settings.tab">
+                <v-tabs-window-item value="blocks">
+                  <h4>Latest {{ latestCount }} Blocks</h4>
+                  <v-data-table :items="blocksList" :headers="blocksHeaders" density="compact">
+                    <template v-slot:item.timestamp="{ item }">
+                      {{ formatTimestamp(item.timestamp) }}
+                    </template>
+                    <template v-slot:item.number="{ item }">
+                      <a :href="'#/block/' + item.number">{{ item.number }}</a>
+                    </template>
+                    <template v-slot:item.miner="{ item }">
+                      <a :href="'#/address/' + item.miner">{{ item.miner }}</a>
+                    </template>
+                    <template v-slot:item.txs="{ item }">
+                      {{ item.transactions.length }}
+                    </template>
+                  </v-data-table>
+                </v-tabs-window-item>
+                <v-tabs-window-item value="transactions">
+                  <h4>Transactions From Latest {{ latestCount }} Blocks</h4>
+                  <v-data-table :items="transactionsList" :headers="transactionsHeaders" density="compact" style="max-width: 100%;">
+                    <template v-slot:item.hash="{ item }">
+                      <a :href="'#/transaction/' + item.hash" class="truncate">{{ item.hash.substring(0, 20) + '...' }}</a>
+                    </template>
+                    <template v-slot:item.from="{ item }">
+                      <a :href="'#/address/' + item.from" class="truncate">{{ item.from.substring(0, 10) + '...' + item.from.slice(-8) }}</a>
+                    </template>
+                    <template v-slot:item.to="{ item }">
+                      <a :href="'#/address/' + item.to" class="truncate">{{ item.to.substring(0, 10) + '...' + item.to.slice(-8) }}</a>
+                    </template>
+                    <template v-slot:item.value="{ item }">
+                      {{ formatETH(item.value) }}
+                    </template>
+                  </v-data-table>
+                </v-tabs-window-item>
+              </v-tabs-window>
+            </v-col>
+          </v-row>
         </v-card-text>
       </v-card>
     </div>
   `,
   data: function () {
     return {
+      initialised: false,
+      settings: {
+        tab: null,
+        version: 0,
+      },
       blocksHeaders: [
         { title: 'Block', value: 'number', align: 'end', sortable: true },
         { title: 'Timestamp', value: 'timestamp', sortable: true },
@@ -80,12 +100,26 @@ const Home = {
       }
       return null;
     },
+    saveSettings() {
+      // console.log(now() + " Home - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
+      if (this.initialised) {
+        localStorage.explorerHomeSettings = JSON.stringify(this.settings);
+      }
+    },
   },
   beforeCreate() {
     console.log(now() + " Home - beforeCreate");
 	},
   mounted() {
     console.log(now() + " Home - mounted");
+    if ('explorerHomeSettings' in localStorage) {
+      const tempSettings = JSON.parse(localStorage.explorerHomeSettings);
+      console.log(now() + " Home - mounted - tempSettings: " + JSON.stringify(tempSettings));
+      if ('version' in tempSettings && tempSettings.version == this.settings.version) {
+        this.settings = tempSettings;
+      }
+    }
+    this.initialised = true;
 	},
   destroyed() {
     console.log(now() + " Home - destroyed");
