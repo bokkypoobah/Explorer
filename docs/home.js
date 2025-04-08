@@ -15,7 +15,7 @@ const Home = {
                 <v-tabs-window v-model="settings.tab">
                   <v-tabs-window-item value="blocks">
                     <h4>Latest {{ latestCount }} Blocks</h4>
-                    <v-data-table :items="blocksList" :headers="blocksHeaders" density="compact">
+                    <v-data-table :items="blocksList" :headers="blocksHeaders" @click:row="handleBlocksClick" density="compact">
                       <template v-slot:item.timestamp="{ item }">
                         {{ formatTimestamp(item.timestamp) }}
                       </template>
@@ -32,12 +32,13 @@ const Home = {
                   </v-tabs-window-item>
                   <v-tabs-window-item value="transactions">
                     <h4>Transactions From Latest {{ latestCount }} Blocks</h4>
-                    <v-data-table :items="transactionsList" :headers="transactionsHeaders" density="compact" style="max-width: 100%;">
+                    <v-data-table :items="transactionsList" :headers="transactionsHeaders" @click:row="handleTransactionsClick" density="compact" style="max-width: 100%;">
                       <template v-slot:item.blockNumber="{ item }">
                         <v-btn :href="'#/block/' + item.blockNumber" color="primary" variant="plain">{{ commify0(item.blockNumber) }}</v-btn>
                       </template>
                       <template v-slot:item.hash="{ item }">
                         <v-btn :href="'#/transaction/' + item.hash" color="primary" variant="plain" class="lowercase-btn">{{ item.hash.substring(0, 12) + "..." + item.hash.slice(-10) }}</v-btn>
+                        <!-- <span class="text-blue-grey-lighten-4">My Address</span> -->
                       </template>
                       <template v-slot:item.from="{ item }">
                         <v-btn :href="'#/address/' + item.from" color="primary" variant="plain" class="lowercase-btn">{{ item.from.substring(0, 10) + '...' + item.from.slice(-8) }}</v-btn>
@@ -72,7 +73,7 @@ const Home = {
         { title: 'Txs', value: 'txs', sortable: true },
       ],
       transactionsHeaders: [
-        { title: 'Block#', value: 'blockNumber', align: 'end', sortable: true, width: "15%" },
+        { title: 'Block', value: 'blockNumber', align: 'end', sortable: true, width: "15%" },
         { title: 'Hash', value: 'hash', sortable: true, width: "30%" },
         { title: 'From', value: 'from', sortable: true, width: "20%" },
         { title: 'To', value: 'to', sortable: true, width: "20%" },
@@ -92,6 +93,15 @@ const Home = {
     },
   },
   methods: {
+    handleBlocksClick(block, row) {
+      console.log(now() + " Home - methods.handleBlocksClick - block: " + JSON.stringify(block, null, 2) + ", row: " + JSON.stringify(row, null, 2));
+      this.$router.push({ name: 'Block', params: { inputBlockNumber: row.item.number } });
+    },
+    handleTransactionsClick(tx, row) {
+      console.log(now() + " Home - methods.handleTransactionsClick - tx: " + JSON.stringify(tx, null, 2) + ", row: " + JSON.stringify(row, null, 2));
+      this.$router.push({ name: 'Transaction', params: { inputTxHash: row.item.hash } });
+      store.dispatch('transaction/loadTransaction', row.item.hash);
+    },
     formatETH(e) {
       if (e) {
         return ethers.utils.formatEther(e).replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");

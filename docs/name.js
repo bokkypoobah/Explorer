@@ -212,7 +212,6 @@ const Name = {
     handleEventsClick(event, row) {
       console.log(now() + " Name - methods.handleEventsClick - event: " + JSON.stringify(event, null, 2) + ", row: " + JSON.stringify(row, null, 2));
       this.$router.push({ name: 'Transaction', params: { inputTxHash: row.item.txHash } });
-      // store.dispatch('address/loadAddress', { inputTxHash: row.item.txHash, forceUpdate: false });
       store.dispatch('transaction/loadTransaction', row.item.txHash);
     },
     navigateToAddress(link) {
