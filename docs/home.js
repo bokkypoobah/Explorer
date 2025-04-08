@@ -25,8 +25,8 @@ const Home = {
                       <template v-slot:item.miner="{ item }">
                         <v-btn :href="'#/address/' + item.miner" color="primary" variant="text" class="lowercase-btn pa-0">{{ item.miner }}</v-btn>
                       </template>
-                      <template v-slot:item.txs="{ item }">
-                        {{ item.transactions.length }}
+                      <template v-slot:item.txCount="{ item }">
+                        {{ item.txCount }}
                       </template>
                     </v-data-table>
                   </v-tabs-window-item>
@@ -37,7 +37,7 @@ const Home = {
                         <v-btn :href="'#/block/' + item.blockNumber" color="primary" variant="text" class="pa-0">{{ commify0(item.blockNumber) }}</v-btn>
                       </template>
                       <template v-slot:item.hash="{ item }">
-                        <v-btn :href="'#/transaction/' + item.hash" color="primary" variant="text" class="lowercase-btn pa-0">{{ item.hash.substring(0, 12) + "..." + item.hash.slice(-10) }}</v-btn>
+                        <v-btn :href="'#/transaction/' + item.hash" color="primary" variant="text" class="lowercase-btn pa-0">{{ item.hash.substring(0, 20) + "..." }}</v-btn>
                         <!-- <span class="text-blue-grey-lighten-4">My Address</span> -->
                       </template>
                       <template v-slot:item.from="{ item }">
@@ -70,7 +70,7 @@ const Home = {
         { title: 'Block', value: 'number', align: 'end', sortable: true },
         { title: 'Timestamp', value: 'timestamp', sortable: true },
         { title: 'Miner', value: 'miner', sortable: true },
-        { title: 'Txs', value: 'txs', sortable: true },
+        { title: 'Txs', value: 'txCount', sortable: true },
       ],
       transactionsHeaders: [
         { title: 'Block', value: 'blockNumber', align: 'end', sortable: true, width: "15%" },

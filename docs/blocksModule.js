@@ -10,7 +10,7 @@ const blocksModule = {
     blocksList(state) {
       const results = [];
       for (const [blockNumber, block] of Object.entries(state.blocks)) {
-        results.push(block);
+        results.push({ ...block, txCount: block.transactions.length });
       }
       results.sort((a, b) => {
         return b.number - a.number;
