@@ -88,14 +88,78 @@
           </v-combobox>
           <v-spacer></v-spacer>
           <v-btn to="/" :active="mainPath == '/'" class="lowercase-btn" text>Home</v-btn>
-          <v-btn to="/block" :active="mainPath == '/block'" class="lowercase-btn" text>Block</v-btn>
-          <v-btn to="/transaction" :active="mainPath == '/transaction'" class="lowercase-btn" text>Transaction</v-btn>
-          <v-btn to="/address/" :active="mainPath == '/address'" class="lowercase-btn" text>Address</v-btn>
-          <v-btn to="/name/" :active="mainPath == '/name'" class="lowercase-btn" text>ENS Name</v-btn>
-          <v-btn to="/config" :active="mainPath == '/config'" class="lowercase-btn" text>
-            <!-- <span class="mdi mdi-tools"></span> -->
-            Config
+
+          <v-btn class="lowercase-btn" text>Blocks
+            <v-menu activator="parent">
+              <v-list density="compact">
+                <v-list-item to="/block" prepend-icon="mdi-cube-outline" density="compact">
+                  <v-list-item-title>Block</v-list-item-title>
+                </v-list-item>
+                <v-list-item disabled to="/blocks/latest" prepend-icon="mdi-lightning-bolt" density="compact">
+                  <v-list-item-title>Latest Blocks</v-list-item-title>
+                </v-list-item>
+                <v-list-item disabled to="/blocks/" prepend-icon="mdi-history" density="compact">
+                  <v-list-item-title>Browse Blocks</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
           </v-btn>
+
+          <v-btn class="lowercase-btn" text>Transactions
+            <v-menu activator="parent">
+              <v-list density="compact">
+                <v-list-item to="/transaction" prepend-icon="mdi-format-list-bulleted" density="compact">
+                  <v-list-item-title>Transaction</v-list-item-title>
+                </v-list-item>
+                <v-list-item disabled to="/transactions/latest" prepend-icon="mdi-lightning-bolt" density="compact">
+                  <v-list-item-title>Latest</v-list-item-title>
+                </v-list-item>
+                <v-list-item disabled to="/transactions/search" prepend-icon="mdi-magnify" density="compact">
+                  <v-list-item-title>Search</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </v-btn>
+
+          <v-btn class="lowercase-btn" text>Addresses
+            <v-menu activator="parent">
+              <v-list density="compact">
+                <v-list-item to="/address" density="compact">
+                  <v-list-item-title>Address</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </v-btn>
+
+          <v-btn class="lowercase-btn" text>Names
+            <v-menu activator="parent">
+              <v-list density="compact">
+                <v-list-item to="/name" density="compact">
+                  <v-list-item-title>Name</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </v-btn>
+
+          <v-btn class="lowercase-btn" text>Other
+            <v-menu activator="parent">
+              <v-list density="compact">
+                <v-list-item to="/config" density="compact">
+                  <v-list-item-title>Config</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </v-btn>
+
+
+          <!-- <v-btn to="/block" :active="mainPath == '/block'" class="lowercase-btn" text>Block</v-btn> -->
+          <!-- <v-btn to="/transaction" :active="mainPath == '/transaction'" class="lowercase-btn" text>Transaction</v-btn> -->
+          <!-- <v-btn to="/address/" :active="mainPath == '/address'" class="lowercase-btn" text>Address</v-btn> -->
+          <!-- <v-btn to="/name/" :active="mainPath == '/name'" class="lowercase-btn" text>ENS Name</v-btn> -->
+          <!-- <v-btn to="/config" :active="mainPath == '/config'" class="lowercase-btn" text> -->
+            <!-- <span class="mdi mdi-tools"></span> -->
+            <!-- Config -->
+          <!-- </v-btn> -->
           <v-btn v-if="!connected" @click="connect();" variant="elevated" color="primary" class="lowercase-btn ml-3" text>Connect</v-btn>
           <v-tooltip v-else :text="coinbase">
             <template v-slot:activator="{ props }">
