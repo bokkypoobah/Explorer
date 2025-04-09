@@ -2,58 +2,58 @@ const Home = {
   template: `
     <div>
       <v-container fluid class="pa-1">
+        <v-toolbar density="compact" class="mt-1">
+          <v-spacer></v-spacer>
+          <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" right color="primary">
+            <v-tab prepend-icon="mdi-cube-outline" text="Blocks" value="blocks" class="lowercase-btn"></v-tab>
+            <v-tab prepend-icon="mdi-format-list-bulleted" text="Transactions" value="transactions" class="lowercase-btn"></v-tab>
+          </v-tabs>
+        </v-toolbar>
+
+
+
         <v-card>
           <v-card-text>
-            <v-row>
-              <v-col cols="2">
-                <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" color="primary" direction="vertical">
-                  <v-tab prepend-icon="mdi-cube-outline" text="Blocks" value="blocks" class="lowercase-btn"></v-tab>
-                  <v-tab prepend-icon="mdi-format-list-bulleted" text="Transactions" value="transactions" class="lowercase-btn"></v-tab>
-                </v-tabs>
-              </v-col>
-              <v-col cols="10">
-                <v-tabs-window v-model="settings.tab">
-                  <v-tabs-window-item value="blocks">
-                    <h4>Latest {{ latestCount }} Blocks</h4>
-                    <v-data-table :items="blocksList" :headers="blocksHeaders" @click:row="handleBlocksClick" density="compact">
-                      <template v-slot:item.timestamp="{ item }">
-                        {{ formatTimestamp(item.timestamp) }}
-                      </template>
-                      <template v-slot:item.number="{ item }">
-                        <v-btn :href="'#/block/' + item.number" color="primary" variant="text" class="pa-0">{{ commify0(item.number) }}</v-btn>
-                      </template>
-                      <template v-slot:item.miner="{ item }">
-                        <v-btn :href="'#/address/' + item.miner" color="primary" variant="text" class="lowercase-btn pa-0">{{ item.miner }}</v-btn>
-                      </template>
-                      <template v-slot:item.txCount="{ item }">
-                        {{ item.txCount }}
-                      </template>
-                    </v-data-table>
-                  </v-tabs-window-item>
-                  <v-tabs-window-item value="transactions">
-                    <h4>Transactions From Latest {{ latestCount }} Blocks</h4>
-                    <v-data-table :items="transactionsList" :headers="transactionsHeaders" @click:row="handleTransactionsClick" density="compact" style="max-width: 100%;">
-                      <template v-slot:item.blockNumber="{ item }">
-                        <v-btn :href="'#/block/' + item.blockNumber" color="primary" variant="text" class="pa-0">{{ commify0(item.blockNumber) }}</v-btn>
-                      </template>
-                      <template v-slot:item.hash="{ item }">
-                        <v-btn :href="'#/transaction/' + item.hash" color="primary" variant="text" class="lowercase-btn pa-0">{{ item.hash.substring(0, 20) + "..." }}</v-btn>
-                        <!-- <span class="text-blue-grey-lighten-4">My Address</span> -->
-                      </template>
-                      <template v-slot:item.from="{ item }">
-                        <v-btn :href="'#/address/' + item.from" color="primary" variant="text" class="lowercase-btn pa-0">{{ item.from.substring(0, 10) + '...' + item.from.slice(-8) }}</v-btn>
-                      </template>
-                      <template v-slot:item.to="{ item }">
-                        <v-btn :href="'#/address/' + item.to" color="primary" variant="text" class="lowercase-btn pa-0">{{ item.to.substring(0, 10) + '...' + item.to.slice(-8) }}</v-btn>
-                      </template>
-                      <template v-slot:item.value="{ item }">
-                        {{ formatETH(item.value) }}
-                      </template>
-                    </v-data-table>
-                  </v-tabs-window-item>
-                </v-tabs-window>
-              </v-col>
-            </v-row>
+            <v-tabs-window v-model="settings.tab">
+              <v-tabs-window-item value="blocks">
+                <h4>Latest {{ latestCount }} Blocks</h4>
+                <v-data-table :items="blocksList" :headers="blocksHeaders" @click:row="handleBlocksClick" density="compact">
+                  <template v-slot:item.timestamp="{ item }">
+                    {{ formatTimestamp(item.timestamp) }}
+                  </template>
+                  <template v-slot:item.number="{ item }">
+                    <v-btn :href="'#/block/' + item.number" color="primary" variant="text" class="pa-0">{{ commify0(item.number) }}</v-btn>
+                  </template>
+                  <template v-slot:item.miner="{ item }">
+                    <v-btn :href="'#/address/' + item.miner" color="primary" variant="text" class="lowercase-btn pa-0">{{ item.miner }}</v-btn>
+                  </template>
+                  <template v-slot:item.txCount="{ item }">
+                    {{ item.txCount }}
+                  </template>
+                </v-data-table>
+              </v-tabs-window-item>
+              <v-tabs-window-item value="transactions">
+                <h4>Transactions From Latest {{ latestCount }} Blocks</h4>
+                <v-data-table :items="transactionsList" :headers="transactionsHeaders" @click:row="handleTransactionsClick" density="compact" style="max-width: 100%;">
+                  <template v-slot:item.blockNumber="{ item }">
+                    <v-btn :href="'#/block/' + item.blockNumber" color="primary" variant="text" class="pa-0">{{ commify0(item.blockNumber) }}</v-btn>
+                  </template>
+                  <template v-slot:item.hash="{ item }">
+                    <v-btn :href="'#/transaction/' + item.hash" color="primary" variant="text" class="lowercase-btn pa-0">{{ item.hash.substring(0, 20) + "..." }}</v-btn>
+                    <!-- <span class="text-blue-grey-lighten-4">My Address</span> -->
+                  </template>
+                  <template v-slot:item.from="{ item }">
+                    <v-btn :href="'#/address/' + item.from" color="primary" variant="text" class="lowercase-btn pa-0">{{ item.from.substring(0, 10) + '...' + item.from.slice(-8) }}</v-btn>
+                  </template>
+                  <template v-slot:item.to="{ item }">
+                    <v-btn :href="'#/address/' + item.to" color="primary" variant="text" class="lowercase-btn pa-0">{{ item.to.substring(0, 10) + '...' + item.to.slice(-8) }}</v-btn>
+                  </template>
+                  <template v-slot:item.value="{ item }">
+                    {{ formatETH(item.value) }}
+                  </template>
+                </v-data-table>
+              </v-tabs-window-item>
+            </v-tabs-window>
           </v-card-text>
         </v-card>
       </v-container>

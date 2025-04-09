@@ -8,7 +8,7 @@ const Address = {
       </v-card>
       <v-container fluid class="pa-1">
         <v-toolbar v-if="inputAddress && address" density="compact" class="mt-1">
-          <v-menu offset-y>
+          <v-menu location="bottom">
             <template v-slot:activator="{ props }">
               <v-btn color="primary" dark v-bind="props" class="lowercase-btn">
                 {{ address }}
