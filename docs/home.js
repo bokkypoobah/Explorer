@@ -30,6 +30,12 @@ const Home = {
                   <template v-slot:item.txCount="{ item }">
                     {{ item.txCount }}
                   </template>
+                  <template v-slot:item.gasUsed="{ item }">
+                    {{ commify0(item.gasUsed) }}
+                  </template>
+                  <template v-slot:item.gasLimit="{ item }">
+                    {{ commify0(item.gasLimit) }}
+                  </template>
                 </v-data-table>
               </v-tabs-window-item>
               <v-tabs-window-item value="transactions">
@@ -71,6 +77,9 @@ const Home = {
         { title: 'Timestamp', value: 'timestamp', sortable: true },
         { title: 'Miner', value: 'miner', sortable: true },
         { title: 'Txs', value: 'txCount', sortable: true },
+        { title: 'Gas Used', value: 'gasUsed', sortable: true },
+        { title: 'Gas Limit', value: 'gasLimit', sortable: true },
+        { title: '%', value: 'percent', sortable: true },
       ],
       transactionsHeaders: [
         { title: 'Block', value: 'blockNumber', align: 'end', sortable: true, width: "15%" },

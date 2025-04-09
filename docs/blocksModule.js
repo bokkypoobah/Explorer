@@ -10,7 +10,13 @@ const blocksModule = {
     blocksList(state) {
       const results = [];
       for (const [blockNumber, block] of Object.entries(state.blocks)) {
-        results.push({ ...block, txCount: block.transactions.length });
+        results.push({
+          ...block,
+          txCount: block.transactions.length,
+          gasUsed: ethers.BigNumber.from(block.gasUsed).toString(),
+          gasLimit: ethers.BigNumber.from(block.gasLimit).toString(),
+          percent: ethers.BigNumber.from(block.gasUsed).mul(100).div(ethers.BigNumber.from(block.gasLimit)).toString(),
+        });
       }
       results.sort((a, b) => {
         return b.number - a.number;
