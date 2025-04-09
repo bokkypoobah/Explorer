@@ -82,7 +82,8 @@ const Home = {
         { title: '%', value: 'percent', sortable: true },
       ],
       transactionsHeaders: [
-        { title: 'Block', value: 'blockNumber', align: 'end', sortable: true, width: "15%" },
+        { title: 'Block', value: 'blockNumber', align: 'end', sortable: true, width: "10%" },
+        { title: 'Tx Index', value: 'transactionIndex', align: 'end', sortable: true, width: "10%" },
         { title: 'Hash', value: 'hash', sortable: true, width: "30%" },
         { title: 'From', value: 'from', sortable: true, width: "20%" },
         { title: 'To', value: 'to', sortable: true, width: "20%" },
