@@ -5,8 +5,8 @@ const Home = {
         <v-toolbar density="compact" class="mt-1">
           <v-spacer></v-spacer>
           <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" right color="primary">
-            <v-tab prepend-icon="mdi-cube-outline" text="Blocks" value="blocks" class="lowercase-btn"></v-tab>
-            <v-tab prepend-icon="mdi-format-list-bulleted" text="Transactions" value="transactions" class="lowercase-btn"></v-tab>
+            <v-tab prepend-icon="mdi-cube-outline" text="Latest Blocks" value="blocks" class="lowercase-btn"></v-tab>
+            <v-tab prepend-icon="mdi-format-list-bulleted" text="Latest Transactions" value="transactions" class="lowercase-btn"></v-tab>
           </v-tabs>
         </v-toolbar>
 
@@ -52,7 +52,7 @@ const Home = {
                     <v-btn :href="'#/address/' + item.from" color="primary" variant="text" class="lowercase-btn pa-0">{{ item.from.substring(0, 10) + '...' + item.from.slice(-8) }}</v-btn>
                   </template>
                   <template v-slot:item.to="{ item }">
-                    <v-btn :href="'#/address/' + item.to" color="primary" variant="text" class="lowercase-btn pa-0">{{ item.to.substring(0, 10) + '...' + item.to.slice(-8) }}</v-btn>
+                    <v-btn v-if="item.to" :href="'#/address/' + item.to" color="primary" variant="text" class="lowercase-btn pa-0">{{ item.to.substring(0, 10) + '...' + item.to.slice(-8) }}</v-btn>
                   </template>
                   <template v-slot:item.value="{ item }">
                     {{ formatETH(item.value) }}
