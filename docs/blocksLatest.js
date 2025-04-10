@@ -3,11 +3,11 @@ const BlocksLatest = {
     <div>
       <v-container fluid class="pa-1">
         <v-data-table :items="blocksList" :headers="blocksHeaders" @click:row="handleBlocksClick" density="compact">
-          <template v-slot:item.timestamp="{ item }">
-            {{ formatTimestamp(item.timestamp) }}
-          </template>
           <template v-slot:item.number="{ item }">
             <v-btn :href="'#/block/' + item.number" color="primary" variant="text" class="pa-0">{{ commify0(item.number) }}</v-btn>
+          </template>
+          <template v-slot:item.timestamp="{ item }">
+            {{ formatTimestamp(item.timestamp) }}
           </template>
           <template v-slot:item.miner="{ item }">
             <v-btn :href="'#/address/' + item.miner" color="primary" variant="text" class="lowercase-btn pa-0">{{ item.miner }}</v-btn>
