@@ -11,7 +11,7 @@ const Transactions_ = {
           <v-spacer></v-spacer>
           <v-tabs right color="deep-purple-accent-4">
             <v-tab :to="'/transactions/latest'" class="lowercase-btn">Transactions In Latest {{ latestCount }} Blocks</v-tab>
-            <v-tab :to="'/transactions/search'" class="lowercase-btn">Search</v-tab>
+            <v-tab disabled :to="'/transactions/search'" class="lowercase-btn">Search</v-tab>
           </v-tabs>
         </v-toolbar>
         <router-view />
