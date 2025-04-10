@@ -32,9 +32,9 @@ const BlocksLatest = {
         { title: 'Block', value: 'number', align: 'end', sortable: true },
         { title: 'Timestamp', value: 'timestamp', sortable: true },
         { title: 'Miner', value: 'miner', sortable: true },
-        { title: 'Txs', value: 'txCount', sortable: true },
-        { title: 'Gas Used', value: 'gasUsed', sortable: true },
-        { title: 'Gas Limit', value: 'gasLimit', sortable: true },
+        { title: 'Txs', value: 'txCount', align: 'end', sortable: true },
+        { title: 'Gas Used', value: 'gasUsed', align: 'end', sortable: true },
+        { title: 'Gas Limit', value: 'gasLimit', align: 'end', sortable: true },
         { title: '%', value: 'percent', sortable: true },
       ],
     };

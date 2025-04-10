@@ -2,16 +2,15 @@ const Home = {
   template: `
     <div>
       <v-container fluid class="pa-1">
-        <v-toolbar density="compact" class="mt-1">
+        <v-toolbar v-if="false" density="compact" class="mt-1">
           <v-spacer></v-spacer>
           <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" right color="primary">
             <v-tab prepend-icon="mdi-cube-outline" text="Latest Blocks" value="blocks" class="lowercase-btn"></v-tab>
             <v-tab prepend-icon="mdi-format-list-bulleted" text="Latest Transactions" value="transactions" class="lowercase-btn"></v-tab>
           </v-tabs>
         </v-toolbar>
-
         <v-card>
-          <v-card-text>
+          <v-card-text v-if="false">
             <v-tabs-window v-model="settings.tab">
               <v-tabs-window-item value="blocks">
                 <h4>Latest {{ latestCount }} Blocks</h4>

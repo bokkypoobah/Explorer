@@ -20,6 +20,26 @@ const routes = [
     ],
   },
   {
+    path: '/transactions/:inputBlockNumber?',
+    name: "Transactions_",
+    component: Transactions_, // Issue using `Transactions`, maybe due to a clash
+    // props: true,
+    children: [
+      {
+        path: 'latest',
+        name: "TransactionsLatest",
+        component: TransactionsLatest,
+        // props: true,
+      },
+      // {
+      //   path: 'search',
+      //   name: "BlocksBrowse",
+      //   component: BlocksBrowse,
+      //   // props: true,
+      // },
+    ],
+  },
+  {
     path: '/block/:inputBlockNumber?',
     name: "Block",
     component: Block,
