@@ -2,7 +2,7 @@ const BlocksLatest = {
   template: `
     <div>
       <v-container fluid class="pa-1">
-        <v-data-table :items="blocksList" :headers="blocksHeaders" @click:row="handleBlocksClick" density="compact">
+        <v-data-table :items="blocksList" :headers="blocksHeaders" @click:row="handleBlocksClick" density="comfortable">
           <template v-slot:item.number="{ item }">
             <v-btn :href="'#/block/' + item.number" color="primary" variant="text" class="pa-0">{{ commify0(item.number) }}</v-btn>
           </template>

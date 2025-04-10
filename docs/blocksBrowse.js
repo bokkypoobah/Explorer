@@ -16,6 +16,7 @@ const BlocksBrowse = {
           item-value="name"
           @update:options="loadItems"
           v-model:page="currentPage"
+          density="comfortable"
         >
           <template v-slot:item.number="{ item }">
             <v-btn :href="'#/block/' + item.number" color="primary" variant="text" class="pa-0">{{ commify0(item.number) }}</v-btn>
