@@ -1,71 +1,82 @@
 const BlocksLatest = {
   template: `
     <div>
-      <!-- <v-card v-if="!inputAddress">
-        <v-card-text>
-          Enter address in the search field above
-        </v-card-text>
-      </v-card> -->
       <v-container fluid class="pa-1">
-        <h4 class="ml-2">Blocks Latest</h4>
-        <!-- <v-toolbar density="compact" class="mt-1">
-          <h4 class="ml-2">BlocksLatest</h4>
-          <v-spacer></v-spacer>
-          <v-btn @click="syncAddress();" color="primary" icon>
-            <v-icon>mdi-refresh</v-icon>
-          </v-btn>
-          <v-spacer></v-spacer>
-          <v-tabs right color="deep-purple-accent-4">
-            <v-tab :to="'/blocks/latest'" class="lowercase-btn">Latest</v-tab>
-            <v-tab :to="'/blocks/browse'" class="lowercase-btn">Browse</v-tab>
-          </v-tabs>
-        </v-toolbar>
-        <router-view /> -->
+        <v-data-table :items="blocksList" :headers="blocksHeaders" @click:row="handleBlocksClick" density="compact">
+          <template v-slot:item.timestamp="{ item }">
+            {{ formatTimestamp(item.timestamp) }}
+          </template>
+          <template v-slot:item.number="{ item }">
+            <v-btn :href="'#/block/' + item.number" color="primary" variant="text" class="pa-0">{{ commify0(item.number) }}</v-btn>
+          </template>
+          <template v-slot:item.miner="{ item }">
+            <v-btn :href="'#/address/' + item.miner" color="primary" variant="text" class="lowercase-btn pa-0">{{ item.miner }}</v-btn>
+          </template>
+          <template v-slot:item.txCount="{ item }">
+            {{ item.txCount }}
+          </template>
+          <template v-slot:item.gasUsed="{ item }">
+            {{ commify0(item.gasUsed) }}
+          </template>
+          <template v-slot:item.gasLimit="{ item }">
+            {{ commify0(item.gasLimit) }}
+          </template>
+        </v-data-table>
       </v-container>
     </div>
   `,
   props: ['inputAddress'],
   data: function () {
     return {
+      blocksHeaders: [
+        { title: 'Block', value: 'number', align: 'end', sortable: true },
+        { title: 'Timestamp', value: 'timestamp', sortable: true },
+        { title: 'Miner', value: 'miner', sortable: true },
+        { title: 'Txs', value: 'txCount', sortable: true },
+        { title: 'Gas Used', value: 'gasUsed', sortable: true },
+        { title: 'Gas Limit', value: 'gasLimit', sortable: true },
+        { title: '%', value: 'percent', sortable: true },
+      ],
     };
   },
   computed: {
-    // address() {
-    //   return store.getters['address/address'];
-    // },
-    // type() {
-    //   return store.getters['address/info'].type || null;
-    // },
-    // version() {
-    //   return store.getters['address/info'].version || null;
-    // },
-    // implementation() {
-    //   return store.getters['address/info'].implementation || null;
-    // },
-    // explorer() {
-    //   return store.getters['explorer'];
-    // },
+    blocksList() {
+      return store.getters['blocks/blocksList'];
+    },
   },
   methods: {
-    // syncAddress() {
-    //   console.log(now() + " BlocksLatest - methods.syncAddress");
-    //   const address = store.getters["address/address"];
-    //   console.log(now() + " BlocksLatest - methods.syncAddress - address: " + address);
-    //   store.dispatch('address/loadAddress', { inputAddress: address, forceUpdate: true });
-    // },
-    // copyToClipboard(str) {
-    //   navigator.clipboard.writeText(str);
-    // },
+    handleBlocksClick(block, row) {
+      console.log(now() + " BlocksLatest - methods.handleBlocksClick - block: " + JSON.stringify(block, null, 2) + ", row: " + JSON.stringify(row, null, 2));
+      this.$router.push({ name: 'Block', params: { inputBlockNumber: row.item.number } });
+    },
+    formatETH(e) {
+      if (e) {
+        return ethers.utils.formatEther(e).replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+      }
+      return null;
+    },
+    commify0(n) {
+      if (n != null) {
+        return Number(n).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+      }
+      return null;
+    },
+    formatTimestamp(ts) {
+      if (ts != null) {
+        return moment.unix(ts).format("YYYY-MM-DD HH:mm:ss");
+      }
+      return null;
+    },
   },
   beforeCreate() {
     console.log(now() + " BlocksLatest - beforeCreate");
 	},
   mounted() {
-    console.log(now() + " BlocksLatest - mounted - inputAddress: " + this.inputAddress);
-    const t = this;
-    setTimeout(function() {
-      store.dispatch('address/loadAddress', { inputAddress: t.inputAddress, forceUpdate: false });
-    }, 1000);
+    console.log(now() + " BlocksLatest - mounted");
+    // const t = this;
+    // setTimeout(function() {
+    //   store.dispatch('address/loadAddress', { inputAddress: t.inputAddress, forceUpdate: false });
+    // }, 1000);
 	},
   unmounted() {
     console.log(now() + " BlocksLatest - unmounted");

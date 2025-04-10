@@ -7,7 +7,7 @@ const BlocksBrowse = {
         </v-card-text>
       </v-card> -->
       <v-container fluid class="pa-1">
-        <h4 class="ml-2">Blocks Browse</h4>
+        <h4 class="ml-2">Blocks Browse TODO</h4>
         <!-- <v-toolbar density="compact" class="mt-1">
           <h4 class="ml-2">Blocks Browse</h4>
           <v-spacer></v-spacer>
