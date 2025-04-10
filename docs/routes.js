@@ -1,5 +1,25 @@
 const routes = [
   {
+    path: '/blocks/:inputBlockNumber?',
+    name: "Blocks",
+    component: Blocks,
+    // props: true,
+    children: [
+      {
+        path: 'latest',
+        name: "BlocksLatest",
+        component: BlocksLatest,
+        // props: true,
+      },
+      {
+        path: 'browse',
+        name: "BlocksBrowse",
+        component: BlocksBrowse,
+        // props: true,
+      },
+    ],
+  },
+  {
     path: '/block/:inputBlockNumber?',
     name: "Block",
     component: Block,
