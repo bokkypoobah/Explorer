@@ -61,8 +61,8 @@ const BlocksBrowse = {
     return {
       itemsPerPage: 10,
       blocks: [],
-      currentPage: null,
-      sortBy: null,
+      currentPage: 1,
+      sortBy: "desc",
       loading: null,
       blocksHeaders: [
         { title: 'Block', value: 'number', align: 'end', sortable: true },
