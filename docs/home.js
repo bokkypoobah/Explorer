@@ -10,8 +10,6 @@ const Home = {
           </v-tabs>
         </v-toolbar>
 
-
-
         <v-card>
           <v-card-text>
             <v-tabs-window v-model="settings.tab">
