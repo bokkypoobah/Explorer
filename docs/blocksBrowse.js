@@ -37,6 +37,8 @@ const BlocksBrowse = {
           </template>
         </v-data-table-server>
         currentPage: {{ currentPage }}
+        <br />
+        sortBy: {{ sortBy }}
         <!-- <h4 class="ml-2">Blocks Browse TODO</h4> -->
         <!-- <v-toolbar density="compact" class="mt-1">
           <h4 class="ml-2">Blocks Browse</h4>
@@ -60,15 +62,16 @@ const BlocksBrowse = {
       itemsPerPage: 10,
       blocks: [],
       currentPage: null,
+      sortBy: null,
       loading: null,
       blocksHeaders: [
         { title: 'Block', value: 'number', align: 'end', sortable: true },
-        { title: 'Timestamp', value: 'timestamp', sortable: true },
-        { title: 'Miner', value: 'miner', sortable: true },
-        { title: 'Txs', value: 'txCount', align: 'end', sortable: true },
-        { title: 'Gas Used', value: 'gasUsed', align: 'end', sortable: true },
-        { title: 'Gas Limit', value: 'gasLimit', align: 'end', sortable: true },
-        { title: '%', value: 'percent', sortable: true },
+        { title: 'Timestamp', value: 'timestamp', sortable: false },
+        { title: 'Miner', value: 'miner', sortable: false },
+        { title: 'Txs', value: 'txCount', align: 'end', sortable: false },
+        { title: 'Gas Used', value: 'gasUsed', align: 'end', sortable: false },
+        { title: 'Gas Limit', value: 'gasLimit', align: 'end', sortable: false },
+        { title: '%', value: 'percent', sortable: false },
       ],
     };
   },
@@ -97,8 +100,10 @@ const BlocksBrowse = {
       if (!this.provider) {
         this.provider = new ethers.providers.Web3Provider(window.ethereum);
       }
-      console.log(now() + " BlocksBrowse - methods.loadItems - page: " + page + ", itemsPerPage: " + itemsPerPage + ", sortBy: " + sortBy);
+      console.log(now() + " BlocksBrowse - methods.loadItems - page: " + page + ", itemsPerPage: " + itemsPerPage + ", sortBy: " + JSON.stringify(sortBy));
       this.loading = true;
+      this.sortBy = !sortBy || sortBy.length == 0 || (sortBy[0].key == "number" && sortBy[0].order == "desc") ? "desc" : "asc";
+      console.log(now() + " BlocksBrowse - methods.loadItems - this.sortBy: " + this.sortBy);
       const startBlock = (page - 1) * itemsPerPage;
       let endBlock = page * itemsPerPage - 1;
       if (endBlock > this.blockNumber) {
