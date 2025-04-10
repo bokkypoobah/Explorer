@@ -38,22 +38,6 @@ const BlocksBrowse = {
           </template>
         </v-data-table-server>
         currentPage: {{ currentPage }}
-        <br />
-        sortBy: {{ sortBy }}
-        <!-- <h4 class="ml-2">Blocks Browse TODO</h4> -->
-        <!-- <v-toolbar density="compact" class="mt-1">
-          <h4 class="ml-2">Blocks Browse</h4>
-          <v-spacer></v-spacer>
-          <v-btn @click="syncAddress();" color="primary" icon>
-            <v-icon>mdi-refresh</v-icon>
-          </v-btn>
-          <v-spacer></v-spacer>
-          <v-tabs right color="deep-purple-accent-4">
-            <v-tab :to="'/blocks/latest'" class="lowercase-btn">Latest</v-tab>
-            <v-tab :to="'/blocks/browse'" class="lowercase-btn">Browse</v-tab>
-          </v-tabs>
-        </v-toolbar>
-        <router-view /> -->
       </v-container>
     </div>
   `,
@@ -105,23 +89,45 @@ const BlocksBrowse = {
       this.loading = true;
       this.sortBy = !sortBy || sortBy.length == 0 || (sortBy[0].key == "number" && sortBy[0].order == "desc") ? "desc" : "asc";
       console.log(now() + " BlocksBrowse - methods.loadItems - this.sortBy: " + this.sortBy);
-      const startBlock = (page - 1) * itemsPerPage;
-      let endBlock = page * itemsPerPage - 1;
-      if (endBlock > this.blockNumber) {
-        endBlock = this.blockNumber;
+      let startBlock, endBlock;
+      if (this.sortBy == "desc") {
+        startBlock =  parseInt(this.blockNumber) - ((page - 1) * itemsPerPage);
+        endBlock = startBlock - (itemsPerPage -1 );
+        if (endBlock < 0) {
+          endBlock = 0;
+        }
+      } else {
+        startBlock = (page - 1) * itemsPerPage;
+        endBlock = page * itemsPerPage - 1;
+        if (endBlock > this.blockNumber) {
+          endBlock = this.blockNumber;
+        }
       }
-      // console.log(now() + " BlocksBrowse - methods.loadItems - startBlock: " + startBlock + ", endBlock: " + endBlock);
+      console.log(now() + " BlocksBrowse - methods.loadItems - startBlock: " + startBlock + ", endBlock: " + endBlock);
       const blocks = [];
       const t0 = performance.now();
-      for (let blockNumber = startBlock; blockNumber <= endBlock; blockNumber++) {
-        const block = await this.provider.getBlockWithTransactions(blockNumber);
-        blocks.push({
-          ...block,
-          txCount: block.transactions.length,
-          gasUsed: ethers.BigNumber.from(block.gasUsed).toString(),
-          gasLimit: ethers.BigNumber.from(block.gasLimit).toString(),
-          percent: ethers.BigNumber.from(block.gasUsed).mul(100).div(ethers.BigNumber.from(block.gasLimit)).toString(),
-        });
+      if (this.sortBy == "desc") {
+        for (let blockNumber = startBlock; blockNumber >= endBlock; blockNumber--) {
+          const block = await this.provider.getBlockWithTransactions(blockNumber);
+          blocks.push({
+            ...block,
+            txCount: block.transactions.length,
+            gasUsed: ethers.BigNumber.from(block.gasUsed).toString(),
+            gasLimit: ethers.BigNumber.from(block.gasLimit).toString(),
+            percent: ethers.BigNumber.from(block.gasUsed).mul(100).div(ethers.BigNumber.from(block.gasLimit)).toString(),
+          });
+        }
+      } else {
+        for (let blockNumber = startBlock; blockNumber <= endBlock; blockNumber++) {
+          const block = await this.provider.getBlockWithTransactions(blockNumber);
+          blocks.push({
+            ...block,
+            txCount: block.transactions.length,
+            gasUsed: ethers.BigNumber.from(block.gasUsed).toString(),
+            gasLimit: ethers.BigNumber.from(block.gasLimit).toString(),
+            percent: ethers.BigNumber.from(block.gasUsed).mul(100).div(ethers.BigNumber.from(block.gasLimit)).toString(),
+          });
+        }
       }
       const t1 = performance.now();
       console.log(now() + " BlocksBrowse - methods.loadItem - provider.getBlockWithTransactions([" + startBlock + "..." + endBlock + "]) took " + (t1 - t0) + " ms");
