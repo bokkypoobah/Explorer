@@ -13,6 +13,7 @@ const BlocksBrowse = {
           :items="blocks"
           :items-length="blockNumber + 1"
           :loading="loading"
+          :search="blockNumber.toString()"
           item-value="name"
           @update:options="loadItems"
           v-model:page="currentPage"
@@ -85,13 +86,16 @@ const BlocksBrowse = {
       if (!this.provider) {
         this.provider = new ethers.providers.Web3Provider(window.ethereum);
       }
-      console.log(now() + " BlocksBrowse - methods.loadItems - page: " + page + ", itemsPerPage: " + itemsPerPage + ", sortBy: " + JSON.stringify(sortBy));
+      const blockNumber = parseInt(store.getters['web3'].blockNumber);
+      console.log(now() + " BlocksBrowse - methods.loadItems - page: " + page + ", itemsPerPage: " + itemsPerPage + ", sortBy: " + JSON.stringify(sortBy) + ", blockNumber: " + blockNumber);
+      const cachedBlocks = store.getters['blocks/blocks'];
+      console.log(now() + " BlocksBrowse - methods.loadItems - cachedBlocks: " + JSON.stringify(cachedBlocks));
       this.loading = true;
       this.sortBy = !sortBy || sortBy.length == 0 || (sortBy[0].key == "number" && sortBy[0].order == "desc") ? "desc" : "asc";
       console.log(now() + " BlocksBrowse - methods.loadItems - this.sortBy: " + this.sortBy);
       let startBlock, endBlock;
       if (this.sortBy == "desc") {
-        startBlock =  parseInt(this.blockNumber) - ((page - 1) * itemsPerPage);
+        startBlock =  parseInt(blockNumber) - ((page - 1) * itemsPerPage);
         endBlock = startBlock - (itemsPerPage -1 );
         if (endBlock < 0) {
           endBlock = 0;
@@ -99,8 +103,8 @@ const BlocksBrowse = {
       } else {
         startBlock = (page - 1) * itemsPerPage;
         endBlock = page * itemsPerPage - 1;
-        if (endBlock > this.blockNumber) {
-          endBlock = this.blockNumber;
+        if (endBlock > blockNumber) {
+          endBlock = blockNumber;
         }
       }
       console.log(now() + " BlocksBrowse - methods.loadItems - startBlock: " + startBlock + ", endBlock: " + endBlock);
@@ -108,7 +112,7 @@ const BlocksBrowse = {
       const t0 = performance.now();
       if (this.sortBy == "desc") {
         for (let blockNumber = startBlock; blockNumber >= endBlock; blockNumber--) {
-          const block = await this.provider.getBlockWithTransactions(blockNumber);
+          const block = cachedBlocks[blockNumber] || (await this.provider.getBlockWithTransactions(blockNumber));
           blocks.push({
             ...block,
             txCount: block.transactions.length,
@@ -119,7 +123,7 @@ const BlocksBrowse = {
         }
       } else {
         for (let blockNumber = startBlock; blockNumber <= endBlock; blockNumber++) {
-          const block = await this.provider.getBlockWithTransactions(blockNumber);
+          const block = cachedBlocks[blockNumber] || await this.provider.getBlockWithTransactions(blockNumber);
           blocks.push({
             ...block,
             txCount: block.transactions.length,

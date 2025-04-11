@@ -2,7 +2,7 @@ const TransactionsLatest = {
   template: `
     <div>
       <v-container fluid class="pa-1">
-        <v-data-table :items="transactionsList" :headers="transactionsHeaders" @click:row="handleTransactionsClick" density="compact" style="max-width: 100%;">
+        <v-data-table :items="transactionsList" :headers="transactionsHeaders" @click:row="handleTransactionsClick" density="comfortable" style="max-width: 100%;">
           <template v-slot:item.blockNumber="{ item }">
             <v-btn :href="'#/block/' + item.blockNumber" color="primary" variant="text" class="pa-0">{{ commify0(item.blockNumber) }}</v-btn>
           </template>
