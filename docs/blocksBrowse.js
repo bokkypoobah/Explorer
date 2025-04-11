@@ -9,16 +9,32 @@ const BlocksBrowse = {
       <v-container fluid class="pa-1">
         <v-data-table-server
           v-model:items-per-page="itemsPerPage"
+          :items-per-page-options="itemsPerPageOptions"
           :headers="blocksHeaders"
           :items="blocks"
           :items-length="blockNumber + 1"
           :loading="loading"
-          :search="blockNumber.toString()"
+          :search="live && blockNumber.toString() || null"
           item-value="name"
           @update:options="loadItems"
           v-model:page="currentPage"
           density="comfortable"
         >
+          <template v-slot:footer.prepend>
+            <tr class="d-flex flex-grow-1">
+              <!-- <td>
+                Search
+              </td> -->
+              <td class="ml-2">
+                <v-btn v-if="live" @click="live = false;" text color="primary" density="compact">
+                  <v-icon>mdi-lightning-bolt</v-icon>Live
+                </v-btn>
+                <v-btn v-else text @click="live = true;"  color="secondary" density="compact">
+                  <v-icon>mdi-lightning-bolt-outline</v-icon>Paused
+                </v-btn>
+              </td>
+            </tr>
+          </template>
           <template v-slot:item.number="{ item }">
             <v-btn :href="'#/block/' + item.number" color="primary" variant="text" class="pa-0">{{ commify0(item.number) }}</v-btn>
           </template>
@@ -45,6 +61,7 @@ const BlocksBrowse = {
   props: ['inputAddress'],
   data: function () {
     return {
+      live: true,
       itemsPerPage: 10,
       blocks: [],
       currentPage: 1,
@@ -58,6 +75,13 @@ const BlocksBrowse = {
         { title: 'Gas Used', value: 'gasUsed', align: 'end', sortable: false },
         { title: 'Gas Limit', value: 'gasLimit', align: 'end', sortable: false },
         { title: '%', value: 'percent', sortable: false },
+      ],
+      itemsPerPageOptions: [
+        { value: 10, title: "10" },
+        { value: 20, title: "20" },
+        { value: 30, title: "30" },
+        { value: 40, title: "40" },
+        { value: 50, title: "50" },
       ],
     };
   },
