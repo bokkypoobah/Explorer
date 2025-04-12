@@ -113,7 +113,7 @@ const BlocksBrowse = {
       const blockNumber = parseInt(store.getters['web3'].blockNumber);
       console.log(now() + " BlocksBrowse - methods.loadItems - page: " + page + ", itemsPerPage: " + itemsPerPage + ", sortBy: " + JSON.stringify(sortBy) + ", blockNumber: " + blockNumber);
       const cachedBlocks = store.getters['blocks/blocks'];
-      console.log(now() + " BlocksBrowse - methods.loadItems - cachedBlocks: " + JSON.stringify(cachedBlocks));
+      // console.log(now() + " BlocksBrowse - methods.loadItems - cachedBlocks: " + JSON.stringify(cachedBlocks));
       this.loading = true;
       this.sortBy = !sortBy || sortBy.length == 0 || (sortBy[0].key == "number" && sortBy[0].order == "desc") ? "desc" : "asc";
       console.log(now() + " BlocksBrowse - methods.loadItems - this.sortBy: " + this.sortBy);
