@@ -183,24 +183,32 @@ const connectionModule = {
 
         if (connected) {
           // TODO: ethers.js fires duplicated new block events sometimes
+          let timerId = null;
           async function handleNewBlock(blockNumber) {
-            console.log(now() + " connectionModule - actions.connect.handleNewBlock - context.state.lastBlockNumber: " + context.state.lastBlockNumber);
+            console.log(now() + " connectionModule - actions.connect.handleNewBlock - blockNumber: " + blockNumber);
+            clearTimeout(timerId);
+            timerId = setTimeout(async () => {
+              await handleNewBlockDebounced(blockNumber);
+            }, 500);
+          }
+          async function handleNewBlockDebounced(blockNumber) {
+            // console.log(now() + " connectionModule - actions.connect.handleNewBlockDebounced - context.state.lastBlockNumber: " + context.state.lastBlockNumber);
             if (parseInt(blockNumber) > context.state.lastBlockNumber) {
               context.commit('setLastBlockNumber', parseInt(blockNumber));
-              console.log(now() + " connectionModule - actions.connect.handleNewBlock - PROCESSING blockNumber: " + blockNumber);
+              console.log(now() + " connectionModule - actions.connect.handleNewBlockDebounced - PROCESSING blockNumber: " + blockNumber);
               // const latestCount = store.getters['blocks/latestCount'];
-              // console.log(now() + " connectionModule - actions.connect.handleNewBlock - latestCount: " + latestCount);
+              // console.log(now() + " connectionModule - actions.connect.handleNewBlockDebounced - latestCount: " + latestCount);
               const performance = window.performance;
               const t0 = performance.now();
               const block = await provider.getBlockWithTransactions("latest");
               context.commit('setLastBlockNumber', parseInt(block.number));
 
               const t1 = performance.now();
-              console.log(now() + " connectionModule - actions.connect.handleNewBlock - provider.getBlockWithTransactions(" + blockNumber + ") took " + (t1 - t0) + " ms");
+              console.log(now() + " connectionModule - actions.connect.handleNewBlockDebounced - provider.getBlockWithTransactions(" + blockNumber + ") took " + (t1 - t0) + " ms");
               const feeData = await provider.getFeeData();
               const t2 = performance.now();
-              console.log(now() + " connectionModule - actions.connect.handleNewBlock - provider.getFeeData() took " + (t2 - t1) + " ms");
-              // console.log(now() + " connectionModule - actions.connect.handleNewBlock - feeData: " + JSON.stringify(feeData));
+              console.log(now() + " connectionModule - actions.connect.handleNewBlockDebounced - provider.getFeeData() took " + (t2 - t1) + " ms");
+              // console.log(now() + " connectionModule - actions.connect.handleNewBlockDebounced - feeData: " + JSON.stringify(feeData));
 
               // const dbInfo = store.getters["db"];
               // const db = new Dexie(dbInfo.name);
@@ -208,7 +216,7 @@ const connectionModule = {
               // const blockData = JSON.parse(JSON.stringify(block));
               // await db.blocks.put({ chainId, ...blockData }).then (function() {
               //   }).catch(function(e) {
-              //     console.error(now() + " connectionModule - actions.connect.handleNewBlock - ERROR blocks.put: " + e.message);
+              //     console.error(now() + " connectionModule - actions.connect.handleNewBlockDebounced - ERROR blocks.put: " + e.message);
               //   });
               // db.close();
 
@@ -221,7 +229,7 @@ const connectionModule = {
                 gasPrice: ethers.BigNumber.from(feeData.gasPrice).toString(),
               });
               store.dispatch('blocks/addBlock', block);
-              // console.log(now() + " connectionModule - actions.connect.handleNewBlock - blockNumber: " + block.number);
+              // console.log(now() + " connectionModule - actions.connect.handleNewBlockDebounced - blockNumber: " + block.number);
             }
           }
           if (provider._events.length == 0) {
