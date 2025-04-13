@@ -145,33 +145,33 @@ const BlocksBrowse = {
 
       // const blocks = [];
       const t0 = performance.now();
-      if (this.sortBy == "desc") {
-        for (let blockNumber = startBlock; blockNumber >= endBlock; blockNumber--) {
-          const block = cachedBlocks[blockNumber] || (await this.provider.getBlockWithTransactions(blockNumber));
-        //   blocks.push({
-        //     ...block,
-        //     txCount: block.transactions.length,
-        //     gasUsed: ethers.BigNumber.from(block.gasUsed).toString(),
-        //     gasLimit: ethers.BigNumber.from(block.gasLimit).toString(),
-        //     percent: ethers.BigNumber.from(block.gasUsed).mul(100).div(ethers.BigNumber.from(block.gasLimit)).toString(),
-        //   });
-        }
-      } else {
-        for (let blockNumber = startBlock; blockNumber <= endBlock; blockNumber++) {
-          const block = cachedBlocks[blockNumber] || await this.provider.getBlockWithTransactions(blockNumber);
-        //   blocks.push({
-        //     ...block,
-        //     txCount: block.transactions.length,
-        //     gasUsed: ethers.BigNumber.from(block.gasUsed).toString(),
-        //     gasLimit: ethers.BigNumber.from(block.gasLimit).toString(),
-        //     percent: ethers.BigNumber.from(block.gasUsed).mul(100).div(ethers.BigNumber.from(block.gasLimit)).toString(),
-        //   });
-        }
-      }
+      // if (this.sortBy == "desc") {
+      //   for (let blockNumber = startBlock; blockNumber >= endBlock; blockNumber--) {
+      //     const block = cachedBlocks[blockNumber] || (await this.provider.getBlockWithTransactions(blockNumber));
+      //   //   blocks.push({
+      //   //     ...block,
+      //   //     txCount: block.transactions.length,
+      //   //     gasUsed: ethers.BigNumber.from(block.gasUsed).toString(),
+      //   //     gasLimit: ethers.BigNumber.from(block.gasLimit).toString(),
+      //   //     percent: ethers.BigNumber.from(block.gasUsed).mul(100).div(ethers.BigNumber.from(block.gasLimit)).toString(),
+      //   //   });
+      //   }
+      // } else {
+      //   for (let blockNumber = startBlock; blockNumber <= endBlock; blockNumber++) {
+      //     const block = cachedBlocks[blockNumber] || await this.provider.getBlockWithTransactions(blockNumber);
+      //   //   blocks.push({
+      //   //     ...block,
+      //   //     txCount: block.transactions.length,
+      //   //     gasUsed: ethers.BigNumber.from(block.gasUsed).toString(),
+      //   //     gasLimit: ethers.BigNumber.from(block.gasLimit).toString(),
+      //   //     percent: ethers.BigNumber.from(block.gasUsed).mul(100).div(ethers.BigNumber.from(block.gasLimit)).toString(),
+      //   //   });
+      //   }
+      // }
       const t1 = performance.now();
       console.log(now() + " BlocksBrowse - methods.loadItem - provider.getBlockWithTransactions([" + startBlock + "..." + endBlock + "]) took " + (t1 - t0) + " ms");
 
-      const blocks = await db.blocks.where('[chainId+number]').between([chainId, firstBlock],[chainId, lastBlock]).toArray();
+      const blocks = await db.blocks.where('[chainId+number]').between([chainId, firstBlock],[chainId, lastBlock], true, true).toArray();
       // console.log(now() + " BlocksBrowse - methods.loadItems - blocks: " + JSON.stringify(blocks.map(e => e.number), null, 2));
       let blockNumbers = new Set(blocks.map(e => e.number));
       console.log(now() + " BlocksBrowse - methods.loadItems - blockNumbers: " + JSON.stringify([...blockNumbers]));
