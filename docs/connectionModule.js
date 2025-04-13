@@ -194,12 +194,24 @@ const connectionModule = {
               const t0 = performance.now();
               const block = await provider.getBlockWithTransactions("latest");
               context.commit('setLastBlockNumber', parseInt(block.number));
+
               const t1 = performance.now();
               console.log(now() + " connectionModule - actions.connect.handleNewBlock - provider.getBlockWithTransactions(" + blockNumber + ") took " + (t1 - t0) + " ms");
               const feeData = await provider.getFeeData();
               const t2 = performance.now();
-              console.log(now() + " connectionModule - actions.connect.handleNewBlock - provider.getFeeData() took " + (t2 - t0) + " ms");
+              console.log(now() + " connectionModule - actions.connect.handleNewBlock - provider.getFeeData() took " + (t2 - t1) + " ms");
               // console.log(now() + " connectionModule - actions.connect.handleNewBlock - feeData: " + JSON.stringify(feeData));
+
+              const dbInfo = store.getters["db"];
+              const db = new Dexie(dbInfo.name);
+              db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
+              const blockData = JSON.parse(JSON.stringify(block));
+              await db.blocks.put({ chainId, ...blockData }).then (function() {
+                }).catch(function(e) {
+                  console.error(now() + " connectionModule - actions.connect.handleNewBlock - ERROR blocks.put: " + e.message);
+                });
+              db.close();
+
               store.dispatch('setWeb3BlockInfo', {
                 blockNumber: block.number,
                 timestamp: block.timestamp,
