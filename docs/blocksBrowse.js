@@ -54,7 +54,7 @@ const BlocksBrowse = {
             {{ commify0(item.gasLimit) }}
           </template>
           <template v-slot:item.extraData="{ item }">
-            {{ item.extraData.substring(0, 32) + (item.extraData.length > 30 ? "..." : "") }}
+            {{ item.extraData.substring(0, 32) + (item.extraData.length > 32 ? "..." : "") }}
           </template>
         </v-data-table-server>
         <!-- currentPage: {{ currentPage }} -->
