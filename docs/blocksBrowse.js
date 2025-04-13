@@ -122,26 +122,21 @@ const BlocksBrowse = {
       this.loading = true;
       this.sortBy = !sortBy || sortBy.length == 0 || (sortBy[0].key == "number" && sortBy[0].order == "desc") ? "desc" : "asc";
       // console.log(now() + " BlocksBrowse - methods.loadItems - this.sortBy: " + this.sortBy);
-      let startBlock, endBlock, firstBlock, lastBlock;
+      let startBlock, endBlock;
       if (this.sortBy == "desc") {
-        startBlock =  parseInt(blockNumber) - ((page - 1) * itemsPerPage);
-        endBlock = startBlock - (itemsPerPage -1 );
-        if (endBlock < 0) {
-          endBlock = 0;
+        endBlock =  parseInt(blockNumber) - ((page - 1) * itemsPerPage);
+        startBlock = endBlock - (itemsPerPage -1 );
+        if (startBlock < 0) {
+          startBlock = 0;
         }
-        firstBlock = endBlock;
-        lastBlock = startBlock;
       } else {
         startBlock = (page - 1) * itemsPerPage;
         endBlock = page * itemsPerPage - 1;
         if (endBlock > blockNumber) {
           endBlock = blockNumber;
         }
-        firstBlock = startBlock;
-        lastBlock = endBlock;
       }
-      // console.log(now() + " BlocksBrowse - methods.loadItems - startBlock: " + startBlock + ", endBlock: " + endBlock);
-      console.log(now() + " BlocksBrowse - methods.loadItems - firstBlock: " + firstBlock + ", lastBlock: " + lastBlock + ", this.sortBy: " + this.sortBy);
+      console.log(now() + " BlocksBrowse - methods.loadItems - startBlock: " + startBlock + ", endBlock: " + endBlock + ", this.sortBy: " + this.sortBy);
 
       // const blocks = [];
       const t0 = performance.now();
@@ -169,13 +164,13 @@ const BlocksBrowse = {
       //   }
       // }
       const t1 = performance.now();
-      console.log(now() + " BlocksBrowse - methods.loadItem - provider.getBlockWithTransactions([" + firstBlock + "..." + lastBlock + "]) took " + (t1 - t0) + " ms");
+      console.log(now() + " BlocksBrowse - methods.loadItem - provider.getBlockWithTransactions([" + startBlock + "..." + endBlock + "]) took " + (t1 - t0) + " ms");
 
-      const blocks = await db.blocks.where('[chainId+number]').between([chainId, firstBlock],[chainId, lastBlock], true, true).toArray();
+      const blocks = await db.blocks.where('[chainId+number]').between([chainId, startBlock],[chainId, endBlock], true, true).toArray();
       // console.log(now() + " BlocksBrowse - methods.loadItems - blocks: " + JSON.stringify(blocks.map(e => e.number), null, 2));
       let blockNumbers = new Set(blocks.map(e => e.number));
       console.log(now() + " BlocksBrowse - methods.loadItems - blockNumbers: " + JSON.stringify([...blockNumbers]));
-      for (let blockNumber = firstBlock; blockNumber <= lastBlock; blockNumber++) {
+      for (let blockNumber = startBlock; blockNumber <= endBlock; blockNumber++) {
         if (!blockNumbers.has(blockNumber)) {
           console.log(now() + " BlocksBrowse - methods.loadItems - RETRIEVING blockNumber: " + blockNumber);
           const block = await this.provider.getBlockWithTransactions(blockNumber);
@@ -191,7 +186,7 @@ const BlocksBrowse = {
         }
       }
       const t2 = performance.now();
-      console.log(now() + " BlocksBrowse - methods.loadItem - db.blocks.where([" + firstBlock + "..." + lastBlock + "]) took " + (t2 - t1) + " ms");
+      console.log(now() + " BlocksBrowse - methods.loadItem - db.blocks.where([" + startBlock + "..." + endBlock + "]) took " + (t2 - t1) + " ms");
 
       if (this.sortBy == "desc") {
         blocks.sort((a, b) => {
