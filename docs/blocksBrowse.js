@@ -169,7 +169,7 @@ const BlocksBrowse = {
       //   }
       // }
       const t1 = performance.now();
-      console.log(now() + " BlocksBrowse - methods.loadItem - provider.getBlockWithTransactions([" + startBlock + "..." + endBlock + "]) took " + (t1 - t0) + " ms");
+      console.log(now() + " BlocksBrowse - methods.loadItem - provider.getBlockWithTransactions([" + firstBlock + "..." + lastBlock + "]) took " + (t1 - t0) + " ms");
 
       const blocks = await db.blocks.where('[chainId+number]').between([chainId, firstBlock],[chainId, lastBlock], true, true).toArray();
       // console.log(now() + " BlocksBrowse - methods.loadItems - blocks: " + JSON.stringify(blocks.map(e => e.number), null, 2));
@@ -191,7 +191,7 @@ const BlocksBrowse = {
         }
       }
       const t2 = performance.now();
-      console.log(now() + " BlocksBrowse - methods.loadItem - db.blocks.where([" + startBlock + "..." + endBlock + "]) took " + (t2 - t1) + " ms");
+      console.log(now() + " BlocksBrowse - methods.loadItem - db.blocks.where([" + firstBlock + "..." + lastBlock + "]) took " + (t2 - t1) + " ms");
 
       if (this.sortBy == "desc") {
         blocks.sort((a, b) => {

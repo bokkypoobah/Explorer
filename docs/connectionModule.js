@@ -184,12 +184,14 @@ const connectionModule = {
         if (connected) {
           // TODO: ethers.js fires duplicated new block events sometimes
           let timerId = null;
+          // let period = parseInt(Math.random() * 2000) + 100;
+          const period = 200;
           async function handleNewBlock(blockNumber) {
-            console.log(now() + " connectionModule - actions.connect.handleNewBlock - blockNumber: " + blockNumber);
+            console.log(now() + " connectionModule - actions.connect.handleNewBlock - blockNumber: " + blockNumber + ", period: " + period);
             clearTimeout(timerId);
             timerId = setTimeout(async () => {
               await handleNewBlockDebounced(blockNumber);
-            }, 500);
+            }, period);
           }
           async function handleNewBlockDebounced(blockNumber) {
             // console.log(now() + " connectionModule - actions.connect.handleNewBlockDebounced - context.state.lastBlockNumber: " + context.state.lastBlockNumber);
