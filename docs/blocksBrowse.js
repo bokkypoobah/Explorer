@@ -140,7 +140,7 @@ const BlocksBrowse = {
         firstBlock = startBlock;
         lastBlock = endBlock;
       }
-      console.log(now() + " BlocksBrowse - methods.loadItems - startBlock: " + startBlock + ", endBlock: " + endBlock);
+      // console.log(now() + " BlocksBrowse - methods.loadItems - startBlock: " + startBlock + ", endBlock: " + endBlock);
       console.log(now() + " BlocksBrowse - methods.loadItems - firstBlock: " + firstBlock + ", lastBlock: " + lastBlock + ", this.sortBy: " + this.sortBy);
 
       // const blocks = [];
