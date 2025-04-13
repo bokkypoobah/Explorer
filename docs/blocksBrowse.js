@@ -197,7 +197,17 @@ const BlocksBrowse = {
           return a.number - b.number;
         });
       }
-      this.blocks = blocks;
+      const results = [];
+      for (const block of blocks) {
+        results.push({
+          ...block,
+          txCount: block.transactions.length,
+          gasUsed: ethers.BigNumber.from(block.gasUsed).toString(),
+          gasLimit: ethers.BigNumber.from(block.gasLimit).toString(),
+          percent: ethers.BigNumber.from(block.gasUsed).mul(100).div(ethers.BigNumber.from(block.gasLimit)).toString(),
+        });
+      }
+      this.blocks = results;
       this.loading = null;
       db.close();
     },
