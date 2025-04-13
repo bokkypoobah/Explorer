@@ -10,8 +10,8 @@ const Blocks = {
           </v-btn> -->
           <v-spacer></v-spacer>
           <v-tabs right color="deep-purple-accent-4">
-            <v-tab :to="'/blocks/latest'" class="lowercase-btn">Latest {{ latestCount }} Blocks</v-tab>
-            <v-tab :to="'/blocks/browse'" class="lowercase-btn">Browse</v-tab>
+            <!-- <v-tab :to="'/blocks/latest'" class="lowercase-btn">Latest {{ latestCount }} Blocks</v-tab> -->
+            <v-tab :to="'/blocks/browse'" prepend-icon="mdi-format-list-numbered" class="lowercase-btn">Blocks</v-tab>
           </v-tabs>
         </v-toolbar>
         <router-view />

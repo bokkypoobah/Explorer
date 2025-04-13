@@ -53,6 +53,9 @@ const BlocksBrowse = {
           <template v-slot:item.gasLimit="{ item }">
             {{ commify0(item.gasLimit) }}
           </template>
+          <template v-slot:item.extraData="{ item }">
+            {{ item.extraData.substring(0, 32) + (item.extraData.length > 30 ? "..." : "") }}
+          </template>
         </v-data-table-server>
         <!-- currentPage: {{ currentPage }} -->
       </v-container>
@@ -75,6 +78,7 @@ const BlocksBrowse = {
         { title: 'Gas Used', value: 'gasUsed', align: 'end', sortable: false },
         { title: 'Gas Limit', value: 'gasLimit', align: 'end', sortable: false },
         { title: '%', value: 'percent', sortable: false },
+        { title: 'Extra Data', value: 'extraData', sortable: false },
       ],
       itemsPerPageOptions: [
         { value: 10, title: "10" },
@@ -199,8 +203,14 @@ const BlocksBrowse = {
       }
       const results = [];
       for (const block of blocks) {
+        let extraData = block.extraData;
+        try {
+          extraData = ethers.utils.toUtf8String(block.extraData);
+        } catch (e) {
+        }
         results.push({
           ...block,
+          extraData,
           txCount: block.transactions.length,
           gasUsed: ethers.BigNumber.from(block.gasUsed).toString(),
           gasLimit: ethers.BigNumber.from(block.gasLimit).toString(),
