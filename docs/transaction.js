@@ -40,7 +40,7 @@ const Transaction = {
           <v-tabs-window-item value="info">
             <v-card>
               <v-card-text>
-                <v-row dense>
+                <v-row no-gutters dense>
                   <v-col cols="2" align="right">
                     <p class="my-2">Transaction Hash:</p>
                   </v-col>
@@ -50,7 +50,7 @@ const Transaction = {
                     </v-btn>
                   </v-col>
                 </v-row>
-                <v-row dense>
+                <v-row no-gutters dense>
                   <v-col cols="2" align="right">
                     <p class="my-2">Type:</p>
                   </v-col>
@@ -60,7 +60,7 @@ const Transaction = {
                     </v-btn>
                   </v-col>
                 </v-row>
-                <v-row dense>
+                <v-row no-gutters dense>
                   <v-col cols="2" align="right">
                     <p class="my-2">Status:</p>
                   </v-col>
@@ -70,7 +70,7 @@ const Transaction = {
                     </v-btn>
                   </v-col>
                 </v-row>
-                <v-row dense>
+                <v-row no-gutters dense>
                   <v-col cols="2" align="right">
                     <p class="my-2">Block:</p>
                   </v-col>
@@ -80,7 +80,7 @@ const Transaction = {
                     </v-btn>
                   </v-col>
                 </v-row>
-                <v-row dense>
+                <v-row no-gutters dense>
                   <v-col cols="2" align="right">
                     <p class="my-2">Timestamp:</p>
                   </v-col>
@@ -90,7 +90,7 @@ const Transaction = {
                     </v-btn>
                   </v-col>
                 </v-row>
-                <v-row dense>
+                <v-row no-gutters dense>
                   <v-col cols="2" align="right">
                     <p class="my-2">From:</p>
                   </v-col>
@@ -100,7 +100,7 @@ const Transaction = {
                     </v-btn>
                   </v-col>
                 </v-row>
-                <v-row dense>
+                <v-row no-gutters dense>
                   <v-col cols="2" align="right">
                     <p class="my-2">Nonce:</p>
                   </v-col>
@@ -110,7 +110,7 @@ const Transaction = {
                     </v-btn>
                   </v-col>
                 </v-row>
-                <v-row dense>
+                <v-row no-gutters dense>
                   <v-col cols="2" align="right">
                     <p class="my-2">To:</p>
                   </v-col>
@@ -120,7 +120,7 @@ const Transaction = {
                     </v-btn>
                   </v-col>
                 </v-row>
-                <v-row dense>
+                <v-row no-gutters dense>
                   <v-col cols="2" align="right">
                     <p class="my-2">Value (Ξ):</p>
                   </v-col>
@@ -130,7 +130,7 @@ const Transaction = {
                     </v-btn>
                   </v-col>
                 </v-row>
-                <v-row dense>
+                <v-row no-gutters dense>
                   <v-col cols="2" align="right">
                     <p class="my-2">Fee (Ξ):</p>
                   </v-col>
@@ -140,7 +140,7 @@ const Transaction = {
                     </v-btn>
                   </v-col>
                 </v-row>
-                <v-row dense>
+                <v-row no-gutters dense>
                   <v-col cols="2" align="right">
                     <p class="my-2">Gas Used / Limit, %:</p>
                   </v-col>
@@ -150,7 +150,7 @@ const Transaction = {
                     </v-btn>
                   </v-col>
                 </v-row>
-                <v-row dense>
+                <v-row no-gutters dense>
                   <v-col cols="2" align="right">
                     <p class="my-2">Data:</p>
                   </v-col>
