@@ -52,6 +52,16 @@ const Transaction = {
                 </v-row>
                 <v-row dense>
                   <v-col cols="2" align="right">
+                    <p class="mt-2">Type:</p>
+                  </v-col>
+                  <v-col cols="10" align="left">
+                    <v-btn v-if="tx" variant="text" class="lowercase-btn ma-0 px-2">
+                      {{ tx.type }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+                <v-row dense>
+                  <v-col cols="2" align="right">
                     <p class="mt-2">Status:</p>
                   </v-col>
                   <v-col cols="10" align="left">
@@ -92,6 +102,16 @@ const Transaction = {
                 </v-row>
                 <v-row dense>
                   <v-col cols="2" align="right">
+                    <p class="mt-2">Nonce:</p>
+                  </v-col>
+                  <v-col cols="10" align="left">
+                    <v-btn v-if="tx" variant="text" class="lowercase-btn ma-0 px-2">
+                      {{ tx.nonce }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+                <v-row dense>
+                  <v-col cols="2" align="right">
                     <p class="mt-2">To:</p>
                   </v-col>
                   <v-col cols="10" align="left">
@@ -126,7 +146,7 @@ const Transaction = {
                   </v-col>
                   <v-col cols="10" align="left">
                     <v-btn v-if="tx && txReceipt" variant="text" class="lowercase-btn ma-0 px-2">
-                      {{ txReceipt.gasUsed + " / " + tx.gasLimit + ", " + gasPercentage + "%" }}
+                      {{ commify0(txReceipt.gasUsed) + " / " + commify0(tx.gasLimit) + ", " + gasPercentage + "%" }}
                     </v-btn>
                   </v-col>
                 </v-row>
