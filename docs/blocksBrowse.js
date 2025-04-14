@@ -121,12 +121,8 @@ const BlocksBrowse = {
       const chainId = store.getters["chainId"];
 
       const blockNumber = parseInt(store.getters['web3'].blockNumber);
-      console.log(now() + " BlocksBrowse - methods.loadItems - page: " + page + ", itemsPerPage: " + itemsPerPage + ", sortBy: " + JSON.stringify(sortBy) + ", blockNumber: " + blockNumber);
-      const cachedBlocks = store.getters['blocks/blocks'];
-      // console.log(now() + " BlocksBrowse - methods.loadItems - cachedBlocks: " + JSON.stringify(cachedBlocks));
       this.loading = true;
       this.sortBy = !sortBy || sortBy.length == 0 || (sortBy[0].key == "number" && sortBy[0].order == "desc") ? "desc" : "asc";
-      // console.log(now() + " BlocksBrowse - methods.loadItems - this.sortBy: " + this.sortBy);
       let startBlock, endBlock;
       if (this.sortBy == "desc") {
         endBlock =  parseInt(blockNumber) - ((page - 1) * itemsPerPage);
@@ -141,40 +137,11 @@ const BlocksBrowse = {
           endBlock = blockNumber;
         }
       }
-      console.log(now() + " BlocksBrowse - methods.loadItems - startBlock: " + startBlock + ", endBlock: " + endBlock + ", this.sortBy: " + this.sortBy);
+      console.log(now() + " BlocksBrowse - methods.loadItems - blockNumber: " + blockNumber + ", this.sortBy: " + this.sortBy + ", page: " + page + ", itemsPerPage: " + itemsPerPage + ", startBlock: " + startBlock + ", endBlock: " + endBlock);
 
-      // const blocks = [];
       const t0 = performance.now();
-      // if (this.sortBy == "desc") {
-      //   for (let blockNumber = startBlock; blockNumber >= endBlock; blockNumber--) {
-      //     const block = cachedBlocks[blockNumber] || (await this.provider.getBlockWithTransactions(blockNumber));
-      //   //   blocks.push({
-      //   //     ...block,
-      //   //     txCount: block.transactions.length,
-      //   //     gasUsed: ethers.BigNumber.from(block.gasUsed).toString(),
-      //   //     gasLimit: ethers.BigNumber.from(block.gasLimit).toString(),
-      //   //     percent: ethers.BigNumber.from(block.gasUsed).mul(100).div(ethers.BigNumber.from(block.gasLimit)).toString(),
-      //   //   });
-      //   }
-      // } else {
-      //   for (let blockNumber = startBlock; blockNumber <= endBlock; blockNumber++) {
-      //     const block = cachedBlocks[blockNumber] || await this.provider.getBlockWithTransactions(blockNumber);
-      //   //   blocks.push({
-      //   //     ...block,
-      //   //     txCount: block.transactions.length,
-      //   //     gasUsed: ethers.BigNumber.from(block.gasUsed).toString(),
-      //   //     gasLimit: ethers.BigNumber.from(block.gasLimit).toString(),
-      //   //     percent: ethers.BigNumber.from(block.gasUsed).mul(100).div(ethers.BigNumber.from(block.gasLimit)).toString(),
-      //   //   });
-      //   }
-      // }
-      const t1 = performance.now();
-      console.log(now() + " BlocksBrowse - methods.loadItem - provider.getBlockWithTransactions([" + startBlock + "..." + endBlock + "]) took " + (t1 - t0) + " ms");
-
       const blocks = await db.blocks.where('[chainId+number]').between([chainId, startBlock],[chainId, endBlock], true, true).toArray();
-      // console.log(now() + " BlocksBrowse - methods.loadItems - blocks: " + JSON.stringify(blocks.map(e => e.number), null, 2));
       let blockNumbers = new Set(blocks.map(e => e.number));
-      console.log(now() + " BlocksBrowse - methods.loadItems - blockNumbers: " + JSON.stringify([...blockNumbers]));
       for (let blockNumber = startBlock; blockNumber <= endBlock; blockNumber++) {
         if (!blockNumbers.has(blockNumber)) {
           console.log(now() + " BlocksBrowse - methods.loadItems - RETRIEVING blockNumber: " + blockNumber);
@@ -185,13 +152,10 @@ const BlocksBrowse = {
             }).catch(function(e) {
               console.error(now() + " BlocksBrowse - methods.loadItems - ERROR blocks.put: " + e.message);
             });
-
-        } else {
-          // console.log(now() + " BlocksBrowse - methods.loadItems - HAS blockNumber: " + blockNumber);
         }
       }
-      const t2 = performance.now();
-      console.log(now() + " BlocksBrowse - methods.loadItem - db.blocks.where([" + startBlock + "..." + endBlock + "]) took " + (t2 - t1) + " ms");
+      const t1 = performance.now();
+      console.log(now() + " BlocksBrowse - methods.loadItem - db.blocks.where([" + startBlock + "..." + endBlock + "]) & getBlockWithTransactions(...) took " + (t1 - t0) + " ms");
 
       if (this.sortBy == "desc") {
         blocks.sort((a, b) => {

@@ -4,22 +4,13 @@
 const Connection = {
   template: `
     <div>
-      <v-tooltip v-if="coinbase" :text="coinbase" class="ma-0 pa-0">
-        <template v-slot:activator="{ props }">
-          <v-btn v-bind="props" :href="explorer + 'address/' + coinbase" target="_blank" size="x-small" color="primary" variant="text" icon class="lowercase-btn text-caption ma-0 py-0 px-1">
-            <v-img :class="connected ? 'mdi mdi-network' : 'mdi mdi-network-outline'"></v-img>
-          </v-btn>
-        </template>
-      </v-tooltip>
-      <span v-else>
-        <v-btn size="x-small" color="primary" variant="text" icon class="lowercase-btn text-caption ma-0 py-0 px-1">
-          <v-img :class="connected ? 'mdi mdi-network' : 'mdi mdi-network-outline'"></v-img>
-        </v-btn>
-      </span>
-      <v-btn v-if="info.chainId" :href="explorer" target="_blank" color="primary" variant="text" class="lowercase-btn text-caption ma-0 px-1">
+      <v-btn :disabled="!coinbase" :href="explorer + 'address/' + coinbase" target="_blank" size="x-small" color="primary" variant="text" icon class="ma-0 pa-0" v-tooltip="coinbase">
+        <v-img :class="connected ? 'mdi mdi-network' : 'mdi mdi-network-outline'"></v-img>
+      </v-btn>
+      <v-btn v-if="info.chainId" :href="explorer" target="_blank" color="primary" variant="text" class="lowercase-btn text-caption ma-0 px-2">
         {{ networkName }}
       </v-btn>
-      <v-btn v-if="info.blockNumber" :href="explorer + 'block/' + info.blockNumber" target="_blank" color="primary" variant="text" class="lowercase-btn text-caption ma-0 px-1">
+      <v-btn v-if="info.blockNumber" :href="explorer + 'block/' + info.blockNumber" target="_blank" color="primary" variant="text" class="lowercase-btn text-caption ma-0 px-2">
         {{ '#' + commify0(info.blockNumber) }}
       </v-btn>
       <v-tooltip v-if="info.timestamp" :text="formatTimestamp(info.timestamp)">
@@ -27,13 +18,9 @@ const Connection = {
           <span v-bind="props" class="text-caption text--disabled">{{ formatTimeDiff(info.timestamp) }}</span>
         </template>
       </v-tooltip>
-      <v-tooltip v-if="info.gasPrice" :text="'gasPrice ' + formatGas(info.gasPrice) + ', lastBaseFeePerGas ' + formatGas(info.lastBaseFeePerGas) + ', maxPriorityFeePerGas ' + formatGas(info.maxPriorityFeePerGas) + ', maxFeePerGas ' + formatGas(info.maxFeePerGas) + ' gwei'">
-        <template v-slot:activator="{ props }">
-          <v-btn href="https://etherscan.io/gastracker" target="_blank" color="primary" variant="text" class="lowercase-btn text-caption py-0 px-1">
-            <span v-bind="props">{{ formatGas(info.gasPrice) + 'g'}}</span>
-          </v-btn>
-        </template>
-      </v-tooltip>
+      <v-btn :disabled="!info.gasPrice" href="https://etherscan.io/gastracker" target="_blank" size="small" color="primary" variant="text" text class="lowercase-btn ma-0 px-2" v-tooltip="'gasPrice ' + formatGas(info.gasPrice) + ', lastBaseFeePerGas ' + formatGas(info.lastBaseFeePerGas) + ', maxPriorityFeePerGas ' + formatGas(info.maxPriorityFeePerGas) + ', maxFeePerGas ' + formatGas(info.maxFeePerGas) + ' gwei'">
+        {{ formatGas(info.gasPrice) + 'g'}}
+      </v-btn>
     </div>
   `,
   data: function () {
@@ -141,8 +128,8 @@ const connectionModule = {
           const t0 = performance.now();
           const block = await provider.getBlockWithTransactions("latest");
           const t1 = performance.now();
-          console.log(now() + " connectionModule - actions.connect.handleNewBlock - provider.getBlockWithTransactions('latest') took " + (t1 - t0) + " ms");
           blockNumber = block.number;
+          console.log(now() + " connectionModule - actions.connect.handleNewBlock - getBlockWithTransactions('latest') blockNumber: " + blockNumber + " took " + (t1 - t0) + " ms");
           timestamp = block.timestamp;
           const signer = provider.getSigner();
           coinbase = await signer.getAddress();
@@ -179,30 +166,25 @@ const connectionModule = {
           // let period = parseInt(Math.random() * 2000) + 100;
           const period = 200;
           async function handleNewBlock(blockNumber) {
-            console.log(now() + " connectionModule - actions.connect.handleNewBlock - blockNumber: " + blockNumber + ", period: " + period);
+            console.log(now() + " connectionModule - actions.connect.handleNewBlock - blockNumber: " + blockNumber);
             clearTimeout(timerId);
             timerId = setTimeout(async () => {
               await handleNewBlockDebounced(blockNumber);
             }, period);
           }
           async function handleNewBlockDebounced(blockNumber) {
-            // console.log(now() + " connectionModule - actions.connect.handleNewBlockDebounced - context.state.lastBlockNumber: " + context.state.lastBlockNumber);
             if (parseInt(blockNumber) > context.state.lastBlockNumber) {
               context.commit('setLastBlockNumber', parseInt(blockNumber));
-              console.log(now() + " connectionModule - actions.connect.handleNewBlockDebounced - PROCESSING blockNumber: " + blockNumber);
-              // const latestCount = store.getters['blocks/latestCount'];
-              // console.log(now() + " connectionModule - actions.connect.handleNewBlockDebounced - latestCount: " + latestCount);
               const performance = window.performance;
               const t0 = performance.now();
               const block = await provider.getBlockWithTransactions("latest");
               context.commit('setLastBlockNumber', parseInt(block.number));
 
               const t1 = performance.now();
-              console.log(now() + " connectionModule - actions.connect.handleNewBlockDebounced - provider.getBlockWithTransactions(" + blockNumber + ") took " + (t1 - t0) + " ms");
+              console.log(now() + " connectionModule - actions.connect.handleNewBlockDebounced - getBlockWithTransactions('latest') blockNumber: " + blockNumber + " took " + (t1 - t0) + " ms");
               const feeData = await provider.getFeeData();
               const t2 = performance.now();
-              console.log(now() + " connectionModule - actions.connect.handleNewBlockDebounced - provider.getFeeData() took " + (t2 - t1) + " ms");
-              // console.log(now() + " connectionModule - actions.connect.handleNewBlockDebounced - feeData: " + JSON.stringify(feeData));
+              console.log(now() + " connectionModule - actions.connect.handleNewBlockDebounced - getFeeData() took " + (t2 - t1) + " ms");
 
               const dbInfo = store.getters["db"];
               const db = new Dexie(dbInfo.name);
@@ -223,7 +205,6 @@ const connectionModule = {
                 gasPrice: ethers.BigNumber.from(feeData.gasPrice).toString(),
               });
               store.dispatch('blocks/addBlock', block);
-              // console.log(now() + " connectionModule - actions.connect.handleNewBlockDebounced - blockNumber: " + block.number);
             }
           }
           if (provider._events.length == 0) {
