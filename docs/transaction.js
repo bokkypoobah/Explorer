@@ -38,7 +38,89 @@ const Transaction = {
         </v-toolbar>
         <v-tabs-window v-model="settings.tab">
           <v-tabs-window-item value="info">
-            Info
+            <v-card title="Info">
+              <v-card-text>
+                <v-row dense>
+                  <v-col cols="2" align="right">
+                    <p class="mt-2">Transaction Hash:</p>
+                  </v-col>
+                  <v-col cols="6" align="left">
+                    <v-btn v-if="tx && tx.hash" variant="text" class="lowercase-btn ma-0 px-2">
+                      {{ tx.hash }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+                <v-row dense>
+                  <v-col cols="2" align="right">
+                    <p class="mt-2">Status:</p>
+                  </v-col>
+                  <v-col cols="10" align="left">
+                    <v-btn v-if="txReceipt && txReceipt.status" variant="text" class="lowercase-btn ma-0 px-2">
+                      {{ txReceipt.status == "1" ? "SUCCESS" : "FAILURE" }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+                <v-row dense>
+                  <v-col cols="2" align="right">
+                    <p class="mt-2">Block:</p>
+                  </v-col>
+                  <v-col cols="10" align="left">
+                    <v-btn v-if="tx && tx.blockNumber" :to="'/block/' + tx.blockNumber" color="primary" variant="text" class="lowercase-btn ma-0 px-2">
+                      {{ '#' + commify0(tx.blockNumber) }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+                <v-row dense>
+                  <v-col cols="2" align="right">
+                    <p class="mt-2">Timestamp:</p>
+                  </v-col>
+                  <v-col cols="10" align="left">
+                    <v-btn v-if="timestamp" variant="text" class="lowercase-btn ma-0 px-2">
+                      {{ formatTimestamp(timestamp) + ", " + formatTimeDiff(timestamp) }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+                <v-row dense>
+                  <v-col cols="2" align="right">
+                    <p class="mt-2">From:</p>
+                  </v-col>
+                  <v-col cols="10" align="left">
+                    <v-btn v-if="tx && tx.from" :to="'/address/' + tx.from" color="primary" variant="text" class="lowercase-btn ma-0 px-2">
+                      {{ tx.from }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+                <v-row dense>
+                  <v-col cols="2" align="right">
+                    <p class="mt-2">To:</p>
+                  </v-col>
+                  <v-col cols="10" align="left">
+                    <v-btn v-if="tx && tx.to" :to="'/address/' + tx.to" color="primary" variant="text" class="lowercase-btn ma-0 px-2">
+                      {{ tx.to }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+                <v-row dense>
+                  <v-col cols="2" align="right">
+                    <p class="mt-2">Value (Ξ):</p>
+                  </v-col>
+                  <v-col cols="10" align="left">
+                    <v-btn v-if="tx && tx.value" variant="text" class="lowercase-btn ma-0 px-2">
+                      {{ formatETH(tx.value) }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+                <v-row dense>
+                  <v-col cols="2" align="right">
+                    <p class="mt-2">Data:</p>
+                  </v-col>
+                  <v-col cols="10" align="left">
+                    <v-textarea v-if="tx && tx.data" :model-value="tx.data" rows="5" max-rows="10" class="ma-2">
+                    </v-textarea>
+                  </v-col>
+                </v-row>
+              </v-card-text>
+            </v-card>
           </v-tabs-window-item>
           <v-tabs-window-item value="events">
             Events
