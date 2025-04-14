@@ -116,9 +116,9 @@ const Block = {
 
       <v-card>
         <v-card-text>
-          <div v-if="!block">
+          <!-- <div v-if="!block">
             Enter block number in the search field above
-          </div>
+          </div> -->
           <!-- <p>{{ block }}</p> -->
         </v-card-text>
         <!-- <v-card-actions>

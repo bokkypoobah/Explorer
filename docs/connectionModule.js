@@ -10,7 +10,7 @@ const Connection = {
       <v-btn v-if="info.chainId" :href="explorer" target="_blank" color="primary" variant="text" class="lowercase-btn text-caption ma-0 px-2">
         {{ networkName }}
       </v-btn>
-      <v-btn v-if="info.blockNumber" :href="explorer + 'block/' + info.blockNumber" target="_blank" color="primary" variant="text" class="lowercase-btn text-caption ma-0 px-2">
+      <v-btn v-if="info.blockNumber" :to="'/block/' + info.blockNumber" color="primary" variant="text" class="lowercase-btn text-caption ma-0 px-2">
         {{ '#' + commify0(info.blockNumber) }}
       </v-btn>
       <v-tooltip v-if="info.timestamp" :text="formatTimestamp(info.timestamp)">

@@ -11,6 +11,7 @@ const Transaction = {
               </v-btn>
             </template>
             <v-list>
+              <v-list-subheader>{{ tx.hash }}</v-list-subheader>
               <v-list-item @click="copyToClipboard(tx.hash);">
                 <template v-slot:prepend>
                   <v-icon>mdi-content-copy</v-icon>
