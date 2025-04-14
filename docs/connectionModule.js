@@ -4,35 +4,29 @@
 const Connection = {
   template: `
     <div>
-      <!-- <span class="text-caption text--disabled"> -->
       <v-tooltip v-if="coinbase" :text="coinbase" class="ma-0 pa-0">
         <template v-slot:activator="{ props }">
-          <v-btn v-bind="props" :href="explorer + 'address/' + coinbase" target="_blank" :prepend-icon="connected ? 'mdi-network' : 'mdi-network-outline'" size="x-small" color="primary" variant="text" icon class="lowercase-btn text-caption ma-0 py-0 px-1">
-            <!-- Blah -->
-            <v-img v-if="connected" class="mdi mdi-network"></v-img>
-            <v-img v-if="!connected" class="mdi mdi-network-outline"></v-img>
+          <v-btn v-bind="props" :href="explorer + 'address/' + coinbase" target="_blank" size="x-small" color="primary" variant="text" icon class="lowercase-btn text-caption ma-0 py-0 px-1">
+            <v-img :class="connected ? 'mdi mdi-network' : 'mdi mdi-network-outline'"></v-img>
           </v-btn>
         </template>
       </v-tooltip>
       <span v-else>
-        <span v-if="connected" class="mdi mdi-network"></span>
-        <span v-if="!connected" class="mdi mdi-network-outline"></span>
+        <v-btn size="x-small" color="primary" variant="text" icon class="lowercase-btn text-caption ma-0 py-0 px-1">
+          <v-img :class="connected ? 'mdi mdi-network' : 'mdi mdi-network-outline'"></v-img>
+        </v-btn>
       </span>
-
-      <v-btn v-if="info.chainId" :href="explorer" target="_blank" color="primary" variant="text" class="lowercase-btn text-caption ma-0 pa-0">
+      <v-btn v-if="info.chainId" :href="explorer" target="_blank" color="primary" variant="text" class="lowercase-btn text-caption ma-0 px-1">
         {{ networkName }}
       </v-btn>
-
-      <v-btn v-if="info.blockNumber" :href="explorer + 'block/' + info.blockNumber" target="_blank" color="primary" variant="text" class="lowercase-btn text-caption py-0 px-1">
+      <v-btn v-if="info.blockNumber" :href="explorer + 'block/' + info.blockNumber" target="_blank" color="primary" variant="text" class="lowercase-btn text-caption ma-0 px-1">
         {{ '#' + commify0(info.blockNumber) }}
       </v-btn>
-
       <v-tooltip v-if="info.timestamp" :text="formatTimestamp(info.timestamp)">
         <template v-slot:activator="{ props }">
           <span v-bind="props" class="text-caption text--disabled">{{ formatTimeDiff(info.timestamp) }}</span>
         </template>
       </v-tooltip>
-
       <v-tooltip v-if="info.gasPrice" :text="'gasPrice ' + formatGas(info.gasPrice) + ', lastBaseFeePerGas ' + formatGas(info.lastBaseFeePerGas) + ', maxPriorityFeePerGas ' + formatGas(info.maxPriorityFeePerGas) + ', maxFeePerGas ' + formatGas(info.maxFeePerGas) + ' gwei'">
         <template v-slot:activator="{ props }">
           <v-btn href="https://etherscan.io/gastracker" target="_blank" color="primary" variant="text" class="lowercase-btn text-caption py-0 px-1">
@@ -40,7 +34,6 @@ const Connection = {
           </v-btn>
         </template>
       </v-tooltip>
-      <!-- </span> -->
     </div>
   `,
   data: function () {
