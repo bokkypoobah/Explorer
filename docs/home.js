@@ -2,6 +2,16 @@ const Home = {
   template: `
     <div>
       <v-container fluid class="pa-1">
+        <v-card>
+          <v-card-text>
+            <h3 class="mt-5 mb-5">Welcome</h3>
+            <v-btn :href="'#/blocks/browse'" color="primary" variant="text" class="pa-0 lowercase-btn">View Blocks</v-btn>
+          </v-card-text>
+        </v-card>
+        <!-- <v-list-item to="/blocks/browse" prepend-icon="mdi-format-list-numbered" density="compact">
+          <v-list-item-title>Blocks</v-list-item-title>
+        </v-list-item> -->
+
         <v-toolbar v-if="false" density="compact" class="mt-1">
           <v-spacer></v-spacer>
           <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" right color="primary">
