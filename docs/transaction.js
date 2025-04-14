@@ -42,7 +42,7 @@ const Transaction = {
               <v-card-text>
                 <v-row dense>
                   <v-col cols="2" align="right">
-                    <p class="mt-2">Transaction Hash:</p>
+                    <p class="my-2">Transaction Hash:</p>
                   </v-col>
                   <v-col cols="6" align="left">
                     <v-btn v-if="tx && tx.hash" variant="text" class="lowercase-btn ma-0 px-2">
@@ -52,7 +52,7 @@ const Transaction = {
                 </v-row>
                 <v-row dense>
                   <v-col cols="2" align="right">
-                    <p class="mt-2">Type:</p>
+                    <p class="my-2">Type:</p>
                   </v-col>
                   <v-col cols="10" align="left">
                     <v-btn v-if="tx" variant="text" class="lowercase-btn ma-0 px-2">
@@ -62,7 +62,7 @@ const Transaction = {
                 </v-row>
                 <v-row dense>
                   <v-col cols="2" align="right">
-                    <p class="mt-2">Status:</p>
+                    <p class="my-2">Status:</p>
                   </v-col>
                   <v-col cols="10" align="left">
                     <v-btn v-if="txReceipt && txReceipt.status" variant="text" class="lowercase-btn ma-0 px-2">
@@ -72,7 +72,7 @@ const Transaction = {
                 </v-row>
                 <v-row dense>
                   <v-col cols="2" align="right">
-                    <p class="mt-2">Block:</p>
+                    <p class="my-2">Block:</p>
                   </v-col>
                   <v-col cols="10" align="left">
                     <v-btn v-if="tx && tx.blockNumber" :to="'/block/' + tx.blockNumber" color="primary" variant="text" class="lowercase-btn ma-0 px-2">
@@ -82,7 +82,7 @@ const Transaction = {
                 </v-row>
                 <v-row dense>
                   <v-col cols="2" align="right">
-                    <p class="mt-2">Timestamp:</p>
+                    <p class="my-2">Timestamp:</p>
                   </v-col>
                   <v-col cols="10" align="left">
                     <v-btn v-if="timestamp" variant="text" class="lowercase-btn ma-0 px-2">
@@ -92,7 +92,7 @@ const Transaction = {
                 </v-row>
                 <v-row dense>
                   <v-col cols="2" align="right">
-                    <p class="mt-2">From:</p>
+                    <p class="my-2">From:</p>
                   </v-col>
                   <v-col cols="10" align="left">
                     <v-btn v-if="tx && tx.from" :to="'/address/' + tx.from" color="primary" variant="text" class="lowercase-btn ma-0 px-2">
@@ -102,7 +102,7 @@ const Transaction = {
                 </v-row>
                 <v-row dense>
                   <v-col cols="2" align="right">
-                    <p class="mt-2">Nonce:</p>
+                    <p class="my-2">Nonce:</p>
                   </v-col>
                   <v-col cols="10" align="left">
                     <v-btn v-if="tx" variant="text" class="lowercase-btn ma-0 px-2">
@@ -112,7 +112,7 @@ const Transaction = {
                 </v-row>
                 <v-row dense>
                   <v-col cols="2" align="right">
-                    <p class="mt-2">To:</p>
+                    <p class="my-2">To:</p>
                   </v-col>
                   <v-col cols="10" align="left">
                     <v-btn v-if="tx && tx.to" :to="'/address/' + tx.to" color="primary" variant="text" class="lowercase-btn ma-0 px-2">
@@ -122,7 +122,7 @@ const Transaction = {
                 </v-row>
                 <v-row dense>
                   <v-col cols="2" align="right">
-                    <p class="mt-2">Value (Ξ):</p>
+                    <p class="my-2">Value (Ξ):</p>
                   </v-col>
                   <v-col cols="10" align="left">
                     <v-btn v-if="tx && tx.value" variant="text" class="lowercase-btn ma-0 px-2">
@@ -132,7 +132,7 @@ const Transaction = {
                 </v-row>
                 <v-row dense>
                   <v-col cols="2" align="right">
-                    <p class="mt-2">Fee (Ξ):</p>
+                    <p class="my-2">Fee (Ξ):</p>
                   </v-col>
                   <v-col cols="10" align="left">
                     <v-btn v-if="fee" variant="text" class="lowercase-btn ma-0 px-2">
@@ -142,7 +142,7 @@ const Transaction = {
                 </v-row>
                 <v-row dense>
                   <v-col cols="2" align="right">
-                    <p class="mt-2">Gas Used / Limit, %:</p>
+                    <p class="my-2">Gas Used / Limit, %:</p>
                   </v-col>
                   <v-col cols="10" align="left">
                     <v-btn v-if="tx && txReceipt" variant="text" class="lowercase-btn ma-0 px-2">
@@ -152,7 +152,7 @@ const Transaction = {
                 </v-row>
                 <v-row dense>
                   <v-col cols="2" align="right">
-                    <p class="mt-2">Data:</p>
+                    <p class="my-2">Data:</p>
                   </v-col>
                   <v-col cols="10" align="left">
                     <v-textarea v-if="tx && tx.data" :model-value="tx.data" rows="5" max-rows="10" class="ma-2">
