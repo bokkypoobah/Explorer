@@ -38,7 +38,7 @@ const Transaction = {
         </v-toolbar>
         <v-tabs-window v-model="settings.tab">
           <v-tabs-window-item value="info">
-            <v-card title="Info">
+            <v-card>
               <v-card-text>
                 <v-row dense>
                   <v-col cols="2" align="right">
@@ -112,6 +112,26 @@ const Transaction = {
                 </v-row>
                 <v-row dense>
                   <v-col cols="2" align="right">
+                    <p class="mt-2">Fee (Ξ):</p>
+                  </v-col>
+                  <v-col cols="10" align="left">
+                    <v-btn v-if="fee" variant="text" class="lowercase-btn ma-0 px-2">
+                      {{ formatETH(fee) }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+                <v-row dense>
+                  <v-col cols="2" align="right">
+                    <p class="mt-2">Gas Used / Limit, %:</p>
+                  </v-col>
+                  <v-col cols="10" align="left">
+                    <v-btn v-if="tx && txReceipt" variant="text" class="lowercase-btn ma-0 px-2">
+                      {{ txReceipt.gasUsed + " / " + tx.gasLimit + ", " + gasPercentage + "%" }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+                <v-row dense>
+                  <v-col cols="2" align="right">
                     <p class="mt-2">Data:</p>
                   </v-col>
                   <v-col cols="10" align="left">
@@ -163,6 +183,18 @@ const Transaction = {
       get: function() {
         return this.timestamp && this.formatTimestamp(this.timestamp) || null;
       },
+    },
+    gasPercentage() {
+      if (this.tx && this.txReceipt) {
+        return ethers.BigNumber.from(this.txReceipt.gasUsed).mul(100).div(this.tx.gasLimit);
+      }
+      return null;
+    },
+    fee() {
+      if (this.txReceipt) {
+        return ethers.BigNumber.from(this.txReceipt.gasUsed).mul(this.txReceipt.effectiveGasPrice);
+      }
+      return null;
     },
 
   },
