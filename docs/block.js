@@ -4,9 +4,13 @@ const Block = {
       <v-container fluid class="pa-1">
         <v-toolbar density="compact" class="mt-1">
           <h4 class="ml-2">Block</h4>
+          <v-btn v-if="block" :disabled="block.number == 0" @click="navigateToBlock(0);" icon="mdi-page-first" density="compact" color="primary" dark class="ma-0 ml-5">
+          </v-btn>
+          <v-btn v-if="block" :disabled="block.number == 0" @click="navigateToBlock(block.number - 1);" icon="mdi-chevron-left" density="compact" color="primary" dark class="ma-0">
+          </v-btn>
           <v-menu location="bottom">
             <template v-slot:activator="{ props }">
-              <v-btn v-if="block" color="primary" dark v-bind="props" class="ml-2 lowercase-btn">
+              <v-btn v-if="block" color="primary" dark v-bind="props" class="ma-0 lowercase-btn">
                 {{ commify0(block.number) }}
               </v-btn>
             </template>
@@ -25,6 +29,10 @@ const Block = {
               </v-list-item>
             </v-list>
           </v-menu>
+          <v-btn v-if="block" :disabled="block.number == latestBlockNumber" @click="navigateToBlock(block.number + 1);" icon="mdi-chevron-right" density="compact" color="primary" dark class="ma-0">
+          </v-btn>
+          <v-btn v-if="block" :disabled="block.number == latestBlockNumber" @click="navigateToBlock(latestBlockNumber);" icon="mdi-page-last" density="compact" color="primary" dark class="ma-0">
+          </v-btn>
 
           <!-- <v-text-field v-model="settings.blockNumber" @input="saveSettings();" hide-details single-line density="compact" variant="plain" style="width: 50px;" class="ma-0 pa-0" placeholder="block #">
           </v-text-field> -->
@@ -140,6 +148,9 @@ const Block = {
     block() {
       return store.getters['block/block'];
     },
+    latestBlockNumber() {
+      return store.getters['web3'].blockNumber;
+    },
     explorer() {
       return store.getters['explorer'];
     },
@@ -186,6 +197,11 @@ const Block = {
     },
   },
   methods: {
+    navigateToBlock(blockNumber) {
+      console.log(now() + " Block - methods.navigateToBlock - blockNumber: " + blockNumber);
+      this.$router.push({ name: 'Block', params: { inputBlockNumber: blockNumber } });
+      store.dispatch('block/loadBlock', blockNumber);
+    },
     navigateToAddress(link) {
       console.log(now() + " Block - methods.navigateToAddress - link: " + link);
       this.$router.push({ name: 'AddressAddress', params: { inputAddress: link } });
@@ -272,7 +288,7 @@ const blockModule = {
     async loadBlock(context, blockNumber) {
       console.log(now() + " blockModule - actions.loadBlock - blockNumber: " + blockNumber);
       let [error, block] = [null, null];
-      if (blockNumber) {
+      if (blockNumber != null) {
         if (!store.getters['web3'].connected || !window.ethereum) {
           error = "Not connected";
         }
