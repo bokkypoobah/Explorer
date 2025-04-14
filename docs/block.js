@@ -1,66 +1,112 @@
 const Block = {
   template: `
     <div>
+      <v-container fluid class="pa-1">
+        <v-toolbar density="compact" class="mt-1">
+          <h4 class="ml-2">Block</h4>
+          <v-menu location="bottom">
+            <template v-slot:activator="{ props }">
+              <v-btn v-if="block" color="primary" dark v-bind="props" class="ml-2 lowercase-btn">
+                {{ commify0(block.number) }}
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item @click="copyToClipboard(block.number);">
+                <template v-slot:prepend>
+                  <v-icon>mdi-content-copy</v-icon>
+                </template>
+                <v-list-item-title>Copy block number to clipboard</v-list-item-title>
+              </v-list-item>
+              <v-list-item :href="explorer + 'block/' + block.number" target="_blank">
+                <template v-slot:prepend>
+                  <v-icon>mdi-link</v-icon>
+                </template>
+                <v-list-item-title>View in explorer</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+
+          <!-- <v-text-field v-model="settings.blockNumber" @input="saveSettings();" hide-details single-line density="compact" variant="plain" style="width: 50px;" class="ma-0 pa-0" placeholder="block #">
+          </v-text-field> -->
+          <!-- <v-btn @click="syncAddress();" color="primary" icon>
+            <v-icon>mdi-refresh</v-icon>
+          </v-btn> -->
+          <v-spacer></v-spacer>
+          <v-spacer></v-spacer>
+          <v-tabs  v-model="settings.tab" @update:modelValue="saveSettings();" right color="deep-purple-accent-4">
+            <v-tab prepend-icon="mdi-cube-outline" text="Info" value="info" class="lowercase-btn"></v-tab>
+            <v-tab prepend-icon="mdi-currency-eth" text="Transactions" value="transactions" class="lowercase-btn"></v-tab>
+          </v-tabs>
+        </v-toolbar>
+        <v-tabs-window v-model="settings.tab">
+          <v-tabs-window-item value="info">
+            <div v-if="block" class="mt-1">
+              <v-row dense>
+                <v-col cols="2">
+                  <v-text-field v-if="block" readonly v-model="block.number" label="Number:"></v-text-field>
+                </v-col>
+                <v-col cols="3">
+                  <v-text-field v-if="block" readonly v-model="timestampString" label="Timestamp:"></v-text-field>
+                </v-col>
+                <v-col>
+                </v-col>
+                <v-col cols="6">
+                  <v-text-field v-if="block" readonly v-model="block.hash" label="Block Hash:"></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row dense>
+                <v-col cols="5">
+                  <v-text-field
+                    v-if="block"
+                    readonly
+                    v-model="block.miner"
+                    label="Miner:"
+                    append-inner-icon="mdi-arrow-right-bold-outline"
+                    @click:append-inner="navigateToAddress(block.miner)"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="1">
+                </v-col>
+                <v-col cols="6">
+                  <v-text-field v-if="block" readonly v-model="block.parentHash" label="Parent Block Hash:"></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row dense>
+                <v-col cols="2">
+                  <v-text-field v-if="block" readonly v-model="gasLimit" label="Gas Limit:"></v-text-field>
+                </v-col>
+                <v-col cols="2">
+                  <v-text-field v-if="block" readonly v-model="gasUsed" label="Gas Used:"></v-text-field>
+                </v-col>
+                <v-col cols="2">
+                </v-col>
+                <v-col cols="4">
+                  <v-text-field v-if="block" readonly v-model="extraData" label="Extra Data:"></v-text-field>
+                </v-col>
+              </v-row>
+            </div>
+          </v-tabs-window-item>
+          <v-tabs-window-item value="transactions">
+            <v-data-table v-if="block" :items="transactions" @click:row="handleClick" density="comfortable">
+              <template v-slot:item.txHash="{ item }">
+                <v-btn :href="'#/transaction/' + item.txHash" color="primary" variant="text" class="lowercase-btn pa-0">{{ item.txHash.substring(0, 20) + "..." }}</v-btn>
+              </template>
+              <template v-slot:item.from="{ item }">
+                <v-btn :href="'#/address/' + item.from" color="primary" variant="text" class="lowercase-btn pa-0">{{ item.from.substring(0, 10) + '...' + item.from.slice(-8) }}</v-btn>
+              </template>
+              <template v-slot:item.to="{ item }">
+                <v-btn v-if="item.to" :href="'#/address/' + item.to" color="primary" variant="text" class="lowercase-btn pa-0">{{ item.to.substring(0, 10) + '...' + item.to.slice(-8) }}</v-btn>
+              </template>
+            </v-data-table>
+          </v-tabs-window-item>
+        </v-tabs-window>
+      </v-container>
+
+
       <v-card>
         <v-card-text>
           <div v-if="!block">
             Enter block number in the search field above
-          </div>
-          <div v-if="block">
-            <v-row dense>
-              <v-col cols="2">
-                <v-text-field v-if="block" readonly v-model="block.number" label="Number:"></v-text-field>
-              </v-col>
-              <v-col cols="3">
-                <v-text-field v-if="block" readonly v-model="timestampString" label="Timestamp:"></v-text-field>
-              </v-col>
-              <v-col>
-              </v-col>
-              <v-col cols="6">
-                <v-text-field v-if="block" readonly v-model="block.hash" label="Block Hash:"></v-text-field>
-              </v-col>
-            </v-row>
-            <v-row dense>
-              <v-col cols="5">
-                <v-text-field
-                  v-if="block"
-                  readonly
-                  v-model="block.miner"
-                  label="Miner:"
-                  append-inner-icon="mdi-arrow-right-bold-outline"
-                  @click:append-inner="navigateToAddress(block.miner)"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="1">
-              </v-col>
-              <v-col cols="6">
-                <v-text-field v-if="block" readonly v-model="block.parentHash" label="Parent Block Hash:"></v-text-field>
-              </v-col>
-            </v-row>
-            <v-row dense>
-              <v-col cols="2">
-                <v-text-field v-if="block" readonly v-model="gasLimit" label="Gas Limit:"></v-text-field>
-              </v-col>
-              <v-col cols="2">
-                <v-text-field v-if="block" readonly v-model="gasUsed" label="Gas Used:"></v-text-field>
-              </v-col>
-              <v-col cols="2">
-              </v-col>
-              <v-col cols="4">
-                <v-text-field v-if="block" readonly v-model="extraData" label="Extra Data:"></v-text-field>
-              </v-col>
-            </v-row>
-            <v-data-table v-if="block" :items="transactions" @click:row="handleClick" density="compact">
-              <template v-slot:item.txHash="{ item }">
-                <a :href="'#/transaction/' + item.txHash">{{ item.txHash.substring(0, 20) + "..." + item.txHash.slice(-18) }}</a>
-              </template>
-              <template v-slot:item.from="{ item }">
-                <a :href="'#/address/' + item.from">{{ item.from.substring(0, 10) + "..." + item.from.slice(-8) }}</a>
-              </template>
-              <template v-slot:item.to="{ item }">
-                <a v-if="item.to" :href="'#/address/' + item.to">{{ item.to.substring(0, 10) + "..." + item.to.slice(-8) }}</a>
-              </template>
-            </v-data-table>
           </div>
           <!-- <p>{{ block }}</p> -->
         </v-card-text>
@@ -74,7 +120,12 @@ const Block = {
   props: ['inputBlockNumber'],
   data: function () {
     return {
-      blockNumber: null,
+      initialised: false,
+      settings: {
+        tab: null,
+        blockNumber: null,
+        version: 0,
+      },
       // v-data-table :headers="headers" not working
       // headers: [
       //   { text: 'Tx Index', value: 'txIndex' },
@@ -88,6 +139,9 @@ const Block = {
   computed: {
     block() {
       return store.getters['block/block'];
+    },
+    explorer() {
+      return store.getters['explorer'];
     },
     timestampString: {
       get: function() {
@@ -152,12 +206,38 @@ const Block = {
       }
       return null;
     },
+    commify0(n) {
+      if (n != null) {
+        return Number(n).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+      }
+      return null;
+    },
+    saveSettings() {
+      console.log(now() + " Block - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
+      if (this.initialised) {
+        localStorage.explorerBlockSettings = JSON.stringify(this.settings);
+      }
+    },
+    copyToClipboard(str) {
+      navigator.clipboard.writeText(str);
+    },
   },
   beforeCreate() {
     console.log(now() + " Block - beforeCreate");
 	},
   mounted() {
     console.log(now() + " Block - mounted - inputBlockNumber: " + this.inputBlockNumber);
+
+    if ('explorerBlockSettings' in localStorage) {
+      const tempSettings = JSON.parse(localStorage.explorerBlockSettings);
+      console.log(now() + " Block - mounted - tempSettings: " + JSON.stringify(tempSettings));
+      if ('version' in tempSettings && tempSettings.version == this.settings.version) {
+        this.settings = tempSettings;
+      }
+    }
+    this.initialised = true;
+    console.log(now() + " Block - mounted - this.settings: " + JSON.stringify(this.settings));
+
     const t = this;
     setTimeout(function() {
       store.dispatch('block/loadBlock', t.inputBlockNumber);

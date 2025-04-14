@@ -206,7 +206,7 @@ const AddressContract = {
     console.log(now() + " AddressContract - mounted");
     if ('explorerAddressContractSettings' in localStorage) {
       const tempSettings = JSON.parse(localStorage.explorerAddressContractSettings);
-      console.log(now() + " AddressContract - mounted - tempSettings: " + JSON.stringify(tempSettings));
+      // console.log(now() + " AddressContract - mounted - tempSettings: " + JSON.stringify(tempSettings));
       if ('version' in tempSettings && tempSettings.version == this.settings.version) {
         this.settings = tempSettings;
       }
