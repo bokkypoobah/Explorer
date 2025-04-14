@@ -4,44 +4,43 @@
 const Connection = {
   template: `
     <div>
-      <span class="text-caption text--disabled">
-        <span v-if="coinbase">
-          <v-tooltip :text="coinbase">
-            <template v-slot:activator="{ props }">
-              <a v-bind="props" :href="explorer + 'address/' + coinbase" target="_blank" >
-                <span v-if="connected" class="mdi mdi-network"></span>
-                <span v-if="!connected" class="mdi mdi-network-outline"></span>
-              </a>
-            </template>
-          </v-tooltip>
-        </span>
-        <span v-else>
-          <span v-if="connected" class="mdi mdi-network"></span>
-          <span v-if="!connected" class="mdi mdi-network-outline"></span>
-        </span>
-        <a v-if="info.chainId" :href="explorer" target="_blank" class="ml-1">
-          {{ networkName }}
-        </a>
-        <a v-if="info.blockNumber" :href="explorer + 'block/' + info.blockNumber" target="_blank" class="ml-1">
-          {{ '#' + commify0(info.blockNumber) }}
-        </a>
-        <span v-if="info.timestamp" class="ml-1">
-          <v-tooltip :text="formatTimestamp(info.timestamp)">
-            <template v-slot:activator="{ props }">
-              <span v-bind="props">{{ formatTimeDiff(info.timestamp) }}</span>
-            </template>
-          </v-tooltip>
-        </span>
-        <span v-if="info.gasPrice" class="ml-1">
-          <v-tooltip :text="'gasPrice ' + formatGas(info.gasPrice) + ', lastBaseFeePerGas ' + formatGas(info.lastBaseFeePerGas) + ', maxPriorityFeePerGas ' + formatGas(info.maxPriorityFeePerGas) + ', maxFeePerGas ' + formatGas(info.maxFeePerGas) + ' gwei'">
-            <template v-slot:activator="{ props }">
-              <a href="https://etherscan.io/gastracker" target="_blank" class="ml-1">
-                <span v-bind="props">{{ formatGas(info.gasPrice) + 'g'}}</span>
-              </a>
-            </template>
-          </v-tooltip>
-        </span>
+      <!-- <span class="text-caption text--disabled"> -->
+      <v-tooltip v-if="coinbase" :text="coinbase" class="ma-0 pa-0">
+        <template v-slot:activator="{ props }">
+          <v-btn v-bind="props" :href="explorer + 'address/' + coinbase" target="_blank" :prepend-icon="connected ? 'mdi-network' : 'mdi-network-outline'" size="x-small" color="primary" variant="text" icon class="lowercase-btn text-caption ma-0 py-0 px-1">
+            <!-- Blah -->
+            <v-img v-if="connected" class="mdi mdi-network"></v-img>
+            <v-img v-if="!connected" class="mdi mdi-network-outline"></v-img>
+          </v-btn>
+        </template>
+      </v-tooltip>
+      <span v-else>
+        <span v-if="connected" class="mdi mdi-network"></span>
+        <span v-if="!connected" class="mdi mdi-network-outline"></span>
       </span>
+
+      <v-btn v-if="info.chainId" :href="explorer" target="_blank" color="primary" variant="text" class="lowercase-btn text-caption ma-0 pa-0">
+        {{ networkName }}
+      </v-btn>
+
+      <v-btn v-if="info.blockNumber" :href="explorer + 'block/' + info.blockNumber" target="_blank" color="primary" variant="text" class="lowercase-btn text-caption py-0 px-1">
+        {{ '#' + commify0(info.blockNumber) }}
+      </v-btn>
+
+      <v-tooltip v-if="info.timestamp" :text="formatTimestamp(info.timestamp)">
+        <template v-slot:activator="{ props }">
+          <span v-bind="props" class="text-caption text--disabled">{{ formatTimeDiff(info.timestamp) }}</span>
+        </template>
+      </v-tooltip>
+
+      <v-tooltip v-if="info.gasPrice" :text="'gasPrice ' + formatGas(info.gasPrice) + ', lastBaseFeePerGas ' + formatGas(info.lastBaseFeePerGas) + ', maxPriorityFeePerGas ' + formatGas(info.maxPriorityFeePerGas) + ', maxFeePerGas ' + formatGas(info.maxFeePerGas) + ' gwei'">
+        <template v-slot:activator="{ props }">
+          <v-btn href="https://etherscan.io/gastracker" target="_blank" color="primary" variant="text" class="lowercase-btn text-caption py-0 px-1">
+            <span v-bind="props">{{ formatGas(info.gasPrice) + 'g'}}</span>
+          </v-btn>
+        </template>
+      </v-tooltip>
+      <!-- </span> -->
     </div>
   `,
   data: function () {
