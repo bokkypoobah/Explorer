@@ -212,15 +212,15 @@ const connectionModule = {
               console.log(now() + " connectionModule - actions.connect.handleNewBlockDebounced - provider.getFeeData() took " + (t2 - t1) + " ms");
               // console.log(now() + " connectionModule - actions.connect.handleNewBlockDebounced - feeData: " + JSON.stringify(feeData));
 
-              // const dbInfo = store.getters["db"];
-              // const db = new Dexie(dbInfo.name);
-              // db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
-              // const blockData = JSON.parse(JSON.stringify(block));
-              // await db.blocks.put({ chainId, ...blockData }).then (function() {
-              //   }).catch(function(e) {
-              //     console.error(now() + " connectionModule - actions.connect.handleNewBlockDebounced - ERROR blocks.put: " + e.message);
-              //   });
-              // db.close();
+              const dbInfo = store.getters["db"];
+              const db = new Dexie(dbInfo.name);
+              db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
+              const blockData = JSON.parse(JSON.stringify(block));
+              await db.blocks.put({ chainId, ...blockData }).then (function() {
+                }).catch(function(e) {
+                  console.error(now() + " connectionModule - actions.connect.handleNewBlockDebounced - ERROR blocks.put: " + e.message);
+                });
+              db.close();
 
               store.dispatch('setWeb3BlockInfo', {
                 blockNumber: block.number,

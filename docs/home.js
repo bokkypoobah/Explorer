@@ -8,9 +8,6 @@ const Home = {
             <v-btn :href="'#/blocks/browse'" color="primary" variant="text" class="pa-0 lowercase-btn">View Blocks</v-btn>
           </v-card-text>
         </v-card>
-        <!-- <v-list-item to="/blocks/browse" prepend-icon="mdi-format-list-numbered" density="compact">
-          <v-list-item-title>Blocks</v-list-item-title>
-        </v-list-item> -->
 
         <v-toolbar v-if="false" density="compact" class="mt-1">
           <v-spacer></v-spacer>
