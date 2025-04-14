@@ -58,7 +58,7 @@ const Block = {
                 <a :href="'#/address/' + item.from">{{ item.from.substring(0, 10) + "..." + item.from.slice(-8) }}</a>
               </template>
               <template v-slot:item.to="{ item }">
-                <a :href="'#/address/' + item.to">{{ item.to.substring(0, 10) + "..." + item.to.slice(-8) }}</a>
+                <a v-if="item.to" :href="'#/address/' + item.to">{{ item.to.substring(0, 10) + "..." + item.to.slice(-8) }}</a>
               </template>
             </v-data-table>
           </div>
