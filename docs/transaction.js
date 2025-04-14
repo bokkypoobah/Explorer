@@ -1,18 +1,68 @@
 const Transaction = {
   template: `
     <div>
+      <v-container fluid class="pa-1">
+        <v-toolbar density="compact" class="mt-1">
+          <h4 class="ml-2">Transaction</h4>
+          <v-menu location="bottom">
+            <template v-slot:activator="{ props }">
+              <v-btn v-if="tx" color="primary" dark v-bind="props" class="ma-0 lowercase-btn">
+                {{ tx.hash.substring(0, 20) + "..." + tx.hash.slice(-18) }}
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item @click="copyToClipboard(tx.hash);">
+                <template v-slot:prepend>
+                  <v-icon>mdi-content-copy</v-icon>
+                </template>
+                <v-list-item-title>Copy tx hash to clipboard</v-list-item-title>
+              </v-list-item>
+              <v-list-item :href="explorer + 'tx/' + tx.hash" target="_blank">
+                <template v-slot:prepend>
+                  <v-icon>mdi-link</v-icon>
+                </template>
+                <v-list-item-title>View in explorer</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+          <p class="ml-5 text-caption text--disabled">
+            {{ tx && tx.blockNumber && ("#" + commify0(tx.blockNumber)) }} {{ timestampString }}, {{ timestamp && formatTimeDiff(timestamp) }}
+          </p>
+          <v-spacer></v-spacer>
+          <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" right color="deep-purple-accent-4">
+            <v-tab prepend-icon="mdi-currency-eth" text="Info" value="info" class="lowercase-btn"></v-tab>
+            <v-tab prepend-icon="mdi-math-log" text="Events" value="events" class="lowercase-btn"></v-tab>
+            <v-tab prepend-icon="mdi-code-json" text="Raw" value="raw" class="lowercase-btn"></v-tab>
+          </v-tabs>
+        </v-toolbar>
+        <v-tabs-window v-model="settings.tab">
+          <v-tabs-window-item value="info">
+            Info
+          </v-tabs-window-item>
+          <v-tabs-window-item value="events">
+            Events
+          </v-tabs-window-item>
+          <v-tabs-window-item value="raw">
+            <v-textarea v-if="tx" :model-value="JSON.stringify(tx, null, 2)" label="Tx" rows="10">
+            </v-textarea>
+            <v-textarea v-if="txReceipt" :model-value="JSON.stringify(txReceipt, null, 2)" label="Tx Receipt" rows="10">
+            </v-textarea>
+          </v-tabs-window-item>
+        </v-tabs-window>
+      </v-container>
+
       <v-card>
         <v-card-text>
-          <div v-if="!tx">
+          <!-- <div v-if="!tx">
             Enter transaction hash in the search field above
-          </div>
-          <div v-if="timestampString">
+          </div> -->
+          <!-- <div v-if="timestampString">
             timestampString: {{ timestampString }}
-          </div>
-          <v-textarea v-if="tx" :model-value="JSON.stringify(tx, null, 2)" label="Tx" rows="10">
+          </div> -->
+          <!-- <v-textarea v-if="tx" :model-value="JSON.stringify(tx, null, 2)" label="Tx" rows="10">
           </v-textarea>
           <v-textarea v-if="txReceipt" :model-value="JSON.stringify(txReceipt, null, 2)" label="Tx Receipt" rows="10">
-          </v-textarea>
+          </v-textarea> -->
         </v-card-text>
         <!-- <v-card-actions>
           <v-btn>Action 1</v-btn>
@@ -24,10 +74,18 @@ const Transaction = {
   props: ['inputTxHash'],
   data: function () {
     return {
-      txHash: null,
+      initialised: false,
+      settings: {
+        tab: null,
+        // txHash: null,
+        version: 0,
+      },
     };
   },
   computed: {
+    explorer() {
+      return store.getters['explorer'];
+    },
     tx() {
       return store.getters['transaction/tx'];
     },
@@ -57,12 +115,44 @@ const Transaction = {
       }
       return null;
     },
+    formatTimeDiff(unixtime) {
+      if (unixtime) {
+        return moment.unix(unixtime).fromNow();
+      }
+      return null;
+    },
+    commify0(n) {
+      if (n != null) {
+        return Number(n).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+      }
+      return null;
+    },
+    copyToClipboard(str) {
+      navigator.clipboard.writeText(str);
+    },
+    saveSettings() {
+      console.log(now() + " Transaction - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
+      if (this.initialised) {
+        localStorage.explorerTransactionSettings = JSON.stringify(this.settings);
+      }
+    },
   },
   beforeCreate() {
     console.log(now() + " Transaction - beforeCreate");
 	},
   mounted() {
     console.log(now() + " Transaction - mounted - inputTxHash: " + this.inputTxHash);
+
+    if ('explorerTransactionSettings' in localStorage) {
+      const tempSettings = JSON.parse(localStorage.explorerTransactionSettings);
+      console.log(now() + " Transaction - mounted - tempSettings: " + JSON.stringify(tempSettings));
+      if ('version' in tempSettings && tempSettings.version == this.settings.version) {
+        this.settings = tempSettings;
+      }
+    }
+    this.initialised = true;
+    console.log(now() + " Block - mounted - this.settings: " + JSON.stringify(this.settings));
+
     const t = this;
     setTimeout(function() {
       store.dispatch('transaction/loadTransaction', t.inputTxHash);

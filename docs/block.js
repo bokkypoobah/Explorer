@@ -44,7 +44,7 @@ const Block = {
             {{ timestampString }}, {{ block && block.timestamp && formatTimeDiff(block.timestamp) }}
           </p>
           <v-spacer></v-spacer>
-          <v-tabs  v-model="settings.tab" @update:modelValue="saveSettings();" right color="deep-purple-accent-4">
+          <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" right color="deep-purple-accent-4">
             <v-tab prepend-icon="mdi-cube-outline" text="Info" value="info" class="lowercase-btn"></v-tab>
             <v-tab prepend-icon="mdi-currency-eth" text="Transactions" value="transactions" class="lowercase-btn"></v-tab>
           </v-tabs>
@@ -237,14 +237,14 @@ const Block = {
       }
       return null;
     },
+    copyToClipboard(str) {
+      navigator.clipboard.writeText(str);
+    },
     saveSettings() {
       console.log(now() + " Block - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
       if (this.initialised) {
         localStorage.explorerBlockSettings = JSON.stringify(this.settings);
       }
-    },
-    copyToClipboard(str) {
-      navigator.clipboard.writeText(str);
     },
   },
   beforeCreate() {
