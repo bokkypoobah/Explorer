@@ -39,7 +39,10 @@ const Block = {
           <!-- <v-btn @click="syncAddress();" color="primary" icon>
             <v-icon>mdi-refresh</v-icon>
           </v-btn> -->
-          <v-spacer></v-spacer>
+          <!-- <v-spacer></v-spacer> -->
+          <p class="ml-5 text-caption text--disabled">
+            {{ timestampString }}, {{ block && block.timestamp && formatTimeDiff(block.timestamp) }}
+          </p>
           <v-spacer></v-spacer>
           <v-tabs  v-model="settings.tab" @update:modelValue="saveSettings();" right color="deep-purple-accent-4">
             <v-tab prepend-icon="mdi-cube-outline" text="Info" value="info" class="lowercase-btn"></v-tab>
@@ -219,6 +222,12 @@ const Block = {
     formatTimestamp(ts) {
       if (ts != null) {
         return moment.unix(ts).format("YYYY-MM-DD HH:mm:ss");
+      }
+      return null;
+    },
+    formatTimeDiff(unixtime) {
+      if (unixtime) {
+        return moment.unix(unixtime).fromNow();
       }
       return null;
     },
