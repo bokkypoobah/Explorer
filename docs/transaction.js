@@ -31,7 +31,7 @@ const Transaction = {
           </p>
           <v-spacer></v-spacer>
           <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" right color="deep-purple-accent-4">
-            <v-tab prepend-icon="mdi-currency-eth" text="Info" value="info" class="lowercase-btn"></v-tab>
+            <v-tab prepend-icon="mdi-text-long" text="Info" value="info" class="lowercase-btn"></v-tab>
             <v-tab prepend-icon="mdi-math-log" text="Events" value="events" class="lowercase-btn"></v-tab>
             <v-tab prepend-icon="mdi-code-json" text="Raw" value="raw" class="lowercase-btn"></v-tab>
           </v-tabs>
