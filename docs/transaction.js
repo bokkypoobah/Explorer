@@ -55,7 +55,7 @@ const Transaction = {
                     <p class="my-2">Type:</p>
                   </v-col>
                   <v-col cols="10" align="left">
-                    <v-btn v-if="tx" variant="text" class="lowercase-btn ma-0 px-2">
+                    <v-btn v-if="tx" variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
                       {{ tx.type }}
                     </v-btn>
                   </v-col>
@@ -105,7 +105,7 @@ const Transaction = {
                     <p class="my-2">Nonce:</p>
                   </v-col>
                   <v-col cols="10" align="left">
-                    <v-btn v-if="tx" variant="text" class="lowercase-btn ma-0 px-2">
+                    <v-btn v-if="tx" variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
                       {{ tx.nonce }}
                     </v-btn>
                   </v-col>
@@ -125,7 +125,7 @@ const Transaction = {
                     <p class="my-2">Value (Ξ):</p>
                   </v-col>
                   <v-col cols="10" align="left">
-                    <v-btn v-if="tx && tx.value" variant="text" class="lowercase-btn ma-0 px-2">
+                    <v-btn v-if="tx && tx.value" variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
                       {{ formatETH(tx.value) }}
                     </v-btn>
                   </v-col>
@@ -135,7 +135,7 @@ const Transaction = {
                     <p class="my-2">Fee (Ξ):</p>
                   </v-col>
                   <v-col cols="10" align="left">
-                    <v-btn v-if="fee" variant="text" class="lowercase-btn ma-0 px-2">
+                    <v-btn v-if="fee" variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
                       {{ formatETH(fee) }}
                     </v-btn>
                   </v-col>
