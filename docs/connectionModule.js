@@ -134,7 +134,7 @@ const connectionModule = {
           const block = await provider.getBlockWithTransactions("latest");
           const t1 = performance.now();
           blockNumber = block.number;
-          console.log(now() + " connectionModule - actions.connect.handleNewBlock - getBlockWithTransactions('latest') blockNumber: " + blockNumber + " took " + (t1 - t0) + " ms");
+          console.log(now() + " connectionModule - actions.connect - getBlockWithTransactions('latest') => blockNumber: " + blockNumber + " took " + (t1 - t0) + " ms");
           timestamp = block.timestamp;
           const signer = provider.getSigner();
           coinbase = await signer.getAddress();
@@ -186,7 +186,7 @@ const connectionModule = {
               context.commit('setLastBlockNumber', parseInt(block.number));
 
               const t1 = performance.now();
-              console.log(now() + " connectionModule - actions.connect.handleNewBlockDebounced - getBlockWithTransactions('latest') blockNumber: " + blockNumber + " took " + (t1 - t0) + " ms");
+              console.log(now() + " connectionModule - actions.connect.handleNewBlockDebounced - getBlockWithTransactions('latest') => blockNumber: " + blockNumber + " took " + (t1 - t0) + " ms");
               const feeData = await provider.getFeeData();
               const t2 = performance.now();
               console.log(now() + " connectionModule - actions.connect.handleNewBlockDebounced - getFeeData() took " + (t2 - t1) + " ms");

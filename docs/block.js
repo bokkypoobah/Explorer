@@ -124,34 +124,7 @@ const Block = {
           <v-tabs-window-item value="transactions">
             <v-data-table :items="transactions" @click:row="handleClick" density="comfortable">
               <template v-slot:item.txHash="{ item }">
-                <v-menu location="bottom">
-                  <template v-slot:activator="{ props }">
-                    <v-btn color="primary" dark v-bind="props" variant="text" class="ma-0 pa-0 lowercase-btn">
-                      {{ item.txHash.substring(0, 20) + "..." }}
-                    </v-btn>
-                  </template>
-                  <v-list>
-                    <v-list-subheader>{{ item.txHash }}</v-list-subheader>
-                    <v-list-item :href="'#/transaction/' + item.txHash">
-                      <template v-slot:prepend>
-                        <v-icon>mdi-arrow-right-bold-outline</v-icon>
-                      </template>
-                      <v-list-item-title>View</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item @click="copyToClipboard(item.txHash);">
-                      <template v-slot:prepend>
-                        <v-icon>mdi-content-copy</v-icon>
-                      </template>
-                      <v-list-item-title>Copy transaction hash to clipboard</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item :href="explorer + 'tx/' + item.txHash" target="_blank">
-                      <template v-slot:prepend>
-                        <v-icon>mdi-link-variant</v-icon>
-                      </template>
-                      <v-list-item-title>View in explorer</v-list-item-title>
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
+                <render-tx-hash v-if="item && item.txHash" :txHash="item.txHash" shortTxHash></render-tx-hash>
               </template>
               <template v-slot:item.from="{ item }">
                 <render-address v-if="item && item.from" :address="item.from" shortAddress></render-address>

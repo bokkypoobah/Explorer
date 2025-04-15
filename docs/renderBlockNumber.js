@@ -36,7 +36,7 @@ const RenderBlockNumber = {
     supressView: {
       type: Boolean,
       default: false,
-    }
+    },
   },
   data: function () {
     return {

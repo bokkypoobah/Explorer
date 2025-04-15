@@ -291,4 +291,5 @@ app.use(vuetify);
 app.component("connection", Connection);
 app.component("renderAddress", RenderAddress);
 app.component("renderBlockNumber", RenderBlockNumber);
+app.component("renderTxHash", RenderTxHash);
 app.mount('#app');
