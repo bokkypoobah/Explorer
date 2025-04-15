@@ -52,7 +52,7 @@ const Transaction = {
                     <p class="my-2">Block:</p>
                   </v-col>
                   <v-col cols="10" align="left">
-                    <render-block-number v-if="tx && tx.blockNumber" :block="tx.blockNumber" suppressView></render-block-number>
+                    <render-block-number v-if="tx && tx.blockNumber" :block="tx.blockNumber"></render-block-number>
                   </v-col>
                 </v-row>
                 <v-row no-gutters dense>
@@ -79,7 +79,7 @@ const Transaction = {
                   </v-col>
                   <v-col cols="10" align="left">
                     <v-btn v-if="tx" variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
-                      {{ tx.nonce }}
+                      {{ commify0(tx.nonce) }}
                     </v-btn>
                   </v-col>
                 </v-row>

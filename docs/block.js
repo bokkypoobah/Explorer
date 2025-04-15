@@ -169,37 +169,24 @@ const Block = {
     explorer() {
       return store.getters['explorer'];
     },
-    timestampString: {
-      get: function() {
-        return this.block && this.formatTimestamp(this.block.timestamp) || null;
-      },
-      // set: function(timestamp) {
-      //   store.dispatch('setTimestamp', timestamp);
-      // },
+    timestampString() {
+      return this.block && this.formatTimestamp(this.block.timestamp) || null;
     },
-    gasLimit: {
-      get: function() {
-        return this.block && parseInt(this.block.gasLimit) || null;
-      },
+    gasLimit() {
+      return this.block && parseInt(this.block.gasLimit) || null;
     },
-    gasUsed: {
-      get: function() {
-        return this.block && parseInt(this.block.gasUsed) || null;
-      },
+    gasUsed() {
+      return this.block && parseInt(this.block.gasUsed) || null;
     },
-    gasPercentage: {
-      get: function() {
-        return this.block && parseInt(this.block.gasUsed * 100 / this.block.gasLimit) || null;
-      },
+    gasPercentage() {
+      return this.block && parseInt(this.block.gasUsed * 100 / this.block.gasLimit) || null;
     },
-    extraData: {
-      get: function() {
-        try {
-          return this.block && ethers.utils.toUtf8String(this.block.extraData) || null;
-        } catch (e) {
-        }
-        return this.block.extraData;
-      },
+    extraData() {
+      try {
+        return this.block && ethers.utils.toUtf8String(this.block.extraData) || null;
+      } catch (e) {
+      }
+      return this.block.extraData;
     },
     transactions() {
       const results = [];
