@@ -4,17 +4,124 @@ const TransactionsLatest = {
       <v-container fluid class="pa-1">
         <v-data-table :items="transactionsList" :headers="transactionsHeaders" @click:row="handleTransactionsClick" density="comfortable" style="max-width: 100%;">
           <template v-slot:item.blockNumber="{ item }">
-            <v-btn :href="'#/block/' + item.blockNumber" color="primary" variant="text" class="pa-0">{{ commify0(item.blockNumber) }}</v-btn>
+            <v-menu location="bottom">
+              <template v-slot:activator="{ props }">
+                <v-btn color="primary" dark v-bind="props" variant="text" class="ma-0 pa-0 lowercase-btn">
+                  {{ commify0(item.blockNumber) }}
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-subheader>{{ commify0(item.blockNumber) }}</v-list-subheader>
+                <v-list-item :href="'#/block/' + item.blockNumber">
+                  <template v-slot:prepend>
+                    <v-icon>mdi-arrow-right-bold-outline</v-icon>
+                  </template>
+                  <v-list-item-title>View</v-list-item-title>
+                </v-list-item>
+                <v-list-item @click="copyToClipboard(item.blockNumber);">
+                  <template v-slot:prepend>
+                    <v-icon>mdi-content-copy</v-icon>
+                  </template>
+                  <v-list-item-title>Copy block number to clipboard</v-list-item-title>
+                </v-list-item>
+                <v-list-item :href="explorer + 'block/' + item.blockNumber" target="_blank">
+                  <template v-slot:prepend>
+                    <v-icon>mdi-link-variant</v-icon>
+                  </template>
+                  <v-list-item-title>View in explorer</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
           </template>
           <template v-slot:item.hash="{ item }">
-            <v-btn :href="'#/transaction/' + item.hash" color="primary" variant="text" class="lowercase-btn pa-0">{{ item.hash.substring(0, 20) + "..." }}</v-btn>
-            <!-- <span class="text-blue-grey-lighten-4">My Address</span> -->
+            <v-menu location="bottom">
+              <template v-slot:activator="{ props }">
+                <v-btn color="primary" dark v-bind="props" variant="text" class="ma-0 pa-0 lowercase-btn">
+                  {{ item.hash.substring(0, 20) + "..." }}
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-subheader>{{ item.hash }}</v-list-subheader>
+                <v-list-item :href="'#/transaction/' + item.hash">
+                  <template v-slot:prepend>
+                    <v-icon>mdi-arrow-right-bold-outline</v-icon>
+                  </template>
+                  <v-list-item-title>View</v-list-item-title>
+                </v-list-item>
+                <v-list-item @click="copyToClipboard(item.hash);">
+                  <template v-slot:prepend>
+                    <v-icon>mdi-content-copy</v-icon>
+                  </template>
+                  <v-list-item-title>Copy transaction hash to clipboard</v-list-item-title>
+                </v-list-item>
+                <v-list-item :href="explorer + 'tx/' + item.hash" target="_blank">
+                  <template v-slot:prepend>
+                    <v-icon>mdi-link-variant</v-icon>
+                  </template>
+                  <v-list-item-title>View in explorer</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
           </template>
           <template v-slot:item.from="{ item }">
-            <v-btn :href="'#/address/' + item.from" color="primary" variant="text" class="lowercase-btn pa-0">{{ item.from.substring(0, 10) + '...' + item.from.slice(-8) }}</v-btn>
+            <v-menu location="bottom">
+              <template v-slot:activator="{ props }">
+                <v-btn color="primary" dark v-bind="props" variant="text" class="ma-0 pa-0 lowercase-btn">
+                  {{ item.from.substring(0, 10) + '...' + item.from.slice(-8) }}
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-subheader>{{ item.from }}</v-list-subheader>
+                <v-list-item :href="'#/address/' + item.from">
+                  <template v-slot:prepend>
+                    <v-icon>mdi-arrow-right-bold-outline</v-icon>
+                  </template>
+                  <v-list-item-title>View</v-list-item-title>
+                </v-list-item>
+                <v-list-item @click="copyToClipboard(item.from);">
+                  <template v-slot:prepend>
+                    <v-icon>mdi-content-copy</v-icon>
+                  </template>
+                  <v-list-item-title>Copy address to clipboard</v-list-item-title>
+                </v-list-item>
+                <v-list-item :href="explorer + 'address/' + item.from" target="_blank">
+                  <template v-slot:prepend>
+                    <v-icon>mdi-link-variant</v-icon>
+                  </template>
+                  <v-list-item-title>View in explorer</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
           </template>
           <template v-slot:item.to="{ item }">
-            <v-btn v-if="item.to" :href="'#/address/' + item.to" color="primary" variant="text" class="lowercase-btn pa-0">{{ item.to.substring(0, 10) + '...' + item.to.slice(-8) }}</v-btn>
+            <v-menu location="bottom">
+              <template v-slot:activator="{ props }">
+                <v-btn v-if="item.to" color="primary" dark v-bind="props" variant="text" class="ma-0 pa-0 lowercase-btn">
+                  {{ item.to.substring(0, 10) + '...' + item.to.slice(-8) }}
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-subheader>{{ item.to }}</v-list-subheader>
+                <v-list-item :href="'#/address/' + item.to">
+                  <template v-slot:prepend>
+                    <v-icon>mdi-arrow-right-bold-outline</v-icon>
+                  </template>
+                  <v-list-item-title>View</v-list-item-title>
+                </v-list-item>
+                <v-list-item @click="copyToClipboard(item.to);">
+                  <template v-slot:prepend>
+                    <v-icon>mdi-content-copy</v-icon>
+                  </template>
+                  <v-list-item-title>Copy address to clipboard</v-list-item-title>
+                </v-list-item>
+                <v-list-item :href="explorer + 'address/' + item.to" target="_blank">
+                  <template v-slot:prepend>
+                    <v-icon>mdi-link-variant</v-icon>
+                  </template>
+                  <v-list-item-title>View in explorer</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
           </template>
           <template v-slot:item.value="{ item }">
             {{ formatETH(item.value) }}
@@ -58,6 +165,9 @@ const TransactionsLatest = {
     };
   },
   computed: {
+    explorer() {
+      return store.getters['explorer'];
+    },
     transactionsList() {
       return store.getters['blocks/transactionsList'];
     },
@@ -85,6 +195,9 @@ const TransactionsLatest = {
         return moment.unix(ts).format("YYYY-MM-DD HH:mm:ss");
       }
       return null;
+    },
+    copyToClipboard(str) {
+      navigator.clipboard.writeText(str);
     },
   },
   beforeCreate() {

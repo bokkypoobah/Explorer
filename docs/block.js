@@ -52,7 +52,6 @@ const Block = {
         </v-toolbar>
         <v-tabs-window v-model="settings.tab">
           <v-tabs-window-item value="info">
-
             <v-card>
               <v-card-text>
                 <v-row no-gutters dense>
