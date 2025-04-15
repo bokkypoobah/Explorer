@@ -102,8 +102,18 @@ const Block = {
                     <p class="my-2">Block Hash:</p>
                   </v-col>
                   <v-col cols="6" align="left">
-                    <v-btn v-if="block" variant="text" class="lowercase-btn ma-0 px-2">
+                    <v-btn v-if="block" @click="copyToClipboard(block.hash);" variant="text" class="lowercase-btn ma-0 px-2">
                       {{ block.hash }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+                <v-row no-gutters dense>
+                  <v-col cols="2" align="right">
+                    <p class="my-2">Parent Block Hash:</p>
+                  </v-col>
+                  <v-col cols="6" align="left">
+                    <v-btn v-if="block" @click="copyToClipboard(block.parentHash);" variant="text" class="lowercase-btn ma-0 px-2">
+                      {{ block.parentHash }}
                     </v-btn>
                   </v-col>
                 </v-row>
@@ -142,54 +152,38 @@ const Block = {
                     </v-menu>
                   </v-col>
                 </v-row>
+                <v-row no-gutters dense>
+                  <v-col cols="2" align="right">
+                    <p class="my-2">Gas Used:</p>
+                  </v-col>
+                  <v-col cols="6" align="left">
+                    <v-btn v-if="gasUsed" variant="text" class="lowercase-btn ma-0 px-2">
+                      {{ commify0(gasUsed) }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+                <v-row no-gutters dense>
+                  <v-col cols="2" align="right">
+                    <p class="my-2">Gas Limit:</p>
+                  </v-col>
+                  <v-col cols="6" align="left">
+                    <v-btn v-if="gasLimit" variant="text" class="lowercase-btn ma-0 px-2">
+                      {{ commify0(gasLimit) }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+                <v-row no-gutters dense>
+                  <v-col cols="2" align="right">
+                    <p class="my-2">Extra Data:</p>
+                  </v-col>
+                  <v-col cols="6" align="left">
+                    <v-btn v-if="extraData" variant="text" class="lowercase-btn ma-0 px-2">
+                      {{ extraData }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
               </v-card-text>
             </v-card>
-
-            <div v-if="block" class="mt-1">
-              <v-row dense>
-                <v-col cols="2">
-                  <v-text-field v-if="block" readonly v-model="block.number" label="Number:"></v-text-field>
-                </v-col>
-                <v-col cols="3">
-                  <v-text-field v-if="block" readonly v-model="timestampString" label="Timestamp:"></v-text-field>
-                </v-col>
-                <v-col>
-                </v-col>
-                <v-col cols="6">
-                  <v-text-field v-if="block" readonly v-model="block.hash" label="Block Hash:"></v-text-field>
-                </v-col>
-              </v-row>
-              <v-row dense>
-                <v-col cols="5">
-                  <v-text-field
-                    v-if="block"
-                    readonly
-                    v-model="block.miner"
-                    label="Miner:"
-                    append-inner-icon="mdi-arrow-right-bold-outline"
-                    @click:append-inner="navigateToAddress(block.miner)"
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="1">
-                </v-col>
-                <v-col cols="6">
-                  <v-text-field v-if="block" readonly v-model="block.parentHash" label="Parent Block Hash:"></v-text-field>
-                </v-col>
-              </v-row>
-              <v-row dense>
-                <v-col cols="2">
-                  <v-text-field v-if="block" readonly v-model="gasLimit" label="Gas Limit:"></v-text-field>
-                </v-col>
-                <v-col cols="2">
-                  <v-text-field v-if="block" readonly v-model="gasUsed" label="Gas Used:"></v-text-field>
-                </v-col>
-                <v-col cols="2">
-                </v-col>
-                <v-col cols="4">
-                  <v-text-field v-if="block" readonly v-model="extraData" label="Extra Data:"></v-text-field>
-                </v-col>
-              </v-row>
-            </div>
           </v-tabs-window-item>
           <v-tabs-window-item value="transactions">
             <v-data-table v-if="block" :items="transactions" @click:row="handleClick" density="comfortable">
