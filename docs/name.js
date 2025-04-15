@@ -119,16 +119,13 @@ const Name = {
             </template>
             <template v-slot:item.what="{ item }">
               <span v-if="item.type == 'AddrChanged'">
-                <!-- node: {{ item.node }} -->
-                a: {{ item.a }}
+                a: <render-address v-if="item.a" :address="item.a" shortAddress></render-address>
               </span>
               <span v-else-if="item.type == 'AddressChanged'">
-                <!-- node: {{ item.node }} -->
                 coinType: {{ item.coinType }}
                 newAddress: <render-address v-if="item.newAddress" :address="item.newAddress" shortAddress></render-address>
               </span>
               <span v-else-if="item.type == 'ContenthashChanged'">
-                <!-- node: {{ item.node }} -->
                 hash: {{ item.hash }}
               </span>
               <span v-else-if="item.type == 'NameRegistered'">
@@ -150,7 +147,6 @@ const Name = {
                 expiry: {{ formatTimestamp(item.expiry) }}
               </span>
               <span v-else-if="item.type == 'NewResolver'">
-                <!-- node: {{ item.node }} -->
                 resolver: <render-address v-if="item.resolver" :address="item.resolver" shortAddress></render-address>
               </span>
               <span v-else-if="item.type == 'TextChanged'">
