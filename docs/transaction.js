@@ -75,9 +75,34 @@ const Transaction = {
                     <p class="my-2">Block:</p>
                   </v-col>
                   <v-col cols="10" align="left">
-                    <v-btn v-if="tx && tx.blockNumber" :to="'/block/' + tx.blockNumber" color="primary" variant="text" class="lowercase-btn ma-0 px-2">
-                      {{ '#' + commify0(tx.blockNumber) }}
-                    </v-btn>
+                    <v-menu location="bottom">
+                      <template v-slot:activator="{ props }">
+                        <v-btn v-if="tx && tx.blockNumber" color="primary" dark v-bind="props" variant="text" class="ma-0 px-2 lowercase-btn">
+                          {{ commify0(tx.blockNumber) }}
+                        </v-btn>
+                      </template>
+                      <v-list>
+                        <v-list-subheader>{{ commify0(tx.blockNumber) }}</v-list-subheader>
+                        <v-list-item :href="'#/block/' + tx.blockNumber">
+                          <template v-slot:prepend>
+                            <v-icon>mdi-arrow-right-bold-outline</v-icon>
+                          </template>
+                          <v-list-item-title>View</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item @click="copyToClipboard(tx.blockNumber);">
+                          <template v-slot:prepend>
+                            <v-icon>mdi-content-copy</v-icon>
+                          </template>
+                          <v-list-item-title>Copy block number to clipboard</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item :href="explorer + 'block/' + tx.blockNumber" target="_blank">
+                          <template v-slot:prepend>
+                            <v-icon>mdi-link-variant</v-icon>
+                          </template>
+                          <v-list-item-title>View in explorer</v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
                   </v-col>
                 </v-row>
                 <v-row no-gutters dense>
@@ -95,9 +120,34 @@ const Transaction = {
                     <p class="my-2">From:</p>
                   </v-col>
                   <v-col cols="10" align="left">
-                    <v-btn v-if="tx && tx.from" :to="'/address/' + tx.from" color="primary" variant="text" class="lowercase-btn ma-0 px-2">
-                      {{ tx.from }}
-                    </v-btn>
+                    <v-menu location="bottom">
+                      <template v-slot:activator="{ props }">
+                        <v-btn v-if="tx && tx.from" color="primary" dark v-bind="props" variant="text" class="ma-0 px-2 lowercase-btn">
+                          {{ tx.from }}
+                        </v-btn>
+                      </template>
+                      <v-list>
+                        <v-list-subheader>{{ tx.from }}</v-list-subheader>
+                        <v-list-item :href="'#/address/' + tx.from">
+                          <template v-slot:prepend>
+                            <v-icon>mdi-arrow-right-bold-outline</v-icon>
+                          </template>
+                          <v-list-item-title>View</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item @click="copyToClipboard(tx.from);">
+                          <template v-slot:prepend>
+                            <v-icon>mdi-content-copy</v-icon>
+                          </template>
+                          <v-list-item-title>Copy address to clipboard</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item :href="explorer + 'address/' + tx.from" target="_blank">
+                          <template v-slot:prepend>
+                            <v-icon>mdi-link-variant</v-icon>
+                          </template>
+                          <v-list-item-title>View in explorer</v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
                   </v-col>
                 </v-row>
                 <v-row no-gutters dense>
@@ -115,9 +165,34 @@ const Transaction = {
                     <p class="my-2">To:</p>
                   </v-col>
                   <v-col cols="10" align="left">
-                    <v-btn v-if="tx && tx.to" :to="'/address/' + tx.to" color="primary" variant="text" class="lowercase-btn ma-0 px-2">
-                      {{ tx.to }}
-                    </v-btn>
+                    <v-menu location="bottom">
+                      <template v-slot:activator="{ props }">
+                        <v-btn v-if="tx && tx.to" color="primary" dark v-bind="props" variant="text" class="ma-0 px-2 lowercase-btn">
+                          {{ tx.to }}
+                        </v-btn>
+                      </template>
+                      <v-list>
+                        <v-list-subheader>{{ tx.to }}</v-list-subheader>
+                        <v-list-item :href="'#/address/' + tx.to">
+                          <template v-slot:prepend>
+                            <v-icon>mdi-arrow-right-bold-outline</v-icon>
+                          </template>
+                          <v-list-item-title>View</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item @click="copyToClipboard(tx.to);">
+                          <template v-slot:prepend>
+                            <v-icon>mdi-content-copy</v-icon>
+                          </template>
+                          <v-list-item-title>Copy address to clipboard</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item :href="explorer + 'address/' + tx.to" target="_blank">
+                          <template v-slot:prepend>
+                            <v-icon>mdi-link-variant</v-icon>
+                          </template>
+                          <v-list-item-title>View in explorer</v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
                   </v-col>
                 </v-row>
                 <v-row no-gutters dense>
