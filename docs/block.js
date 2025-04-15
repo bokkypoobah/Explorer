@@ -100,6 +100,16 @@ const Block = {
                 </v-row>
                 <v-row no-gutters dense>
                   <v-col cols="2" align="right">
+                    <p class="my-2">Gas Used / Limit:</p>
+                  </v-col>
+                  <v-col cols="6" align="left">
+                    <v-btn v-if="gasPercentage" variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
+                      {{ gasPercentage + "%" }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+                <v-row no-gutters dense>
+                  <v-col cols="2" align="right">
                     <p class="my-2">Extra Data:</p>
                   </v-col>
                   <v-col cols="6" align="left">
@@ -175,6 +185,11 @@ const Block = {
     gasUsed: {
       get: function() {
         return this.block && parseInt(this.block.gasUsed) || null;
+      },
+    },
+    gasPercentage: {
+      get: function() {
+        return this.block && parseInt(this.block.gasUsed * 100 / this.block.gasLimit) || null;
       },
     },
     extraData: {
