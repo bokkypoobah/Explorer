@@ -8,28 +8,7 @@ const Block = {
           </v-btn>
           <v-btn v-if="block" :disabled="block.number == 0" @click="navigateToBlock(block.number - 1);" icon="mdi-chevron-left" density="compact" color="primary" dark class="ma-0">
           </v-btn>
-          <v-menu location="bottom">
-            <template v-slot:activator="{ props }">
-              <v-btn v-if="block" color="primary" dark v-bind="props" variant="text" class="ma-0 lowercase-btn">
-                {{ commify0(block.number) }}
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-subheader>{{ commify0(block.number) }}</v-list-subheader>
-              <v-list-item @click="copyToClipboard(block.number);">
-                <template v-slot:prepend>
-                  <v-icon>mdi-content-copy</v-icon>
-                </template>
-                <v-list-item-title>Copy block number to clipboard</v-list-item-title>
-              </v-list-item>
-              <v-list-item :href="explorer + 'block/' + block.number" target="_blank">
-                <template v-slot:prepend>
-                  <v-icon>mdi-link-variant</v-icon>
-                </template>
-                <v-list-item-title>View in explorer</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
+          <render-block-number v-if="block && block.number" :block="block.number" supressView></render-block-number>
           <v-btn v-if="block" :disabled="block.number == latestBlockNumber" @click="navigateToBlock(block.number + 1);" icon="mdi-chevron-right" density="compact" color="primary" dark class="ma-0">
           </v-btn>
           <v-btn v-if="block" :disabled="block.number == latestBlockNumber" @click="navigateToBlock(latestBlockNumber);" icon="mdi-page-last" density="compact" color="primary" dark class="ma-0">
@@ -58,31 +37,7 @@ const Block = {
                     <p class="my-2">Block:</p>
                   </v-col>
                   <v-col cols="6" align="left">
-                    <!-- <v-btn v-if="block" variant="text" class="lowercase-btn ma-0 px-2">
-                      {{ block.number }}
-                    </v-btn> -->
-                    <v-menu location="bottom">
-                      <template v-slot:activator="{ props }">
-                        <v-btn v-if="block" color="primary" dark v-bind="props" variant="text" class="ma-0 px-2 lowercase-btn">
-                          {{ commify0(block.number) }}
-                        </v-btn>
-                      </template>
-                      <v-list>
-                        <v-list-subheader>{{ commify0(block.number) }}</v-list-subheader>
-                        <v-list-item @click="copyToClipboard(block.number);">
-                          <template v-slot:prepend>
-                            <v-icon>mdi-content-copy</v-icon>
-                          </template>
-                          <v-list-item-title>Copy block number to clipboard</v-list-item-title>
-                        </v-list-item>
-                        <v-list-item :href="explorer + 'block/' + block.number" target="_blank">
-                          <template v-slot:prepend>
-                            <v-icon>mdi-link-variant</v-icon>
-                          </template>
-                          <v-list-item-title>View in explorer</v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
+                    <render-block-number v-if="block && block.number" :block="block.number" supressView></render-block-number>
                   </v-col>
                 </v-row>
                 <v-row no-gutters dense>

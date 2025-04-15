@@ -36,34 +36,7 @@ const BlocksBrowse = {
             </tr>
           </template>
           <template v-slot:item.number="{ item }">
-            <v-menu location="bottom">
-              <template v-slot:activator="{ props }">
-                <v-btn color="primary" dark v-bind="props" variant="text" class="ma-0 pa-0 lowercase-btn">
-                  {{ commify0(item.number) }}
-                </v-btn>
-              </template>
-              <v-list>
-                <v-list-subheader>{{ commify0(item.number) }}</v-list-subheader>
-                <v-list-item :href="'#/block/' + item.number">
-                  <template v-slot:prepend>
-                    <v-icon>mdi-arrow-right-bold-outline</v-icon>
-                  </template>
-                  <v-list-item-title>View</v-list-item-title>
-                </v-list-item>
-                <v-list-item @click="copyToClipboard(item.number);">
-                  <template v-slot:prepend>
-                    <v-icon>mdi-content-copy</v-icon>
-                  </template>
-                  <v-list-item-title>Copy block number to clipboard</v-list-item-title>
-                </v-list-item>
-                <v-list-item :href="explorer + 'block/' + item.number" target="_blank">
-                  <template v-slot:prepend>
-                    <v-icon>mdi-link-variant</v-icon>
-                  </template>
-                  <v-list-item-title>View in explorer</v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
+            <render-block-number v-if="item && item.number" :block="item.number"></render-block-number>
           </template>
           <template v-slot:item.timestamp="{ item }">
             {{ formatTimestamp(item.timestamp) }}

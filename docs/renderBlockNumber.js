@@ -1,26 +1,26 @@
-const RenderAddress = {
+const RenderBlockNumber = {
   template: `
     <v-menu location="bottom">
       <template v-slot:activator="{ props }">
-        <v-btn v-if="address" color="primary" dark v-bind="props" variant="text" class="ma-0 px-2 lowercase-btn">
-          {{ shortAddress ? (address.substring(0, 10) + "..." + address.slice(-8)) : address }}
+        <v-btn v-if="block" color="primary" dark v-bind="props" variant="text" class="ma-0 px-2 lowercase-btn">
+          {{ commify0(block) }}
         </v-btn>
       </template>
       <v-list>
-        <v-list-subheader>{{ address }}</v-list-subheader>
-        <v-list-item :href="'#/address/' + address">
+        <v-list-subheader>Block {{ commify0(block) }}</v-list-subheader>
+        <v-list-item v-if="!supressView" :href="'#/block/' + block">
           <template v-slot:prepend>
             <v-icon>mdi-arrow-right-bold-outline</v-icon>
           </template>
           <v-list-item-title>View</v-list-item-title>
         </v-list-item>
-        <v-list-item @click="copyToClipboard(address);">
+        <v-list-item @click="copyToClipboard(block);">
           <template v-slot:prepend>
             <v-icon>mdi-content-copy</v-icon>
           </template>
-          <v-list-item-title>Copy address to clipboard</v-list-item-title>
+          <v-list-item-title>Copy block to clipboard</v-list-item-title>
         </v-list-item>
-        <v-list-item :href="explorer + 'address/' + address" target="_blank">
+        <v-list-item :href="explorer + 'block/' + block" target="_blank">
           <template v-slot:prepend>
             <v-icon>mdi-link-variant</v-icon>
           </template>
@@ -30,10 +30,10 @@ const RenderAddress = {
     </v-menu>
   `,
   props: {
-    address: {
-      type: String,
+    block: {
+      type: Number,
     },
-    shortAddress: {
+    supressView: {
       type: Boolean,
       default: false,
     }
@@ -48,20 +48,26 @@ const RenderAddress = {
     },
   },
   methods: {
+    commify0(n) {
+      if (n != null) {
+        return Number(n).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+      }
+      return null;
+    },
     copyToClipboard(str) {
       navigator.clipboard.writeText(str);
     },
   },
   // beforeCreate() {
-  //   console.log(now() + " RenderAddress - beforeCreate");
+  //   console.log(now() + " RenderBlockNumber - beforeCreate");
 	// },
   // mounted() {
-  //   console.log(now() + " RenderAddress - mounted");
+  //   console.log(now() + " RenderBlockNumber - mounted");
 	// },
   // unmounted() {
-  //   console.log(now() + " RenderAddress - unmounted");
+  //   console.log(now() + " RenderBlockNumber - unmounted");
 	// },
   // destroyed() {
-  //   console.log(now() + " RenderAddress - destroyed");
+  //   console.log(now() + " RenderBlockNumber - destroyed");
 	// },
 };

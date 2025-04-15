@@ -171,7 +171,7 @@ const connectionModule = {
           // let period = parseInt(Math.random() * 2000) + 100;
           const period = 200;
           async function handleNewBlock(blockNumber) {
-            console.log(now() + " connectionModule - actions.connect.handleNewBlock - blockNumber: " + blockNumber);
+            // console.log(now() + " connectionModule - actions.connect.handleNewBlock - blockNumber: " + blockNumber);
             clearTimeout(timerId);
             timerId = setTimeout(async () => {
               await handleNewBlockDebounced(blockNumber);
