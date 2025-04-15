@@ -125,7 +125,7 @@ const Name = {
               <span v-else-if="item.type == 'AddressChanged'">
                 <!-- node: {{ item.node }} -->
                 coinType: {{ item.coinType }}
-                newAddress: {{ item.newAddress }}
+                newAddress: <render-address v-if="item.newAddress" :address="item.newAddress" shortAddress></render-address>
               </span>
               <span v-else-if="item.type == 'ContenthashChanged'">
                 <!-- node: {{ item.node }} -->
@@ -134,7 +134,7 @@ const Name = {
               <span v-else-if="item.type == 'NameRegistered'">
                 <span v-if="item.label">label: {{ item.label }}</span>
                 labelhash: {{ item.labelhash }}
-                owner: {{ item.owner }}
+                owner: <render-address v-if="item.owner" :address="item.owner" shortAddress></render-address>
                 cost: {{ formatETH(item.cost) }}
                 expires: {{ formatTimestamp(item.expires) }}
               </span>
@@ -145,13 +145,13 @@ const Name = {
               </span>
               <span v-else-if="item.type == 'NameWrapped'">
                 label: {{ item.label }}
-                owner: {{ item.owner }}
+                owner: <render-address v-if="item.owner" :address="item.owner" shortAddress></render-address>
                 fuses: {{ item.fuses }}
                 expiry: {{ formatTimestamp(item.expiry) }}
               </span>
               <span v-else-if="item.type == 'NewResolver'">
                 <!-- node: {{ item.node }} -->
-                resolver: {{ item.resolver }}
+                resolver: <render-address v-if="item.resolver" :address="item.resolver" shortAddress></render-address>
               </span>
               <span v-else-if="item.type == 'TextChanged'">
                 {{ item.key }} => {{ item.value }}
