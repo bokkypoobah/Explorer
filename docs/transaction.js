@@ -27,7 +27,7 @@ const Transaction = {
             </v-list>
           </v-menu>
           <p v-if="tx && tx.blockNumber" class="ml-5 text-caption text--disabled">
-            {{ "#" + commify0(tx.blockNumber) }} @ {{ timestampString }}, {{ timestamp && formatTimeDiff(timestamp) }}
+            {{ commify0(tx.blockNumber) }} @ {{ timestampString }}, {{ timestamp && formatTimeDiff(timestamp) }}
           </p>
           <v-spacer></v-spacer>
           <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" right color="deep-purple-accent-4">

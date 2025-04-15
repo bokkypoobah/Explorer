@@ -7,11 +7,11 @@ const Connection = {
       <v-btn :disabled="!coinbase" :href="explorer + 'address/' + coinbase" target="_blank" size="x-small" color="primary" variant="text" icon class="ma-0 pa-0" v-tooltip="coinbase">
         <v-img :class="connected ? 'mdi mdi-network' : 'mdi mdi-network-outline'"></v-img>
       </v-btn>
-      <v-btn v-if="info.chainId" :href="explorer" target="_blank" color="primary" variant="text" class="lowercase-btn text-caption ma-0 px-2">
+      <v-btn v-if="info.chainId" :href="explorer" target="_blank" color="primary" variant="text" class="lowercase-btn text-caption ma-0 px-0">
         {{ networkName }}
       </v-btn>
       <v-btn v-if="info.blockNumber" :to="'/block/' + info.blockNumber" color="primary" variant="text" class="lowercase-btn text-caption ma-0 px-2">
-        {{ '#' + commify0(info.blockNumber) }}
+        {{ commify0(info.blockNumber) }}
       </v-btn>
       <v-tooltip v-if="info.timestamp" :text="formatTimestamp(info.timestamp)">
         <template v-slot:activator="{ props }">

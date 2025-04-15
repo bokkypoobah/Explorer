@@ -1,166 +1,227 @@
 const Name = {
   template: `
     <div>
-      <!-- <v-sheet :height="200" :width="200">
-        Blah
-      </v-sheet> -->
-      <v-card v-if="!inputName">
+      <v-container fluid class="pa-1">
+        <v-toolbar density="compact" class="mt-1">
+          <h4 class="ml-2">ENS Name</h4>
+          <!-- <v-menu location="bottom">
+            <template v-slot:activator="{ props }">
+              <v-btn v-if="block" color="primary" dark v-bind="props" variant="text" class="ma-0 lowercase-btn">
+                {{ commify0(block.number) }}
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-subheader>{{ commify0(block.number) }}</v-list-subheader>
+              <v-list-item @click="copyToClipboard(block.number);">
+                <template v-slot:prepend>
+                  <v-icon>mdi-content-copy</v-icon>
+                </template>
+                <v-list-item-title>Copy block number to clipboard</v-list-item-title>
+              </v-list-item>
+              <v-list-item :href="explorer + 'block/' + block.number" target="_blank">
+                <template v-slot:prepend>
+                  <v-icon>mdi-link-variant</v-icon>
+                </template>
+                <v-list-item-title>View in explorer</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu> -->
+          <!-- <p class="ml-5 text-caption text--disabled">
+            {{ timestampString }}, {{ block && block.timestamp && formatTimeDiff(block.timestamp) }}
+          </p> -->
+          <v-spacer></v-spacer>
+          <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" right color="deep-purple-accent-4">
+            <v-tab prepend-icon="mdi-card-account-details-outline" text="Name" value="name" class="lowercase-btn"></v-tab>
+            <v-tab prepend-icon="mdi-calendar" text="History" value="history" class="lowercase-btn"></v-tab>
+          </v-tabs>
+        </v-toolbar>
+      </v-container>
+      <v-tabs-window v-model="settings.tab">
+        <v-tabs-window-item value="name">
+          <v-card>
+            <v-card-text>
+              <v-row no-gutters dense>
+                <v-col cols="7">
+                  <v-row no-gutters dense>
+                    <v-col cols="2" align="right">
+                      <p class="my-2">Name:</p>
+                    </v-col>
+                    <v-col cols="10" align="left">
+                      <v-btn v-if="name" variant="text" class="lowercase-btn ma-0 px-2">
+                        {{ name }}
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                  <v-row no-gutters dense>
+                    <v-col cols="2" align="right">
+                      <p class="my-2">Resolved Address:</p>
+                    </v-col>
+                    <v-col cols="10" align="left">
+                      <v-menu location="bottom">
+                        <template v-slot:activator="{ props }">
+                          <v-btn v-if="resolvedAddress" color="primary" dark v-bind="props" variant="text" class="ma-0 px-2 lowercase-btn">
+                            {{ resolvedAddress }}
+                          </v-btn>
+                        </template>
+                        <v-list>
+                          <v-list-subheader>{{ resolvedAddress }}</v-list-subheader>
+                          <v-list-item :href="'#/address/' + resolvedAddress">
+                            <template v-slot:prepend>
+                              <v-icon>mdi-arrow-right-bold-outline</v-icon>
+                            </template>
+                            <v-list-item-title>View</v-list-item-title>
+                          </v-list-item>
+                          <v-list-item @click="copyToClipboard(resolvedAddress);">
+                            <template v-slot:prepend>
+                              <v-icon>mdi-content-copy</v-icon>
+                            </template>
+                            <v-list-item-title>Copy address to clipboard</v-list-item-title>
+                          </v-list-item>
+                          <v-list-item :href="explorer + 'address/' + resolvedAddress" target="_blank">
+                            <template v-slot:prepend>
+                              <v-icon>mdi-link-variant</v-icon>
+                            </template>
+                            <v-list-item-title>View in explorer</v-list-item-title>
+                          </v-list-item>
+                        </v-list>
+                      </v-menu>
+                    </v-col>
+                  </v-row>
+                  <v-row no-gutters dense>
+                    <v-col cols="2" align="right">
+                      <p class="my-2">ETH Address:</p>
+                    </v-col>
+                    <v-col cols="10" align="left">
+                      <v-menu location="bottom">
+                        <template v-slot:activator="{ props }">
+                          <v-btn v-if="ethAddress" color="primary" dark v-bind="props" variant="text" class="ma-0 px-2 lowercase-btn">
+                            {{ ethAddress }}
+                          </v-btn>
+                        </template>
+                        <v-list>
+                          <v-list-subheader>{{ ethAddress }}</v-list-subheader>
+                          <v-list-item :href="'#/address/' + ethAddress">
+                            <template v-slot:prepend>
+                              <v-icon>mdi-arrow-right-bold-outline</v-icon>
+                            </template>
+                            <v-list-item-title>View</v-list-item-title>
+                          </v-list-item>
+                          <v-list-item @click="copyToClipboard(ethAddress);">
+                            <template v-slot:prepend>
+                              <v-icon>mdi-content-copy</v-icon>
+                            </template>
+                            <v-list-item-title>Copy address to clipboard</v-list-item-title>
+                          </v-list-item>
+                          <v-list-item :href="explorer + 'address/' + ethAddress" target="_blank">
+                            <template v-slot:prepend>
+                              <v-icon>mdi-link-variant</v-icon>
+                            </template>
+                            <v-list-item-title>View in explorer</v-list-item-title>
+                          </v-list-item>
+                        </v-list>
+                      </v-menu>
+                    </v-col>
+                  </v-row>
+                  <v-row no-gutters dense>
+                    <v-col cols="2" align="right">
+                      <p class="my-2">Avatar:</p>
+                    </v-col>
+                    <v-col cols="10" align="left">
+                      <v-menu location="bottom">
+                        <template v-slot:activator="{ props }">
+                          <v-btn v-if="avatar" color="primary" dark v-bind="props" variant="text" class="ma-0 px-2 lowercase-btn">
+                            {{ avatar.substring(0, 64) + (avatar.length > 64 ? "..." : "") }}
+                          </v-btn>
+                        </template>
+                        <v-list>
+                          <v-list-subheader>{{ avatar }}</v-list-subheader>
+                          <v-list-item @click="copyToClipboard(avatar);">
+                            <template v-slot:prepend>
+                              <v-icon>mdi-content-copy</v-icon>
+                            </template>
+                            <v-list-item-title>Copy address to clipboard</v-list-item-title>
+                          </v-list-item>
+                          <v-list-item :href="avatar" target="_blank">
+                            <template v-slot:prepend>
+                              <v-icon>mdi-link-variant</v-icon>
+                            </template>
+                            <v-list-item-title>View in browser</v-list-item-title>
+                          </v-list-item>
+                        </v-list>
+                      </v-menu>
+                    </v-col>
+                  </v-row>
+                </v-col>
+                <v-col cols="5">
+                  <v-img :src="avatar" width="400" class="mx-2" style="border: 1px solid currentColor; border-radius: 8px; height: 400px; width: 400px;"></v-img>
+                </v-col>
+              </v-row>
+            </v-card-text>
+          </v-card>
+        </v-tabs-window-item>
+        <v-tabs-window-item value="history">
+          <v-data-table :items="eventsList" :headers="eventsHeaders" @click:row="handleEventsClick" density="comfortable">
+            <template v-slot:item.when="{ item }">
+              <span v-if="item.timestamp">
+                {{ formatTimestamp(item.timestamp) }}
+              </span>
+              <span v-else>
+                {{ '#' + item.blockNumber }}
+              </span>
+              <!-- <a :href="'#/transaction/' + item.txHash">{{ item.txHash.substring(0, 20) + "..." + item.txHash.slice(-18) }}</a> -->
+            </template>
+            <template v-slot:item.what="{ item }">
+              <span v-if="item.type == 'AddrChanged'">
+                <!-- node: {{ item.node }} -->
+                a: {{ item.a }}
+              </span>
+              <span v-else-if="item.type == 'AddressChanged'">
+                <!-- node: {{ item.node }} -->
+                coinType: {{ item.coinType }}
+                newAddress: {{ item.newAddress }}
+              </span>
+              <span v-else-if="item.type == 'ContenthashChanged'">
+                <!-- node: {{ item.node }} -->
+                hash: {{ item.hash }}
+              </span>
+              <span v-else-if="item.type == 'NameRegistered'">
+                <span v-if="item.label">label: {{ item.label }}</span>
+                labelhash: {{ item.labelhash }}
+                owner: {{ item.owner }}
+                cost: {{ formatETH(item.cost) }}
+                expires: {{ formatTimestamp(item.expires) }}
+              </span>
+              <span v-else-if="item.type == 'NameRenewed'">
+                label: {{ item.label }}
+                cost: {{ formatETH(item.cost) }}
+                expiry: {{ formatTimestamp(item.expiry) }}
+              </span>
+              <span v-else-if="item.type == 'NameWrapped'">
+                label: {{ item.label }}
+                owner: {{ item.owner }}
+                fuses: {{ item.fuses }}
+                expiry: {{ formatTimestamp(item.expiry) }}
+              </span>
+              <span v-else-if="item.type == 'NewResolver'">
+                <!-- node: {{ item.node }} -->
+                resolver: {{ item.resolver }}
+              </span>
+              <span v-else-if="item.type == 'TextChanged'">
+                {{ item.key }} => {{ item.value }}
+              </span>
+              <span v-else>
+                {{ item }}
+              </span>
+              <!-- <a :href="'#/address/' + item.from">{{ item.from.substring(0, 10) + "..." + item.from.slice(-8) }}</a> -->
+            </template>
+          </v-data-table>
+        </v-tabs-window-item>
+      </v-tabs-window>
+      <!-- <v-card v-if="!inputName">
         <v-card-text>
           Enter ENS name in the search field above
         </v-card-text>
-      </v-card>
-      <v-container v-if="inputName && name" fluid class="pa-1">
-        <v-card>
-          <v-card-text>
-            <v-row>
-              <v-col cols="2">
-                <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" color="primary" direction="vertical">
-                  <v-tab prepend-icon="mdi-card-account-details-outline" text="Name" value="name" class="lowercase-btn"></v-tab>
-                  <v-tab prepend-icon="mdi-calendar" text="History" value="history" class="lowercase-btn"></v-tab>
-                </v-tabs>
-              </v-col>
-              <v-col cols="10">
-
-                <v-tabs-window v-model="settings.tab">
-                  <v-tabs-window-item value="name">
-                    <v-row dense>
-                      <v-col cols="8">
-                        <v-row dense>
-                          <v-col cols="11">
-                            <!-- append-inner-icon="mdi-content-copy"
-                            @click:append-inner="copyToClipboard(name)" -->
-                            <v-text-field
-                              readonly
-                              v-model="name"
-                              label="ENS Name:"
-                              append-icon="mdi-link"
-                              @click:append="navigateToURL('https://app.ens.domains/' + name)"
-                              density="compact"
-                              hide-details
-                            >
-                            </v-text-field>
-                          </v-col>
-                        </v-row>
-                        <v-row dense>
-                          <v-col cols="11">
-                            <!-- append-inner-icon="mdi-content-copy"
-                            @click:append-inner="copyToClipboard(resolvedAddress)" -->
-                            <v-text-field
-                              readonly
-                              v-model="resolvedAddress"
-                              label="Resolved Address:"
-                              append-icon="mdi-arrow-right-bold-outline"
-                              @click:append="navigateToAddress(resolvedAddress)"
-                              density="compact"
-                              hide-details
-                            >
-                            </v-text-field>
-                          </v-col>
-                        </v-row>
-                        <v-row dense>
-                          <v-col cols="11">
-                            <!-- append-inner-icon="mdi-content-copy"
-                            @click:append-inner="copyToClipboard(ethAddress)" -->
-                            <v-text-field
-                              readonly
-                              v-model="ethAddress"
-                              label="ETH Address:"
-                              append-icon="mdi-arrow-right-bold-outline"
-                              @click:append="navigateToAddress(ethAddress)"
-                              density="compact"
-                              hide-details
-                            >
-                            </v-text-field>
-                          </v-col>
-                        </v-row>
-                        <v-row dense>
-                          <v-col cols="11">
-                            <!-- append-inner-icon="mdi-content-copy"
-                            @click:append-inner="copyToClipboard(avatar)" -->
-                            <v-text-field
-                              readonly
-                              v-model="avatar"
-                              label="Avatar:"
-                              append-icon="mdi-link"
-                              @click:append="navigateToURL(avatar)"
-                              density="compact"
-                              hide-details
-                            >
-                            </v-text-field>
-                          </v-col>
-                        </v-row>
-                      </v-col>
-                      <v-col cols="4">
-                        <v-img :src="avatar" width="200"></v-img>
-                      </v-col>
-                    </v-row>
-                  </v-tabs-window-item>
-                  <v-tabs-window-item value="history">
-                    <v-data-table :items="eventsList" :headers="eventsHeaders" @click:row="handleEventsClick" density="compact">
-                      <template v-slot:item.when="{ item }">
-                        <span v-if="item.timestamp">
-                          {{ formatTimestamp(item.timestamp) }}
-                        </span>
-                        <span v-else>
-                          {{ '#' + item.blockNumber }}
-                        </span>
-                        <!-- <a :href="'#/transaction/' + item.txHash">{{ item.txHash.substring(0, 20) + "..." + item.txHash.slice(-18) }}</a> -->
-                      </template>
-                      <template v-slot:item.what="{ item }">
-                        <span v-if="item.type == 'AddrChanged'">
-                          <!-- node: {{ item.node }} -->
-                          a: {{ item.a }}
-                        </span>
-                        <span v-else-if="item.type == 'AddressChanged'">
-                          <!-- node: {{ item.node }} -->
-                          coinType: {{ item.coinType }}
-                          newAddress: {{ item.newAddress }}
-                        </span>
-                        <span v-else-if="item.type == 'ContenthashChanged'">
-                          <!-- node: {{ item.node }} -->
-                          hash: {{ item.hash }}
-                        </span>
-                        <span v-else-if="item.type == 'NameRegistered'">
-                          <span v-if="item.label">label: {{ item.label }}</span>
-                          labelhash: {{ item.labelhash }}
-                          owner: {{ item.owner }}
-                          cost: {{ formatETH(item.cost) }}
-                          expires: {{ formatTimestamp(item.expires) }}
-                        </span>
-                        <span v-else-if="item.type == 'NameRenewed'">
-                          label: {{ item.label }}
-                          cost: {{ formatETH(item.cost) }}
-                          expiry: {{ formatTimestamp(item.expiry) }}
-                        </span>
-                        <span v-else-if="item.type == 'NameWrapped'">
-                          label: {{ item.label }}
-                          owner: {{ item.owner }}
-                          fuses: {{ item.fuses }}
-                          expiry: {{ formatTimestamp(item.expiry) }}
-                        </span>
-                        <span v-else-if="item.type == 'NewResolver'">
-                          <!-- node: {{ item.node }} -->
-                          resolver: {{ item.resolver }}
-                        </span>
-                        <span v-else-if="item.type == 'TextChanged'">
-                          {{ item.key }} => {{ item.value }}
-                        </span>
-                        <span v-else>
-                          {{ item }}
-                        </span>
-                        <!-- <a :href="'#/address/' + item.from">{{ item.from.substring(0, 10) + "..." + item.from.slice(-8) }}</a> -->
-                      </template>
-                    </v-data-table>
-                    <!-- eventsList: {{ eventsList }}
-                    <br />
-                    info: {{ info }} -->
-                  </v-tabs-window-item>
-                </v-tabs-window>
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
-      </v-container>
+      </v-card> -->
     </div>
   `,
   props: ['inputName'],
@@ -172,14 +233,17 @@ const Name = {
         version: 0,
       },
       eventsHeaders: [
-        { title: 'When', value: 'when', sortable: false, width: "20%" },
+        { title: 'When', value: 'when', sortable: false, width: "15%" },
         { title: 'Contract', value: 'contract', sortable: false, width: "20%" },
-        { title: 'Type', value: 'type', sortable: false, width: "20%" },
-        { title: 'What', value: 'what', sortable: false, width: "40%" },
+        { title: 'Type', value: 'type', sortable: false, width: "15%" },
+        { title: 'What', value: 'what', sortable: false, width: "50%" },
       ],
     };
   },
   computed: {
+    explorer() {
+      return store.getters['explorer'];
+    },
     name() {
       return store.getters['name/name'];
     },
