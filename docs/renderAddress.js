@@ -4,7 +4,7 @@ const RenderAddress = {
       <v-menu location="bottom">
         <template v-slot:activator="{ props }">
           <v-btn v-if="address" color="primary" dark v-bind="props" variant="text" class="ma-0 px-2 lowercase-btn">
-            {{ address }}
+            {{ shortAddress ? (address.substring(0, 10) + "..." + address.slice(-8)) : address }}
           </v-btn>
         </template>
         <v-list>
@@ -31,7 +31,15 @@ const RenderAddress = {
       </v-menu>
     </div>
   `,
-  props: ['address'],
+  props: {
+    address: {
+      type: String,
+    },
+    shortAddress: {
+      type: Boolean,
+      default: false
+    }
+  },
   data: function () {
     return {
     };

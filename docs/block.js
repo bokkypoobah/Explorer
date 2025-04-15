@@ -199,64 +199,10 @@ const Block = {
                 </v-menu>
               </template>
               <template v-slot:item.from="{ item }">
-                <v-menu location="bottom">
-                  <template v-slot:activator="{ props }">
-                    <v-btn color="primary" dark v-bind="props" variant="text" class="ma-0 pa-0 lowercase-btn">
-                      {{ item.from.substring(0, 10) + '...' + item.from.slice(-8) }}
-                    </v-btn>
-                  </template>
-                  <v-list>
-                    <v-list-subheader>{{ item.from }}</v-list-subheader>
-                    <v-list-item :href="'#/address/' + item.from">
-                      <template v-slot:prepend>
-                        <v-icon>mdi-arrow-right-bold-outline</v-icon>
-                      </template>
-                      <v-list-item-title>View</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item @click="copyToClipboard(item.from);">
-                      <template v-slot:prepend>
-                        <v-icon>mdi-content-copy</v-icon>
-                      </template>
-                      <v-list-item-title>Copy address to clipboard</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item :href="explorer + 'address/' + item.from" target="_blank">
-                      <template v-slot:prepend>
-                        <v-icon>mdi-link-variant</v-icon>
-                      </template>
-                      <v-list-item-title>View in explorer</v-list-item-title>
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
+                <render-address v-if="item && item.from" :address="item.from" shortAddress></render-address>
               </template>
               <template v-slot:item.to="{ item }">
-                <v-menu location="bottom">
-                  <template v-slot:activator="{ props }">
-                    <v-btn v-if="item.to" color="primary" dark v-bind="props" variant="text" class="ma-0 pa-0 lowercase-btn">
-                      {{ item.to.substring(0, 10) + '...' + item.to.slice(-8) }}
-                    </v-btn>
-                  </template>
-                  <v-list>
-                    <v-list-subheader>{{ item.to }}</v-list-subheader>
-                    <v-list-item :href="'#/address/' + item.to">
-                      <template v-slot:prepend>
-                        <v-icon>mdi-arrow-right-bold-outline</v-icon>
-                      </template>
-                      <v-list-item-title>View</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item @click="copyToClipboard(item.to);">
-                      <template v-slot:prepend>
-                        <v-icon>mdi-content-copy</v-icon>
-                      </template>
-                      <v-list-item-title>Copy address to clipboard</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item :href="explorer + 'address/' + item.to" target="_blank">
-                      <template v-slot:prepend>
-                        <v-icon>mdi-link-variant</v-icon>
-                      </template>
-                      <v-list-item-title>View in explorer</v-list-item-title>
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
+                <render-address v-if="item && item.to" :address="item.to" shortAddress></render-address>
               </template>
             </v-data-table>
           </v-tabs-window-item>
