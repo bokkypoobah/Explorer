@@ -4,28 +4,7 @@ const Transaction = {
       <v-container fluid class="pa-1">
         <v-toolbar density="compact" class="mt-1">
           <h4 class="ml-2">Transaction</h4>
-          <v-menu location="bottom">
-            <template v-slot:activator="{ props }">
-              <v-btn v-if="tx" color="primary" dark v-bind="props" variant="text" class="ma-0 lowercase-btn">
-                {{ tx.hash.substring(0, 20) + "..." + tx.hash.slice(-18) }}
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-subheader>{{ tx.hash }}</v-list-subheader>
-              <v-list-item @click="copyToClipboard(tx.hash);">
-                <template v-slot:prepend>
-                  <v-icon>mdi-content-copy</v-icon>
-                </template>
-                <v-list-item-title>Copy tx hash to clipboard</v-list-item-title>
-              </v-list-item>
-              <v-list-item :href="explorer + 'tx/' + tx.hash" target="_blank">
-                <template v-slot:prepend>
-                  <v-icon>mdi-link</v-icon>
-                </template>
-                <v-list-item-title>View in explorer</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
+          <render-tx-hash v-if="tx && tx.hash" :txHash="tx.hash" shortTxHash suppressView></render-tx-hash>
           <p v-if="tx && tx.blockNumber" class="ml-5 text-caption text--disabled">
             {{ commify0(tx.blockNumber) }} @ {{ timestampString }}, {{ timestamp && formatTimeDiff(timestamp) }}
           </p>
@@ -45,9 +24,7 @@ const Transaction = {
                     <p class="my-2">Transaction Hash:</p>
                   </v-col>
                   <v-col cols="6" align="left">
-                    <v-btn v-if="tx && tx.hash" @click="copyToClipboard(tx.hash);" variant="text" class="lowercase-btn ma-0 px-2">
-                      {{ tx.hash }}
-                    </v-btn>
+                    <render-tx-hash v-if="tx && tx.hash" :txHash="tx.hash" suppressView></render-tx-hash>
                   </v-col>
                 </v-row>
                 <v-row no-gutters dense>
@@ -75,34 +52,7 @@ const Transaction = {
                     <p class="my-2">Block:</p>
                   </v-col>
                   <v-col cols="10" align="left">
-                    <v-menu location="bottom">
-                      <template v-slot:activator="{ props }">
-                        <v-btn v-if="tx && tx.blockNumber" color="primary" dark v-bind="props" variant="text" class="ma-0 px-2 lowercase-btn">
-                          {{ commify0(tx.blockNumber) }}
-                        </v-btn>
-                      </template>
-                      <v-list>
-                        <v-list-subheader>{{ commify0(tx.blockNumber) }}</v-list-subheader>
-                        <v-list-item :href="'#/block/' + tx.blockNumber">
-                          <template v-slot:prepend>
-                            <v-icon>mdi-arrow-right-bold-outline</v-icon>
-                          </template>
-                          <v-list-item-title>View</v-list-item-title>
-                        </v-list-item>
-                        <v-list-item @click="copyToClipboard(tx.blockNumber);">
-                          <template v-slot:prepend>
-                            <v-icon>mdi-content-copy</v-icon>
-                          </template>
-                          <v-list-item-title>Copy block number to clipboard</v-list-item-title>
-                        </v-list-item>
-                        <v-list-item :href="explorer + 'block/' + tx.blockNumber" target="_blank">
-                          <template v-slot:prepend>
-                            <v-icon>mdi-link-variant</v-icon>
-                          </template>
-                          <v-list-item-title>View in explorer</v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
+                    <render-block-number v-if="tx && tx.blockNumber" :block="tx.blockNumber" suppressView></render-block-number>
                   </v-col>
                 </v-row>
                 <v-row no-gutters dense>
@@ -120,34 +70,7 @@ const Transaction = {
                     <p class="my-2">From:</p>
                   </v-col>
                   <v-col cols="10" align="left">
-                    <v-menu location="bottom">
-                      <template v-slot:activator="{ props }">
-                        <v-btn v-if="tx && tx.from" color="primary" dark v-bind="props" variant="text" class="ma-0 px-2 lowercase-btn">
-                          {{ tx.from }}
-                        </v-btn>
-                      </template>
-                      <v-list>
-                        <v-list-subheader>{{ tx.from }}</v-list-subheader>
-                        <v-list-item :href="'#/address/' + tx.from">
-                          <template v-slot:prepend>
-                            <v-icon>mdi-arrow-right-bold-outline</v-icon>
-                          </template>
-                          <v-list-item-title>View</v-list-item-title>
-                        </v-list-item>
-                        <v-list-item @click="copyToClipboard(tx.from);">
-                          <template v-slot:prepend>
-                            <v-icon>mdi-content-copy</v-icon>
-                          </template>
-                          <v-list-item-title>Copy address to clipboard</v-list-item-title>
-                        </v-list-item>
-                        <v-list-item :href="explorer + 'address/' + tx.from" target="_blank">
-                          <template v-slot:prepend>
-                            <v-icon>mdi-link-variant</v-icon>
-                          </template>
-                          <v-list-item-title>View in explorer</v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
+                    <render-address v-if="tx && tx.from" :address="tx.from"></render-address>
                   </v-col>
                 </v-row>
                 <v-row no-gutters dense>
@@ -165,34 +88,7 @@ const Transaction = {
                     <p class="my-2">To:</p>
                   </v-col>
                   <v-col cols="10" align="left">
-                    <v-menu location="bottom">
-                      <template v-slot:activator="{ props }">
-                        <v-btn v-if="tx && tx.to" color="primary" dark v-bind="props" variant="text" class="ma-0 px-2 lowercase-btn">
-                          {{ tx.to }}
-                        </v-btn>
-                      </template>
-                      <v-list>
-                        <v-list-subheader>{{ tx.to }}</v-list-subheader>
-                        <v-list-item :href="'#/address/' + tx.to">
-                          <template v-slot:prepend>
-                            <v-icon>mdi-arrow-right-bold-outline</v-icon>
-                          </template>
-                          <v-list-item-title>View</v-list-item-title>
-                        </v-list-item>
-                        <v-list-item @click="copyToClipboard(tx.to);">
-                          <template v-slot:prepend>
-                            <v-icon>mdi-content-copy</v-icon>
-                          </template>
-                          <v-list-item-title>Copy address to clipboard</v-list-item-title>
-                        </v-list-item>
-                        <v-list-item :href="explorer + 'address/' + tx.to" target="_blank">
-                          <template v-slot:prepend>
-                            <v-icon>mdi-link-variant</v-icon>
-                          </template>
-                          <v-list-item-title>View in explorer</v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
+                    <render-address v-if="tx && tx.to" :address="tx.to"></render-address>
                   </v-col>
                 </v-row>
                 <v-row no-gutters dense>

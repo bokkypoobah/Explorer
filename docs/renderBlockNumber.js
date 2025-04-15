@@ -8,7 +8,7 @@ const RenderBlockNumber = {
       </template>
       <v-list>
         <v-list-subheader>Block {{ commify0(block) }}</v-list-subheader>
-        <v-list-item v-if="!supressView" :href="'#/block/' + block">
+        <v-list-item v-if="!suppressView" :href="'#/block/' + block">
           <template v-slot:prepend>
             <v-icon>mdi-arrow-right-bold-outline</v-icon>
           </template>
@@ -18,7 +18,7 @@ const RenderBlockNumber = {
           <template v-slot:prepend>
             <v-icon>mdi-content-copy</v-icon>
           </template>
-          <v-list-item-title>Copy block to clipboard</v-list-item-title>
+          <v-list-item-title>Copy block number to clipboard</v-list-item-title>
         </v-list-item>
         <v-list-item :href="explorer + 'block/' + block" target="_blank">
           <template v-slot:prepend>
@@ -33,7 +33,7 @@ const RenderBlockNumber = {
     block: {
       type: Number,
     },
-    supressView: {
+    suppressView: {
       type: Boolean,
       default: false,
     },

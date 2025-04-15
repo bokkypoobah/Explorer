@@ -8,7 +8,7 @@ const RenderTxHash = {
       </template>
       <v-list>
         <v-list-subheader>Transaction hash {{ txHash }}</v-list-subheader>
-        <v-list-item v-if="!supressView" :href="'#/transaction/' + txHash">
+        <v-list-item v-if="!suppressView" :href="'#/transaction/' + txHash">
           <template v-slot:prepend>
             <v-icon>mdi-arrow-right-bold-outline</v-icon>
           </template>
@@ -18,7 +18,7 @@ const RenderTxHash = {
           <template v-slot:prepend>
             <v-icon>mdi-content-copy</v-icon>
           </template>
-          <v-list-item-title>Copy block to clipboard</v-list-item-title>
+          <v-list-item-title>Copy transaction hash to clipboard</v-list-item-title>
         </v-list-item>
         <v-list-item :href="explorer + 'tx/' + txHash" target="_blank">
           <template v-slot:prepend>
@@ -37,7 +37,7 @@ const RenderTxHash = {
       type: Boolean,
       default: false,
     },
-    supressView: {
+    suppressView: {
       type: Boolean,
       default: false,
     },

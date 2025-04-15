@@ -8,7 +8,7 @@ const Block = {
           </v-btn>
           <v-btn v-if="block" :disabled="block.number == 0" @click="navigateToBlock(block.number - 1);" icon="mdi-chevron-left" density="compact" color="primary" dark class="ma-0">
           </v-btn>
-          <render-block-number v-if="block && block.number" :block="block.number" supressView></render-block-number>
+          <render-block-number v-if="block && block.number" :block="block.number" suppressView></render-block-number>
           <v-btn v-if="block" :disabled="block.number == latestBlockNumber" @click="navigateToBlock(block.number + 1);" icon="mdi-chevron-right" density="compact" color="primary" dark class="ma-0">
           </v-btn>
           <v-btn v-if="block" :disabled="block.number == latestBlockNumber" @click="navigateToBlock(latestBlockNumber);" icon="mdi-page-last" density="compact" color="primary" dark class="ma-0">
@@ -37,7 +37,7 @@ const Block = {
                     <p class="my-2">Block:</p>
                   </v-col>
                   <v-col cols="6" align="left">
-                    <render-block-number v-if="block && block.number" :block="block.number" supressView></render-block-number>
+                    <render-block-number v-if="block && block.number" :block="block.number" suppressView></render-block-number>
                   </v-col>
                 </v-row>
                 <v-row no-gutters dense>

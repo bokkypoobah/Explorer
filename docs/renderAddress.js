@@ -7,7 +7,7 @@ const RenderAddress = {
         </v-btn>
       </template>
       <v-list>
-        <v-list-subheader>{{ address }}</v-list-subheader>
+        <v-list-subheader>Address {{ address }}</v-list-subheader>
         <v-list-item :href="'#/address/' + address">
           <template v-slot:prepend>
             <v-icon>mdi-arrow-right-bold-outline</v-icon>
