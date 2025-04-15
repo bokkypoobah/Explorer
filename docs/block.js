@@ -15,6 +15,7 @@ const Block = {
               </v-btn>
             </template>
             <v-list>
+              <v-list-subheader>{{ commify0(block.number) }}</v-list-subheader>
               <v-list-item @click="copyToClipboard(block.number);">
                 <template v-slot:prepend>
                   <v-icon>mdi-content-copy</v-icon>
@@ -23,7 +24,7 @@ const Block = {
               </v-list-item>
               <v-list-item :href="explorer + 'block/' + block.number" target="_blank">
                 <template v-slot:prepend>
-                  <v-icon>mdi-link</v-icon>
+                  <v-icon>mdi-link-variant</v-icon>
                 </template>
                 <v-list-item-title>View in explorer</v-list-item-title>
               </v-list-item>
@@ -100,32 +101,99 @@ const Block = {
           <v-tabs-window-item value="transactions">
             <v-data-table v-if="block" :items="transactions" @click:row="handleClick" density="comfortable">
               <template v-slot:item.txHash="{ item }">
-                <v-btn :href="'#/transaction/' + item.txHash" color="primary" variant="text" class="lowercase-btn pa-0">{{ item.txHash.substring(0, 20) + "..." }}</v-btn>
+                <v-menu location="bottom">
+                  <template v-slot:activator="{ props }">
+                    <v-btn color="primary" dark v-bind="props" variant="text" class="ma-0 pa-0 lowercase-btn">
+                      {{ item.txHash.substring(0, 20) + "..." }}
+                    </v-btn>
+                  </template>
+                  <v-list>
+                    <v-list-subheader>{{ item.txHash }}</v-list-subheader>
+                    <v-list-item :href="'#/transaction/' + item.txHash">
+                      <template v-slot:prepend>
+                        <v-icon>mdi-arrow-right-bold-outline</v-icon>
+                      </template>
+                      <v-list-item-title>View</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item @click="copyToClipboard(item.txHash);">
+                      <template v-slot:prepend>
+                        <v-icon>mdi-content-copy</v-icon>
+                      </template>
+                      <v-list-item-title>Copy transaction hash to clipboard</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item :href="explorer + 'tx/' + item.txHash" target="_blank">
+                      <template v-slot:prepend>
+                        <v-icon>mdi-link-variant</v-icon>
+                      </template>
+                      <v-list-item-title>View in explorer</v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
               </template>
               <template v-slot:item.from="{ item }">
-                <v-btn :href="'#/address/' + item.from" color="primary" variant="text" class="lowercase-btn pa-0">{{ item.from.substring(0, 10) + '...' + item.from.slice(-8) }}</v-btn>
+                <v-menu location="bottom">
+                  <template v-slot:activator="{ props }">
+                    <v-btn color="primary" dark v-bind="props" variant="text" class="ma-0 pa-0 lowercase-btn">
+                      {{ item.from.substring(0, 10) + '...' + item.from.slice(-8) }}
+                    </v-btn>
+                  </template>
+                  <v-list>
+                    <v-list-subheader>{{ item.from }}</v-list-subheader>
+                    <v-list-item :href="'#/address/' + item.from">
+                      <template v-slot:prepend>
+                        <v-icon>mdi-arrow-right-bold-outline</v-icon>
+                      </template>
+                      <v-list-item-title>View</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item @click="copyToClipboard(item.from);">
+                      <template v-slot:prepend>
+                        <v-icon>mdi-content-copy</v-icon>
+                      </template>
+                      <v-list-item-title>Copy address to clipboard</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item :href="explorer + 'address/' + item.from" target="_blank">
+                      <template v-slot:prepend>
+                        <v-icon>mdi-link-variant</v-icon>
+                      </template>
+                      <v-list-item-title>View in explorer</v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
               </template>
               <template v-slot:item.to="{ item }">
-                <v-btn v-if="item.to" :href="'#/address/' + item.to" color="primary" variant="text" class="lowercase-btn pa-0">{{ item.to.substring(0, 10) + '...' + item.to.slice(-8) }}</v-btn>
+                <v-menu location="bottom">
+                  <template v-slot:activator="{ props }">
+                    <v-btn v-if="item.to" color="primary" dark v-bind="props" variant="text" class="ma-0 pa-0 lowercase-btn">
+                      {{ item.to.substring(0, 10) + '...' + item.to.slice(-8) }}
+                    </v-btn>
+                  </template>
+                  <v-list>
+                    <v-list-subheader>{{ item.to }}</v-list-subheader>
+                    <v-list-item :href="'#/address/' + item.to">
+                      <template v-slot:prepend>
+                        <v-icon>mdi-arrow-right-bold-outline</v-icon>
+                      </template>
+                      <v-list-item-title>View</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item @click="copyToClipboard(item.to);">
+                      <template v-slot:prepend>
+                        <v-icon>mdi-content-copy</v-icon>
+                      </template>
+                      <v-list-item-title>Copy address to clipboard</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item :href="explorer + 'address/' + item.to" target="_blank">
+                      <template v-slot:prepend>
+                        <v-icon>mdi-link-variant</v-icon>
+                      </template>
+                      <v-list-item-title>View in explorer</v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
               </template>
             </v-data-table>
           </v-tabs-window-item>
         </v-tabs-window>
       </v-container>
-
-
-      <v-card>
-        <v-card-text>
-          <!-- <div v-if="!block">
-            Enter block number in the search field above
-          </div> -->
-          <!-- <p>{{ block }}</p> -->
-        </v-card-text>
-        <!-- <v-card-actions>
-          <v-btn>Action 1</v-btn>
-          <v-btn>Action 2</v-btn>
-        </v-card-actions> -->
-      </v-card>
     </div>
   `,
   props: ['inputBlockNumber'],
@@ -137,14 +205,6 @@ const Block = {
         blockNumber: null,
         version: 0,
       },
-      // v-data-table :headers="headers" not working
-      // headers: [
-      //   { text: 'Tx Index', value: 'txIndex' },
-      //   { text: 'Tx Hash', value: 'txHash' },
-      //   { text: 'From', value: 'from' },
-      //   { text: 'To', value: 'to' },
-      //   { text: 'Value', value: 'value' },
-      // ],
     };
   },
   computed: {
@@ -241,7 +301,7 @@ const Block = {
       navigator.clipboard.writeText(str);
     },
     saveSettings() {
-      console.log(now() + " Block - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
+      // console.log(now() + " Block - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
       if (this.initialised) {
         localStorage.explorerBlockSettings = JSON.stringify(this.settings);
       }

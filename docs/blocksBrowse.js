@@ -23,7 +23,7 @@ const BlocksBrowse = {
           <template v-slot:footer.prepend>
             <tr class="d-flex flex-grow-1">
               <!-- <td>
-                Search
+                TODO: Search by block
               </td> -->
               <td class="ml-2">
                 <v-btn v-if="live" @click="live = false;" text color="primary" density="compact">
@@ -64,20 +64,17 @@ const BlocksBrowse = {
                 </v-list-item>
               </v-list>
             </v-menu>
-
           </template>
           <template v-slot:item.timestamp="{ item }">
             {{ formatTimestamp(item.timestamp) }}
           </template>
           <template v-slot:item.miner="{ item }">
-            <!-- <v-btn :href="'#/address/' + item.miner" color="primary" variant="text" class="lowercase-btn pa-0">{{ item.miner }}</v-btn> -->
             <v-menu location="bottom">
               <template v-slot:activator="{ props }">
                 <v-btn color="primary" dark v-bind="props" variant="text" class="ma-0 pa-0 lowercase-btn">
                   {{ item.miner }}
                 </v-btn>
               </template>
-
               <v-list>
                 <v-list-subheader>{{ item.miner }}</v-list-subheader>
                 <v-list-item :href="'#/address/' + item.miner">
@@ -99,9 +96,7 @@ const BlocksBrowse = {
                   <v-list-item-title>View in explorer</v-list-item-title>
                 </v-list-item>
               </v-list>
-
             </v-menu>
-
           </template>
           <template v-slot:item.txCount="{ item }">
             {{ item.txCount }}
