@@ -34,7 +34,6 @@ const Block = {
           </v-btn>
           <v-btn v-if="block" :disabled="block.number == latestBlockNumber" @click="navigateToBlock(latestBlockNumber);" icon="mdi-page-last" density="compact" color="primary" dark class="ma-0">
           </v-btn>
-
           <!-- <v-text-field v-model="settings.blockNumber" @input="saveSettings();" hide-details single-line density="compact" variant="plain" style="width: 50px;" class="ma-0 pa-0" placeholder="block #">
           </v-text-field> -->
           <!-- <v-btn @click="syncAddress();" color="primary" icon>
@@ -195,7 +194,7 @@ const Block = {
             </v-card>
           </v-tabs-window-item>
           <v-tabs-window-item value="transactions">
-            <v-data-table v-if="block" :items="transactions" @click:row="handleClick" density="comfortable">
+            <v-data-table :items="transactions" @click:row="handleClick" density="comfortable">
               <template v-slot:item.txHash="{ item }">
                 <v-menu location="bottom">
                   <template v-slot:activator="{ props }">
