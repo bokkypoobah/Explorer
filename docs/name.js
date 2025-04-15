@@ -160,7 +160,8 @@ const Name = {
           </v-card>
         </v-tabs-window-item>
         <v-tabs-window-item value="history">
-          <v-data-table :items="eventsList" :headers="eventsHeaders" @click:row="handleEventsClick" density="comfortable">
+          <!-- <v-data-table :items="eventsList" :headers="eventsHeaders" @click:row="handleEventsClick" density="comfortable"> -->
+          <v-data-table :items="eventsList" :headers="eventsHeaders" density="comfortable">
             <template v-slot:item.when="{ item }">
               <span v-if="item.timestamp">
                 {{ formatTimestamp(item.timestamp) }}
