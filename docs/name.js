@@ -4,28 +4,28 @@ const Name = {
       <v-container fluid class="pa-1">
         <v-toolbar density="compact" class="mt-1">
           <h4 class="ml-2">ENS Name</h4>
-          <!-- <v-menu location="bottom">
+          <v-menu location="bottom">
             <template v-slot:activator="{ props }">
-              <v-btn v-if="block" color="primary" dark v-bind="props" variant="text" class="ma-0 lowercase-btn">
-                {{ commify0(block.number) }}
+              <v-btn v-if="name" color="primary" dark v-bind="props" variant="text" class="ma-0 lowercase-btn">
+                {{ name.length <= 64 ? name : name.substring(0, 54) + "..." + name.slice(-10) }}
               </v-btn>
             </template>
             <v-list>
-              <v-list-subheader>{{ commify0(block.number) }}</v-list-subheader>
-              <v-list-item @click="copyToClipboard(block.number);">
+              <v-list-subheader>{{ name }}</v-list-subheader>
+              <v-list-item @click="copyToClipboard(name);">
                 <template v-slot:prepend>
                   <v-icon>mdi-content-copy</v-icon>
                 </template>
-                <v-list-item-title>Copy block number to clipboard</v-list-item-title>
+                <v-list-item-title>Copy name to clipboard</v-list-item-title>
               </v-list-item>
-              <v-list-item :href="explorer + 'block/' + block.number" target="_blank">
+              <v-list-item :href="'https://app.ens.domains/' + name" target="_blank">
                 <template v-slot:prepend>
                   <v-icon>mdi-link-variant</v-icon>
                 </template>
-                <v-list-item-title>View in explorer</v-list-item-title>
+                <v-list-item-title>View in app.ens.domains</v-list-item-title>
               </v-list-item>
             </v-list>
-          </v-menu> -->
+          </v-menu>
           <!-- <p class="ml-5 text-caption text--disabled">
             {{ timestampString }}, {{ block && block.timestamp && formatTimeDiff(block.timestamp) }}
           </p> -->
@@ -48,7 +48,7 @@ const Name = {
                     </v-col>
                     <v-col cols="10" align="left">
                       <v-btn v-if="name" variant="text" class="lowercase-btn ma-0 px-2">
-                        {{ name }}
+                        {{ name.length <= 64 ? name : name.substring(0, 54) + "..." + name.slice(-10) }}
                       </v-btn>
                     </v-col>
                   </v-row>
