@@ -45,7 +45,7 @@ const Transaction = {
                     <p class="my-2">Transaction Hash:</p>
                   </v-col>
                   <v-col cols="6" align="left">
-                    <v-btn v-if="tx && tx.hash" variant="text" class="lowercase-btn ma-0 px-2">
+                    <v-btn v-if="tx && tx.hash" @click="copyToClipboard(tx.hash);" variant="text" class="lowercase-btn ma-0 px-2">
                       {{ tx.hash }}
                     </v-btn>
                   </v-col>
