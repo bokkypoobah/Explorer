@@ -10,7 +10,7 @@ const Address = {
         <v-toolbar v-if="inputAddress && address" density="compact" class="mt-1">
           <v-menu location="bottom">
             <template v-slot:activator="{ props }">
-              <v-btn color="primary" dark v-bind="props" class="lowercase-btn">
+              <v-btn color="primary" dark v-bind="props" variant="text" class="lowercase-btn">
                 {{ address }}
               </v-btn>
             </template>
@@ -23,25 +23,25 @@ const Address = {
               </v-list-item>
               <v-list-item :href="explorer + 'address/' + address" target="_blank">
                 <template v-slot:prepend>
-                  <v-icon>mdi-link</v-icon>
+                  <v-icon>mdi-link-variant</v-icon>
                 </template>
                 <v-list-item-title>View in explorer</v-list-item-title>
               </v-list-item>
               <v-list-item :href="'https://remix.ethereum.org/address/' + address" target="_blank">
                 <template v-slot:prepend>
-                  <v-icon>mdi-link</v-icon>
+                  <v-icon>mdi-link-variant</v-icon>
                 </template>
                 <v-list-item-title>View in remix.ethereum.org</v-list-item-title>
               </v-list-item>
               <v-list-item :href="'https://opensea.io/' + address" target="_blank">
                 <template v-slot:prepend>
-                  <v-icon>mdi-link</v-icon>
+                  <v-icon>mdi-link-variant</v-icon>
                 </template>
                 <v-list-item-title>View in opensea.io</v-list-item-title>
               </v-list-item>
               <v-list-item :href="'https://app.ens.domains/' + address" target="_blank">
                 <template v-slot:prepend>
-                  <v-icon>mdi-link</v-icon>
+                  <v-icon>mdi-link-variant</v-icon>
                 </template>
                 <v-list-item-title>View in app.ens.domains</v-list-item-title>
               </v-list-item>
@@ -50,19 +50,19 @@ const Address = {
                 <v-list-subheader inset>Gnosis Safe v{{ version }}</v-list-subheader>
                 <v-list-item :href="'https://app.safe.global/home?safe=eth:' + address" target="_blank">
                   <template v-slot:prepend>
-                    <v-icon>mdi-link</v-icon>
+                    <v-icon>mdi-link-variant</v-icon>
                   </template>
                   <v-list-item-title>View in app.safe.global</v-list-item-title>
                 </v-list-item>
                 <v-list-item :href="explorer + 'address/' + implementation" target="_blank">
                   <template v-slot:prepend>
-                    <v-icon>mdi-link</v-icon>
+                    <v-icon>mdi-link-variant</v-icon>
                   </template>
                   <v-list-item-title>View implementation in explorer</v-list-item-title>
                 </v-list-item>
                 <v-list-item :href="'https://remix.ethereum.org/address/' + implementation" target="_blank">
                   <template v-slot:prepend>
-                    <v-icon>mdi-link</v-icon>
+                    <v-icon>mdi-link-variant</v-icon>
                   </template>
                   <v-list-item-title>View implementation in remix.ethereum.org</v-list-item-title>
                 </v-list-item>

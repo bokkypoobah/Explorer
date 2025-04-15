@@ -6,7 +6,7 @@ const Transaction = {
           <h4 class="ml-2">Transaction</h4>
           <v-menu location="bottom">
             <template v-slot:activator="{ props }">
-              <v-btn v-if="tx" color="primary" dark v-bind="props" class="ma-0 lowercase-btn">
+              <v-btn v-if="tx" color="primary" dark v-bind="props" variant="text" class="ma-0 lowercase-btn">
                 {{ tx.hash.substring(0, 20) + "..." + tx.hash.slice(-18) }}
               </v-btn>
             </template>

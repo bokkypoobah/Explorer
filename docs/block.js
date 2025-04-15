@@ -10,7 +10,7 @@ const Block = {
           </v-btn>
           <v-menu location="bottom">
             <template v-slot:activator="{ props }">
-              <v-btn v-if="block" color="primary" dark v-bind="props" class="ma-0 lowercase-btn">
+              <v-btn v-if="block" color="primary" dark v-bind="props" variant="text" class="ma-0 lowercase-btn">
                 {{ commify0(block.number) }}
               </v-btn>
             </template>
