@@ -47,7 +47,7 @@ const Block = {
           <v-spacer></v-spacer>
           <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" right color="deep-purple-accent-4">
             <v-tab prepend-icon="mdi-cube-outline" text="Info" value="info" class="lowercase-btn"></v-tab>
-            <v-tab prepend-icon="mdi-text-long" text="Transactions" value="transactions" class="lowercase-btn"></v-tab>
+            <v-tab prepend-icon="mdi-text-long" :text="(block && transactions.length || '') + ' Transactions'" value="transactions" class="lowercase-btn"></v-tab>
           </v-tabs>
         </v-toolbar>
         <v-tabs-window v-model="settings.tab">
@@ -179,6 +179,16 @@ const Block = {
                   <v-col cols="6" align="left">
                     <v-btn v-if="extraData" variant="text" class="lowercase-btn ma-0 px-2">
                       {{ extraData }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+                <v-row no-gutters dense>
+                  <v-col cols="2" align="right">
+                    <p class="my-2">Transactions:</p>
+                  </v-col>
+                  <v-col cols="6" align="left">
+                    <v-btn v-if="block" variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
+                      {{ transactions.length }}
                     </v-btn>
                   </v-col>
                 </v-row>
@@ -342,7 +352,7 @@ const Block = {
           value: this.formatETH(tx.value),
         });
       }
-      console.log(now() + " Block - computed.transactions - results: " + JSON.stringify(results, null, 2));
+      // console.log(now() + " Block - computed.transactions - results: " + JSON.stringify(results, null, 2));
       return results;
     },
   },
