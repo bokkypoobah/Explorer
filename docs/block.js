@@ -52,6 +52,99 @@ const Block = {
         </v-toolbar>
         <v-tabs-window v-model="settings.tab">
           <v-tabs-window-item value="info">
+
+            <v-card>
+              <v-card-text>
+                <v-row no-gutters dense>
+                  <v-col cols="2" align="right">
+                    <p class="my-2">Block:</p>
+                  </v-col>
+                  <v-col cols="6" align="left">
+                    <!-- <v-btn v-if="block" variant="text" class="lowercase-btn ma-0 px-2">
+                      {{ block.number }}
+                    </v-btn> -->
+                    <v-menu location="bottom">
+                      <template v-slot:activator="{ props }">
+                        <v-btn v-if="block" color="primary" dark v-bind="props" variant="text" class="ma-0 px-2 lowercase-btn">
+                          {{ commify0(block.number) }}
+                        </v-btn>
+                      </template>
+                      <v-list>
+                        <v-list-subheader>{{ commify0(block.number) }}</v-list-subheader>
+                        <v-list-item @click="copyToClipboard(block.number);">
+                          <template v-slot:prepend>
+                            <v-icon>mdi-content-copy</v-icon>
+                          </template>
+                          <v-list-item-title>Copy block number to clipboard</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item :href="explorer + 'block/' + block.number" target="_blank">
+                          <template v-slot:prepend>
+                            <v-icon>mdi-link-variant</v-icon>
+                          </template>
+                          <v-list-item-title>View in explorer</v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+                  </v-col>
+                </v-row>
+                <v-row no-gutters dense>
+                  <v-col cols="2" align="right">
+                    <p class="my-2">Timestamp:</p>
+                  </v-col>
+                  <v-col cols="10" align="left">
+                    <v-btn v-if="block" variant="text" class="lowercase-btn ma-0 px-2">
+                      {{ timestampString }}, {{ block && block.timestamp && formatTimeDiff(block.timestamp) }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+                <v-row no-gutters dense>
+                  <v-col cols="2" align="right">
+                    <p class="my-2">Block Hash:</p>
+                  </v-col>
+                  <v-col cols="6" align="left">
+                    <v-btn v-if="block" variant="text" class="lowercase-btn ma-0 px-2">
+                      {{ block.hash }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+                <v-row no-gutters dense>
+                  <v-col cols="2" align="right">
+                    <p class="my-2">Miner:</p>
+                  </v-col>
+                  <v-col cols="10" align="left">
+                    <v-menu location="bottom">
+                      <template v-slot:activator="{ props }">
+                        <v-btn v-if="block" color="primary" dark v-bind="props" variant="text" class="ma-0 px-2 lowercase-btn">
+                          {{ block.miner }}
+                        </v-btn>
+                      </template>
+                      <v-list>
+                        <v-list-subheader>{{ block.miner }}</v-list-subheader>
+                        <v-list-item :href="'#/address/' + block.miner">
+                          <template v-slot:prepend>
+                            <v-icon>mdi-arrow-right-bold-outline</v-icon>
+                          </template>
+                          <v-list-item-title>View</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item @click="copyToClipboard(block.miner);">
+                          <template v-slot:prepend>
+                            <v-icon>mdi-content-copy</v-icon>
+                          </template>
+                          <v-list-item-title>Copy address to clipboard</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item :href="explorer + 'address/' + block.miner" target="_blank">
+                          <template v-slot:prepend>
+                            <v-icon>mdi-link-variant</v-icon>
+                          </template>
+                          <v-list-item-title>View in explorer</v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+                  </v-col>
+                </v-row>
+              </v-card-text>
+            </v-card>
+
             <div v-if="block" class="mt-1">
               <v-row dense>
                 <v-col cols="2">
