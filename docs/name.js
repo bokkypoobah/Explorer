@@ -57,34 +57,7 @@ const Name = {
                       <p class="my-2">Resolved Address:</p>
                     </v-col>
                     <v-col cols="10" align="left">
-                      <v-menu location="bottom">
-                        <template v-slot:activator="{ props }">
-                          <v-btn v-if="resolvedAddress" color="primary" dark v-bind="props" variant="text" class="ma-0 px-2 lowercase-btn">
-                            {{ resolvedAddress }}
-                          </v-btn>
-                        </template>
-                        <v-list>
-                          <v-list-subheader>{{ resolvedAddress }}</v-list-subheader>
-                          <v-list-item :href="'#/address/' + resolvedAddress">
-                            <template v-slot:prepend>
-                              <v-icon>mdi-arrow-right-bold-outline</v-icon>
-                            </template>
-                            <v-list-item-title>View</v-list-item-title>
-                          </v-list-item>
-                          <v-list-item @click="copyToClipboard(resolvedAddress);">
-                            <template v-slot:prepend>
-                              <v-icon>mdi-content-copy</v-icon>
-                            </template>
-                            <v-list-item-title>Copy address to clipboard</v-list-item-title>
-                          </v-list-item>
-                          <v-list-item :href="explorer + 'address/' + resolvedAddress" target="_blank">
-                            <template v-slot:prepend>
-                              <v-icon>mdi-link-variant</v-icon>
-                            </template>
-                            <v-list-item-title>View in explorer</v-list-item-title>
-                          </v-list-item>
-                        </v-list>
-                      </v-menu>
+                      <render-address v-if="resolvedAddress" :address="resolvedAddress"></render-address>
                     </v-col>
                   </v-row>
                   <v-row no-gutters dense>
@@ -92,34 +65,7 @@ const Name = {
                       <p class="my-2">ETH Address:</p>
                     </v-col>
                     <v-col cols="10" align="left">
-                      <v-menu location="bottom">
-                        <template v-slot:activator="{ props }">
-                          <v-btn v-if="ethAddress" color="primary" dark v-bind="props" variant="text" class="ma-0 px-2 lowercase-btn">
-                            {{ ethAddress }}
-                          </v-btn>
-                        </template>
-                        <v-list>
-                          <v-list-subheader>{{ ethAddress }}</v-list-subheader>
-                          <v-list-item :href="'#/address/' + ethAddress">
-                            <template v-slot:prepend>
-                              <v-icon>mdi-arrow-right-bold-outline</v-icon>
-                            </template>
-                            <v-list-item-title>View</v-list-item-title>
-                          </v-list-item>
-                          <v-list-item @click="copyToClipboard(ethAddress);">
-                            <template v-slot:prepend>
-                              <v-icon>mdi-content-copy</v-icon>
-                            </template>
-                            <v-list-item-title>Copy address to clipboard</v-list-item-title>
-                          </v-list-item>
-                          <v-list-item :href="explorer + 'address/' + ethAddress" target="_blank">
-                            <template v-slot:prepend>
-                              <v-icon>mdi-link-variant</v-icon>
-                            </template>
-                            <v-list-item-title>View in explorer</v-list-item-title>
-                          </v-list-item>
-                        </v-list>
-                      </v-menu>
+                      <render-address v-if="ethAddress" :address="ethAddress"></render-address>
                     </v-col>
                   </v-row>
                   <v-row no-gutters dense>
