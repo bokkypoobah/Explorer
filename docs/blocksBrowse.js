@@ -36,13 +36,72 @@ const BlocksBrowse = {
             </tr>
           </template>
           <template v-slot:item.number="{ item }">
-            <v-btn :href="'#/block/' + item.number" color="primary" variant="text" class="pa-0">{{ commify0(item.number) }}</v-btn>
+            <v-menu location="bottom">
+              <template v-slot:activator="{ props }">
+                <v-btn color="primary" dark v-bind="props" variant="text" class="ma-0 pa-0 lowercase-btn">
+                  {{ commify0(item.number) }}
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-subheader>{{ commify0(item.number) }}</v-list-subheader>
+                <v-list-item :href="'#/block/' + item.number">
+                  <template v-slot:prepend>
+                    <v-icon>mdi-arrow-right-bold-outline</v-icon>
+                  </template>
+                  <v-list-item-title>View</v-list-item-title>
+                </v-list-item>
+                <v-list-item @click="copyToClipboard(item.number);">
+                  <template v-slot:prepend>
+                    <v-icon>mdi-content-copy</v-icon>
+                  </template>
+                  <v-list-item-title>Copy block number to clipboard</v-list-item-title>
+                </v-list-item>
+                <v-list-item :href="explorer + 'block/' + item.number" target="_blank">
+                  <template v-slot:prepend>
+                    <v-icon>mdi-link-variant</v-icon>
+                  </template>
+                  <v-list-item-title>View in explorer</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+
           </template>
           <template v-slot:item.timestamp="{ item }">
             {{ formatTimestamp(item.timestamp) }}
           </template>
           <template v-slot:item.miner="{ item }">
-            <v-btn :href="'#/address/' + item.miner" color="primary" variant="text" class="lowercase-btn pa-0">{{ item.miner }}</v-btn>
+            <!-- <v-btn :href="'#/address/' + item.miner" color="primary" variant="text" class="lowercase-btn pa-0">{{ item.miner }}</v-btn> -->
+            <v-menu location="bottom">
+              <template v-slot:activator="{ props }">
+                <v-btn color="primary" dark v-bind="props" variant="text" class="ma-0 pa-0 lowercase-btn">
+                  {{ item.miner }}
+                </v-btn>
+              </template>
+
+              <v-list>
+                <v-list-subheader>{{ item.miner }}</v-list-subheader>
+                <v-list-item :href="'#/address/' + item.miner">
+                  <template v-slot:prepend>
+                    <v-icon>mdi-arrow-right-bold-outline</v-icon>
+                  </template>
+                  <v-list-item-title>View</v-list-item-title>
+                </v-list-item>
+                <v-list-item @click="copyToClipboard(item.miner);">
+                  <template v-slot:prepend>
+                    <v-icon>mdi-content-copy</v-icon>
+                  </template>
+                  <v-list-item-title>Copy address to clipboard</v-list-item-title>
+                </v-list-item>
+                <v-list-item :href="explorer + 'address/' + item.miner" target="_blank">
+                  <template v-slot:prepend>
+                    <v-icon>mdi-link-variant</v-icon>
+                  </template>
+                  <v-list-item-title>View in explorer</v-list-item-title>
+                </v-list-item>
+              </v-list>
+
+            </v-menu>
+
           </template>
           <template v-slot:item.txCount="{ item }">
             {{ item.txCount }}
@@ -106,9 +165,9 @@ const BlocksBrowse = {
     // implementation() {
     //   return store.getters['address/info'].implementation || null;
     // },
-    // explorer() {
-    //   return store.getters['explorer'];
-    // },
+    explorer() {
+      return store.getters['explorer'];
+    },
   },
   methods: {
     async loadItems ({ page, itemsPerPage, sortBy }) {
@@ -211,9 +270,9 @@ const BlocksBrowse = {
     //   console.log(now() + " BlocksBrowse - methods.syncAddress - address: " + address);
     //   store.dispatch('address/loadAddress', { inputAddress: address, forceUpdate: true });
     // },
-    // copyToClipboard(str) {
-    //   navigator.clipboard.writeText(str);
-    // },
+    copyToClipboard(str) {
+      navigator.clipboard.writeText(str);
+    },
   },
   beforeCreate() {
     console.log(now() + " BlocksBrowse - beforeCreate");
