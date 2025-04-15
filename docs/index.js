@@ -1,6 +1,3 @@
-// Vue.component('connection', Connection);
-
-// Create the router
 const router = VueRouter.createRouter({
   history: VueRouter.createWebHashHistory(),
   routes,
@@ -292,4 +289,5 @@ app.use(router);
 app.use(store);
 app.use(vuetify);
 app.component("connection", Connection);
+app.component("renderAddress", RenderAddress);
 app.mount('#app');

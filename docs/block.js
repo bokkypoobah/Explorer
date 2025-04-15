@@ -120,34 +120,7 @@ const Block = {
                     <p class="my-2">Miner:</p>
                   </v-col>
                   <v-col cols="10" align="left">
-                    <v-menu location="bottom">
-                      <template v-slot:activator="{ props }">
-                        <v-btn v-if="block" color="primary" dark v-bind="props" variant="text" class="ma-0 px-2 lowercase-btn">
-                          {{ block.miner }}
-                        </v-btn>
-                      </template>
-                      <v-list>
-                        <v-list-subheader>{{ block.miner }}</v-list-subheader>
-                        <v-list-item :href="'#/address/' + block.miner">
-                          <template v-slot:prepend>
-                            <v-icon>mdi-arrow-right-bold-outline</v-icon>
-                          </template>
-                          <v-list-item-title>View</v-list-item-title>
-                        </v-list-item>
-                        <v-list-item @click="copyToClipboard(block.miner);">
-                          <template v-slot:prepend>
-                            <v-icon>mdi-content-copy</v-icon>
-                          </template>
-                          <v-list-item-title>Copy address to clipboard</v-list-item-title>
-                        </v-list-item>
-                        <v-list-item :href="explorer + 'address/' + block.miner" target="_blank">
-                          <template v-slot:prepend>
-                            <v-icon>mdi-link-variant</v-icon>
-                          </template>
-                          <v-list-item-title>View in explorer</v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
+                    <render-address v-if="block" :address="block.miner"></render-address>
                   </v-col>
                 </v-row>
                 <v-row no-gutters dense>
