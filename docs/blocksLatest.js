@@ -1,3 +1,4 @@
+// TODO: Unused - to delete
 const BlocksLatest = {
   template: `
     <div>

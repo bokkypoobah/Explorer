@@ -69,34 +69,7 @@ const BlocksBrowse = {
             {{ formatTimestamp(item.timestamp) }}
           </template>
           <template v-slot:item.miner="{ item }">
-            <v-menu location="bottom">
-              <template v-slot:activator="{ props }">
-                <v-btn color="primary" dark v-bind="props" variant="text" class="ma-0 pa-0 lowercase-btn">
-                  {{ item.miner }}
-                </v-btn>
-              </template>
-              <v-list>
-                <v-list-subheader>{{ item.miner }}</v-list-subheader>
-                <v-list-item :href="'#/address/' + item.miner">
-                  <template v-slot:prepend>
-                    <v-icon>mdi-arrow-right-bold-outline</v-icon>
-                  </template>
-                  <v-list-item-title>View</v-list-item-title>
-                </v-list-item>
-                <v-list-item @click="copyToClipboard(item.miner);">
-                  <template v-slot:prepend>
-                    <v-icon>mdi-content-copy</v-icon>
-                  </template>
-                  <v-list-item-title>Copy address to clipboard</v-list-item-title>
-                </v-list-item>
-                <v-list-item :href="explorer + 'address/' + item.miner" target="_blank">
-                  <template v-slot:prepend>
-                    <v-icon>mdi-link-variant</v-icon>
-                  </template>
-                  <v-list-item-title>View in explorer</v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
+            <render-address :address="item.miner"></render-address>
           </template>
           <template v-slot:item.txCount="{ item }">
             {{ item.txCount }}

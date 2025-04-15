@@ -10,7 +10,7 @@ const Connection = {
       <v-btn v-if="info.chainId" :href="explorer" target="_blank" color="primary" variant="text" class="lowercase-btn text-caption ma-0 px-0">
         {{ networkName }}
       </v-btn>
-      <v-btn v-if="info.blockNumber" :to="'/block/' + info.blockNumber" color="primary" variant="text" class="lowercase-btn text-caption ma-0 px-2">
+      <v-btn v-if="info.blockNumber" @click="navigateToBlock(info.blockNumber)" color="primary" variant="text" class="lowercase-btn text-caption ma-0 px-2">
         {{ commify0(info.blockNumber) }}
       </v-btn>
       <v-tooltip v-if="info.timestamp" :text="formatTimestamp(info.timestamp)">
@@ -49,6 +49,11 @@ const Connection = {
     },
   },
   methods: {
+    navigateToBlock(blockNumber) {
+      console.log(now() + " Connection - methods.navigateToBlock - blockNumber: " + blockNumber);
+      this.$router.push({ name: 'Block', params: { inputBlockNumber: blockNumber } });
+      store.dispatch('block/loadBlock', blockNumber);
+    },
     commify0(n) {
       if (n != null) {
         return Number(n).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
