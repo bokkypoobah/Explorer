@@ -10,6 +10,10 @@ Web3 dapp: https://bokkypoobah.github.io/Explorer/ connected to Ethereum Mainnet
 
 #### Ethereum Mainnet
 
+Get your free (or non-free) API key from https://etherscan.io/apis and enter in the Other -> Config page. This API key is used to import the ABI and source code for contracts, and later on transactions and internal transaction listings for addresses. We are not affiliated with Etherscan.
+
+Click [IMPORT FROM ETHERSCAN] to import a list of EVM chains.
+
 <kbd><img src="images/SampleScreen01.png" width="800" /></kbd>
 
 <kbd><img src="images/SampleScreen02.png" width="800" /></kbd>
