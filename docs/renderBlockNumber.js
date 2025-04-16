@@ -2,7 +2,7 @@ const RenderBlockNumber = {
   template: `
     <v-menu location="bottom">
       <template v-slot:activator="{ props }">
-        <v-btn v-if="block != null" color="primary" dark v-bind="props" variant="text" class="ma-0 px-2 lowercase-btn">
+        <v-btn v-if="block != null" color="primary" dark v-bind="props" variant="text" class="ma-0 px-2 lowercase-btn" style="min-width: 0px;">
           {{ commify0(block) }}
         </v-btn>
       </template>
