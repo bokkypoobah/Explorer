@@ -36,7 +36,7 @@ const BlocksBrowse = {
             </tr>
           </template>
           <template v-slot:item.number="{ item }">
-            <render-block-number v-if="item && item.number" :block="item.number"></render-block-number>
+            <render-block-number v-if="item && item.number != null" :block="item.number"></render-block-number>
           </template>
           <template v-slot:item.timestamp="{ item }">
             {{ formatTimestamp(item.timestamp) }}

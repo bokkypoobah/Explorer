@@ -8,7 +8,7 @@ const Block = {
           </v-btn>
           <v-btn v-if="block" :disabled="block.number == 0" @click="navigateToBlock(block.number - 1);" icon="mdi-chevron-left" density="compact" color="primary" dark class="ma-0">
           </v-btn>
-          <render-block-number v-if="block && block.number" :block="block.number" suppressView></render-block-number>
+          <render-block-number v-if="block && block.number != null" :block="block.number" suppressView></render-block-number>
           <v-btn v-if="block" :disabled="block.number == latestBlockNumber" @click="navigateToBlock(block.number + 1);" icon="mdi-chevron-right" density="compact" color="primary" dark class="ma-0">
           </v-btn>
           <v-btn v-if="block" :disabled="block.number == latestBlockNumber" @click="navigateToBlock(latestBlockNumber);" icon="mdi-page-last" density="compact" color="primary" dark class="ma-0">
@@ -37,7 +37,7 @@ const Block = {
                     <p class="my-2">Block:</p>
                   </v-col>
                   <v-col cols="6" align="left">
-                    <render-block-number v-if="block && block.number" :block="block.number" suppressView></render-block-number>
+                    <render-block-number v-if="block && block.number != null" :block="block.number" suppressView></render-block-number>
                   </v-col>
                 </v-row>
                 <v-row no-gutters dense>
@@ -83,7 +83,7 @@ const Block = {
                     <p class="my-2">Gas Used:</p>
                   </v-col>
                   <v-col cols="6" align="left">
-                    <v-btn v-if="gasUsed" variant="text" class="lowercase-btn ma-0 px-2">
+                    <v-btn v-if="gasUsed != null" variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
                       {{ commify0(gasUsed) }}
                     </v-btn>
                   </v-col>
@@ -173,13 +173,13 @@ const Block = {
       return this.block && this.formatTimestamp(this.block.timestamp) || null;
     },
     gasLimit() {
-      return this.block && parseInt(this.block.gasLimit) || null;
+      return this.block && ethers.BigNumber.from(this.block.gasLimit).toString() || null;
     },
     gasUsed() {
-      return this.block && parseInt(this.block.gasUsed) || null;
+      return this.block && this.block.gasUsed != null && ethers.BigNumber.from(this.block.gasUsed).toString() || null;
     },
     gasPercentage() {
-      return this.block && parseInt(this.block.gasUsed * 100 / this.block.gasLimit) || null;
+      return this.block && this.block.gasUsed != null && ethers.BigNumber.from(this.block.gasUsed).mul(100).div(this.block.gasLimit) || null;
     },
     extraData() {
       try {
