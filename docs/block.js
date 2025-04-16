@@ -25,7 +25,7 @@ const Block = {
           <v-spacer></v-spacer>
           <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" right color="deep-purple-accent-4">
             <v-tab prepend-icon="mdi-cube-outline" text="Info" value="info" class="lowercase-btn"></v-tab>
-            <v-tab prepend-icon="mdi-text-long" :text="(block && transactions.length || '') + ' Transactions'" value="transactions" class="lowercase-btn"></v-tab>
+            <v-tab prepend-icon="mdi-text-long" :text="(block && transactions.length || '0') + ' Transactions'" value="transactions" class="lowercase-btn"></v-tab>
           </v-tabs>
         </v-toolbar>
         <v-tabs-window v-model="settings.tab">
