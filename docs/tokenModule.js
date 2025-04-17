@@ -54,7 +54,7 @@ const tokenModule = {
   },
   mutations: {
     setInfo(state, info) {
-      console.log(now() + " tokenModule - mutations.setData - info: " + JSON.stringify(info));
+      // console.log(now() + " tokenModule - mutations.setData - info: " + JSON.stringify(info));
       state.info = info;
     },
   },
@@ -70,7 +70,6 @@ const tokenModule = {
       }
       const chainId = store.getters["chainId"];
       const dbInfo = store.getters["db"];
-      // console.log(now() + " tokenModule - actions.loadToken - dbInfo: " + JSON.stringify(dbInfo));
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
 
@@ -95,6 +94,17 @@ const tokenModule = {
     },
     async syncTokenEvents(context, { inputAddress, forceUpdate }) {
       console.log(now() + " tokenModule - actions.syncTokenEvents - inputAddress: " + inputAddress + ", forceUpdate: " + forceUpdate);
+      const chainId = store.getters["chainId"];
+      const dbInfo = store.getters["db"];
+      const db = new Dexie(dbInfo.name);
+      db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
+
+      const validatedAddress = validateAddress(inputAddress);
+      let info = {};
+      if (validatedAddress) {
+        console.log(now() + " tokenModule - actions.syncTokenEvents - doIt");
+      }
+      db.close();
     },
   },
 };
