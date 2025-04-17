@@ -202,17 +202,10 @@
         </v-app-bar>
 
         <v-dialog v-model="searchAddress.displayDialog" width="auto">
-          <v-card
-            max-width="800"
-            prepend-icon="mdi-cash-multiple"
-            text="View as address or token contract?"
-            :title="searchAddress.name + ' ' + searchAddress.type.replace(/erc/, 'ERC-') + ' Token Contract'"
-          >
+          <v-card max-width="800" prepend-icon="mdi-cash-multiple" :text="'View ' + searchAddress.type.replace(/erc/, 'ERC-') + ' ' + searchAddress.name + ' as an address or a token contract?'" title="Token Contract">
             <template v-slot:actions>
               <v-spacer></v-spacer>
-              <!-- prepend-icon="mdi-numeric" -->
               <v-btn class="ms-auto" prepend-icon="mdi-numeric" text="Address" color="primary" @click="searchAddress.displayDialog = false; navigateToAddress(searchString.value);"></v-btn>
-              <!-- prepend-icon="mdi-cash-multiple" -->
               <v-btn class="ms-auto" prepend-icon="mdi-cash-multiple" text="Token Contract" color="primary" @click="searchAddress.displayDialog = false; navigateToToken(searchString.value);"></v-btn>
               <v-btn class="ms-auto" text="Cancel" color="warning" @click="searchAddress.displayDialog = false;"></v-btn>
             </template>
