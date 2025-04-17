@@ -60,7 +60,7 @@ const addressModule = {
   actions: {
     async loadAddress(context, { inputAddress, forceUpdate }) {
       console.log(now() + " addressModule - actions.loadAddress - inputAddress: " + inputAddress + ", forceUpdate: " + forceUpdate);
-      // TODO
+      // TODO - handle offline
       // if (!store.getters['web3'].connected || !window.ethereum) {
       //   error = "Not connected";
       // }

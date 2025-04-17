@@ -61,7 +61,7 @@ const tokenModule = {
   actions: {
     async loadToken(context, { inputAddress, forceUpdate }) {
       console.log(now() + " tokenModule - actions.loadToken - inputAddress: " + inputAddress + ", forceUpdate: " + forceUpdate);
-      // TODO
+      // TODO - handle offline
       // if (!store.getters['web3'].connected || !window.ethereum) {
       //   error = "Not connected";
       // }
