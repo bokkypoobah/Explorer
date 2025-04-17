@@ -139,6 +139,7 @@ const store = new Vuex.Store({
     transaction: transactionModule,
     address: addressModule,
     addresses: addressesModule,
+    token: tokenModule,
     name: nameModule,
   },
   plugins: [
@@ -184,6 +185,13 @@ const app = Vue.createApp({
     return {
       searchString: null,
       _timerId: null,
+      searchAddress: {
+        type: null,
+        name: null,
+        decimals: null,
+        displayDialog: false,
+      }
+
   //     testData: 'Hellooo',
   //     name: "Testing"
     }
@@ -228,14 +236,14 @@ const app = Vue.createApp({
     disconnect(connected) {
       store.dispatch('connection/disconnect');
     },
-    search() {
+    async search() {
       console.log(now() + " index.js - methods.search - this.searchString: " + JSON.stringify(this.searchString));
-      clearTimeout(this._timerId)
-      this._timerId = setTimeout(() => {
-        this.searchDebounced()
-      }, 500)
+      clearTimeout(this._timerId);
+      this._timerId = setTimeout(async () => {
+        await this.searchDebounced();
+      }, 500);
     },
-    searchDebounced() {
+    async searchDebounced() {
       const blockRegex = /^\d+$/;
       const txRegex = /^0x[a-fA-F0-9]{64}$/;
       const addressRegex = /^0x[a-fA-F0-9]{40}$/;
@@ -254,7 +262,78 @@ const app = Vue.createApp({
           store.dispatch('transaction/loadTransaction', searchString);
         } else if (addressRegex.test(searchString)) {
           console.log(now() + " index.js - methods.searchDebounced - ADDRESS searchString: " + JSON.stringify(searchString));
-          // this.$router.push({ name: 'Address', params: { inputAddress: searchString } });
+          this.searchAddress.type = null;
+          this.searchAddress.name = null;
+          this.searchAddress.decimals = null;
+          if (validateAddress(searchString) && window.ethereum) {
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            try {
+              const code = await provider.getCode(searchString);
+              if (code == "0x") {
+                this.searchAddress.type = "eoa";
+              }
+            } catch (e) {
+              console.error(now() + " index.js:searchDebounced - provider.getCode: " + e.message);
+            }
+            if (!this.searchAddress.type) {
+              const TOKEN_ABI = [
+                "function name() public view returns (string)",
+                "function symbol() public view returns (string)",
+                "function decimals() public view returns (uint8)",
+                "function totalSupply() public view returns (uint256)",
+                "function supportsInterface(bytes4 interfaceID) external view returns (bool)",
+              ];
+              const tokenContract = new ethers.Contract(searchString, TOKEN_ABI, provider);
+              try {
+                this.searchAddress.name = await tokenContract.name();
+                console.log(now() + " index.js:searchDebounced - this.searchAddress.name: " + this.searchAddress.name);
+              } catch (e) {
+                console.error(now() + " index.js:searchDebounced - ERROR tokenContract.name(): " + e.message);
+              }
+              try {
+                this.searchAddress.decimals = parseInt(await tokenContract.decimals());
+                console.log(now() + " index.js:searchDebounced - this.searchAddress.decimals: " + this.searchAddress.decimals);
+              } catch (e) {
+                console.error(now() + " index.js:searchDebounced - ERROR tokenContract.decimals(): " + e.message);
+              }
+              if (this.searchAddress.name && this.searchAddress.decimals) {
+                this.searchAddress.type = "erc20";
+              }
+              if (!this.searchAddress.type) {
+                try {
+                  if (await tokenContract.supportsInterface(ERC721_INTERFACE)) {
+                    this.searchAddress.type = "erc721";
+                  }
+                } catch (e) {
+                  console.error(now() + " index.js:searchDebounced - ERROR tokenContract.supportsInterface(ERC721_INTERFACE): " + e.message);
+                }
+              }
+              if (!this.searchAddress.type) {
+                try {
+                  if (await tokenContract.supportsInterface(ERC1155_INTERFACE)) {
+                    this.searchAddress.type = "erc1155";
+                  }
+                } catch (e) {
+                  console.error(now() + " index.js:searchDebounced - ERROR tokenContract.supportsInterface(ERC721_INTERFACE): " + e.message);
+                }
+              }
+              try {
+                this.searchAddress.name = await tokenContract.name();
+              } catch (e) {
+                console.error(now() + " index.js:searchDebounced - ERROR tokenContract.name(): " + e.message);
+              }
+              if (!this.searchAddress.type) {
+                this.searchAddress.type = "contract";
+              }
+            }
+            console.log(now() + " index.js:searchDebounced - this.searchAddress.type: " + this.searchAddress.type);
+            console.log(now() + " index.js:searchDebounced - this.searchAddress.name: " + this.searchAddress.name);
+            console.log(now() + " index.js:searchDebounced - this.searchAddress.decimals: " + this.searchAddress.decimals);
+          }
+          if (["erc20", "erc721", "erc1155"].includes(this.searchAddress.type)) {
+            this.searchAddress.displayDialog = true;
+          }
+          // TODO
           this.$router.push({ name: 'AddressAddress', params: { inputAddress: searchString } });
           store.dispatch('address/loadAddress', { inputAddress: searchString, forceUpdate: false });
         } else {
@@ -266,6 +345,16 @@ const app = Vue.createApp({
           }
         }
       }
+    },
+    navigateToAddress(inputAddress) {
+      console.log(now() + " index.js - methods.navigateToAddress - inputAddress: " + inputAddress);
+      this.$router.push({ name: 'AddressAddress', params: { inputAddress } });
+      store.dispatch('address/loadAddress', { inputAddress, forceUpdate: false });
+    },
+    navigateToToken(inputAddress) {
+      console.log(now() + " index.js - methods.navigateToToken - inputAddress: " + inputAddress);
+      this.$router.push({ name: 'Token', params: { inputAddress } });
+      store.dispatch('token/loadToken', { inputAddress, forceUpdate: false });
     },
   },
   beforeCreate() {

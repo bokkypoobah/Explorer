@@ -126,10 +126,10 @@ const Token = {
 	},
   mounted() {
     console.log(now() + " Token - mounted - inputAddress: " + this.inputAddress);
-    const t = this;
-    setTimeout(function() {
-      store.dispatch('address/loadAddress', { inputAddress: t.inputAddress, forceUpdate: false });
-    }, 1000);
+    // const t = this;
+    // setTimeout(function() {
+    //   store.dispatch('address/loadAddress', { inputAddress: t.inputAddress, forceUpdate: false });
+    // }, 1000);
 	},
   unmounted() {
     console.log(now() + " Token - unmounted");

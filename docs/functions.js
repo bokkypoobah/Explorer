@@ -128,60 +128,60 @@ async function getAddressInfo(inputAddress, provider) {
 
   // ERC-20, ERC-721 or ERC-1155 contracts?
   if (results.address && results.type == "contract") {
-    const TOKENS_ABI = [
+    const TOKEN_ABI = [
       "function name() public view returns (string)",
       "function symbol() public view returns (string)",
       "function decimals() public view returns (uint8)",
       "function totalSupply() public view returns (uint256)",
       "function supportsInterface(bytes4 interfaceID) external view returns (bool)",
     ];
-    const tokensContract = new ethers.Contract(results.address, TOKENS_ABI, provider);
+    const tokenContract = new ethers.Contract(results.address, TOKEN_ABI, provider);
     try {
-      results.name = await tokensContract.name();
+      results.name = await tokenContract.name();
       console.log(now() + " functions.js:getAddressInfo - results.name: " + results.name);
     } catch (e) {
-      console.error(now() + " functions.js:getAddressInfo - ERROR tokensContract.name(): " + e.message);
+      console.error(now() + " functions.js:getAddressInfo - ERROR tokenContract.name(): " + e.message);
     }
     try {
-      results.decimals = parseInt(await tokensContract.decimals());
+      results.decimals = parseInt(await tokenContract.decimals());
       console.log(now() + " functions.js:getAddressInfo - results.decimals: " + results.decimals);
     } catch (e) {
-      console.error(now() + " functions.js:getAddressInfo - ERROR tokensContract.decimals(): " + e.message);
+      console.error(now() + " functions.js:getAddressInfo - ERROR tokenContract.decimals(): " + e.message);
     }
     if (results.name && results.decimals) {
       results.type = "erc20";
       // results.abi = JSON.stringify(ERC20ABI);
       try {
-        results.symbol = await tokensContract.symbol();
+        results.symbol = await tokenContract.symbol();
         console.log(now() + " functions.js:getAddressInfo - results.symbol: " + results.symbol);
       } catch (e) {
-        console.error(now() + " functions.js:getAddressInfo - ERROR tokensContract.symbol(): " + e.message);
+        console.error(now() + " functions.js:getAddressInfo - ERROR tokenContract.symbol(): " + e.message);
       }
       try {
-        results.totalSupply = ethers.BigNumber.from(await tokensContract.totalSupply()).toString();
+        results.totalSupply = ethers.BigNumber.from(await tokenContract.totalSupply()).toString();
         console.log(now() + " functions.js:getAddressInfo - results.totalSupply: " + results.totalSupply);
       } catch (e) {
-        console.error(now() + " functions.js:getAddressInfo - ERROR tokensContract.totalSupply(): " + e.message);
+        console.error(now() + " functions.js:getAddressInfo - ERROR tokenContract.totalSupply(): " + e.message);
       }
     }
     if (results.type == "contract") {
       try {
-        if (await tokensContract.supportsInterface(ERC721_INTERFACE)) {
+        if (await tokenContract.supportsInterface(ERC721_INTERFACE)) {
           results.type = "erc721";
           // results.abi = JSON.stringify(ERC721ABI);
         }
       } catch (e) {
-        console.error(now() + " functions.js:getAddressInfo - ERROR tokensContract.supportsInterface(ERC721_INTERFACE): " + e.message);
+        console.error(now() + " functions.js:getAddressInfo - ERROR tokenContract.supportsInterface(ERC721_INTERFACE): " + e.message);
       }
     }
     if (results.type == "contract") {
       try {
-        if (await tokensContract.supportsInterface(ERC1155_INTERFACE)) {
+        if (await tokenContract.supportsInterface(ERC1155_INTERFACE)) {
           results.type = "erc1155";
           // results.abi = JSON.stringify(ERC1155ABI);
         }
       } catch (e) {
-        console.error(now() + " functions.js:getAddressInfo - ERROR tokensContract.supportsInterface(ERC1155_INTERFACE): " + e.message);
+        console.error(now() + " functions.js:getAddressInfo - ERROR tokenContract.supportsInterface(ERC1155_INTERFACE): " + e.message);
       }
     }
   }
