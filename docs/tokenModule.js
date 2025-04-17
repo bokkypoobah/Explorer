@@ -91,6 +91,17 @@ const tokenModule = {
     },
     async syncTokenEvents(context, { inputAddress, forceUpdate }) {
 
+      async function processLogs(fromBlock, toBlock, logs) {
+        console.log(moment().format("HH:mm:ss") + " tokenModule - actions.syncTokenEvents.processLogs - fromBlock: " + fromBlock + ", toBlock: " + toBlock + ", logs.length: " + logs.length);
+        const records = logs.map(e => ({ chainId, ...e }));
+        console.log(moment().format("HH:mm:ss") + " tokenModule - actions.syncTokenEvents.processLogs - fromBlock: " + fromBlock + ", toBlock: " + toBlock + ", records: " + JSON.stringify(records, null, 2));
+        await db.tokenEvents.bulkAdd(records).then(function(lastKey) {
+          console.log(moment().format("HH:mm:ss") + " tokenModule - actions.syncTokenEvents.processLogs - bulkAdd lastKey: " + JSON.stringify(lastKey));
+          }).catch(Dexie.BulkError, function(e) {
+            console.log(moment().format("HH:mm:ss") + " tokenModule - actions.syncTokenEvents.processLogs - bulkAdd e: " + JSON.stringify(e.failures, null, 2));
+          });
+      }
+
       async function getTokenLogsFromRange(validatedAddress, fromBlock, toBlock) {
         console.log(moment().format("HH:mm:ss") + " tokenModule - actions.syncTokenEvents.getTokenLogsFromRange - fromBlock: " + fromBlock + ", toBlock: " + toBlock);
         try {
@@ -100,8 +111,8 @@ const tokenModule = {
             toBlock,
             topics: null,
           });
-          // await syncSafe_processSafeAndTokenLogs(section, fromBlock, toBlock, logs);
-          console.log(moment().format("HH:mm:ss") + " tokenModule - actions.syncTokenEvents.getTokenLogsFromRange - logs: " + JSON.stringify(logs, null, 2));
+          // console.log(moment().format("HH:mm:ss") + " tokenModule - actions.syncTokenEvents.getTokenLogsFromRange - logs: " + JSON.stringify(logs, null, 2));
+          await processLogs(fromBlock, toBlock, logs);
         } catch (e) {
           console.error(moment().format("HH:mm:ss") + " tokenModule - actions.syncTokenEvents.getTokenLogsFromRange - Error: " + e.message);
           const mid = parseInt((fromBlock + toBlock) / 2);

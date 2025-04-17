@@ -35,10 +35,11 @@ const store = new Vuex.Store({
       version: 1,
     },
     db: {
-      name: "explorer088c",
+      name: "explorer088d",
       version: 1,
       schemaDefinition: {
         blocks: '[chainId+number]',
+        tokenEvents: '[chainId+address+blockNumber+logIndex]',
         cache: '&objectName',
       },
     },
@@ -327,7 +328,7 @@ const app = Vue.createApp({
             this.searchAddress.displayDialog = true;
           } else {
             this.$router.push({ name: 'AddressAddress', params: { inputAddress: searchString } });
-            store.dispatch('address/loadAddress', { inputAddress: searchString, forceUpdate: false });            
+            store.dispatch('address/loadAddress', { inputAddress: searchString, forceUpdate: false });
           }
         } else {
           console.log(now() + " index.js - methods.searchDebounced - NAME searchString: " + JSON.stringify(searchString));
