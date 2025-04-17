@@ -46,6 +46,20 @@ Click [IMPORT FROM ETHERSCAN] to import a list of EVM chains.
 
 <kbd><img src="images/SampleScreen15.png" width="800" /></kbd>
 
+#### Ethereum Mainnet Token
+
+Select the ERC-20 TURBO token at `0xA35923162C49cF95e6BF26623385eb431ad920D3`
+
+<kbd><img src="images/SampleScreen16.png" width="800" /></kbd>
+
+Click on the [Sync Token Events] button
+
+<kbd><img src="images/SampleScreen17.png" width="800" /></kbd>
+
+1,307,482 event logs retrieved from the web3 connection and stored in the local IndexedDB database in ~ 10 minutes. Only works on Ethereum Mainnet as L2s may have a small `provider.getLogs(...)` block range.
+
+<kbd><img src="images/SampleScreen18.png" width="800" /></kbd>
+
 <br />
 
 ---
