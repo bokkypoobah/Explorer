@@ -1,7 +1,30 @@
 const Token = {
   template: `
     <div>
+      <v-container fluid class="pa-1">
+        <v-toolbar density="compact" class="mt-1">
+          <h4 class="ml-2">Token</h4>
+          <render-address v-if="address" :address="address"></render-address>
+          <p class="ml-5 text-caption text--disabled">
+            {{ type }} {{ symbol }} '{{ name }}' {{ decimals }}
+          </p>
+          <v-spacer></v-spacer>
+          <v-btn @click="syncToken();" color="primary" icon>
+            <v-icon>mdi-refresh</v-icon>
+          </v-btn>
+          <v-spacer></v-spacer>
+          <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" right color="deep-purple-accent-4">
+            <v-tab prepend-icon="mdi-cash-multiple" text="Info" value="info" class="lowercase-btn"></v-tab>
+            <v-tab prepend-icon="mdi-text-long" text="Transfers" value="transfers" class="lowercase-btn"></v-tab>
+          </v-tabs>
+        </v-toolbar density="compact" class="mt-1">
+      </v-container fluid class="pa-1">
+
       Token WIP
+      <br />
+      address: {{ address }}
+      <br />
+      type: {{ type }}
       <!-- <v-card v-if="!inputAddress">
         <v-card-text>
           Enter address in the search field above
@@ -71,7 +94,7 @@ const Token = {
             </v-list>
           </v-menu>
           <v-spacer></v-spacer>
-          <v-btn @click="syncAddress();" color="primary" icon>
+          <v-btn @click="syncToken();" color="primary" icon>
             <v-icon>mdi-refresh</v-icon>
           </v-btn>
           <v-spacer></v-spacer>
@@ -91,31 +114,51 @@ const Token = {
   props: ['inputAddress'],
   data: function () {
     return {
+      initialised: false,
+      settings: {
+        tab: null,
+        version: 0,
+      },
     };
   },
   computed: {
     address() {
-      return store.getters['address/address'];
+      return store.getters['token/address'];
     },
     type() {
-      return store.getters['address/info'].type || null;
+      return store.getters['token/info'].type || null;
+    },
+    name() {
+      return store.getters['token/info'].name || null;
+    },
+    symbol() {
+      return store.getters['token/info'].symbol || null;
+    },
+    decimals() {
+      return store.getters['token/info'].decimals || null;
     },
     version() {
-      return store.getters['address/info'].version || null;
+      return store.getters['token/info'].version || null;
     },
     implementation() {
-      return store.getters['address/info'].implementation || null;
+      return store.getters['token/info'].implementation || null;
     },
     explorer() {
       return store.getters['explorer'];
     },
   },
   methods: {
-    syncAddress() {
-      console.log(now() + " Token - methods.syncAddress");
-      const address = store.getters["address/address"];
-      console.log(now() + " Token - methods.syncAddress - address: " + address);
-      store.dispatch('address/loadAddress', { inputAddress: address, forceUpdate: true });
+    syncToken() {
+      console.log(now() + " Token - methods.syncToken");
+      const address = store.getters["token/address"];
+      console.log(now() + " Token - methods.syncToken - address: " + address);
+      store.dispatch('token/loadToken', { inputAddress: address, forceUpdate: true });
+    },
+    saveSettings() {
+      // console.log(now() + " Token - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
+      if (this.initialised) {
+        localStorage.explorerTokenSettings = JSON.stringify(this.settings);
+      }
     },
     copyToClipboard(str) {
       navigator.clipboard.writeText(str);
@@ -126,6 +169,17 @@ const Token = {
 	},
   mounted() {
     console.log(now() + " Token - mounted - inputAddress: " + this.inputAddress);
+
+    if ('explorerTokenSettings' in localStorage) {
+      const tempSettings = JSON.parse(localStorage.explorerTokenSettings);
+      console.log(now() + " Token - mounted - tempSettings: " + JSON.stringify(tempSettings));
+      if ('version' in tempSettings && tempSettings.version == this.settings.version) {
+        this.settings = tempSettings;
+      }
+    }
+    this.initialised = true;
+    console.log(now() + " Block - mounted - this.settings: " + JSON.stringify(this.settings));
+
     const t = this;
     setTimeout(function() {
       store.dispatch('token/loadToken', { inputAddress: t.inputAddress, forceUpdate: false });
