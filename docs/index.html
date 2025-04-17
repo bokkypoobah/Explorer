@@ -61,6 +61,7 @@
     <script src="addressTokens.js"></script>
     <script src="addressTransactions.js"></script>
     <script src="addressEvents.js"></script>
+    <script src="token.js"></script>
 
     <script src="blocks.js"></script>
     <script src="blocksBrowse.js"></script>
@@ -147,6 +148,16 @@
                 </v-list-item>
                 <v-list-item disabled to="/address" prepend-icon="mdi-function" density="compact">
                   <v-list-item-title>Contract</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </v-btn>
+
+          <v-btn class="lowercase-btn" text>Tokens
+            <v-menu activator="parent">
+              <v-list density="compact">
+                <v-list-item to="/token" prepend-icon="mdi-cash-multiple" density="compact">
+                  <v-list-item-title>Token</v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>

@@ -102,6 +102,12 @@ const routes = [
     ],
   },
   {
+    path: '/token/:inputAddress?',
+    name: "Token",
+    component: Token,
+    props: true,
+  },
+  {
     path: '/name/:inputName?',
     name: "Name",
     component: Name,
