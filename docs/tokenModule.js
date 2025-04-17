@@ -2,7 +2,6 @@ const tokenModule = {
   namespaced: true,
   state: {
     info: {},
-    provider: null,
   },
   getters: {
     address: state => state.info.address || null,
@@ -54,7 +53,7 @@ const tokenModule = {
   },
   mutations: {
     setInfo(state, info) {
-      // console.log(now() + " tokenModule - mutations.setData - info: " + JSON.stringify(info));
+      // console.log(now() + " tokenModule - mutations.setInfo - info: " + JSON.stringify(info));
       state.info = info;
     },
   },
@@ -65,9 +64,7 @@ const tokenModule = {
       // if (!store.getters['web3'].connected || !window.ethereum) {
       //   error = "Not connected";
       // }
-      if (!this.provider) {
-        this.provider = new ethers.providers.Web3Provider(window.ethereum);
-      }
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
       const chainId = store.getters["chainId"];
       const dbInfo = store.getters["db"];
       const db = new Dexie(dbInfo.name);
@@ -79,7 +76,7 @@ const tokenModule = {
         info = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_address", {});
         // console.log(now() + " tokenModule - actions.loadToken - info: " + JSON.stringify(info));
         if (Object.keys(info).length == 0 || forceUpdate) {
-          info = await getAddressInfo(validatedAddress, this.provider);
+          info = await getAddressInfo(validatedAddress, provider);
           // console.log(now() + " tokenModule - actions.loadToken - info: " + JSON.stringify(info));
           await dbSaveCacheData(db, validatedAddress + "_" + chainId + "_address", info);
         }
@@ -93,7 +90,28 @@ const tokenModule = {
       db.close();
     },
     async syncTokenEvents(context, { inputAddress, forceUpdate }) {
+
+      async function getTokenLogsFromRange(validatedAddress, fromBlock, toBlock) {
+        console.log(moment().format("HH:mm:ss") + " tokenModule - actions.syncTokenEvents.getTokenLogsFromRange - fromBlock: " + fromBlock + ", toBlock: " + toBlock);
+        try {
+          const logs = await provider.getLogs({
+            address: validatedAddress,
+            fromBlock,
+            toBlock,
+            topics: null,
+          });
+          // await syncSafe_processSafeAndTokenLogs(section, fromBlock, toBlock, logs);
+          console.log(moment().format("HH:mm:ss") + " tokenModule - actions.syncTokenEvents.getTokenLogsFromRange - logs: " + JSON.stringify(logs, null, 2));
+        } catch (e) {
+          console.error(moment().format("HH:mm:ss") + " tokenModule - actions.syncTokenEvents.getTokenLogsFromRange - Error: " + e.message);
+          const mid = parseInt((fromBlock + toBlock) / 2);
+          await getTokenLogsFromRange(validatedAddress, fromBlock, mid);
+          await getTokenLogsFromRange(validatedAddress, parseInt(mid) + 1, toBlock);
+        }
+      }
+
       console.log(now() + " tokenModule - actions.syncTokenEvents - inputAddress: " + inputAddress + ", forceUpdate: " + forceUpdate);
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
       const chainId = store.getters["chainId"];
       const dbInfo = store.getters["db"];
       const db = new Dexie(dbInfo.name);
@@ -102,7 +120,9 @@ const tokenModule = {
       const validatedAddress = validateAddress(inputAddress);
       let info = {};
       if (validatedAddress) {
-        console.log(now() + " tokenModule - actions.syncTokenEvents - doIt");
+        const block = await provider.getBlock();
+        const latestBlockNumber = block && block.number || null;
+        await getTokenLogsFromRange(validatedAddress, 0, latestBlockNumber);
       }
       db.close();
     },
