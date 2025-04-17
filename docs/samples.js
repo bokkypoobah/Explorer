@@ -2,7 +2,7 @@ const SAMPLES = {
   // ETH Mainnet
   "1": [
     { type: "contract", address: "0x9fC3dc011b461664c835F2527fffb1169b3C213e", info: "EF: DeFi Multisig - Safe v1.4.1" },
-    { type: "contract", address: "0xa35923162c49cf95e6bf26623385eb431ad920d3", info: "ERC-20: TURBO" },
+    { type: "contract", address: "0xA35923162C49cF95e6BF26623385eb431ad920D3", info: "ERC-20: TURBO" },
     { type: "contract", address: "0x2823589Ae095D99bD64dEeA80B4690313e2fB519", info: "ERC-20: WEENUS" },
     { type: "contract", address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", info: "ERC-20: WETH" },
     { type: "contract", address: "0x42069abfe407c60cf4ae4112bedead391dba1cdb", info: "ERC-721: CryptoDickButts" },
