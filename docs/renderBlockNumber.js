@@ -2,7 +2,7 @@ const RenderBlockNumber = {
   template: `
     <v-menu location="bottom">
       <template v-slot:activator="{ props }">
-        <v-btn v-if="block != null" color="primary" dark v-bind="props" variant="text" class="ma-0 px-2 lowercase-btn" style="min-width: 0px;">
+        <v-btn v-if="block != null" color="primary" dark v-bind="props" variant="text" :class="noXPadding ? 'ma-0 px-0 lowercase-btn' : 'ma-0 px-2 lowercase-btn'" style="min-width: 0px;">
           {{ commify0(block) }}
         </v-btn>
       </template>
@@ -34,6 +34,10 @@ const RenderBlockNumber = {
       type: Number,
     },
     suppressView: {
+      type: Boolean,
+      default: false,
+    },
+    noXPadding: {
       type: Boolean,
       default: false,
     },

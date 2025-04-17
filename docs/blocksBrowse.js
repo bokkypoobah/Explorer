@@ -36,13 +36,13 @@ const BlocksBrowse = {
             </tr>
           </template>
           <template v-slot:item.number="{ item }">
-            <render-block-number v-if="item && item.number != null" :block="item.number"></render-block-number>
+            <render-block-number v-if="item && item.number != null" :block="item.number" noXPadding></render-block-number>
           </template>
           <template v-slot:item.timestamp="{ item }">
             {{ formatTimestamp(item.timestamp) }}
           </template>
           <template v-slot:item.miner="{ item }">
-            <render-address :address="item.miner"></render-address>
+            <render-address :address="item.miner" noXPadding></render-address>
           </template>
           <template v-slot:item.txCount="{ item }">
             {{ item.txCount }}

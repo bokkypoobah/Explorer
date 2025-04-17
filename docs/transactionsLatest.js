@@ -4,43 +4,16 @@ const TransactionsLatest = {
       <v-container fluid class="pa-1">
         <v-data-table :items="transactionsList" :headers="transactionsHeaders" @click:row="handleTransactionsClick" density="comfortable" style="max-width: 100%;">
           <template v-slot:item.blockNumber="{ item }">
-            <render-block-number v-if="item && item.blockNumber" :block="item.blockNumber"></render-block-number>
+            <render-block-number v-if="item && item.blockNumber" :block="item.blockNumber" noXPadding></render-block-number>
           </template>
           <template v-slot:item.hash="{ item }">
-            <v-menu location="bottom">
-              <template v-slot:activator="{ props }">
-                <v-btn color="primary" dark v-bind="props" variant="text" class="ma-0 pa-0 lowercase-btn">
-                  {{ item.hash.substring(0, 20) + "..." }}
-                </v-btn>
-              </template>
-              <v-list>
-                <v-list-subheader>{{ item.hash }}</v-list-subheader>
-                <v-list-item :href="'#/transaction/' + item.hash">
-                  <template v-slot:prepend>
-                    <v-icon>mdi-arrow-right-bold-outline</v-icon>
-                  </template>
-                  <v-list-item-title>View</v-list-item-title>
-                </v-list-item>
-                <v-list-item @click="copyToClipboard(item.hash);">
-                  <template v-slot:prepend>
-                    <v-icon>mdi-content-copy</v-icon>
-                  </template>
-                  <v-list-item-title>Copy transaction hash to clipboard</v-list-item-title>
-                </v-list-item>
-                <v-list-item :href="explorer + 'tx/' + item.hash" target="_blank">
-                  <template v-slot:prepend>
-                    <v-icon>mdi-link-variant</v-icon>
-                  </template>
-                  <v-list-item-title>View in explorer</v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
+            <render-tx-hash v-if="item && item.hash" :txHash="item.hash" shortTxHash noXPadding></render-tx-hash>
           </template>
           <template v-slot:item.from="{ item }">
-            <render-address v-if="item && item.from" :address="item.from" shortAddress></render-address>
+            <render-address v-if="item && item.from" :address="item.from" shortAddress noXPadding></render-address>
           </template>
           <template v-slot:item.to="{ item }">
-            <render-address v-if="item && item.to" :address="item.to" shortAddress></render-address>
+            <render-address v-if="item && item.to" :address="item.to" shortAddress noXPadding></render-address>
           </template>
           <template v-slot:item.value="{ item }">
             {{ formatETH(item.value) }}

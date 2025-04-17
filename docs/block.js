@@ -134,13 +134,13 @@ const Block = {
           <v-tabs-window-item value="transactions">
             <v-data-table :items="transactions" @click:row="handleClick" density="comfortable">
               <template v-slot:item.txHash="{ item }">
-                <render-tx-hash v-if="item && item.txHash" :txHash="item.txHash" shortTxHash></render-tx-hash>
+                <render-tx-hash v-if="item && item.txHash" :txHash="item.txHash" shortTxHash noXPadding></render-tx-hash>
               </template>
               <template v-slot:item.from="{ item }">
-                <render-address v-if="item && item.from" :address="item.from" shortAddress></render-address>
+                <render-address v-if="item && item.from" :address="item.from" shortAddress noXPadding></render-address>
               </template>
               <template v-slot:item.to="{ item }">
-                <render-address v-if="item && item.to" :address="item.to" shortAddress></render-address>
+                <render-address v-if="item && item.to" :address="item.to" shortAddress noXPadding></render-address>
               </template>
             </v-data-table>
           </v-tabs-window-item>
