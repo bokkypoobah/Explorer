@@ -2,12 +2,12 @@ const Token = {
   template: `
     <div>
       Token WIP
-      <v-card v-if="!inputAddress">
+      <!-- <v-card v-if="!inputAddress">
         <v-card-text>
           Enter address in the search field above
         </v-card-text>
-      </v-card>
-      <v-container fluid class="pa-1">
+      </v-card> -->
+      <!-- <v-container fluid class="pa-1">
         <v-toolbar v-if="inputAddress && address" density="compact" class="mt-1">
           <v-menu location="bottom">
             <template v-slot:activator="{ props }">
@@ -85,7 +85,7 @@ const Token = {
           </v-tabs>
         </v-toolbar>
         <router-view v-if="inputAddress && address" />
-      </v-container>
+      </v-container> -->
     </div>
   `,
   props: ['inputAddress'],
@@ -126,10 +126,10 @@ const Token = {
 	},
   mounted() {
     console.log(now() + " Token - mounted - inputAddress: " + this.inputAddress);
-    // const t = this;
-    // setTimeout(function() {
-    //   store.dispatch('address/loadAddress', { inputAddress: t.inputAddress, forceUpdate: false });
-    // }, 1000);
+    const t = this;
+    setTimeout(function() {
+      store.dispatch('token/loadToken', { inputAddress: t.inputAddress, forceUpdate: false });
+    }, 1000);
 	},
   unmounted() {
     console.log(now() + " Token - unmounted");

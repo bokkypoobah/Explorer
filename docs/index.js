@@ -276,13 +276,6 @@ const app = Vue.createApp({
               console.error(now() + " index.js:searchDebounced - provider.getCode: " + e.message);
             }
             if (!this.searchAddress.type) {
-              const TOKEN_ABI = [
-                "function name() public view returns (string)",
-                "function symbol() public view returns (string)",
-                "function decimals() public view returns (uint8)",
-                "function totalSupply() public view returns (uint256)",
-                "function supportsInterface(bytes4 interfaceID) external view returns (bool)",
-              ];
               const tokenContract = new ethers.Contract(searchString, TOKEN_ABI, provider);
               try {
                 this.searchAddress.name = await tokenContract.name();
@@ -332,10 +325,10 @@ const app = Vue.createApp({
           }
           if (["erc20", "erc721", "erc1155"].includes(this.searchAddress.type)) {
             this.searchAddress.displayDialog = true;
+          } else {
+            this.$router.push({ name: 'AddressAddress', params: { inputAddress: searchString } });
+            store.dispatch('address/loadAddress', { inputAddress: searchString, forceUpdate: false });            
           }
-          // TODO
-          this.$router.push({ name: 'AddressAddress', params: { inputAddress: searchString } });
-          store.dispatch('address/loadAddress', { inputAddress: searchString, forceUpdate: false });
         } else {
           console.log(now() + " index.js - methods.searchDebounced - NAME searchString: " + JSON.stringify(searchString));
           const inputName = /\.eth$/i.test(searchString) ? searchString.toLowerCase() : (searchString.toLowerCase() + ".eth");

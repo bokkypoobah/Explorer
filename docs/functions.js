@@ -6,6 +6,14 @@ const ERC1155_INTERFACE = "0xd9b67a26";
 const ERC1155METADATA_INTERFACE = "0x0e89341c";
 const ERC1155TOKENRECEIVER_INTERFACE = "0x4e2312e0";
 
+const TOKEN_ABI = [
+  "function name() public view returns (string)",
+  "function symbol() public view returns (string)",
+  "function decimals() public view returns (uint8)",
+  "function totalSupply() public view returns (uint256)",
+  "function supportsInterface(bytes4 interfaceID) external view returns (bool)",
+];
+
 function validateAddress(address) {
   if (address) {
     try {
@@ -128,13 +136,6 @@ async function getAddressInfo(inputAddress, provider) {
 
   // ERC-20, ERC-721 or ERC-1155 contracts?
   if (results.address && results.type == "contract") {
-    const TOKEN_ABI = [
-      "function name() public view returns (string)",
-      "function symbol() public view returns (string)",
-      "function decimals() public view returns (uint8)",
-      "function totalSupply() public view returns (uint256)",
-      "function supportsInterface(bytes4 interfaceID) external view returns (bool)",
-    ];
     const tokenContract = new ethers.Contract(results.address, TOKEN_ABI, provider);
     try {
       results.name = await tokenContract.name();
