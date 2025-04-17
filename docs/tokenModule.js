@@ -2,6 +2,7 @@ const tokenModule = {
   namespaced: true,
   state: {
     info: {},
+    provider: null,
   },
   getters: {
     address: state => state.info.address || null,
@@ -64,7 +65,9 @@ const tokenModule = {
       // if (!store.getters['web3'].connected || !window.ethereum) {
       //   error = "Not connected";
       // }
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      if (!this.provider) {
+        this.provider = new ethers.providers.Web3Provider(window.ethereum);
+      }
       const chainId = store.getters["chainId"];
       const dbInfo = store.getters["db"];
       // console.log(now() + " tokenModule - actions.loadToken - dbInfo: " + JSON.stringify(dbInfo));
@@ -77,7 +80,7 @@ const tokenModule = {
         info = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_address", {});
         // console.log(now() + " tokenModule - actions.loadToken - info: " + JSON.stringify(info));
         if (Object.keys(info).length == 0 || forceUpdate) {
-          info = await getAddressInfo(validatedAddress, provider);
+          info = await getAddressInfo(validatedAddress, this.provider);
           // console.log(now() + " tokenModule - actions.loadToken - info: " + JSON.stringify(info));
           await dbSaveCacheData(db, validatedAddress + "_" + chainId + "_address", info);
         }
@@ -87,9 +90,11 @@ const tokenModule = {
           store.dispatch("addresses/addAddress", { address: validatedAddress, type: info.type, version: info.version, ensName: info.ensName });
         }
       }
-
       context.commit('setInfo', info);
       db.close();
+    },
+    async syncTokenEvents(context, { inputAddress, forceUpdate }) {
+      console.log(now() + " tokenModule - actions.syncTokenEvents - inputAddress: " + inputAddress + ", forceUpdate: " + forceUpdate);
     },
   },
 };

@@ -6,11 +6,14 @@ const Token = {
           <h4 class="ml-2">Token</h4>
           <render-address v-if="address" :address="address"></render-address>
           <p class="ml-5 text-caption text--disabled">
-            {{ type }} {{ symbol }} '{{ name }}' {{ decimals }}
+            {{ type && type.replace(/erc/, "ERC-") || "" }} {{ symbol }} {{ name && ("'" + name + "'") || "" }} {{ decimals }}
           </p>
           <v-spacer></v-spacer>
-          <v-btn @click="syncToken();" color="primary" icon>
+          <v-btn @click="syncToken();" color="primary" icon v-tooltip="'Sync Token Info'">
             <v-icon>mdi-refresh</v-icon>
+          </v-btn>
+          <v-btn @click="syncTokenEvents();" color="primary" icon v-tooltip="'Sync Token Events'">
+            <v-icon>mdi-download-multiple</v-icon>
           </v-btn>
           <v-spacer></v-spacer>
           <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" right color="deep-purple-accent-4">
@@ -153,6 +156,12 @@ const Token = {
       const address = store.getters["token/address"];
       console.log(now() + " Token - methods.syncToken - address: " + address);
       store.dispatch('token/loadToken', { inputAddress: address, forceUpdate: true });
+    },
+    syncTokenEvents() {
+      console.log(now() + " Token - methods.syncTokenEvents");
+      const address = store.getters["token/address"];
+      console.log(now() + " Token - methods.syncTokenEvents - address: " + address);
+      store.dispatch('token/syncTokenEvents', { inputAddress: address, forceUpdate: true });
     },
     saveSettings() {
       // console.log(now() + " Token - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
