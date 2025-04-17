@@ -21,13 +21,77 @@ const Token = {
             <v-tab prepend-icon="mdi-text-long" text="Transfers" value="transfers" class="lowercase-btn"></v-tab>
           </v-tabs>
         </v-toolbar density="compact" class="mt-1">
+        <v-tabs-window v-model="settings.tab">
+          <v-tabs-window-item value="info">
+            <v-card>
+              <v-card-text>
+                <v-row no-gutters dense>
+                  <v-col cols="2" align="right">
+                    <p class="my-2">Address:</p>
+                  </v-col>
+                  <v-col cols="6" align="left">
+                    <render-address v-if="address" :address="address"></render-address>
+                  </v-col>
+                </v-row>
+                <v-row no-gutters dense>
+                  <v-col cols="2" align="right">
+                    <p class="my-2">Type:</p>
+                  </v-col>
+                  <v-col cols="6" align="left">
+                    <v-btn v-if="type" variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
+                      {{ type && type.replace(/erc/, "ERC-") || "" }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+                <v-row v-if="type == 'erc20'" no-gutters dense>
+                  <v-col cols="2" align="right">
+                    <p class="my-2">Symbol:</p>
+                  </v-col>
+                  <v-col cols="6" align="left">
+                    <v-btn v-if="symbol" variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
+                      {{ symbol }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+                <v-row no-gutters dense>
+                  <v-col cols="2" align="right">
+                    <p class="my-2">Name:</p>
+                  </v-col>
+                  <v-col cols="6" align="left">
+                    <v-btn v-if="name" variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
+                      {{ name }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+                <v-row v-if="type == 'erc20'" no-gutters dense>
+                  <v-col cols="2" align="right">
+                    <p class="my-2">Decimals:</p>
+                  </v-col>
+                  <v-col cols="6" align="left">
+                    <v-btn v-if="decimals" variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
+                      {{ decimals }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+                <v-row v-if="type == 'erc20'" no-gutters dense>
+                  <v-col cols="2" align="right">
+                    <p class="my-2">Total Supply:</p>
+                  </v-col>
+                  <v-col cols="6" align="left">
+                    <v-btn v-if="totalSupply" variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
+                      {{ totalSupply && formatUnits(totalSupply) || "" }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </v-card-text>
+            </v-card>
+          </v-tabs-window-item>
+          <v-tabs-window-item value="transfers">
+            Transfers
+          </v-tabs-window-item>
+        </v-tabs-window>
       </v-container fluid class="pa-1">
 
-      Token WIP
-      <br />
-      address: {{ address }}
-      <br />
-      type: {{ type }}
       <!-- <v-card v-if="!inputAddress">
         <v-card-text>
           Enter address in the search field above
@@ -140,6 +204,9 @@ const Token = {
     decimals() {
       return store.getters['token/info'].decimals || null;
     },
+    totalSupply() {
+      return store.getters['token/info'].totalSupply || null;
+    },
     version() {
       return store.getters['token/info'].version || null;
     },
@@ -162,6 +229,12 @@ const Token = {
       const address = store.getters["token/address"];
       console.log(now() + " Token - methods.syncTokenEvents - address: " + address);
       store.dispatch('token/syncTokenEvents', { inputAddress: address, forceUpdate: true });
+    },
+    formatUnits(e, decimals) {
+      if (e) {
+        return ethers.utils.formatUnits(e, decimals).replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+      }
+      return null;
     },
     saveSettings() {
       // console.log(now() + " Token - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
