@@ -311,16 +311,40 @@ const tokenModule = {
         const BATCH_SIZE = 100000;
         let rows = 0;
         let done = false;
+        const balances = {};
+        const approvals = {};
+        // const approvalForAlls = {};
         do {
           const data = await db.tokenEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, validatedAddress, Dexie.minKey, Dexie.minKey],[chainId, validatedAddress, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(BATCH_SIZE).toArray();
           if (data.length > 0) {
             // console.log(now() + " tokenModule - actions.collateEventData - data[0]: " + JSON.stringify(data[0], null, 2));
+            if (context.state.info.type == "erc20") {
+              for (const item of data) {
+                const info = item.info;
+                if (info.event == "Transfer") {
+                  // console.log("erc20 Transfer: " + JSON.stringify(info));
+                  if (info.from != ADDRESS0) {
+                    balances[info.from] = ethers.BigNumber.from(balances[info.from] || "0").sub(info.tokens).toString();
+                  }
+                  balances[info.to] = ethers.BigNumber.from(balances[info.to] || "0").add(info.tokens).toString();
+                } else if (info.event == "Approval") {
+                  // console.log("erc20 Approval: " + JSON.stringify(info));
+                  if (!(info.owner in approvals)) {
+                    approvals[info.owner] = {};
+                  }
+                  approvals[info.owner][info.spender] = info.tokens;
+                }
+              }
+            }
           }
           rows = parseInt(rows) + data.length;
           console.log(now() + " tokenModule - actions.collateEventData - rows: " + rows);
           done = data.length < BATCH_SIZE;
         } while (!done);
         console.log(now() + " tokenModule - actions.collateEventData - rows: " + rows);
+        console.log(now() + " tokenModule - actions.collateEventData - balances: " + JSON.stringify(balances, null, 2));
+        console.log(now() + " tokenModule - actions.collateEventData - approvals: " + JSON.stringify(approvals, null, 2));
+        // console.log(now() + " tokenModule - actions.collateEventData - approvalForAlls: " + JSON.stringify(approvalForAlls, null, 2));
         context.commit('setNumberOfEvents', rows);
       }
       db.close();
