@@ -201,7 +201,12 @@ const Token = {
               </template>
               <template v-slot:item.value1="{ item }">
                 <span v-if="type == 'erc20'">
-                  {{ formatUnits(item.info.tokens, decimals) }}
+                  <span v-if="item.info.tokens.toString().length > 40" v-tooltip="formatUnits(item.info.tokens, decimals)">
+                    &infin;
+                  </span>
+                  <span v-else>
+                    {{ formatUnits(item.info.tokens, decimals) }}
+                  </span>
                 </span>
                 <span v-else-if="type == 'erc721'">
                   <span v-if="item.info.event == 'Transfer'">
