@@ -454,7 +454,8 @@ const Token = {
     },
 
     async loadItems ({ page, itemsPerPage, sortBy }) {
-      console.log(now() + " Token - methods.loadItems - page: " + page + ", itemsPerPage: " + itemsPerPage + ", sortBy: " + JSON.stringify(sortBy));
+      const sort = !sortBy || sortBy.length == 0 || (sortBy[0].key == "blockNumber" && sortBy[0].order == "desc") ? "desc" : "asc";
+      console.log(now() + " Token - methods.loadItems - page: " + page + ", itemsPerPage: " + itemsPerPage + ", sortBy: " + JSON.stringify(sortBy) + ", sort: " + sort);
       const dbInfo = store.getters["db"];
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
@@ -463,7 +464,12 @@ const Token = {
       if (address) {
         const chainId = store.getters["chainId"];
         const row = (page - 1) * itemsPerPage;
-        const data = await db.tokenEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, address, Dexie.minKey, Dexie.minKey],[chainId, address, Dexie.maxKey, Dexie.maxKey]).offset(row).limit(itemsPerPage).toArray();
+        let data;
+        if (sort == "asc") {
+          data = await db.tokenEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, address, Dexie.minKey, Dexie.minKey],[chainId, address, Dexie.maxKey, Dexie.maxKey]).offset(row).limit(itemsPerPage).toArray();
+        } else {
+          data = await db.tokenEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, address, Dexie.minKey, Dexie.minKey],[chainId, address, Dexie.maxKey, Dexie.maxKey]).reverse().offset(row).limit(itemsPerPage).toArray();
+        }
         this.items = data;
       }
       db.close();
