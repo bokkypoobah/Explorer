@@ -266,10 +266,11 @@ const app = Vue.createApp({
           this.searchAddress.type = null;
           this.searchAddress.name = null;
           this.searchAddress.decimals = null;
-          if (validateAddress(searchString) && window.ethereum) {
+          const validatedAddress = validateAddress(searchString);
+          if (validatedAddress && window.ethereum) {
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             try {
-              const code = await provider.getCode(searchString);
+              const code = await provider.getCode(validatedAddress);
               if (code == "0x") {
                 this.searchAddress.type = "eoa";
               }
@@ -277,7 +278,7 @@ const app = Vue.createApp({
               console.error(now() + " index.js:searchDebounced - provider.getCode: " + e.message);
             }
             if (!this.searchAddress.type) {
-              const tokenContract = new ethers.Contract(searchString, TOKEN_ABI, provider);
+              const tokenContract = new ethers.Contract(validatedAddress, TOKEN_ABI, provider);
               try {
                 this.searchAddress.name = await tokenContract.name();
                 console.log(now() + " index.js:searchDebounced - this.searchAddress.name: " + this.searchAddress.name);
@@ -327,8 +328,8 @@ const app = Vue.createApp({
           if (["erc20", "erc721", "erc1155"].includes(this.searchAddress.type)) {
             this.searchAddress.displayDialog = true;
           } else {
-            this.$router.push({ name: 'AddressAddress', params: { inputAddress: searchString } });
-            store.dispatch('address/loadAddress', { inputAddress: searchString, forceUpdate: false });
+            this.$router.push({ name: 'AddressAddress', params: { inputAddress: validatedAddress } });
+            store.dispatch('address/loadAddress', { inputAddress: validatedAddress, forceUpdate: false });
           }
         } else {
           console.log(now() + " index.js - methods.searchDebounced - NAME searchString: " + JSON.stringify(searchString));

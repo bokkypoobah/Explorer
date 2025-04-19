@@ -306,20 +306,23 @@ const tokenModule = {
       // const latest = await db.tokenEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, address, Dexie.minKey, Dexie.minKey],[chainId, address, Dexie.maxKey, Dexie.maxKey]).last();
       // console.log(now() + " tokenModule - actions.collateEventData - latest: " + JSON.stringify(latest, null, 2));
 
-      const BATCH_SIZE = 100000;
-      let rows = 0;
-      let done = false;
-      do {
-        const data = await db.tokenEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, address, Dexie.minKey, Dexie.minKey],[chainId, address, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(BATCH_SIZE).toArray();
-        if (data.length > 0) {
-          // console.log(now() + " tokenModule - actions.collateEventData - data[0]: " + JSON.stringify(data[0], null, 2));
-        }
-        rows = parseInt(rows) + data.length;
+      const validatedAddress = validateAddress(address);
+      if (validatedAddress) {
+        const BATCH_SIZE = 100000;
+        let rows = 0;
+        let done = false;
+        do {
+          const data = await db.tokenEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, validatedAddress, Dexie.minKey, Dexie.minKey],[chainId, validatedAddress, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(BATCH_SIZE).toArray();
+          if (data.length > 0) {
+            // console.log(now() + " tokenModule - actions.collateEventData - data[0]: " + JSON.stringify(data[0], null, 2));
+          }
+          rows = parseInt(rows) + data.length;
+          console.log(now() + " tokenModule - actions.collateEventData - rows: " + rows);
+          done = data.length < BATCH_SIZE;
+        } while (!done);
         console.log(now() + " tokenModule - actions.collateEventData - rows: " + rows);
-        done = data.length < BATCH_SIZE;
-      } while (!done);
-      console.log(now() + " tokenModule - actions.collateEventData - rows: " + rows);
-      context.commit('setNumberOfEvents', rows);
+        context.commit('setNumberOfEvents', rows);
+      }
       db.close();
     },
   },
