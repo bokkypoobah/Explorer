@@ -312,7 +312,7 @@ const tokenModule = {
         let rows = 0;
         let done = false;
         const balances = {};
-        const owners = {};
+        const tokens = {};
         const approvals = {};
         const approvalForAlls = {};
         do {
@@ -341,7 +341,7 @@ const tokenModule = {
                 const info = item.info;
                 if (info.event == "Transfer") {
                   // console.log("erc721 Transfer: " + JSON.stringify(info));
-                  owners[info.tokenId] = info.to;
+                  tokens[info.tokenId] = info.to;
                 } else if (info.event == "Approval") {
                   // console.log("erc721 Approval: " + JSON.stringify(info));
                   if (info.approved != ADDRESS0) {
@@ -367,6 +367,49 @@ const tokenModule = {
                   approvalForAlls[info.owner][info.operator] = info.approved;
                 }
               }
+            } else if (context.state.info.type == "erc1155") {
+              for (const item of data) {
+                const info = item.info;
+                if (info.event == "TransferSingle") {
+                  // console.log("erc1155 TransferSingle: " + JSON.stringify(info));
+                  if (!(info.tokenId in tokens)) {
+                    tokens[info.tokenId] = {};
+                  }
+                  if (info.from in tokens[info.tokenId]) {
+                    tokens[info.tokenId][info.from] = ethers.BigNumber.from(tokens[info.tokenId][info.from]).sub(info.value).toString();
+                    if (tokens[info.tokenId][info.from] == "0") {
+                      delete tokens[info.tokenId][info.from];
+                    }
+                  }
+                  if (!(info.to in tokens[info.tokenId])) {
+                    tokens[info.tokenId][info.to] = "0";
+                  }
+                  tokens[info.tokenId][info.to] = ethers.BigNumber.from(tokens[info.tokenId][info.to]).add(info.value).toString();
+                } else if (info.event == "TransferBatch") {
+                  // console.log("erc1155 TransferBatch: " + JSON.stringify(info));
+                  for (const [index, tokenId] of info.tokenIds.entries()) {
+                    if (!(tokenId in tokens)) {
+                      tokens[tokenId] = {};
+                    }
+                    if (info.from in tokens[tokenId]) {
+                      tokens[tokenId][info.from] = ethers.BigNumber.from(tokens[tokenId][info.from]).sub(info.values[index]).toString();
+                      if (tokens[tokenId][info.from] == "0") {
+                        delete tokens[tokenId][info.from];
+                      }
+                    }
+                    if (!(info.to in tokens[tokenId])) {
+                      tokens[tokenId][info.to] = "0";
+                    }
+                    tokens[tokenId][info.to] = ethers.BigNumber.from(tokens[tokenId][info.to]).add(info.values[index]).toString();
+                  }
+                } else if (info.event == "ApprovalForAll") {
+                  // console.log("erc1155 ApprovalForAll: " + JSON.stringify(info));
+                  if (!(info.owner in approvalForAlls)) {
+                    approvalForAlls[info.owner] = {};
+                  }
+                  approvalForAlls[info.owner][info.operator] = info.approved;
+                }
+              }
             }
           }
           rows = parseInt(rows) + data.length;
@@ -375,7 +418,7 @@ const tokenModule = {
         } while (!done);
         console.log(now() + " tokenModule - actions.collateEventData - rows: " + rows);
         console.log(now() + " tokenModule - actions.collateEventData - balances: " + JSON.stringify(balances, null, 2));
-        console.log(now() + " tokenModule - actions.collateEventData - owners: " + JSON.stringify(owners, null, 2));
+        console.log(now() + " tokenModule - actions.collateEventData - tokens: " + JSON.stringify(tokens, null, 2));
         console.log(now() + " tokenModule - actions.collateEventData - approvals: " + JSON.stringify(approvals, null, 2));
         console.log(now() + " tokenModule - actions.collateEventData - approvalForAlls: " + JSON.stringify(approvalForAlls, null, 2));
         context.commit('setNumberOfEvents', rows);
