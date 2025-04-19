@@ -21,8 +21,9 @@ const Token = {
           <v-progress-circular v-if="sync.info != null" color="primary" :model-value="sync.total ? (parseInt(sync.completed * 100 / sync.total)) : 0" :size="30" :width="6" v-tooltip="sync.info + ': ' + commify0(sync.completed) + ' of ' + commify0(sync.total)"></v-progress-circular>
           <v-spacer></v-spacer>
           <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" right color="deep-purple-accent-4">
-            <v-tab prepend-icon="mdi-cash-multiple" text="Info" value="info" class="lowercase-btn"></v-tab>
-            <v-tab prepend-icon="mdi-text-long" text="Events" value="events" class="lowercase-btn"></v-tab>
+            <v-tab prepend-icon="mdi-text-long" text="Info" value="info" class="lowercase-btn"></v-tab>
+            <v-tab prepend-icon="mdi-cash-multiple" text="Balances" value="balances" class="lowercase-btn"></v-tab>
+            <v-tab prepend-icon="mdi-log" text="Events" value="events" class="lowercase-btn"></v-tab>
           </v-tabs>
         </v-toolbar density="compact" class="mt-1">
         <v-tabs-window v-model="settings.tab">
@@ -101,8 +102,6 @@ const Token = {
             </v-card>
           </v-tabs-window-item>
           <v-tabs-window-item value="events">
-            Events
-
             <!-- <v-data-table-server
               v-model:items-per-page="itemsPerPage"
               :items-per-page-options="itemsPerPageOptions"
@@ -116,7 +115,6 @@ const Token = {
               v-model:page="currentPage"
               density="comfortable"
             > -->
-            {{ numberOfEvents }}
             <v-data-table-server
               v-if="address"
               :items-length="numberOfEvents || 0"
