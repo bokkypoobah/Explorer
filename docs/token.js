@@ -130,7 +130,9 @@ const Token = {
                 <render-tx-hash :txHash="item.txHash" shortTxHash noXPadding></render-tx-hash>
               </template>
               <template v-slot:item.event="{ item }">
-                {{ item.info.event }}
+                <v-btn variant="text" class="lowercase-btn ma-0 px-0">
+                  {{ item.info.event }}
+                </v-btn>
               </template>
               <template v-slot:item.address1="{ item }">
                 <span v-if="type == 'erc20'">
@@ -142,7 +144,15 @@ const Token = {
                   </span>
                 </span>
                 <span v-else-if="type == 'erc721'">
-                  ERC-721
+                  <span v-if="item.info.event == 'Transfer'">
+                    <render-address :address="item.info.from" shortAddress noXPadding></render-address>
+                  </span>
+                  <span v-else-if="item.info.event == 'Approval'">
+                    <render-address :address="item.info.owner" shortAddress noXPadding></render-address>
+                  </span>
+                  <span v-else>
+                    <render-address :address="item.info.owner" shortAddress noXPadding></render-address>
+                  </span>
                 </span>
                 <span v-else>
                   ERC-1155
@@ -158,7 +168,15 @@ const Token = {
                   </span>
                 </span>
                 <span v-else-if="type == 'erc721'">
-                  ERC-721
+                  <span v-if="item.info.event == 'Transfer'">
+                    <render-address :address="item.info.to" shortAddress noXPadding></render-address>
+                  </span>
+                  <span v-else-if="item.info.event == 'Approval'">
+                    <render-address :address="item.info.approved" shortAddress noXPadding></render-address>
+                  </span>
+                  <span v-else>
+                    <render-address :address="item.info.operator" shortAddress noXPadding></render-address>
+                  </span>
                 </span>
                 <span v-else>
                   ERC-1155
@@ -169,7 +187,21 @@ const Token = {
                   {{ formatUnits(item.info.tokens, decimals) }}
                 </span>
                 <span v-else-if="type == 'erc721'">
-                  ERC-721
+                  <span v-if="item.info.event == 'Transfer'">
+                    <v-btn variant="text" class="lowercase-btn ma-0 px-0">
+                      {{ item.info.tokenId }}
+                    </v-btn>
+                  </span>
+                  <span v-else-if="item.info.event == 'Approval'">
+                    <v-btn variant="text" class="lowercase-btn ma-0 px-0">
+                      {{ item.info.tokenId }}
+                    </v-btn>
+                  </span>
+                  <span v-else>
+                    <v-btn variant="text" class="lowercase-btn ma-0 px-0">
+                      {{ item.info.approved }}
+                    </v-btn>
+                  </span>
                 </span>
                 <span v-else>
                   ERC-1155
@@ -337,16 +369,16 @@ const Token = {
           { title: 'From / Owner', value: 'address1', sortable: true },
           { title: 'To / Spender', value: 'address2', sortable: true },
           { title: 'Tokens', value: 'value1', sortable: true },
-          // { title: 'Info', value: 'info', sortable: true },
         ];
       } else if (this.type == "erc721") {
         return [
           { title: 'When', value: 'when', sortable: true },
+          { title: 'Block #', value: 'blockNumber', sortable: true },
+          { title: 'Tx Hash', value: 'txHash', sortable: false },
           { title: 'Event', value: 'event', sortable: false },
-          { title: 'From / Owner', value: 'address1', sortable: true },
-          { title: 'To / Spender', value: 'address2', sortable: true },
-          { title: 'Token Id', value: 'value1', sortable: true },
-          { title: 'Info', value: 'info', sortable: true },
+          { title: 'From / Owner / Account', value: 'address1', sortable: true },
+          { title: 'To / Approved / Operator', value: 'address2', sortable: true },
+          { title: 'Token Id / Token Id / Approved', value: 'value1', sortable: true },
         ];
       } else {
         return [
