@@ -120,7 +120,55 @@ const tokenModule = {
 
       async function processLogs(fromBlock, toBlock, logs) {
         console.log(moment().format("HH:mm:ss") + " tokenModule - actions.syncTokenEvents.processLogs - fromBlock: " + fromBlock + ", toBlock: " + toBlock + ", logs.length: " + logs.length);
-        const records = logs.map(e => ({ chainId, ...e }));
+        const records = [];
+        for (const log of logs) {
+          if (!log.removed) {
+            let info = null;
+            // ERC-20 Transfer (index_topic_1 address from, index_topic_2 address to, uint256 tokens)
+            // ERC-721 Transfer (index_topic_1 address from, index_topic_2 address to, index_topic_3 uint256 id)
+            if (log.topics[0] == "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef") {
+              info = { event: "Transfer" };
+
+            // ERC-1155 TransferSingle (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256 id, uint256 value)
+            } else if (log.topics[0] == "0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62") {
+              info = { event: "TransferSingle" };
+
+            // ERC-1155 TransferBatch (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256[] ids, uint256[] values)
+            } else if (log.topics[0] == "0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb") {
+              info = { event: "TransferBatch" };
+
+            // WETH Deposit (index_topic_1 address dst, uint256 wad)
+            } else if (log.topics[0] == "0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c") {
+              info = { event: "Deposit" };
+
+            // WETH Withdrawal (index_topic_1 address src, uint256 wad)
+            } else if (log.topics[0] == "0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65") {
+              info = { event: "Withdrawal" };
+
+            // ERC-20 Approval (index_topic_1 address owner, index_topic_2 address spender, uint256 value)
+            // ERC-721 Approval (index_topic_1 address owner, index_topic_2 address approved, index_topic_3 uint256 tokenId)
+            } else if (log.topics[0] == "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925") {
+              info = { event: "Approval" };
+
+            // ERC-721 ApprovalForAll (index_topic_1 address owner, index_topic_2 address operator, bool approved)
+            // ERC-1155 ApprovalForAll (index_topic_1 address account, index_topic_2 address operator, bool approved)
+            } else if (log.topics[0] == "0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31") {
+              info = { event: "ApprovalForAll" };
+
+            }
+            if (info) {
+              records.push({
+                chainId,
+                address: log.address,
+                blockNumber: log.blockNumber,
+                logIndex: log.logIndex,
+                transactionIndex: log.transactionIndex,
+                transactionHash: log.transactionHash,
+                info,
+              });
+            }
+          }
+        }
         // console.log(moment().format("HH:mm:ss") + " tokenModule - actions.syncTokenEvents.processLogs - fromBlock: " + fromBlock + ", toBlock: " + toBlock + ", records: " + JSON.stringify(records, null, 2));
         if (records.length > 0) {
           await db.tokenEvents.bulkAdd(records).then(function(lastKey) {
@@ -137,39 +185,31 @@ const tokenModule = {
           return;
         }
         try {
-
-          // ERC-20 Transfer (index_topic_1 address from, index_topic_2 address to, uint256 tokens)
-          // ERC-721 Transfer (index_topic_1 address from, index_topic_2 address to, index_topic_3 uint256 id)
-          // [ '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef', accountAs32Bytes, null ],
-          // [ '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef', null, accountAs32Bytes ],
-
-          // ERC-1155 TransferSingle (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256 id, uint256 value)
-          // [ '0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62', null, accountAs32Bytes, null ],
-          // [ '0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62', null, null, accountAs32Bytes ],
-
-          // ERC-1155 TransferBatch (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256[] ids, uint256[] values)
-          // [ '0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb', null, accountAs32Bytes, null ],
-          // [ '0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb', null, null, accountAs32Bytes ],
-
-          // WETH Deposit (index_topic_1 address dst, uint256 wad)
-          // 0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c
-          // WETH Withdrawal (index_topic_1 address src, uint256 wad)
-          // 0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65
-
-          // ERC-20 Approval (index_topic_1 address owner, index_topic_2 address spender, uint256 value)
-          // 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925
-          // ERC-721 Approval (index_topic_1 address owner, index_topic_2 address approved, index_topic_3 uint256 tokenId)
-          // 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925
-          // ERC-721 ApprovalForAll (index_topic_1 address owner, index_topic_2 address operator, bool approved)
-          // 0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31
-          // ERC-1155 ApprovalForAll (index_topic_1 address account, index_topic_2 address operator, bool approved)
-          // 0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31
-
+          topics = [[
+              // ERC-20 Transfer (index_topic_1 address from, index_topic_2 address to, uint256 tokens)
+              // ERC-721 Transfer (index_topic_1 address from, index_topic_2 address to, index_topic_3 uint256 id)
+              '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
+              // ERC-1155 TransferSingle (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256 id, uint256 value)
+              '0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62',
+              // ERC-1155 TransferBatch (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256[] ids, uint256[] values)
+              '0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb',
+              // WETH Deposit (index_topic_1 address dst, uint256 wad)
+              '0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c',
+              // WETH Withdrawal (index_topic_1 address src, uint256 wad)
+              '0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65',
+              // ERC-20 Approval (index_topic_1 address owner, index_topic_2 address spender, uint256 value)
+              // ERC-721 Approval (index_topic_1 address owner, index_topic_2 address approved, index_topic_3 uint256 tokenId)
+              '0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925',
+              // ERC-721 ApprovalForAll (index_topic_1 address owner, index_topic_2 address operator, bool approved)
+              // ERC-1155 ApprovalForAll (index_topic_1 address account, index_topic_2 address operator, bool approved)
+              '0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31',
+            ],
+          ];
           const logs = await provider.getLogs({
             address: validatedAddress,
             fromBlock,
             toBlock,
-            topics: null,
+            topics,
           });
           // console.log(moment().format("HH:mm:ss") + " tokenModule - actions.syncTokenEvents.getTokenLogsFromRange - logs: " + JSON.stringify(logs, null, 2));
           await processLogs(fromBlock, toBlock, logs);
@@ -202,16 +242,36 @@ const tokenModule = {
         const startBlock = latest ? parseInt(latest.blockNumber) + 1: 0;
         console.log(now() + " tokenModule - actions.syncTokenEvents - startBlock: " + startBlock + ", latestBlockNumber: " + latestBlockNumber);
         await getTokenLogsFromRange(validatedAddress, startBlock, latestBlockNumber);
-        context.dispatch("collateEventData", { chainId, db, address: validatedAddress });
       }
       db.close();
+      context.dispatch("collateEventData", inputAddress);
       context.commit('setSyncInfo', null);
       context.commit('setSyncHalt', false);
     },
-    async collateEventData(context, { chainId, address, db }) {
-      console.log(moment().format("HH:mm:ss") + " tokenModule - actions.collateEventData");
-      const latest = await db.tokenEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, address, Dexie.minKey, Dexie.minKey],[chainId, address, Dexie.maxKey, Dexie.maxKey]).last();
-      console.log(now() + " tokenModule - actions.collateEventData - latest: " + JSON.stringify(latest, null, 2));
+    async collateEventData(context, address) {
+      console.log(moment().format("HH:mm:ss") + " tokenModule - actions.collateEventData - address: " + address);
+
+      const chainId = store.getters["chainId"];
+      const dbInfo = store.getters["db"];
+      const db = new Dexie(dbInfo.name);
+      db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
+
+      // const latest = await db.tokenEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, address, Dexie.minKey, Dexie.minKey],[chainId, address, Dexie.maxKey, Dexie.maxKey]).last();
+      // console.log(now() + " tokenModule - actions.collateEventData - latest: " + JSON.stringify(latest, null, 2));
+
+      const BATCH_SIZE = 10000;
+      let rows = 0;
+      let done = false;
+      do {
+        const data = await db.tokenEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, address, Dexie.minKey, Dexie.minKey],[chainId, address, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(BATCH_SIZE).toArray();
+        if (data.length > 0) {
+          // console.log(now() + " tokenModule - actions.collateEventData - data[0]: " + JSON.stringify(data[0], null, 2));
+        }
+        rows = parseInt(rows) + data.length;
+        done = data.length < BATCH_SIZE;
+      } while (!done);
+      console.log(now() + " tokenModule - actions.collateEventData - rows: " + rows);
+      db.close();
     },
   },
 };
