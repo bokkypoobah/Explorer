@@ -119,7 +119,7 @@ const tokenModule = {
     async syncTokenEvents(context, { inputAddress, forceUpdate }) {
 
       async function processLogs(fromBlock, toBlock, logs) {
-        console.log(moment().format("HH:mm:ss") + " tokenModule - actions.syncTokenEvents.processLogs - fromBlock: " + fromBlock + ", toBlock: " + toBlock + ", logs.length: " + logs.length);
+        console.log(moment().format("HH:mm:ss") + " tokenModule - actions.syncTokenEvents.processLogs - fromBlock: " + fromBlock + ", toBlock: " + toBlock + ", logs.length: " + logs.length + ", type: " + context.state.info.type);
         const records = [];
         for (const log of logs) {
           if (!log.removed) {
@@ -127,7 +127,17 @@ const tokenModule = {
             // ERC-20 Transfer (index_topic_1 address from, index_topic_2 address to, uint256 tokens)
             // ERC-721 Transfer (index_topic_1 address from, index_topic_2 address to, index_topic_3 uint256 id)
             if (log.topics[0] == "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef") {
-              info = { event: "Transfer" };
+              if (log.topics.length == 3 && context.state.info.type == "erc20") {
+                const from = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
+                const to = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
+                info = { event: "Transfer", from, to };
+
+              } else if (log.topics.length == 4 && context.state.info.type == "erc721") {
+                const from = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
+                const to = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
+                const tokenId = ethers.BigNumber.from(log.topics[3]).toString();
+                info = { event: "Transfer", from, to, tokenId };
+              }
 
             // ERC-1155 TransferSingle (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256 id, uint256 value)
             } else if (log.topics[0] == "0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62") {
