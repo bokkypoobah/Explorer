@@ -202,10 +202,16 @@ const tokenModule = {
         const startBlock = latest ? parseInt(latest.blockNumber) + 1: 0;
         console.log(now() + " tokenModule - actions.syncTokenEvents - startBlock: " + startBlock + ", latestBlockNumber: " + latestBlockNumber);
         await getTokenLogsFromRange(validatedAddress, startBlock, latestBlockNumber);
+        context.dispatch("collateEventData", { chainId, db, address: validatedAddress });
       }
       db.close();
       context.commit('setSyncInfo', null);
       context.commit('setSyncHalt', false);
+    },
+    async collateEventData(context, { chainId, address, db }) {
+      console.log(moment().format("HH:mm:ss") + " tokenModule - actions.collateEventData");
+      const latest = await db.tokenEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, address, Dexie.minKey, Dexie.minKey],[chainId, address, Dexie.maxKey, Dexie.maxKey]).last();
+      console.log(now() + " tokenModule - actions.collateEventData - latest: " + JSON.stringify(latest, null, 2));
     },
   },
 };
