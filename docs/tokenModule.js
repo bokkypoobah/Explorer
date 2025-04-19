@@ -130,7 +130,8 @@ const tokenModule = {
               if (log.topics.length == 3 && context.state.info.type == "erc20") {
                 const from = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
                 const to = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
-                info = { event: "Transfer", from, to };
+                const tokens = ethers.BigNumber.from(log.data).toString();
+                info = { event: "Transfer", from, to, tokens };
 
               } else if (log.topics.length == 4 && context.state.info.type == "erc721") {
                 const from = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
@@ -141,19 +142,30 @@ const tokenModule = {
 
             // ERC-1155 TransferSingle (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256 id, uint256 value)
             } else if (log.topics[0] == "0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62") {
-              info = { event: "TransferSingle" };
+              const logData = erc1155Interface.parseLog(log);
+              const [ operator, from, to, tokenId, value ] = logData.args;
+              info = { event: "TransferSingle", operator, from, to, tokenId: ethers.BigNumber.from(tokenId).toString(), value: ethers.BigNumber.from(value).toString() };
 
             // ERC-1155 TransferBatch (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256[] ids, uint256[] values)
             } else if (log.topics[0] == "0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb") {
-              info = { event: "TransferBatch" };
+              const logData = erc1155Interface.parseLog(log);
+              const [ operator, from, to, tokenIds, values ] = logData.args;
+              info = { event: "TransferBatch", operator, from, to, tokenIds: tokenIds.map(e => ethers.BigNumber.from(e).toString()), values: values.map(e => ethers.BigNumber.from(e).toString()) };
 
             // WETH Deposit (index_topic_1 address dst, uint256 wad)
             } else if (log.topics[0] == "0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c") {
-              info = { event: "Deposit" };
+              const from = ADDRESS0;
+              const to = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
+              const tokens = ethers.BigNumber.from(log.data).toString();
+              info = { event: "Transfer", from, to, tokens };
 
             // WETH Withdrawal (index_topic_1 address src, uint256 wad)
             } else if (log.topics[0] == "0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65") {
               info = { event: "Withdrawal" };
+              const from = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
+              const to = ADDRESS0;
+              const tokens = ethers.BigNumber.from(log.data).toString();
+              info = { event: "Transfer", from, to, tokens };
 
             // ERC-20 Approval (index_topic_1 address owner, index_topic_2 address spender, uint256 value)
             // ERC-721 Approval (index_topic_1 address owner, index_topic_2 address approved, index_topic_3 uint256 tokenId)
@@ -238,6 +250,7 @@ const tokenModule = {
       const dbInfo = store.getters["db"];
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
+      const erc1155Interface = new ethers.utils.Interface(ERC1155ABI);
 
       const validatedAddress = validateAddress(inputAddress);
       let info = {};
@@ -250,6 +263,8 @@ const tokenModule = {
         const latest = await db.tokenEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, validatedAddress, Dexie.minKey, Dexie.minKey],[chainId, validatedAddress, Dexie.maxKey, Dexie.maxKey]).last();
         console.log(now() + " tokenModule - actions.syncTokenEvents - latest: " + JSON.stringify(latest, null, 2));
         const startBlock = latest ? parseInt(latest.blockNumber) + 1: 0;
+        // TODO: Testing
+        // const startBlock = latestBlockNumber - 10000;
         console.log(now() + " tokenModule - actions.syncTokenEvents - startBlock: " + startBlock + ", latestBlockNumber: " + latestBlockNumber);
         await getTokenLogsFromRange(validatedAddress, startBlock, latestBlockNumber);
       }
@@ -258,6 +273,7 @@ const tokenModule = {
       context.commit('setSyncInfo', null);
       context.commit('setSyncHalt', false);
     },
+
     async collateEventData(context, address) {
       console.log(moment().format("HH:mm:ss") + " tokenModule - actions.collateEventData - address: " + address);
 
