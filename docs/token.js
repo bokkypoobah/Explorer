@@ -120,6 +120,7 @@ const Token = {
               :headers="getEventsHeaders"
               :items-length="numberOfEvents || 0"
               :items="items"
+              :search="numberOfEvents && numberOfEvents.toString() || null"
               @update:options="loadItems"
               :items-per-page-options="itemsPerPageOptions"
             >
@@ -254,92 +255,7 @@ const Token = {
             </v-data-table-server>
           </v-tabs-window-item>
         </v-tabs-window>
-      </v-container fluid class="pa-1">
-
-      <!-- <v-card v-if="!inputAddress">
-        <v-card-text>
-          Enter address in the search field above
-        </v-card-text>
-      </v-card> -->
-      <!-- <v-container fluid class="pa-1">
-        <v-toolbar v-if="inputAddress && address" density="compact" class="mt-1">
-          <v-menu location="bottom">
-            <template v-slot:activator="{ props }">
-              <v-btn color="primary" dark v-bind="props" variant="text" class="lowercase-btn">
-                {{ address }}
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item @click="copyToClipboard(address);">
-                <template v-slot:prepend>
-                  <v-icon>mdi-content-copy</v-icon>
-                </template>
-                <v-list-item-title>Copy address to clipboard</v-list-item-title>
-              </v-list-item>
-              <v-list-item :href="explorer + 'address/' + address" target="_blank">
-                <template v-slot:prepend>
-                  <v-icon>mdi-link-variant</v-icon>
-                </template>
-                <v-list-item-title>View in explorer</v-list-item-title>
-              </v-list-item>
-              <v-list-item :href="'https://remix.ethereum.org/address/' + address" target="_blank">
-                <template v-slot:prepend>
-                  <v-icon>mdi-link-variant</v-icon>
-                </template>
-                <v-list-item-title>View in remix.ethereum.org</v-list-item-title>
-              </v-list-item>
-              <v-list-item :href="'https://opensea.io/' + address" target="_blank">
-                <template v-slot:prepend>
-                  <v-icon>mdi-link-variant</v-icon>
-                </template>
-                <v-list-item-title>View in opensea.io</v-list-item-title>
-              </v-list-item>
-              <v-list-item :href="'https://app.ens.domains/' + address" target="_blank">
-                <template v-slot:prepend>
-                  <v-icon>mdi-link-variant</v-icon>
-                </template>
-                <v-list-item-title>View in app.ens.domains</v-list-item-title>
-              </v-list-item>
-              <div v-if="type == 'safe'">
-                <v-divider inset></v-divider>
-                <v-list-subheader inset>Gnosis Safe v{{ version }}</v-list-subheader>
-                <v-list-item :href="'https://app.safe.global/home?safe=eth:' + address" target="_blank">
-                  <template v-slot:prepend>
-                    <v-icon>mdi-link-variant</v-icon>
-                  </template>
-                  <v-list-item-title>View in app.safe.global</v-list-item-title>
-                </v-list-item>
-                <v-list-item :href="explorer + 'address/' + implementation" target="_blank">
-                  <template v-slot:prepend>
-                    <v-icon>mdi-link-variant</v-icon>
-                  </template>
-                  <v-list-item-title>View implementation in explorer</v-list-item-title>
-                </v-list-item>
-                <v-list-item :href="'https://remix.ethereum.org/address/' + implementation" target="_blank">
-                  <template v-slot:prepend>
-                    <v-icon>mdi-link-variant</v-icon>
-                  </template>
-                  <v-list-item-title>View implementation in remix.ethereum.org</v-list-item-title>
-                </v-list-item>
-              </div>
-            </v-list>
-          </v-menu>
-          <v-spacer></v-spacer>
-          <v-btn @click="syncToken();" color="primary" icon>
-            <v-icon>mdi-refresh</v-icon>
-          </v-btn>
-          <v-spacer></v-spacer>
-          <v-tabs right color="deep-purple-accent-4">
-            <v-tab :disabled="!address" :to="'/address/' + address" class="lowercase-btn">Address</v-tab>
-            <v-tab :disabled="!address" :to="'/address/' + address + '/contract'" class="lowercase-btn">Contract</v-tab>
-            <v-tab :disabled="!address" :to="'/address/' + address + '/functions'" class="lowercase-btn">Functions</v-tab>
-            <v-tab :disabled="!address" :to="'/address/' + address + '/tokens'" class="lowercase-btn">Tokens</v-tab>
-            <v-tab :disabled="!address" :to="'/address/' + address + '/transactions'" class="lowercase-btn">Transactions</v-tab>
-            <v-tab :disabled="!address" :to="'/address/' + address + '/events'" class="lowercase-btn">Events</v-tab>
-          </v-tabs>
-        </v-toolbar>
-        <router-view v-if="inputAddress && address" />
-      </v-container> -->
+      </v-container>
     </div>
   `,
   props: ['inputAddress'],
