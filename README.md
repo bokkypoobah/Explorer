@@ -48,17 +48,33 @@ Click [IMPORT FROM ETHERSCAN] to import a list of EVM chains.
 
 #### Ethereum Mainnet Token
 
-Select the ERC-20 TURBO token at `0xA35923162C49cF95e6BF26623385eb431ad920D3`
+Select ERC-20 WEENUS @ `0x2823589Ae095D99bD64dEeA80B4690313e2fB519`
 
 <kbd><img src="images/SampleScreen16.png" width="800" /></kbd>
 
-Click on the [Sync Token Events] button
+Select [TOKEN CONTRACT]
 
 <kbd><img src="images/SampleScreen17.png" width="800" /></kbd>
 
-1,307,482 event logs retrieved from the web3 connection and stored in the local IndexedDB database in ~ 10 minutes. Only works on Ethereum Mainnet as L2s may have a small `provider.getLogs(...)` block range.
+Click on the [Sync Token Events] button
 
 <kbd><img src="images/SampleScreen18.png" width="800" /></kbd>
+
+265 events
+
+<kbd><img src="images/SampleScreen19.png" width="800" /></kbd>
+
+Events tab
+
+<kbd><img src="images/SampleScreen20.png" width="800" /></kbd>
+
+ERC-721 Larva Chad @ `0x8FA600364B93C53e0c71C7A33d2adE21f4351da3` events
+
+<kbd><img src="images/SampleScreen21.png" width="800" /></kbd>
+
+ERC-1155 WEENUS @ `0xB32979486938AA9694BFC898f35DBED459F44424` events
+
+<kbd><img src="images/SampleScreen22.png" width="800" /></kbd>
 
 <br />
 
