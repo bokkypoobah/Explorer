@@ -72,7 +72,7 @@ ERC-721 Larva Chad @ `0x8FA600364B93C53e0c71C7A33d2adE21f4351da3` events
 
 <kbd><img src="images/SampleScreen21.png" width="800" /></kbd>
 
-ERC-1155 WEENUS @ `0xB32979486938AA9694BFC898f35DBED459F44424` events
+ERC-1155 NYAN CAT @ `0xB32979486938AA9694BFC898f35DBED459F44424` events
 
 <kbd><img src="images/SampleScreen22.png" width="800" /></kbd>
 
