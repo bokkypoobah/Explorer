@@ -312,8 +312,9 @@ const tokenModule = {
         let rows = 0;
         let done = false;
         const balances = {};
+        const owners = {};
         const approvals = {};
-        // const approvalForAlls = {};
+        const approvalForAlls = {};
         do {
           const data = await db.tokenEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, validatedAddress, Dexie.minKey, Dexie.minKey],[chainId, validatedAddress, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(BATCH_SIZE).toArray();
           if (data.length > 0) {
@@ -335,6 +336,37 @@ const tokenModule = {
                   approvals[info.owner][info.spender] = info.tokens;
                 }
               }
+            } else if (context.state.info.type == "erc721") {
+              for (const item of data) {
+                const info = item.info;
+                if (info.event == "Transfer") {
+                  // console.log("erc721 Transfer: " + JSON.stringify(info));
+                  owners[info.tokenId] = info.to;
+                } else if (info.event == "Approval") {
+                  // console.log("erc721 Approval: " + JSON.stringify(info));
+                  if (info.approved != ADDRESS0) {
+                    if (!(info.owner in approvals)) {
+                      approvals[info.owner] = {};
+                    }
+                    if (!(info.tokenId in approvals[info.owner])) {
+                      approvals[info.owner][info.tokenId] = info.approved;
+                    }
+                  } else {
+                    if (approvals[info.owner] && approvals[info.owner][info.tokenId]) {
+                      delete approvals[info.owner][info.tokenId];
+                      if (Object.keys(approvals[info.owner]).length == 0) {
+                        delete approvals[info.owner];
+                      }
+                    }
+                  }
+                } else if (info.event == "ApprovalForAll") {
+                  console.log("erc721 ApprovalForAll: " + JSON.stringify(info));
+                  if (!(info.owner in approvalForAlls)) {
+                    approvalForAlls[info.owner] = {};
+                  }
+                  approvalForAlls[info.owner][info.operator] = info.approved;
+                }
+              }
             }
           }
           rows = parseInt(rows) + data.length;
@@ -343,8 +375,9 @@ const tokenModule = {
         } while (!done);
         console.log(now() + " tokenModule - actions.collateEventData - rows: " + rows);
         console.log(now() + " tokenModule - actions.collateEventData - balances: " + JSON.stringify(balances, null, 2));
+        console.log(now() + " tokenModule - actions.collateEventData - owners: " + JSON.stringify(owners, null, 2));
         console.log(now() + " tokenModule - actions.collateEventData - approvals: " + JSON.stringify(approvals, null, 2));
-        // console.log(now() + " tokenModule - actions.collateEventData - approvalForAlls: " + JSON.stringify(approvalForAlls, null, 2));
+        console.log(now() + " tokenModule - actions.collateEventData - approvalForAlls: " + JSON.stringify(approvalForAlls, null, 2));
         context.commit('setNumberOfEvents', rows);
       }
       db.close();
