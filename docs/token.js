@@ -102,6 +102,29 @@ const Token = {
           </v-tabs-window-item>
           <v-tabs-window-item value="events">
             Events
+
+            <!-- <v-data-table-server
+              v-model:items-per-page="itemsPerPage"
+              :items-per-page-options="itemsPerPageOptions"
+              :headers="blocksHeaders"
+              :items="blocks"
+              :items-length="blockNumber + 1"
+              :loading="loading"
+              :search="live && blockNumber.toString() || null"
+              item-value="name"
+              @update:options="loadItems"
+              v-model:page="currentPage"
+              density="comfortable"
+            > -->
+            {{ numberOfEvents }}
+            <v-data-table-server
+              v-if="address"
+              :items-length="numberOfEvents || 0"
+              :items="items"
+              @update:options="loadItems"
+              :items-per-page-options="itemsPerPageOptions"
+            >
+            </v-data-table-server>
           </v-tabs-window-item>
         </v-tabs-window>
       </v-container fluid class="pa-1">
@@ -200,6 +223,15 @@ const Token = {
         tab: null,
         version: 0,
       },
+      items: [],
+      itemsPerPageOptions: [
+        { value: 5, title: "5" },
+        { value: 10, title: "10" },
+        { value: 20, title: "20" },
+        { value: 30, title: "30" },
+        { value: 40, title: "40" },
+        { value: 50, title: "50" },
+      ],
     };
   },
   computed: {
@@ -254,6 +286,23 @@ const Token = {
       console.log(now() + " Token - methods.setSyncHalt");
       store.dispatch('token/setSyncHalt');
     },
+
+    async loadItems ({ page, itemsPerPage, sortBy }) {
+      console.log(now() + " Token - methods.loadItems - page: " + page + ", itemsPerPage: " + itemsPerPage + ", sortBy: " + JSON.stringify(sortBy));
+      const dbInfo = store.getters["db"];
+      const db = new Dexie(dbInfo.name);
+      db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
+      const address = store.getters["token/address"];
+      console.log(now() + " Token - methods.loadItems - address: " + address);
+      if (address) {
+        const chainId = store.getters["chainId"];
+        const row = (page - 1) * itemsPerPage;
+        const data = await db.tokenEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, address, Dexie.minKey, Dexie.minKey],[chainId, address, Dexie.maxKey, Dexie.maxKey]).offset(row).limit(itemsPerPage).toArray();
+        this.items = data;
+      }
+      db.close();
+    },
+
     formatUnits(e, decimals) {
       if (e) {
         return ethers.utils.formatUnits(e, decimals).replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
@@ -284,13 +333,13 @@ const Token = {
 
     if ('explorerTokenSettings' in localStorage) {
       const tempSettings = JSON.parse(localStorage.explorerTokenSettings);
-      console.log(now() + " Token - mounted - tempSettings: " + JSON.stringify(tempSettings));
+      // console.log(now() + " Token - mounted - tempSettings: " + JSON.stringify(tempSettings));
       if ('version' in tempSettings && tempSettings.version == this.settings.version) {
         this.settings = tempSettings;
       }
     }
     this.initialised = true;
-    console.log(now() + " Block - mounted - this.settings: " + JSON.stringify(this.settings));
+    console.log(now() + " Token - mounted - this.settings: " + JSON.stringify(this.settings));
 
     const t = this;
     setTimeout(function() {

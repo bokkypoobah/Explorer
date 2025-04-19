@@ -115,6 +115,7 @@ const tokenModule = {
         }
       }
       context.commit('setInfo', info);
+      context.dispatch("collateEventData", inputAddress);
       db.close();
     },
     setSyncHalt(context) {
