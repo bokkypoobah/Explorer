@@ -63,6 +63,10 @@ const tokenModule = {
       // console.log(now() + " tokenModule - mutations.setInfo - info: " + JSON.stringify(info));
       state.info = info;
     },
+    setNumberOfEvents(state, numberOfEvents) {
+      console.log(now() + " tokenModule - mutations.setNumberOfEvents - numberOfEvents: " + JSON.stringify(numberOfEvents));
+      state.info.numberOfEvents = numberOfEvents;
+    },
     setSyncInfo(state, info) {
       // console.log(now() + " tokenModule - mutations.setSyncInfo - info: " + info);
       state.sync.info = info;
@@ -100,7 +104,8 @@ const tokenModule = {
         // console.log(now() + " tokenModule - actions.loadToken - info: " + JSON.stringify(info));
         if (Object.keys(info).length == 0 || forceUpdate) {
           info = await getAddressInfo(validatedAddress, provider);
-          // console.log(now() + " tokenModule - actions.loadToken - info: " + JSON.stringify(info));
+          info.numberOfEvents = null;
+          console.log(now() + " tokenModule - actions.loadToken - info: " + JSON.stringify(info));
           await dbSaveCacheData(db, validatedAddress + "_" + chainId + "_address", info);
         }
         const addressInfo = store.getters["addresses/getAddressInfo"](validatedAddress);
@@ -312,6 +317,7 @@ const tokenModule = {
         done = data.length < BATCH_SIZE;
       } while (!done);
       console.log(now() + " tokenModule - actions.collateEventData - rows: " + rows);
+      context.commit('setNumberOfEvents', rows);
       db.close();
     },
   },

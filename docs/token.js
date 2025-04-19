@@ -87,6 +87,16 @@ const Token = {
                     </v-btn>
                   </v-col>
                 </v-row>
+                <v-row v-if="type == 'erc20'" no-gutters dense>
+                  <v-col cols="2" align="right">
+                    <p class="my-2">Number of Events:</p>
+                  </v-col>
+                  <v-col cols="6" align="left">
+                    <v-btn variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
+                      {{ numberOfEvents != null && commify0(numberOfEvents) || "Click [Sync Token Events] above" }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
               </v-card-text>
             </v-card>
           </v-tabs-window-item>
@@ -213,6 +223,9 @@ const Token = {
     },
     totalSupply() {
       return store.getters['token/info'].totalSupply || null;
+    },
+    numberOfEvents() {
+      return store.getters['token/info'].numberOfEvents || null;
     },
     version() {
       return store.getters['token/info'].version || null;
