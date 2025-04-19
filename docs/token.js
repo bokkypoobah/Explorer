@@ -117,11 +117,67 @@ const Token = {
             > -->
             <v-data-table-server
               v-if="address"
+              :headers="getEventsHeaders"
               :items-length="numberOfEvents || 0"
               :items="items"
               @update:options="loadItems"
               :items-per-page-options="itemsPerPageOptions"
             >
+              <template v-slot:item.blockNumber="{ item }">
+                <render-block-number :block="item.blockNumber" noXPadding></render-block-number>
+              </template>
+              <template v-slot:item.txHash="{ item }">
+                <render-tx-hash :txHash="item.txHash" shortTxHash noXPadding></render-tx-hash>
+              </template>
+              <template v-slot:item.event="{ item }">
+                {{ item.info.event }}
+              </template>
+              <template v-slot:item.address1="{ item }">
+                <span v-if="type == 'erc20'">
+                  <span v-if="item.info.event == 'Transfer'">
+                    <render-address :address="item.info.from" shortAddress noXPadding></render-address>
+                  </span>
+                  <span v-else>
+                    <render-address :address="item.info.owner" shortAddress noXPadding></render-address>
+                  </span>
+                </span>
+                <span v-else-if="type == 'erc721'">
+                  ERC-721
+                </span>
+                <span v-else>
+                  ERC-1155
+                </span>
+              </template>
+              <template v-slot:item.address2="{ item }">
+                <span v-if="type == 'erc20'">
+                  <span v-if="item.info.event == 'Transfer'">
+                    <render-address :address="item.info.to" shortAddress noXPadding></render-address>
+                  </span>
+                  <span v-else>
+                    <render-address :address="item.info.spender" shortAddress noXPadding></render-address>
+                  </span>
+                </span>
+                <span v-else-if="type == 'erc721'">
+                  ERC-721
+                </span>
+                <span v-else>
+                  ERC-1155
+                </span>
+              </template>
+              <template v-slot:item.value1="{ item }">
+                <span v-if="type == 'erc20'">
+                  {{ formatUnits(item.info.tokens, decimals) }}
+                </span>
+                <span v-else-if="type == 'erc721'">
+                  ERC-721
+                </span>
+                <span v-else>
+                  ERC-1155
+                </span>
+              </template>
+              <template v-slot:item.info="{ item }">
+                {{ item.info }}
+              </template>
             </v-data-table-server>
           </v-tabs-window-item>
         </v-tabs-window>
@@ -222,6 +278,11 @@ const Token = {
         version: 0,
       },
       items: [],
+      eventsHeaders: [
+        { title: 'When', value: 'when', sortable: true },
+        { title: 'Event', value: 'event', sortable: false },
+        { title: 'Info', value: 'info', sortable: true },
+      ],
       itemsPerPageOptions: [
         { value: 5, title: "5" },
         { value: 10, title: "10" },
@@ -265,6 +326,39 @@ const Token = {
     },
     explorer() {
       return store.getters['explorer'];
+    },
+    getEventsHeaders() {
+      if (this.type == "erc20") {
+        return [
+          { title: 'When', value: 'when', sortable: true },
+          { title: 'Block #', value: 'blockNumber', sortable: true },
+          { title: 'Tx Hash', value: 'txHash', sortable: false },
+          { title: 'Event', value: 'event', sortable: false },
+          { title: 'From / Owner', value: 'address1', sortable: true },
+          { title: 'To / Spender', value: 'address2', sortable: true },
+          { title: 'Tokens', value: 'value1', sortable: true },
+          // { title: 'Info', value: 'info', sortable: true },
+        ];
+      } else if (this.type == "erc721") {
+        return [
+          { title: 'When', value: 'when', sortable: true },
+          { title: 'Event', value: 'event', sortable: false },
+          { title: 'From / Owner', value: 'address1', sortable: true },
+          { title: 'To / Spender', value: 'address2', sortable: true },
+          { title: 'Token Id', value: 'value1', sortable: true },
+          { title: 'Info', value: 'info', sortable: true },
+        ];
+      } else {
+        return [
+          { title: 'When', value: 'when', sortable: true },
+          { title: 'Event', value: 'event', sortable: false },
+          { title: 'From / Owner', value: 'address1', sortable: true },
+          { title: 'To / Spender', value: 'address2', sortable: true },
+          { title: 'Token Id', value: 'value1', sortable: true },
+          { title: 'Tokens', value: 'value2', sortable: true },
+          { title: 'Info', value: 'info', sortable: true },
+        ];
+      }
     },
   },
   methods: {

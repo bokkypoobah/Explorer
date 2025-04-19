@@ -177,16 +177,16 @@ const tokenModule = {
             // ERC-721 Approval (index_topic_1 address owner, index_topic_2 address approved, index_topic_3 uint256 tokenId)
             } else if (log.topics[0] == "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925") {
               if (log.topics.length == 3 && context.state.info.type == "erc20") {
-                const from = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
-                const to = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
+                const owner = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
+                const spender = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
                 const tokens = ethers.BigNumber.from(log.data).toString();
-                info = { event: "Approval", from, to, tokens };
+                info = { event: "Approval", owner, spender, tokens };
 
               } else if (log.topics.length == 4 && context.state.info.type == "erc721") {
-                const from = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
-                const to = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
+                const owner = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
+                const approved = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
                 const tokenId = ethers.BigNumber.from(log.topics[3]).toString();
-                info = { event: "Approval", from, to, tokenId };
+                info = { event: "Approval", owner, approved, tokenId };
               }
 
             // ERC-721 ApprovalForAll (index_topic_1 address owner, index_topic_2 address operator, bool approved)
@@ -205,8 +205,8 @@ const tokenModule = {
                 address: log.address,
                 blockNumber: log.blockNumber,
                 logIndex: log.logIndex,
-                transactionIndex: log.transactionIndex,
-                transactionHash: log.transactionHash,
+                txIndex: log.transactionIndex,
+                txHash: log.transactionHash,
                 info,
               });
             }
@@ -306,7 +306,7 @@ const tokenModule = {
       // const latest = await db.tokenEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, address, Dexie.minKey, Dexie.minKey],[chainId, address, Dexie.maxKey, Dexie.maxKey]).last();
       // console.log(now() + " tokenModule - actions.collateEventData - latest: " + JSON.stringify(latest, null, 2));
 
-      const BATCH_SIZE = 10000;
+      const BATCH_SIZE = 100000;
       let rows = 0;
       let done = false;
       do {
@@ -315,6 +315,7 @@ const tokenModule = {
           // console.log(now() + " tokenModule - actions.collateEventData - data[0]: " + JSON.stringify(data[0], null, 2));
         }
         rows = parseInt(rows) + data.length;
+        console.log(now() + " tokenModule - actions.collateEventData - rows: " + rows);
         done = data.length < BATCH_SIZE;
       } while (!done);
       console.log(now() + " tokenModule - actions.collateEventData - rows: " + rows);
