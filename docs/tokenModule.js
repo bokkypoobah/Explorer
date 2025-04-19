@@ -2,10 +2,17 @@ const tokenModule = {
   namespaced: true,
   state: {
     info: {},
+    sync: {
+      info: null,
+      completed: null,
+      total: null,
+      halt: false,
+    },
   },
   getters: {
     address: state => state.info.address || null,
     info: state => state.info,
+    sync: state => state.sync,
     functions(state) {
       console.log(now() + " tokenModule - computed.functions");
       const addressInfo = store.getters["addresses/getAddressInfo"](state.info.address);
@@ -56,6 +63,22 @@ const tokenModule = {
       // console.log(now() + " tokenModule - mutations.setInfo - info: " + JSON.stringify(info));
       state.info = info;
     },
+    setSyncInfo(state, info) {
+      // console.log(now() + " tokenModule - mutations.setSyncInfo - info: " + info);
+      state.sync.info = info;
+    },
+    setSyncCompleted(state, completed) {
+      // console.log(now() + " tokenModule - mutations.setSyncCompleted - completed: " + completed);
+      state.sync.completed = completed;
+    },
+    setSyncTotal(state, total) {
+      // console.log(now() + " tokenModule - mutations.setSyncTotal - total: " + total);
+      state.sync.total = total;
+    },
+    setSyncHalt(state, halt) {
+      // console.log(now() + " tokenModule - mutations.setSyncHalt - halt: " + halt);
+      state.sync.halt = halt;
+    },
   },
   actions: {
     async loadToken(context, { inputAddress, forceUpdate }) {
@@ -89,6 +112,10 @@ const tokenModule = {
       context.commit('setInfo', info);
       db.close();
     },
+    setSyncHalt(context) {
+      console.log(moment().format("HH:mm:ss") + " tokenModule - actions.setSyncHalt");
+      context.commit('setSyncHalt', true);
+    },
     async syncTokenEvents(context, { inputAddress, forceUpdate }) {
 
       async function processLogs(fromBlock, toBlock, logs) {
@@ -106,6 +133,9 @@ const tokenModule = {
 
       async function getTokenLogsFromRange(validatedAddress, fromBlock, toBlock) {
         console.log(moment().format("HH:mm:ss") + " tokenModule - actions.syncTokenEvents.getTokenLogsFromRange - fromBlock: " + fromBlock + ", toBlock: " + toBlock);
+        if (context.state.sync.halt) {
+          return;
+        }
         try {
 
           // ERC-20 Transfer (index_topic_1 address from, index_topic_2 address to, uint256 tokens)
@@ -143,6 +173,7 @@ const tokenModule = {
           });
           // console.log(moment().format("HH:mm:ss") + " tokenModule - actions.syncTokenEvents.getTokenLogsFromRange - logs: " + JSON.stringify(logs, null, 2));
           await processLogs(fromBlock, toBlock, logs);
+          context.commit('setSyncCompleted', toBlock);
         } catch (e) {
           console.error(moment().format("HH:mm:ss") + " tokenModule - actions.syncTokenEvents.getTokenLogsFromRange - Error: " + e.message);
           const mid = parseInt((fromBlock + toBlock) / 2);
@@ -163,6 +194,9 @@ const tokenModule = {
       if (validatedAddress) {
         const block = await provider.getBlock();
         const latestBlockNumber = block && block.number || null;
+        context.commit('setSyncTotal', latestBlockNumber);
+        context.commit('setSyncCompleted', 0);
+        context.commit('setSyncInfo', "Syncing token events");
         const latest = await db.tokenEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, validatedAddress, Dexie.minKey, Dexie.minKey],[chainId, validatedAddress, Dexie.maxKey, Dexie.maxKey]).last();
         console.log(now() + " tokenModule - actions.syncTokenEvents - latest: " + JSON.stringify(latest, null, 2));
         const startBlock = latest ? parseInt(latest.blockNumber) + 1: 0;
@@ -170,6 +204,8 @@ const tokenModule = {
         await getTokenLogsFromRange(validatedAddress, startBlock, latestBlockNumber);
       }
       db.close();
+      context.commit('setSyncInfo', null);
+      context.commit('setSyncHalt', false);
     },
   },
 };

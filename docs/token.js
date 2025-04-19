@@ -9,16 +9,20 @@ const Token = {
             {{ type && type.replace(/erc/, "ERC-") || "" }} {{ symbol }} {{ name && ("'" + name + "'") || "" }} {{ decimals }}
           </p>
           <v-spacer></v-spacer>
-          <v-btn @click="syncToken();" color="primary" icon v-tooltip="'Sync Token Info'">
+          <v-btn v-if="sync.info == null" @click="syncToken();" color="primary" icon v-tooltip="'Sync Token Info'">
             <v-icon>mdi-refresh</v-icon>
           </v-btn>
-          <v-btn @click="syncTokenEvents();" color="primary" icon v-tooltip="'Sync Token Events'">
+          <v-btn v-if="sync.info == null" @click="syncTokenEvents();" color="primary" icon v-tooltip="'Sync Token Events'">
             <v-icon>mdi-download-multiple</v-icon>
           </v-btn>
+          <v-btn v-if="sync.info != null" @click="setSyncHalt();" color="primary" icon v-tooltip="'Halt syncing'">
+            <v-icon>mdi-stop</v-icon>
+          </v-btn>
+          <v-progress-circular v-if="sync.info != null" color="primary" :model-value="sync.total ? (parseInt(sync.completed * 100 / sync.total)) : 0" :size="30" :width="6" v-tooltip="sync.info + ': ' + commify0(sync.completed) + ' of ' + commify0(sync.total)"></v-progress-circular>
           <v-spacer></v-spacer>
           <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" right color="deep-purple-accent-4">
             <v-tab prepend-icon="mdi-cash-multiple" text="Info" value="info" class="lowercase-btn"></v-tab>
-            <v-tab prepend-icon="mdi-text-long" text="Transfers" value="transfers" class="lowercase-btn"></v-tab>
+            <v-tab prepend-icon="mdi-text-long" text="Events" value="events" class="lowercase-btn"></v-tab>
           </v-tabs>
         </v-toolbar density="compact" class="mt-1">
         <v-tabs-window v-model="settings.tab">
@@ -86,8 +90,8 @@ const Token = {
               </v-card-text>
             </v-card>
           </v-tabs-window-item>
-          <v-tabs-window-item value="transfers">
-            Transfers
+          <v-tabs-window-item value="events">
+            Events
           </v-tabs-window-item>
         </v-tabs-window>
       </v-container fluid class="pa-1">
@@ -189,6 +193,9 @@ const Token = {
     };
   },
   computed: {
+    sync() {
+      return store.getters['token/sync'];
+    },
     address() {
       return store.getters['token/address'];
     },
@@ -230,9 +237,19 @@ const Token = {
       console.log(now() + " Token - methods.syncTokenEvents - address: " + address);
       store.dispatch('token/syncTokenEvents', { inputAddress: address, forceUpdate: true });
     },
+    setSyncHalt() {
+      console.log(now() + " Token - methods.setSyncHalt");
+      store.dispatch('token/setSyncHalt');
+    },
     formatUnits(e, decimals) {
       if (e) {
         return ethers.utils.formatUnits(e, decimals).replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+      }
+      return null;
+    },
+    commify0(n) {
+      if (n != null) {
+        return Number(n).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
       }
       return null;
     },
