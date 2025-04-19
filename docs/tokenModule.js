@@ -2,6 +2,7 @@ const tokenModule = {
   namespaced: true,
   state: {
     info: {},
+    numberOfEvents: null,
     sync: {
       info: null,
       completed: null,
@@ -12,6 +13,7 @@ const tokenModule = {
   getters: {
     address: state => state.info.address || null,
     info: state => state.info,
+    numberOfEvents: state => state.numberOfEvents,
     sync: state => state.sync,
     functions(state) {
       console.log(now() + " tokenModule - computed.functions");
@@ -65,7 +67,7 @@ const tokenModule = {
     },
     setNumberOfEvents(state, numberOfEvents) {
       console.log(now() + " tokenModule - mutations.setNumberOfEvents - numberOfEvents: " + JSON.stringify(numberOfEvents));
-      state.info.numberOfEvents = numberOfEvents;
+      state.numberOfEvents = numberOfEvents;
     },
     setSyncInfo(state, info) {
       // console.log(now() + " tokenModule - mutations.setSyncInfo - info: " + info);
@@ -104,7 +106,6 @@ const tokenModule = {
         // console.log(now() + " tokenModule - actions.loadToken - info: " + JSON.stringify(info));
         if (Object.keys(info).length == 0 || forceUpdate) {
           info = await getAddressInfo(validatedAddress, provider);
-          info.numberOfEvents = null;
           console.log(now() + " tokenModule - actions.loadToken - info: " + JSON.stringify(info));
           await dbSaveCacheData(db, validatedAddress + "_" + chainId + "_address", info);
         }

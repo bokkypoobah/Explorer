@@ -312,7 +312,7 @@ const Token = {
       return store.getters['token/info'].totalSupply || null;
     },
     numberOfEvents() {
-      return store.getters['token/info'].numberOfEvents || null;
+      return store.getters['token/numberOfEvents'] || null;
     },
     version() {
       return store.getters['token/info'].version || null;
