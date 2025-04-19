@@ -170,12 +170,27 @@ const tokenModule = {
             // ERC-20 Approval (index_topic_1 address owner, index_topic_2 address spender, uint256 value)
             // ERC-721 Approval (index_topic_1 address owner, index_topic_2 address approved, index_topic_3 uint256 tokenId)
             } else if (log.topics[0] == "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925") {
-              info = { event: "Approval" };
+              if (log.topics.length == 3 && context.state.info.type == "erc20") {
+                const from = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
+                const to = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
+                const tokens = ethers.BigNumber.from(log.data).toString();
+                info = { event: "Approval", from, to, tokens };
+
+              } else if (log.topics.length == 4 && context.state.info.type == "erc721") {
+                const from = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
+                const to = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
+                const tokenId = ethers.BigNumber.from(log.topics[3]).toString();
+                info = { event: "Approval", from, to, tokenId };
+              }
 
             // ERC-721 ApprovalForAll (index_topic_1 address owner, index_topic_2 address operator, bool approved)
             // ERC-1155 ApprovalForAll (index_topic_1 address account, index_topic_2 address operator, bool approved)
             } else if (log.topics[0] == "0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31") {
               info = { event: "ApprovalForAll" };
+              const owner = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
+              const operator = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
+              approved = ethers.BigNumber.from(log.data).eq(1);
+              info = { event: "ApprovalForAll", owner, operator, approved };
 
             }
             if (info) {
@@ -261,7 +276,7 @@ const tokenModule = {
         context.commit('setSyncCompleted', 0);
         context.commit('setSyncInfo', "Syncing token events");
         const latest = await db.tokenEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, validatedAddress, Dexie.minKey, Dexie.minKey],[chainId, validatedAddress, Dexie.maxKey, Dexie.maxKey]).last();
-        console.log(now() + " tokenModule - actions.syncTokenEvents - latest: " + JSON.stringify(latest, null, 2));
+        // console.log(now() + " tokenModule - actions.syncTokenEvents - latest: " + JSON.stringify(latest, null, 2));
         const startBlock = latest ? parseInt(latest.blockNumber) + 1: 0;
         // TODO: Testing
         // const startBlock = latestBlockNumber - 10000;
