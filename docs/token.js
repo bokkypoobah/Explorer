@@ -200,58 +200,64 @@ const Token = {
                 </span>
               </template>
               <template v-slot:item.value1="{ item }">
-                <span v-if="type == 'erc20'">
-                  <span v-if="item.info.tokens.toString().length > 40" v-tooltip="formatUnits(item.info.tokens, decimals)">
-                    &infin;
+                <v-row justify="end">
+                  <span v-if="type == 'erc20'">
+                    <span v-if="item.info.tokens.toString().length > 40" v-tooltip="formatUnits(item.info.tokens, decimals)">
+                      <v-btn variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
+                        &infin;
+                      </v-btn>
+                    </span>
+                    <span v-else>
+                      <v-btn variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
+                        {{ formatUnits(item.info.tokens, decimals) }}
+                      </v-btn>
+                    </span>
+                  </span>
+                  <span v-else-if="type == 'erc721'">
+                    <span v-if="item.info.event == 'Transfer'">
+                      <v-btn variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
+                        {{ item.info.tokenId }}
+                      </v-btn>
+                    </span>
+                    <span v-else-if="item.info.event == 'Approval'">
+                      <v-btn variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
+                        {{ item.info.tokenId }}
+                      </v-btn>
+                    </span>
+                    <span v-else>
+                      <v-btn variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
+                        {{ item.info.approved }}
+                      </v-btn>
+                    </span>
                   </span>
                   <span v-else>
-                    {{ formatUnits(item.info.tokens, decimals) }}
+                    <span v-if="item.info.event == 'TransferSingle'">
+                      <v-btn variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
+                        {{ item.info.tokenId }}
+                      </v-btn>
+                    </span>
+                    <span v-else-if="item.info.event == 'TransferBatch'">
+                      <v-btn variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
+                        {{ item.info.tokenIds.join(',') }}
+                      </v-btn>
+                    </span>
+                    <span v-else-if="item.info.event == 'ApprovalForAll'">
+                      <v-btn variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
+                        {{ item.info.approved }}
+                      </v-btn>
+                    </span>
                   </span>
-                </span>
-                <span v-else-if="type == 'erc721'">
-                  <span v-if="item.info.event == 'Transfer'">
-                    <v-btn variant="text" class="lowercase-btn ma-0 px-0">
-                      {{ item.info.tokenId }}
-                    </v-btn>
-                  </span>
-                  <span v-else-if="item.info.event == 'Approval'">
-                    <v-btn variant="text" class="lowercase-btn ma-0 px-0">
-                      {{ item.info.tokenId }}
-                    </v-btn>
-                  </span>
-                  <span v-else>
-                    <v-btn variant="text" class="lowercase-btn ma-0 px-0">
-                      {{ item.info.approved }}
-                    </v-btn>
-                  </span>
-                </span>
-                <span v-else>
-                  <span v-if="item.info.event == 'TransferSingle'">
-                    <v-btn variant="text" class="lowercase-btn ma-0 px-0">
-                      {{ item.info.tokenId }}
-                    </v-btn>
-                  </span>
-                  <span v-else-if="item.info.event == 'TransferBatch'">
-                    <v-btn variant="text" class="lowercase-btn ma-0 px-0">
-                      {{ item.info.tokenIds.join(',') }}
-                    </v-btn>
-                  </span>
-                  <span v-else-if="item.info.event == 'ApprovalForAll'">
-                    <v-btn variant="text" class="lowercase-btn ma-0 px-0">
-                      {{ item.info.approved }}
-                    </v-btn>
-                  </span>
-                </span>
+                </v-row>
               </template>
               <template v-slot:item.value2="{ item }">
                 <span v-if="type == 'erc1155'">
                   <span v-if="item.info.event == 'TransferSingle'">
-                    <v-btn variant="text" class="lowercase-btn ma-0 px-0">
+                    <v-btn variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
                       {{ item.info.value }}
                     </v-btn>
                   </span>
                   <span v-else-if="item.info.event == 'TransferBatch'">
-                    <v-btn variant="text" class="lowercase-btn ma-0 px-0">
+                    <v-btn variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
                       {{ item.info.values.join(',') }}
                     </v-btn>
                   </span>
@@ -272,11 +278,6 @@ const Token = {
         version: 0,
       },
       items: [],
-      eventsHeaders: [
-        { title: 'When', value: 'when', sortable: true },
-        { title: 'Event', value: 'event', sortable: false },
-        { title: 'Info', value: 'info', sortable: true },
-      ],
       itemsPerPageOptions: [
         { value: 5, title: "5" },
         { value: 10, title: "10" },
@@ -330,7 +331,7 @@ const Token = {
           { title: 'Event', value: 'event', sortable: false },
           { title: 'From / Owner', value: 'address1', sortable: false },
           { title: 'To / Spender', value: 'address2', sortable: false },
-          { title: 'Tokens', value: 'value1', sortable: false },
+          { title: 'Tokens', value: 'value1', align: 'end', sortable: false },
         ];
       } else if (this.type == "erc721") {
         return [
@@ -340,7 +341,7 @@ const Token = {
           { title: 'Event', value: 'event', sortable: false },
           { title: 'From / Owner / Account', value: 'address1', sortable: false },
           { title: 'To / Approved / Operator', value: 'address2', sortable: false },
-          { title: 'Token Id / Token Id / Approved', value: 'value1', sortable: false },
+          { title: 'Token Id / Token Id / Approved', value: 'value1', align: 'end', sortable: false },
         ];
       } else {
         return [
@@ -350,8 +351,8 @@ const Token = {
           { title: 'Event', value: 'event', sortable: false },
           { title: 'From / Owner', value: 'address1', sortable: false },
           { title: 'To / Operator', value: 'address2', sortable: false },
-          { title: 'Token Id / Approved', value: 'value1', sortable: false },
-          { title: 'Tokens', value: 'value2', sortable: false },
+          { title: 'Token Id / Approved', value: 'value1', align: 'end', sortable: false },
+          { title: 'Tokens', value: 'value2', align: 'end', sortable: false },
         ];
       }
     },
