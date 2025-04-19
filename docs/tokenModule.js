@@ -3,6 +3,10 @@ const tokenModule = {
   state: {
     info: {},
     numberOfEvents: null,
+    balances: {},
+    tokens: {},
+    approvals: {},
+    approvalForAlls: {},
     sync: {
       info: null,
       completed: null,
@@ -14,6 +18,10 @@ const tokenModule = {
     address: state => state.info.address || null,
     info: state => state.info,
     numberOfEvents: state => state.numberOfEvents,
+    balances: state => state.balances,
+    tokens: state => state.tokens,
+    approvals: state => state.approvals,
+    approvalForAlls: state => state.approvalForAlls,
     sync: state => state.sync,
     functions(state) {
       console.log(now() + " tokenModule - computed.functions");
@@ -65,9 +73,13 @@ const tokenModule = {
       // console.log(now() + " tokenModule - mutations.setInfo - info: " + JSON.stringify(info));
       state.info = info;
     },
-    setNumberOfEvents(state, numberOfEvents) {
-      console.log(now() + " tokenModule - mutations.setNumberOfEvents - numberOfEvents: " + JSON.stringify(numberOfEvents));
+    setEventInfo(state, { numberOfEvents, balances, tokens, approvals, approvalForAlls }) {
+      console.log(now() + " tokenModule - mutations.setEventInfo - numberOfEvents: " + JSON.stringify(numberOfEvents));
       state.numberOfEvents = numberOfEvents;
+      state.balances = balances;
+      state.tokens = tokens;
+      state.approvals = approvals;
+      state.approvalForAlls = approvalForAlls;
     },
     setSyncInfo(state, info) {
       // console.log(now() + " tokenModule - mutations.setSyncInfo - info: " + info);
@@ -422,7 +434,7 @@ const tokenModule = {
         console.log(now() + " tokenModule - actions.collateEventData - tokens: " + JSON.stringify(tokens, null, 2));
         console.log(now() + " tokenModule - actions.collateEventData - approvals: " + JSON.stringify(approvals, null, 2));
         console.log(now() + " tokenModule - actions.collateEventData - approvalForAlls: " + JSON.stringify(approvalForAlls, null, 2));
-        context.commit('setNumberOfEvents', rows);
+        context.commit('setEventInfo', { numberOfEvents: rows, balances, tokens, approvals, approvalForAlls });
       }
       db.close();
     },

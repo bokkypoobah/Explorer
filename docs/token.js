@@ -102,6 +102,22 @@ const Token = {
               </v-card-text>
             </v-card>
           </v-tabs-window-item>
+          <v-tabs-window-item value="balances">
+            Balances
+            <pre>
+balances: {{ balances }}
+
+tokens: {{ tokens }}
+            </pre>
+          </v-tabs-window-item>
+          <v-tabs-window-item value="approvals">
+            Approvals
+            <pre>
+approvals: {{ approvals }}
+
+approvalForAlls: {{ approvalForAlls }}
+            </pre>
+          </v-tabs-window-item>
           <v-tabs-window-item value="events">
             <!-- <v-data-table-server
               v-model:items-per-page="itemsPerPage"
@@ -312,7 +328,19 @@ const Token = {
       return store.getters['token/info'].totalSupply || null;
     },
     numberOfEvents() {
-      return store.getters['token/numberOfEvents'] || null;
+      return store.getters['token/numberOfEvents'];
+    },
+    balances() {
+      return store.getters['token/balances'];
+    },
+    tokens() {
+      return store.getters['token/tokens'];
+    },
+    approvals() {
+      return store.getters['token/approvals'];
+    },
+    approvalForAlls() {
+      return store.getters['token/approvalForAlls'];
     },
     version() {
       return store.getters['token/info'].version || null;
