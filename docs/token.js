@@ -104,6 +104,7 @@ const Token = {
           </v-tabs-window-item>
           <v-tabs-window-item value="balances">
             Balances
+            <!-- <apexchart type="pie" width="380" :options="chartOptions" :series="series"></apexchart> -->
             <pre>
 balances: {{ balances }}
 
@@ -303,6 +304,26 @@ approvalForAlls: {{ approvalForAlls }}
         { value: 40, title: "40" },
         { value: 50, title: "50" },
       ],
+
+      // series: [44, 55, 13, 43, 22],
+      // chartOptions: {
+      //   chart: {
+      //     width: 380,
+      //     type: 'pie',
+      //   },
+      //   labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
+      //   responsive: [{
+      //     breakpoint: 480,
+      //     options: {
+      //       chart: {
+      //         width: 200
+      //       },
+      //       legend: {
+      //         position: 'bottom'
+      //       }
+      //     }
+      //    }]
+      //  },
     };
   },
   computed: {
