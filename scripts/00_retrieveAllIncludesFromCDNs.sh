@@ -104,3 +104,16 @@ wget $SOURCE -O $DEST
 SOURCE=https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-solidity.min.js
 DEST=../docs/js/prism-solidity_1.24.1.min.js
 wget $SOURCE -O $DEST
+
+# Get apexcharts[.min].js 4.5.0
+SOURCE=https://cdn.jsdelivr.net/npm/apexcharts@4.5.0/dist/apexcharts.js
+DEST=../docs/js/apexcharts_4.5.0.js
+wget $SOURCE -O $DEST
+SOURCE=https://cdn.jsdelivr.net/npm/apexcharts@4.5.0/dist/apexcharts.min.js
+DEST=../docs/js/apexcharts_4.5.0.min.js
+wget $SOURCE -O $DEST
+
+# Get vue3-apexcharts@1.8.0
+SOURCE=https://cdn.jsdelivr.net/npm/vue3-apexcharts@1.8.0/dist/vue3-apexcharts.umd.cjs
+DEST=../docs/js/vue3-apexcharts_1.8.0.js
+wget $SOURCE -O $DEST
