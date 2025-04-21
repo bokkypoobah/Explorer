@@ -46,4 +46,10 @@ const SAMPLES = {
     { type: "contract", address: "0x4200000000000000000000000000000000000006", info: "ERC-20: WETH" },
     { type: "contract", address: "0xB8Df6Cc3050cC02F967Db1eE48330bA23276A492", info: "ERC-721: OptiPunk" },
   ],
+  // Polygon
+  "137": [
+    { type: "contract", address: "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619", info: "ERC-20: WETH" },
+    { type: "contract", address: "0x6f7C932e7684666C9fd1d44527765433e01fF61d", info: "ERC-20: Maker (MKR)" },
+    { type: "contract", address: "0xd1153fDc0d73af6010801Dc83d45424329055D4D", info: "ERC-1155: PixeLord" },
+  ],
 };
