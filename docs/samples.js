@@ -24,6 +24,7 @@ const SAMPLES = {
   "42161": [
     { type: "contract", address: "0x429106bAb5981ABb59094b9780cb731Cf1dC16Ad", info: "ERC-20: WEENUS" },
     { type: "contract", address: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1", info: "ERC-20: WETH" },
+    { type: "contract", address: "0xe24b509fD14BFe56acE7087aF757fCc4CD14A7EF", info: "ERC-721: Railcats" },
   ],
   // Base Mainnet
   "8453": [
@@ -43,5 +44,6 @@ const SAMPLES = {
   "10": [
     { type: "contract", address: "0x07391dbE03e7a0DEa0fce6699500da081537B6c3", info: "ERC-20: WEENUS" },
     { type: "contract", address: "0x4200000000000000000000000000000000000006", info: "ERC-20: WETH" },
+    { type: "contract", address: "0xB8Df6Cc3050cC02F967Db1eE48330bA23276A492", info: "ERC-721: OptiPunk" },
   ],
 };
