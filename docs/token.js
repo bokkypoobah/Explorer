@@ -105,11 +105,29 @@ const Token = {
           <v-tabs-window-item value="balances">
             <!-- <apexchart type="pie" width="380" :options="chartOptions" :series="series"></apexchart> -->
             <!-- <v-data-table :items="balancesList" :headers="eventsHeaders" density="comfortable"> -->
-            <v-data-table v-if="type == 'erc20'" :items="balancesList" density="comfortable">
-            </v-data-table>
-            <pre v-if="type == 'erc721' || type == 'erc1155'">
-tokens: {{ tokens }}
-            </pre>
+
+            <v-row no-gutters dense>
+              <v-col cols="7">
+                <v-data-table
+                  v-if="type == 'erc20'"
+                  :items="balancesList"
+                  :headers="balancesHeaders"
+                  v-model:sort-by="settings.balances.sortBy"
+                  @update:sort-by="saveSettings();"
+                  density="comfortable"
+                >
+                  <template v-slot:item.address="{ item }">
+                    <render-address :address="item.address" noXPadding></render-address>
+                  </template>
+                  <template v-slot:item.balance="{ item }">
+                    {{ formatUnits(item.balance, decimals) }}
+                  </template>
+                </v-data-table>
+                <pre v-if="type == 'erc721' || type == 'erc1155'">
+    tokens: {{ tokens }}
+                </pre>
+              </v-col>
+            </v-row>
           </v-tabs-window-item>
           <v-tabs-window-item value="approvals">
             Approvals
@@ -293,7 +311,10 @@ approvalForAlls: {{ approvalForAlls }}
       initialised: false,
       settings: {
         tab: null,
-        version: 0,
+        balances: {
+          sortBy: [{ key: "balances", order: "desc" }],
+        },
+        version: 1,
       },
       items: [],
       itemsPerPageOptions: [
@@ -303,6 +324,11 @@ approvalForAlls: {{ approvalForAlls }}
         { value: 30, title: "30" },
         { value: 40, title: "40" },
         { value: 50, title: "50" },
+      ],
+      balancesHeaders: [
+        { title: 'Address', value: 'address', align: 'end', sortable: true, sortRaw: (a, b) => a.address.localeCompare(b.address) },
+        { title: 'Balance', value: 'balance', align: 'end', sortable: true, sortRaw: (a, b) => ethers.BigNumber.from(a.balance).sub(b.balance) },
+        { title: '%', value: 'percent', align: 'end', sortable: false },
       ],
 
       // series: [44, 55, 13, 43, 22],
@@ -411,11 +437,12 @@ approvalForAlls: {{ approvalForAlls }}
       // console.log(now() + " Token - computed.balancesList - this.balances: " + JSON.stringify(this.balances, null, 2));
       for (const [address, balance] of Object.entries(this.balances)) {
         const percent = ethers.BigNumber.from(balance).mul(1000000).div(this.totalSupply) / 10000.0;
-        results.push({ address, balance: ethers.utils.formatUnits(balance, this.decimals), percent });
+        // results.push({ address, balance: ethers.utils.formatUnits(balance, this.decimals), percent });
+        results.push({ address, balance, percent });
       }
       results.sort((a, b) => {
-        // return ethers.BigNumber.from(b.balance).sub(a.balance);
-        return b.balance - a.balance;
+        return ethers.BigNumber.from(b.balance).sub(a.balance);
+        // return b.balance - a.balance;
       });
       return results;
     },
@@ -473,7 +500,7 @@ approvalForAlls: {{ approvalForAlls }}
       return null;
     },
     saveSettings() {
-      // console.log(now() + " Token - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
+      console.log(now() + " Token - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
       if (this.initialised) {
         localStorage.explorerTokenSettings = JSON.stringify(this.settings);
       }
