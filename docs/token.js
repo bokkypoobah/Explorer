@@ -103,20 +103,19 @@ const Token = {
             </v-card>
           </v-tabs-window-item>
           <v-tabs-window-item value="owners">
-            <v-row no-gutters dense>
+            <v-row v-if="type == 'erc20'" no-gutters dense>
               <v-col cols="7">
                 <v-data-table
-                  v-if="type == 'erc20'"
                   :items="erc20OwnersList"
                   :headers="erc20OwnersHeaders"
-                  v-model:sort-by="settings.owners.sortBy"
-                  v-model:items-per-page="settings.owners.itemsPerPage"
-                  v-model:page="settings.owners.currentPage"
+                  v-model:sort-by="settings.erc20Owners.sortBy"
+                  v-model:items-per-page="settings.erc20Owners.itemsPerPage"
+                  v-model:page="settings.erc20Owners.currentPage"
                   @update:options="saveSettings();"
                   density="comfortable"
                 >
                   <template v-slot:item.rowNumber="{ index }">
-                    {{ (settings.owners.currentPage - 1) * settings.owners.itemsPerPage + index + 1 }}
+                    {{ (settings.erc20Owners.currentPage - 1) * settings.erc20Owners.itemsPerPage + index + 1 }}
                   </template>
                   <template v-slot:item.address="{ item }">
                     <render-address :address="item.address" noXPadding></render-address>
@@ -125,18 +124,43 @@ const Token = {
                     {{ formatUnits(item.balance, decimals) }}
                   </template>
                 </v-data-table>
-                <pre v-if="type == 'erc721' || type == 'erc1155'">
+                <!-- <pre v-if="type == 'erc721' || type == 'erc1155'">
 nftOwnersList: {{ nftOwnersList }}
                   <br />
 nftTotalSupply: {{ nftTotalSupply }}
                   <br />
 tokens: {{ tokens }}
-                </pre>
+                </pre> -->
               </v-col>
               <v-col cols="5">
                 <apexchart type="pie" :options="erc20OwnersChartOptions" :series="erc20OwnersChartSeries" class="ml-5 mt-5"></apexchart>
               </v-col>
             </v-row>
+
+            <v-data-table
+              v-if="type == 'erc721' || type == 'erc1155'"
+              :items="nftOwnersList"
+              :headers="nftOwnersHeaders"
+              v-model:sort-by="settings.nftOwners.sortBy"
+              v-model:items-per-page="settings.nftOwners.itemsPerPage"
+              v-model:page="settings.nftOwners.currentPage"
+              @update:options="saveSettings();"
+              density="comfortable"
+            >
+              <template v-slot:item.rowNumber="{ index }">
+                {{ (settings.nftOwners.currentPage - 1) * settings.nftOwners.itemsPerPage + index + 1 }}
+              </template>
+              <template v-slot:item.address="{ item }">
+                <render-address :address="item.address" shortAddress noXPadding></render-address>
+              </template>
+              <template v-slot:item.count="{ item }">
+                {{ item.count }}
+              </template>
+              <template v-slot:item.tokens="{ item }">
+                {{ item.tokens.join(", ") }}
+              </template>
+            </v-data-table>
+
           </v-tabs-window-item>
           <v-tabs-window-item value="approvals">
             Approvals
@@ -320,13 +344,19 @@ approvalForAlls: {{ approvalForAlls }}
       initialised: false,
       settings: {
         tab: null,
-        owners: {
+        erc20Owners: {
           sortBy: [{ key: "balances", order: "desc" }],
           itemsPerPage: 10,
           currentPage: 1,
           top: 20,
         },
-        version: 2,
+        nftOwners: {
+          sortBy: [{ key: "count", order: "desc" }],
+          itemsPerPage: 10,
+          currentPage: 1,
+          top: 20,
+        },
+        version: 3,
       },
       items: [],
       itemsPerPageOptions: [
@@ -338,10 +368,17 @@ approvalForAlls: {{ approvalForAlls }}
         { value: 50, title: "50" },
       ],
       erc20OwnersHeaders: [
-        { title: '#', value: 'rowNumber', align: 'end', sortable: true, sortRaw: (a, b) => a.address.localeCompare(b.address) },
+        { title: '#', value: 'rowNumber', align: 'end', sortable: false },
         { title: 'Address', value: 'address', sortable: true, sortRaw: (a, b) => a.address.localeCompare(b.address) },
         { title: 'Balance', value: 'balance', align: 'end', sortable: true, sortRaw: (a, b) => ethers.BigNumber.from(a.balance).sub(b.balance) },
         { title: '%', value: 'percent', align: 'end', sortable: false },
+      ],
+      nftOwnersHeaders: [
+        { title: '#', value: 'rowNumber', align: 'end', sortable: false },
+        { title: 'Address', value: 'address', sortable: true, sortRaw: (a, b) => a.address.localeCompare(b.address) },
+        { title: 'Count', value: 'count', align: 'end', sortable: true, sortRaw: (a, b) => a.count - b.count },
+        { title: '%', value: 'percent', align: 'end', sortable: false },
+        { title: 'Tokens', value: 'tokens', sortable: false },
       ],
     };
   },
@@ -459,9 +496,9 @@ approvalForAlls: {{ approvalForAlls }}
           owners[owner].push(tokenId);
         }
         // console.log(now() + " Token - computed.nftOwnersList - owners: " + JSON.stringify(owners, null, 2));
-        for (const [owner, tokens] of Object.entries(owners)) {
+        for (const [address, tokens] of Object.entries(owners)) {
           const percent = tokens.length * 100.0 / totalSupply ;
-          results.push({ owner, count: tokens.length, percent: percent.toFixed(4), tokens });
+          results.push({ address, count: tokens.length, percent: percent.toFixed(4), tokens });
         }
       }
       results.sort((a, b) => {
@@ -475,7 +512,7 @@ approvalForAlls: {{ approvalForAlls }}
       let other = 0;
       for (const [index, row] of this.erc20OwnersList.entries()) {
         const value = parseFloat(ethers.utils.formatUnits(row.balance, this.decimals));
-        if (index < this.settings.owners.top) {
+        if (index < this.settings.erc20Owners.top) {
           series.push(value);
         } else {
           other += value;
@@ -493,7 +530,7 @@ approvalForAlls: {{ approvalForAlls }}
       let otherPercent = 0;
       for (const [index, row] of this.erc20OwnersList.entries()) {
         const value = parseFloat(ethers.utils.formatUnits(row.balance, this.decimals));
-        if (index < this.settings.owners.top) {
+        if (index < this.settings.erc20Owners.top) {
           labels.push(row.address.substring(0, 10) + " " + row.percent.toFixed(4) + "%");
         } else {
           other += value;

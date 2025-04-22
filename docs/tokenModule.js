@@ -373,7 +373,7 @@ const tokenModule = {
                     }
                   }
                 } else if (info.event == "ApprovalForAll") {
-                  console.log("erc721 ApprovalForAll: " + JSON.stringify(info));
+                  // console.log("erc721 ApprovalForAll: " + JSON.stringify(info));
                   if (!(info.owner in approvalForAlls)) {
                     approvalForAlls[info.owner] = {};
                   }
