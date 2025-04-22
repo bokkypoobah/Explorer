@@ -107,8 +107,8 @@ const Token = {
               <v-col cols="7">
                 <v-data-table
                   v-if="type == 'erc20'"
-                  :items="balancesList"
-                  :headers="balancesHeaders"
+                  :items="erc20OwnersList"
+                  :headers="erc20OwnersHeaders"
                   v-model:sort-by="settings.owners.sortBy"
                   v-model:items-per-page="settings.owners.itemsPerPage"
                   v-model:page="settings.owners.currentPage"
@@ -333,7 +333,7 @@ approvalForAlls: {{ approvalForAlls }}
         { value: 40, title: "40" },
         { value: 50, title: "50" },
       ],
-      balancesHeaders: [
+      erc20OwnersHeaders: [
         { title: '#', value: 'rowNumber', align: 'end', sortable: true, sortRaw: (a, b) => a.address.localeCompare(b.address) },
         { title: 'Address', value: 'address', sortable: true, sortRaw: (a, b) => a.address.localeCompare(b.address) },
         { title: 'Balance', value: 'balance', align: 'end', sortable: true, sortRaw: (a, b) => ethers.BigNumber.from(a.balance).sub(b.balance) },
@@ -421,9 +421,9 @@ approvalForAlls: {{ approvalForAlls }}
         ];
       }
     },
-    balancesList() {
+    erc20OwnersList() {
       const results = [];
-      // console.log(now() + " Token - computed.balancesList - this.balances: " + JSON.stringify(this.balances, null, 2));
+      // console.log(now() + " Token - computed.erc20OwnersList - this.balances: " + JSON.stringify(this.balances, null, 2));
       for (const [address, balance] of Object.entries(this.balances)) {
         const percent = ethers.BigNumber.from(balance).mul(1000000).div(this.totalSupply) / 10000.0;
         // results.push({ address, balance: ethers.utils.formatUnits(balance, this.decimals), percent });
@@ -438,7 +438,7 @@ approvalForAlls: {{ approvalForAlls }}
     balancesChartSeries() {
       const series = [];
       let other = 0;
-      for (const [index, row] of this.balancesList.entries()) {
+      for (const [index, row] of this.erc20OwnersList.entries()) {
         const value = parseFloat(ethers.utils.formatUnits(row.balance, this.decimals));
         if (index < this.settings.owners.top) {
           series.push(value);
@@ -456,7 +456,7 @@ approvalForAlls: {{ approvalForAlls }}
       const labels = [];
       let other = 0;
       let otherPercent = 0;
-      for (const [index, row] of this.balancesList.entries()) {
+      for (const [index, row] of this.erc20OwnersList.entries()) {
         const value = parseFloat(ethers.utils.formatUnits(row.balance, this.decimals));
         if (index < this.settings.owners.top) {
           labels.push(row.address.substring(0, 10) + " " + row.percent.toFixed(4) + "%");
