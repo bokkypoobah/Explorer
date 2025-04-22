@@ -22,7 +22,7 @@ const Token = {
           <v-spacer></v-spacer>
           <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" right color="deep-purple-accent-4">
             <v-tab prepend-icon="mdi-text-long" text="Info" value="info" class="lowercase-btn"></v-tab>
-            <v-tab prepend-icon="mdi-cash-multiple" text="Balances" value="balances" class="lowercase-btn"></v-tab>
+            <v-tab prepend-icon="mdi-account-multiple-outline" text="Owners" value="owners" class="lowercase-btn"></v-tab>
             <v-tab prepend-icon="mdi-check-outline" text="Approvals" value="approvals" class="lowercase-btn"></v-tab>
             <v-tab prepend-icon="mdi-math-log" text="Events" value="events" class="lowercase-btn"></v-tab>
           </v-tabs>
@@ -102,17 +102,22 @@ const Token = {
               </v-card-text>
             </v-card>
           </v-tabs-window-item>
-          <v-tabs-window-item value="balances">
+          <v-tabs-window-item value="owners">
             <v-row no-gutters dense>
               <v-col cols="7">
                 <v-data-table
                   v-if="type == 'erc20'"
                   :items="balancesList"
                   :headers="balancesHeaders"
-                  v-model:sort-by="settings.balances.sortBy"
-                  @update:sort-by="saveSettings();"
+                  v-model:sort-by="settings.owners.sortBy"
+                  v-model:items-per-page="settings.owners.itemsPerPage"
+                  v-model:page="settings.owners.currentPage"
+                  @update:options="saveSettings();"
                   density="comfortable"
                 >
+                  <template v-slot:item.rowNumber="{ index }">
+                    {{ (settings.owners.currentPage - 1) * settings.owners.itemsPerPage + index + 1 }}
+                  </template>
                   <template v-slot:item.address="{ item }">
                     <render-address :address="item.address" noXPadding></render-address>
                   </template>
@@ -311,11 +316,13 @@ approvalForAlls: {{ approvalForAlls }}
       initialised: false,
       settings: {
         tab: null,
-        balances: {
+        owners: {
           sortBy: [{ key: "balances", order: "desc" }],
+          itemsPerPage: 10,
+          currentPage: 1,
           top: 20,
         },
-        version: 1,
+        version: 2,
       },
       items: [],
       itemsPerPageOptions: [
@@ -327,7 +334,8 @@ approvalForAlls: {{ approvalForAlls }}
         { value: 50, title: "50" },
       ],
       balancesHeaders: [
-        { title: 'Address', value: 'address', align: 'end', sortable: true, sortRaw: (a, b) => a.address.localeCompare(b.address) },
+        { title: '#', value: 'rowNumber', align: 'end', sortable: true, sortRaw: (a, b) => a.address.localeCompare(b.address) },
+        { title: 'Address', value: 'address', sortable: true, sortRaw: (a, b) => a.address.localeCompare(b.address) },
         { title: 'Balance', value: 'balance', align: 'end', sortable: true, sortRaw: (a, b) => ethers.BigNumber.from(a.balance).sub(b.balance) },
         { title: '%', value: 'percent', align: 'end', sortable: false },
       ],
@@ -432,7 +440,7 @@ approvalForAlls: {{ approvalForAlls }}
       let other = 0;
       for (const [index, row] of this.balancesList.entries()) {
         const value = parseFloat(ethers.utils.formatUnits(row.balance, this.decimals));
-        if (index < this.settings.balances.top) {
+        if (index < this.settings.owners.top) {
           series.push(value);
         } else {
           other += value;
@@ -450,7 +458,7 @@ approvalForAlls: {{ approvalForAlls }}
       let otherPercent = 0;
       for (const [index, row] of this.balancesList.entries()) {
         const value = parseFloat(ethers.utils.formatUnits(row.balance, this.decimals));
-        if (index < this.settings.balances.top) {
+        if (index < this.settings.owners.top) {
           labels.push(row.address.substring(0, 10) + " " + row.percent.toFixed(4) + "%");
         } else {
           other += value;
