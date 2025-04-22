@@ -125,7 +125,7 @@ const Token = {
                 </pre>
               </v-col>
               <v-col cols="5">
-                <apexchart type="pie" width="500" :options="chartOptions" :series="series" class="ml-5"></apexchart>
+                <apexchart type="pie" width="500" :options="balancesChartOptions" :series="balancesChartSeries" class="ml-5"></apexchart>
               </v-col>
             </v-row>
           </v-tabs-window-item>
@@ -330,26 +330,6 @@ approvalForAlls: {{ approvalForAlls }}
         { title: 'Balance', value: 'balance', align: 'end', sortable: true, sortRaw: (a, b) => ethers.BigNumber.from(a.balance).sub(b.balance) },
         { title: '%', value: 'percent', align: 'end', sortable: false },
       ],
-
-      series: [44, 55, 13, 43, 22],
-      chartOptions: {
-        chart: {
-          width: 380,
-          type: 'pie',
-        },
-        labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
-        responsive: [{
-          breakpoint: 480,
-          options: {
-            chart: {
-              width: 200
-            },
-            legend: {
-              position: 'bottom'
-            }
-          }
-         }]
-       },
     };
   },
   computed: {
@@ -445,6 +425,29 @@ approvalForAlls: {{ approvalForAlls }}
         // return b.balance - a.balance;
       });
       return results;
+    },
+    balancesChartSeries() {
+      return [44, 55, 13, 43, 22];
+    },
+    balancesChartOptions() {
+      return {
+        chart: {
+          width: 380,
+          type: 'pie',
+        },
+        labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
+        responsive: [{
+          breakpoint: 480,
+          options: {
+            chart: {
+              width: 200
+            },
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }],
+      }
     },
   },
   methods: {
