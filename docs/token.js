@@ -313,6 +313,7 @@ approvalForAlls: {{ approvalForAlls }}
         tab: null,
         balances: {
           sortBy: [{ key: "balances", order: "desc" }],
+          top: 20,
         },
         version: 1,
       },
@@ -427,26 +428,56 @@ approvalForAlls: {{ approvalForAlls }}
       return results;
     },
     balancesChartSeries() {
-      return [44, 55, 13, 43, 22];
+      const series = [];
+      let other = 0;
+      for (const [index, row] of this.balancesList.entries()) {
+        const value = parseFloat(ethers.utils.formatUnits(row.balance, this.decimals));
+        if (index < this.settings.balances.top) {
+          series.push(value);
+        } else {
+          other += value;
+        }
+      }
+      if (other > 0) {
+        series.push(other);
+      }
+      console.log(now() + " Token - computed.balancesChartSeries - series: " + JSON.stringify(series));
+      return series;
     },
     balancesChartOptions() {
+      const labels = [];
+      let other = 0;
+      let otherPercent = 0;
+      for (const [index, row] of this.balancesList.entries()) {
+        const value = parseFloat(ethers.utils.formatUnits(row.balance, this.decimals));
+        if (index < this.settings.balances.top) {
+          labels.push(row.address.substring(0, 10) + " " + row.percent.toFixed(4) + "%");
+        } else {
+          other += value;
+          otherPercent += row.percent;
+        }
+      }
+      if (other > 0) {
+        labels.push("Other " + otherPercent.toFixed(4) + "%");
+      }
+      console.log(now() + " Token - computed.balancesChartOptions - labels: " + JSON.stringify(labels));
       return {
         chart: {
-          width: 380,
+          width: 480,
           type: 'pie',
         },
-        labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
-        responsive: [{
-          breakpoint: 480,
-          options: {
-            chart: {
-              width: 200
-            },
-            legend: {
-              position: 'bottom'
-            }
-          }
-        }],
+        labels,
+        // responsive: [{
+        //   breakpoint: 480,
+        //   options: {
+        //     chart: {
+        //       width: 200
+        //     },
+        //     legend: {
+        //       position: 'bottom'
+        //     }
+        //   }
+        // }],
       }
     },
   },
