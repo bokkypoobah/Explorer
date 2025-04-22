@@ -102,9 +102,9 @@
             </template>
           </v-combobox>
           <v-spacer></v-spacer>
-          <v-btn to="/" :active="mainPath == '/'" class="px-1 lowercase-btn" text>Home</v-btn>
+          <v-btn to="/" :active="mainPath == '/'" class="px-3 lowercase-btn" text>Home</v-btn>
 
-          <v-btn class="px-1 lowercase-btn" text>Blocks
+          <v-btn class="px-3 lowercase-btn" text>Blocks
             <v-menu activator="parent">
               <v-list density="compact">
                 <!-- TODO: Clean up -->
@@ -121,7 +121,7 @@
             </v-menu>
           </v-btn>
 
-          <v-btn class="px-1 lowercase-btn" text>Transactions
+          <v-btn class="px-3 lowercase-btn" text>Transactions
             <v-menu activator="parent">
               <v-list density="compact">
                 <v-list-item to="/transactions/latest" prepend-icon="mdi-lightning-bolt" density="compact">
@@ -137,7 +137,7 @@
             </v-menu>
           </v-btn>
 
-          <v-btn class="px-1 lowercase-btn" text>Addresses
+          <v-btn class="px-3 lowercase-btn" text>Addresses
             <v-menu activator="parent">
               <v-list density="compact">
                 <v-list-item to="/address" prepend-icon="mdi-numeric" density="compact">
@@ -156,7 +156,7 @@
             </v-menu>
           </v-btn>
 
-          <v-btn class="px-1 lowercase-btn" text>Tokens
+          <v-btn class="px-3 lowercase-btn" text>Tokens
             <v-menu activator="parent">
               <v-list density="compact">
                 <v-list-item to="/token" prepend-icon="mdi-cash-multiple" density="compact">
@@ -166,7 +166,7 @@
             </v-menu>
           </v-btn>
 
-          <v-btn class="px-1 lowercase-btn" text>Names
+          <v-btn class="px-3 lowercase-btn" text>Names
             <v-menu activator="parent">
               <v-list density="compact">
                 <v-list-item to="/name" prepend-icon="mdi-alphabetical" density="compact">
@@ -176,7 +176,7 @@
             </v-menu>
           </v-btn>
 
-          <v-btn class="px-1 lowercase-btn" text>Other
+          <v-btn class="px-3 lowercase-btn" text>Other
             <v-menu activator="parent">
               <v-list density="compact">
                 <v-list-item to="/config" prepend-icon="mdi-cog" density="compact">
