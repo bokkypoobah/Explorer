@@ -103,11 +103,11 @@ const Token = {
             </v-card>
           </v-tabs-window-item>
           <v-tabs-window-item value="balances">
-            Balances
             <!-- <apexchart type="pie" width="380" :options="chartOptions" :series="series"></apexchart> -->
-            <pre>
-balances: {{ balances }}
-
+            <!-- <v-data-table :items="balancesList" :headers="eventsHeaders" density="comfortable"> -->
+            <v-data-table v-if="type == 'erc20'" :items="balancesList" density="comfortable">
+            </v-data-table>
+            <pre v-if="type == 'erc721' || type == 'erc1155'">
 tokens: {{ tokens }}
             </pre>
           </v-tabs-window-item>
@@ -405,6 +405,19 @@ approvalForAlls: {{ approvalForAlls }}
           { title: 'Tokens', value: 'value2', align: 'end', sortable: false },
         ];
       }
+    },
+    balancesList() {
+      const results = [];
+      // console.log(now() + " Token - computed.balancesList - this.balances: " + JSON.stringify(this.balances, null, 2));
+      for (const [address, balance] of Object.entries(this.balances)) {
+        const percent = ethers.BigNumber.from(balance).mul(1000000).div(this.totalSupply) / 10000.0;
+        results.push({ address, balance: ethers.utils.formatUnits(balance, this.decimals), percent });
+      }
+      results.sort((a, b) => {
+        // return ethers.BigNumber.from(b.balance).sub(a.balance);
+        return b.balance - a.balance;
+      });
+      return results;
     },
   },
   methods: {

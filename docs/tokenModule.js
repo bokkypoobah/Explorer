@@ -430,10 +430,10 @@ const tokenModule = {
           done = data.length < BATCH_SIZE;
         } while (!done);
         console.log(now() + " tokenModule - actions.collateEventData - rows: " + rows);
-        console.log(now() + " tokenModule - actions.collateEventData - balances: " + JSON.stringify(balances, null, 2));
-        console.log(now() + " tokenModule - actions.collateEventData - tokens: " + JSON.stringify(tokens, null, 2));
-        console.log(now() + " tokenModule - actions.collateEventData - approvals: " + JSON.stringify(approvals, null, 2));
-        console.log(now() + " tokenModule - actions.collateEventData - approvalForAlls: " + JSON.stringify(approvalForAlls, null, 2));
+        // console.log(now() + " tokenModule - actions.collateEventData - balances: " + JSON.stringify(balances, null, 2));
+        // console.log(now() + " tokenModule - actions.collateEventData - tokens: " + JSON.stringify(tokens, null, 2));
+        // console.log(now() + " tokenModule - actions.collateEventData - approvals: " + JSON.stringify(approvals, null, 2));
+        // console.log(now() + " tokenModule - actions.collateEventData - approvalForAlls: " + JSON.stringify(approvalForAlls, null, 2));
         context.commit('setEventInfo', { numberOfEvents: rows, balances, tokens, approvals, approvalForAlls });
       }
       db.close();
