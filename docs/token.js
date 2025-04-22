@@ -130,7 +130,7 @@ const Token = {
                 </pre>
               </v-col>
               <v-col cols="5">
-                <apexchart type="pie" :options="balancesChartOptions" :series="balancesChartSeries" class="ml-5 mt-5"></apexchart>
+                <apexchart type="pie" :options="erc20OwnersChartOptions" :series="erc20OwnersChartSeries" class="ml-5 mt-5"></apexchart>
               </v-col>
             </v-row>
           </v-tabs-window-item>
@@ -435,7 +435,7 @@ approvalForAlls: {{ approvalForAlls }}
       });
       return results;
     },
-    balancesChartSeries() {
+    erc20OwnersChartSeries() {
       const series = [];
       let other = 0;
       for (const [index, row] of this.erc20OwnersList.entries()) {
@@ -449,10 +449,10 @@ approvalForAlls: {{ approvalForAlls }}
       if (other > 0) {
         series.push(other);
       }
-      console.log(now() + " Token - computed.balancesChartSeries - series: " + JSON.stringify(series));
+      console.log(now() + " Token - computed.erc20OwnersChartSeries - series: " + JSON.stringify(series));
       return series;
     },
-    balancesChartOptions() {
+    erc20OwnersChartOptions() {
       const labels = [];
       let other = 0;
       let otherPercent = 0;
@@ -468,7 +468,7 @@ approvalForAlls: {{ approvalForAlls }}
       if (other > 0) {
         labels.push("Other " + otherPercent.toFixed(4) + "%");
       }
-      console.log(now() + " Token - computed.balancesChartOptions - labels: " + JSON.stringify(labels));
+      console.log(now() + " Token - computed.erc20OwnersChartOptions - labels: " + JSON.stringify(labels));
       return {
         chart: {
           width: 580,
