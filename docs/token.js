@@ -126,7 +126,11 @@ const Token = {
                   </template>
                 </v-data-table>
                 <pre v-if="type == 'erc721' || type == 'erc1155'">
-    tokens: {{ tokens }}
+nftOwnersList: {{ nftOwnersList }}
+                  <br />
+nftTotalSupply: {{ nftTotalSupply }}
+                  <br />
+tokens: {{ tokens }}
                 </pre>
               </v-col>
               <v-col cols="5">
@@ -433,6 +437,37 @@ approvalForAlls: {{ approvalForAlls }}
         return ethers.BigNumber.from(b.balance).sub(a.balance);
         // return b.balance - a.balance;
       });
+      return results;
+    },
+    nftTotalSupply() {
+      let result = 0;
+      if (this.type == "erc721") {
+        result = Object.keys(this.tokens).length;
+      }
+      return result;
+    },
+    nftOwnersList() {
+      const results = [];
+      // console.log(now() + " Token - computed.nftOwnersList - this.tokens: " + JSON.stringify(this.tokens, null, 2));
+      if (this.type == "erc721") {
+        const totalSupply = this.nftTotalSupply;
+        const owners = {};
+        for (const [tokenId, owner] of Object.entries(this.tokens)) {
+          if (!(owner in owners)) {
+            owners[owner] = [];
+          }
+          owners[owner].push(tokenId);
+        }
+        // console.log(now() + " Token - computed.nftOwnersList - owners: " + JSON.stringify(owners, null, 2));
+        for (const [owner, tokens] of Object.entries(owners)) {
+          const percent = tokens.length * 100.0 / totalSupply ;
+          results.push({ owner, count: tokens.length, percent: percent.toFixed(4), tokens });
+        }
+      }
+      results.sort((a, b) => {
+        return b.count - a.count;
+      });
+      // console.log(now() + " Token - computed.nftOwnersList - results: " + JSON.stringify(results, null, 2));
       return results;
     },
     erc20OwnersChartSeries() {
