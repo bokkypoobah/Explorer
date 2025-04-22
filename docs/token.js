@@ -103,9 +103,6 @@ const Token = {
             </v-card>
           </v-tabs-window-item>
           <v-tabs-window-item value="balances">
-            <!-- <apexchart type="pie" width="380" :options="chartOptions" :series="series"></apexchart> -->
-            <!-- <v-data-table :items="balancesList" :headers="eventsHeaders" density="comfortable"> -->
-
             <v-row no-gutters dense>
               <v-col cols="7">
                 <v-data-table
@@ -126,6 +123,9 @@ const Token = {
                 <pre v-if="type == 'erc721' || type == 'erc1155'">
     tokens: {{ tokens }}
                 </pre>
+              </v-col>
+              <v-col cols="5">
+                <apexchart type="pie" width="500" :options="chartOptions" :series="series" class="ml-5"></apexchart>
               </v-col>
             </v-row>
           </v-tabs-window-item>
@@ -331,25 +331,25 @@ approvalForAlls: {{ approvalForAlls }}
         { title: '%', value: 'percent', align: 'end', sortable: false },
       ],
 
-      // series: [44, 55, 13, 43, 22],
-      // chartOptions: {
-      //   chart: {
-      //     width: 380,
-      //     type: 'pie',
-      //   },
-      //   labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
-      //   responsive: [{
-      //     breakpoint: 480,
-      //     options: {
-      //       chart: {
-      //         width: 200
-      //       },
-      //       legend: {
-      //         position: 'bottom'
-      //       }
-      //     }
-      //    }]
-      //  },
+      series: [44, 55, 13, 43, 22],
+      chartOptions: {
+        chart: {
+          width: 380,
+          type: 'pie',
+        },
+        labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
+        responsive: [{
+          breakpoint: 480,
+          options: {
+            chart: {
+              width: 200
+            },
+            legend: {
+              position: 'bottom'
+            }
+          }
+         }]
+       },
     };
   },
   computed: {
