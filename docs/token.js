@@ -471,7 +471,7 @@ approvalForAlls: {{ approvalForAlls }}
       console.log(now() + " Token - computed.erc20OwnersChartOptions - labels: " + JSON.stringify(labels));
       return {
         chart: {
-          width: 580,
+          width: 540,
           type: 'pie',
         },
         labels,
