@@ -125,7 +125,7 @@ const Token = {
                 </pre>
               </v-col>
               <v-col cols="5">
-                <apexchart type="pie" width="500" :options="balancesChartOptions" :series="balancesChartSeries" class="ml-5"></apexchart>
+                <apexchart type="pie" :options="balancesChartOptions" :series="balancesChartSeries" class="ml-5 mt-5"></apexchart>
               </v-col>
             </v-row>
           </v-tabs-window-item>
@@ -463,7 +463,7 @@ approvalForAlls: {{ approvalForAlls }}
       console.log(now() + " Token - computed.balancesChartOptions - labels: " + JSON.stringify(labels));
       return {
         chart: {
-          width: 480,
+          width: 580,
           type: 'pie',
         },
         labels,
