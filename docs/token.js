@@ -136,7 +136,11 @@ tokens: {{ tokens }}
                 <apexchart type="pie" :options="erc20OwnersChartOptions" :series="erc20OwnersChartSeries" class="ml-5 mt-5"></apexchart>
               </v-col>
             </v-row>
-
+            <!-- <pre v-if="type == 'erc1155'">
+nftTotalSupply: {{ nftTotalSupply }}
+              <br />
+nftOwnersList: {{ nftOwnersList }}
+            </pre> -->
             <v-data-table
               v-if="type == 'erc721' || type == 'erc1155'"
               :items="nftOwnersList"
@@ -157,7 +161,12 @@ tokens: {{ tokens }}
                 {{ item.count }}
               </template>
               <template v-slot:item.tokens="{ item }">
-                {{ item.tokens.join(", ") }}
+                <span v-if="type == 'erc721'">
+                  {{ item.tokens.join(", ") }}
+                </span>
+                <span v-else>
+                  {{ item.tokens.map(e => e.tokenId + "x" + e.count).join(", ") }}
+                </span>
               </template>
             </v-data-table>
 
@@ -366,6 +375,7 @@ approvalForAlls: {{ approvalForAlls }}
         { value: 30, title: "30" },
         { value: 40, title: "40" },
         { value: 50, title: "50" },
+        { value: 100, title: "100" },
       ],
       erc20OwnersHeaders: [
         { title: '#', value: 'rowNumber', align: 'end', sortable: false },
@@ -480,6 +490,14 @@ approvalForAlls: {{ approvalForAlls }}
       let result = 0;
       if (this.type == "erc721") {
         result = Object.keys(this.tokens).length;
+      } else if (this.type == "erc1155") {
+        for (const [tokenId, ownerData] of Object.entries(this.tokens)) {
+          // console.log(tokenId + " => " + JSON.stringify(ownerData));
+          for (const [owner, count] of Object.entries(ownerData)) {
+            // console.log(tokenId + "/" + owner + " => " + count);
+            result += parseInt(count);
+          }
+        }
       }
       return result;
     },
@@ -500,6 +518,29 @@ approvalForAlls: {{ approvalForAlls }}
           const percent = tokens.length * 100.0 / totalSupply ;
           results.push({ address, count: tokens.length, percent: percent.toFixed(4), tokens });
         }
+      } else if (this.type == "erc1155") {
+        const totalSupply = this.nftTotalSupply;
+        const owners = {};
+        for (const [tokenId, ownerData] of Object.entries(this.tokens)) {
+          for (const [owner, count] of Object.entries(ownerData)) {
+            if (!(owner in owners)) {
+              owners[owner] = [];
+            }
+            owners[owner].push({ tokenId, count });
+          }
+        }
+        // console.log(now() + " Token - computed.nftOwnersList - owners: " + JSON.stringify(owners, null, 2));
+        for (const [address, tokenInfo] of Object.entries(owners)) {
+          let count = 0;
+          for (const item of tokenInfo) {
+            // console.log("  " + JSON.stringify(item));
+            count += parseInt(item.count);
+          }
+          // console.log(address + " => " + count + " " + JSON.stringify(tokenInfo));
+          const percent = count * 100.0 / totalSupply ;
+          results.push({ address, count, percent: percent.toFixed(4), tokens: tokenInfo });
+        }
+
       }
       results.sort((a, b) => {
         return b.count - a.count;
@@ -614,7 +655,7 @@ approvalForAlls: {{ approvalForAlls }}
       return null;
     },
     saveSettings() {
-      console.log(now() + " Token - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
+      // console.log(now() + " Token - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
       if (this.initialised) {
         localStorage.explorerTokenSettings = JSON.stringify(this.settings);
       }
