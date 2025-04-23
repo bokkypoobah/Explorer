@@ -50,33 +50,33 @@ Click [IMPORT FROM ETHERSCAN] to import a list of EVM chains.
 
 Select ERC-20 WEENUS @ `0x2823589Ae095D99bD64dEeA80B4690313e2fB519`
 
-<kbd><img src="images/SampleScreen16.png?" width="800" /></kbd>
+<kbd><img src="images/SampleScreen16.png" width="800" /></kbd>
 
 Select [Token Contract]
 
-<kbd><img src="images/SampleScreen17.png?" width="800" /></kbd>
+<kbd><img src="images/SampleScreen17.png" width="800" /></kbd>
 
 Click on the [Sync Token Events] button - 265 events
 
-<kbd><img src="images/SampleScreen18.png?" width="800" /></kbd>
+<kbd><img src="images/SampleScreen18.png" width="800" /></kbd>
 
 ERC-20 Owners
 
-<kbd><img src="images/SampleScreen19.png?" width="800" /></kbd>
+<kbd><img src="images/SampleScreen19.png" width="800" /></kbd>
 
 ERC-20 Approvals
 
-<kbd><img src="images/SampleScreen20.png?" width="800" /></kbd>
+<kbd><img src="images/SampleScreen20.png" width="800" /></kbd>
 
 ERC-20 Events
 
-<kbd><img src="images/SampleScreen21.png?" width="800" /></kbd>
+<kbd><img src="images/SampleScreen21.png" width="800" /></kbd>
 
 ERC-721 Larva Chad @ `0x8FA600364B93C53e0c71C7A33d2adE21f4351da3` events
 
-<kbd><img src="images/SampleScreen22.png?" width="800" /></kbd>
+<kbd><img src="images/SampleScreen22.png" width="800" /></kbd>
 
-<kbd><img src="images/SampleScreen23.png?" width="800" /></kbd>
+<kbd><img src="images/SampleScreen23.png" width="800" /></kbd>
 
 <kbd><img src="images/SampleScreen24.png" width="800" /></kbd>
 
