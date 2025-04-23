@@ -13,6 +13,7 @@ const tokenModule = {
     tokens: {},
     approvals: {},
     approvalForAlls: {},
+
     sync: {
       info: null,
       completed: null,
@@ -34,6 +35,7 @@ const tokenModule = {
     tokens: state => state.tokens,
     approvals: state => state.approvals,
     approvalForAlls: state => state.approvalForAlls,
+
     sync: state => state.sync,
     functions(state) {
       console.log(now() + " tokenModule - computed.functions");
@@ -149,13 +151,13 @@ const tokenModule = {
       if (!addressInfo.type) {
         store.dispatch("addresses/addAddress", { address: validatedAddress, type: info.type, version: info.version, ensName: info.ensName });
       }
-      context.commit('setInfo', info);
-
       const addresses = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_token_addresses", []);
       const addressesIndex = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_token_addressesIndex", {});
       const txHashes = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_token_txHashes", []);
       const txHashesIndex = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_token_txHashesIndex", {});
       context.commit('setLookups', { addresses, addressesIndex, txHashes, txHashesIndex });
+
+      context.commit('setInfo', info);
 
       context.dispatch("collateEventData", inputAddress);
       db.close();
@@ -369,7 +371,7 @@ const tokenModule = {
       console.log(now() + " tokenModule - actions.syncTokenEvents - startBlock: " + startBlock + ", latestBlockNumber: " + latestBlockNumber);
       await getTokenLogsFromRange(startBlock, latestBlockNumber);
       context.commit('setLookups', { addresses, addressesIndex, txHashes, txHashesIndex });
-    
+
       db.close();
       context.dispatch("collateEventData", inputAddress);
       context.commit('setSyncInfo', null);
@@ -377,6 +379,12 @@ const tokenModule = {
     },
 
     async collateEventData(context, address) {
+      const validatedAddress = validateAddress(address);
+      if (!validatedAddress) {
+        // TODO: Handle error in UI
+        console.error(now() + " tokenModule - actions.collateEventData - INVALID address: " + address);
+        return;
+      }
       console.log(moment().format("HH:mm:ss") + " tokenModule - actions.collateEventData - address: " + address);
 
       const chainId = store.getters["chainId"];
@@ -384,127 +392,112 @@ const tokenModule = {
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
 
-      // const latest = await db.tokenEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, address, Dexie.minKey, Dexie.minKey],[chainId, address, Dexie.maxKey, Dexie.maxKey]).last();
-      // console.log(now() + " tokenModule - actions.collateEventData - latest: " + JSON.stringify(latest, null, 2));
-
-      const validatedAddress = validateAddress(address);
-      if (validatedAddress) {
-        const BATCH_SIZE = 100000;
-        let rows = 0;
-        let done = false;
-        const balances = {};
-        const tokens = {};
-        const approvals = {};
-        const approvalForAlls = {};
-        do {
-          const data = await db.tokenEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, validatedAddress, Dexie.minKey, Dexie.minKey],[chainId, validatedAddress, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(BATCH_SIZE).toArray();
-          if (data.length > 0) {
-            // console.log(now() + " tokenModule - actions.collateEventData - data[0]: " + JSON.stringify(data[0], null, 2));
-            if (context.state.info.type == "erc20") {
-              for (const item of data) {
-                const info = item.info;
-                if (info.event == "Transfer") {
-                  // console.log("erc20 Transfer: " + JSON.stringify(info));
-                  if (info.from != ADDRESS0) {
-                    balances[info.from] = ethers.BigNumber.from(balances[info.from] || "0").sub(info.tokens).toString();
-                  }
-                  balances[info.to] = ethers.BigNumber.from(balances[info.to] || "0").add(info.tokens).toString();
-                } else if (info.event == "Approval") {
-                  // console.log("erc20 Approval: " + JSON.stringify(info));
+      const BATCH_SIZE = 100000;
+      let rows = 0;
+      let done = false;
+      const balances = {};
+      const tokens = {};
+      const approvals = {};
+      const approvalForAlls = {};
+      do {
+        const data = await db.tokenEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, validatedAddress, Dexie.minKey, Dexie.minKey],[chainId, validatedAddress, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(BATCH_SIZE).toArray();
+        if (data.length > 0) {
+          if (context.state.info.type == "erc20") {
+            for (const item of data) {
+              const info = item.info;
+              if (info.event == "Transfer") {
+                if (info.from != ADDRESS0) {
+                  balances[info.from] = ethers.BigNumber.from(balances[info.from] || "0").sub(info.tokens).toString();
+                }
+                balances[info.to] = ethers.BigNumber.from(balances[info.to] || "0").add(info.tokens).toString();
+              } else if (info.event == "Approval") {
+                if (!(info.owner in approvals)) {
+                  approvals[info.owner] = {};
+                }
+                approvals[info.owner][info.spender] = { tokens: info.tokens, blockNumber: item.blockNumber, txHash: item.txHash, txIndex: item.txIndex };
+              }
+            }
+          } else if (context.state.info.type == "erc721") {
+            for (const item of data) {
+              const info = item.info;
+              if (info.event == "Transfer") {
+                tokens[info.tokenId] = info.to;
+              } else if (info.event == "Approval") {
+                // TODO Make optional to show in history?
+                if (true || info.approved != ADDRESS0) {
                   if (!(info.owner in approvals)) {
                     approvals[info.owner] = {};
                   }
-                  approvals[info.owner][info.spender] = { tokens: info.tokens, blockNumber: item.blockNumber, txHash: item.txHash, txIndex: item.txIndex };
+                  if (!(info.tokenId in approvals[info.owner])) {
+                    approvals[info.owner][info.tokenId] = { approved: info.approved, blockNumber: item.blockNumber, txHash: item.txHash, txIndex: item.txIndex };
+                  }
+                } else {
+                  if (approvals[info.owner] && approvals[info.owner][info.tokenId]) {
+                    delete approvals[info.owner][info.tokenId];
+                    if (Object.keys(approvals[info.owner]).length == 0) {
+                      delete approvals[info.owner];
+                    }
+                  }
                 }
+              } else if (info.event == "ApprovalForAll") {
+                if (!(info.owner in approvalForAlls)) {
+                  approvalForAlls[info.owner] = {};
+                }
+                approvalForAlls[info.owner][info.operator] = { approved: info.approved, blockNumber: item.blockNumber, txHash: item.txHash, txIndex: item.txIndex };
               }
-            } else if (context.state.info.type == "erc721") {
-              for (const item of data) {
-                const info = item.info;
-                if (info.event == "Transfer") {
-                  // console.log("erc721 Transfer: " + JSON.stringify(info));
-                  tokens[info.tokenId] = info.to;
-                } else if (info.event == "Approval") {
-                  // console.log("erc721 Approval: " + JSON.stringify(info));
-                  // TODO Make optional to show in history?
-                  if (true || info.approved != ADDRESS0) {
-                    if (!(info.owner in approvals)) {
-                      approvals[info.owner] = {};
-                    }
-                    if (!(info.tokenId in approvals[info.owner])) {
-                      approvals[info.owner][info.tokenId] = { approved: info.approved, blockNumber: item.blockNumber, txHash: item.txHash, txIndex: item.txIndex };
-                    }
-                  } else {
-                    if (approvals[info.owner] && approvals[info.owner][info.tokenId]) {
-                      delete approvals[info.owner][info.tokenId];
-                      if (Object.keys(approvals[info.owner]).length == 0) {
-                        delete approvals[info.owner];
-                      }
-                    }
-                  }
-                } else if (info.event == "ApprovalForAll") {
-                  // console.log("erc721 ApprovalForAll: " + JSON.stringify(info));
-                  if (!(info.owner in approvalForAlls)) {
-                    approvalForAlls[info.owner] = {};
-                  }
-                  approvalForAlls[info.owner][info.operator] = { approved: info.approved, blockNumber: item.blockNumber, txHash: item.txHash, txIndex: item.txIndex };
+            }
+          } else if (context.state.info.type == "erc1155") {
+            for (const item of data) {
+              const info = item.info;
+              if (info.event == "TransferSingle") {
+                if (!(info.tokenId in tokens)) {
+                  tokens[info.tokenId] = {};
                 }
-              }
-            } else if (context.state.info.type == "erc1155") {
-              for (const item of data) {
-                const info = item.info;
-                if (info.event == "TransferSingle") {
-                  // console.log("erc1155 TransferSingle: " + JSON.stringify(info));
-                  if (!(info.tokenId in tokens)) {
-                    tokens[info.tokenId] = {};
+                if (info.from in tokens[info.tokenId]) {
+                  tokens[info.tokenId][info.from] = ethers.BigNumber.from(tokens[info.tokenId][info.from]).sub(info.value).toString();
+                  if (tokens[info.tokenId][info.from] == "0") {
+                    delete tokens[info.tokenId][info.from];
                   }
-                  if (info.from in tokens[info.tokenId]) {
-                    tokens[info.tokenId][info.from] = ethers.BigNumber.from(tokens[info.tokenId][info.from]).sub(info.value).toString();
-                    if (tokens[info.tokenId][info.from] == "0") {
-                      delete tokens[info.tokenId][info.from];
-                    }
-                  }
-                  if (!(info.to in tokens[info.tokenId])) {
-                    tokens[info.tokenId][info.to] = "0";
-                  }
-                  tokens[info.tokenId][info.to] = ethers.BigNumber.from(tokens[info.tokenId][info.to]).add(info.value).toString();
-                } else if (info.event == "TransferBatch") {
-                  // console.log("erc1155 TransferBatch: " + JSON.stringify(info));
-                  for (const [index, tokenId] of info.tokenIds.entries()) {
-                    if (!(tokenId in tokens)) {
-                      tokens[tokenId] = {};
-                    }
-                    if (info.from in tokens[tokenId]) {
-                      tokens[tokenId][info.from] = ethers.BigNumber.from(tokens[tokenId][info.from]).sub(info.values[index]).toString();
-                      if (tokens[tokenId][info.from] == "0") {
-                        delete tokens[tokenId][info.from];
-                      }
-                    }
-                    if (!(info.to in tokens[tokenId])) {
-                      tokens[tokenId][info.to] = "0";
-                    }
-                    tokens[tokenId][info.to] = ethers.BigNumber.from(tokens[tokenId][info.to]).add(info.values[index]).toString();
-                  }
-                } else if (info.event == "ApprovalForAll") {
-                  // console.log("erc1155 ApprovalForAll: " + JSON.stringify(info));
-                  if (!(info.owner in approvalForAlls)) {
-                    approvalForAlls[info.owner] = {};
-                  }
-                  approvalForAlls[info.owner][info.operator] = { approved: info.approved, blockNumber: item.blockNumber, txHash: item.txHash, txIndex: item.txIndex };
                 }
+                if (!(info.to in tokens[info.tokenId])) {
+                  tokens[info.tokenId][info.to] = "0";
+                }
+                tokens[info.tokenId][info.to] = ethers.BigNumber.from(tokens[info.tokenId][info.to]).add(info.value).toString();
+              } else if (info.event == "TransferBatch") {
+                for (const [index, tokenId] of info.tokenIds.entries()) {
+                  if (!(tokenId in tokens)) {
+                    tokens[tokenId] = {};
+                  }
+                  if (info.from in tokens[tokenId]) {
+                    tokens[tokenId][info.from] = ethers.BigNumber.from(tokens[tokenId][info.from]).sub(info.values[index]).toString();
+                    if (tokens[tokenId][info.from] == "0") {
+                      delete tokens[tokenId][info.from];
+                    }
+                  }
+                  if (!(info.to in tokens[tokenId])) {
+                    tokens[tokenId][info.to] = "0";
+                  }
+                  tokens[tokenId][info.to] = ethers.BigNumber.from(tokens[tokenId][info.to]).add(info.values[index]).toString();
+                }
+              } else if (info.event == "ApprovalForAll") {
+                if (!(info.owner in approvalForAlls)) {
+                  approvalForAlls[info.owner] = {};
+                }
+                approvalForAlls[info.owner][info.operator] = { approved: info.approved, blockNumber: item.blockNumber, txHash: item.txHash, txIndex: item.txIndex };
               }
             }
           }
-          rows = parseInt(rows) + data.length;
-          console.log(now() + " tokenModule - actions.collateEventData - rows: " + rows);
-          done = data.length < BATCH_SIZE;
-        } while (!done);
+        }
+        rows = parseInt(rows) + data.length;
         console.log(now() + " tokenModule - actions.collateEventData - rows: " + rows);
-        // console.log(now() + " tokenModule - actions.collateEventData - balances: " + JSON.stringify(balances, null, 2));
-        // console.log(now() + " tokenModule - actions.collateEventData - tokens: " + JSON.stringify(tokens, null, 2));
-        // console.log(now() + " tokenModule - actions.collateEventData - approvals: " + JSON.stringify(approvals, null, 2));
-        // console.log(now() + " tokenModule - actions.collateEventData - approvalForAlls: " + JSON.stringify(approvalForAlls, null, 2));
-        context.commit('setEventInfo', { numberOfEvents: rows, balances, tokens, approvals, approvalForAlls });
-      }
+        done = data.length < BATCH_SIZE;
+      } while (!done);
+      console.log(now() + " tokenModule - actions.collateEventData - rows: " + rows);
+      // console.log(now() + " tokenModule - actions.collateEventData - balances: " + JSON.stringify(balances, null, 2));
+      // console.log(now() + " tokenModule - actions.collateEventData - tokens: " + JSON.stringify(tokens, null, 2));
+      // console.log(now() + " tokenModule - actions.collateEventData - approvals: " + JSON.stringify(approvals, null, 2));
+      // console.log(now() + " tokenModule - actions.collateEventData - approvalForAlls: " + JSON.stringify(approvalForAlls, null, 2));
+      context.commit('setEventInfo', { numberOfEvents: rows, balances, tokens, approvals, approvalForAlls });
       db.close();
     },
   },
