@@ -346,7 +346,7 @@ const tokenModule = {
                   if (!(info.owner in approvals)) {
                     approvals[info.owner] = {};
                   }
-                  approvals[info.owner][info.spender] = info.tokens;
+                  approvals[info.owner][info.spender] = { tokens: info.tokens, blockNumber: item.blockNumber, txHash: item.txHash, txIndex: item.txIndex };
                 }
               }
             } else if (context.state.info.type == "erc721") {
@@ -356,13 +356,13 @@ const tokenModule = {
                   // console.log("erc721 Transfer: " + JSON.stringify(info));
                   tokens[info.tokenId] = info.to;
                 } else if (info.event == "Approval") {
-                  // console.log("erc721 Approval: " + JSON.stringify(info));
+                  console.log("erc721 Approval: " + JSON.stringify(info));
                   if (info.approved != ADDRESS0) {
                     if (!(info.owner in approvals)) {
                       approvals[info.owner] = {};
                     }
                     if (!(info.tokenId in approvals[info.owner])) {
-                      approvals[info.owner][info.tokenId] = info.approved;
+                      approvals[info.owner][info.tokenId] = { approved: info.approved, blockNumber: item.blockNumber, txHash: item.txHash, txIndex: item.txIndex };
                     }
                   } else {
                     if (approvals[info.owner] && approvals[info.owner][info.tokenId]) {
@@ -377,7 +377,7 @@ const tokenModule = {
                   if (!(info.owner in approvalForAlls)) {
                     approvalForAlls[info.owner] = {};
                   }
-                  approvalForAlls[info.owner][info.operator] = info.approved;
+                  approvalForAlls[info.owner][info.operator] = { approved: info.approved, blockNumber: item.blockNumber, txHash: item.txHash, txIndex: item.txIndex };
                 }
               }
             } else if (context.state.info.type == "erc1155") {
@@ -420,7 +420,7 @@ const tokenModule = {
                   if (!(info.owner in approvalForAlls)) {
                     approvalForAlls[info.owner] = {};
                   }
-                  approvalForAlls[info.owner][info.operator] = info.approved;
+                  approvalForAlls[info.owner][info.operator] = { approved: info.approved, blockNumber: item.blockNumber, txHash: item.txHash, txIndex: item.txIndex };
                 }
               }
             }
