@@ -368,7 +368,8 @@ const tokenModule = {
       // const startBlock = latestBlockNumber - 10000;
       console.log(now() + " tokenModule - actions.syncTokenEvents - startBlock: " + startBlock + ", latestBlockNumber: " + latestBlockNumber);
       await getTokenLogsFromRange(startBlock, latestBlockNumber);
-
+      context.commit('setLookups', { addresses, addressesIndex, txHashes, txHashesIndex });
+    
       db.close();
       context.dispatch("collateEventData", inputAddress);
       context.commit('setSyncInfo', null);
