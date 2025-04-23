@@ -3,7 +3,7 @@ const RenderAddress = {
     <v-menu location="bottom">
       <template v-slot:activator="{ props }">
         <v-btn v-if="address" color="primary" dark v-bind="props" variant="text" :class="noXPadding ? 'ma-0 px-0 lowercase-btn' : 'ma-0 px-2 lowercase-btn'">
-          {{ shortAddress ? (address.substring(0, 10) + "..." + address.slice(-8)) : address }}
+          {{ shortAddress && address.length == 42 ? (address.substring(0, 10) + "..." + address.slice(-8)) : address }}
         </v-btn>
       </template>
       <v-list>
@@ -31,7 +31,7 @@ const RenderAddress = {
   `,
   props: {
     address: {
-      type: String,
+      type: [String, Number],
     },
     shortAddress: {
       type: Boolean,

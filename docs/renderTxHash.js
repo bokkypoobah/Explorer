@@ -3,7 +3,7 @@ const RenderTxHash = {
     <v-menu location="bottom">
       <template v-slot:activator="{ props }">
         <v-btn v-if="txHash" color="primary" dark v-bind="props" variant="text" :class="noXPadding ? 'ma-0 px-0 lowercase-btn' : 'ma-0 px-2 lowercase-btn'">
-          {{ shortTxHash ? (txHash.substring(0, 20) + "...") : txHash }}
+          {{ shortTxHash && txHash.length == 66 ? (txHash.substring(0, 20) + "...") : txHash }}
         </v-btn>
       </template>
       <v-list>
@@ -31,7 +31,7 @@ const RenderTxHash = {
   `,
   props: {
     txHash: {
-      type: String,
+      type: [String, Number],
     },
     shortTxHash: {
       type: Boolean,

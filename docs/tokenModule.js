@@ -114,12 +114,12 @@ const tokenModule = {
       const validatedAddress = validateAddress(inputAddress);
       let info = {};
       if (validatedAddress) {
-        info = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_address", {});
+        info = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_token", {});
         // console.log(now() + " tokenModule - actions.loadToken - info: " + JSON.stringify(info));
         if (Object.keys(info).length == 0 || forceUpdate) {
           info = await getAddressInfo(validatedAddress, provider);
           console.log(now() + " tokenModule - actions.loadToken - info: " + JSON.stringify(info));
-          await dbSaveCacheData(db, validatedAddress + "_" + chainId + "_address", info);
+          await dbSaveCacheData(db, validatedAddress + "_" + chainId + "_token", info);
         }
         const addressInfo = store.getters["addresses/getAddressInfo"](validatedAddress);
         // console.log(now() + " tokenModule - actions.loadToken - addressInfo: " + JSON.stringify(addressInfo));
@@ -137,6 +137,26 @@ const tokenModule = {
     },
     async syncTokenEvents(context, { inputAddress, forceUpdate }) {
 
+      // const addresses = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_token_addresses", []);
+      // const addressesIndex = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_token_addressesIndex", {});
+      // const txHashes = await dbGetCachedData(db, chainId, validatedAddress + "_" + chainId + "_token_txHashes", []);
+      // const txHashesIndex = await dbGetCachedData(db, chainId, validatedAddress + "_" + chainId + "_token_txHashesIndex", {});
+
+      function getAddressIndex(address) {
+        if (!(address in addressesIndex)) {
+          addressesIndex[address] = addresses.length;
+          addresses.push(address);
+        }
+        return addressesIndex[address];
+      }
+      function getTxHashIndex(txHash) {
+        if (!(txHash in txHashesIndex)) {
+          txHashesIndex[txHash] = txHashes.length;
+          txHashes.push(txHash);
+        }
+        return txHashesIndex[txHash];
+      }
+
       async function processLogs(fromBlock, toBlock, logs) {
         console.log(moment().format("HH:mm:ss") + " tokenModule - actions.syncTokenEvents.processLogs - fromBlock: " + fromBlock + ", toBlock: " + toBlock + ", logs.length: " + logs.length + ", type: " + context.state.info.type);
         const records = [];
@@ -150,33 +170,33 @@ const tokenModule = {
                 const from = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
                 const to = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
                 const tokens = ethers.BigNumber.from(log.data).toString();
-                info = { event: "Transfer", from, to, tokens };
+                info = { event: "Transfer", from: getAddressIndex(from), to: getAddressIndex(to), tokens };
 
               } else if (log.topics.length == 4 && context.state.info.type == "erc721") {
                 const from = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
                 const to = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
                 const tokenId = ethers.BigNumber.from(log.topics[3]).toString();
-                info = { event: "Transfer", from, to, tokenId };
+                info = { event: "Transfer", from: getAddressIndex(from), to: getAddressIndex(to), tokenId };
               }
 
             // ERC-1155 TransferSingle (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256 id, uint256 value)
             } else if (log.topics[0] == "0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62") {
               const logData = erc1155Interface.parseLog(log);
               const [ operator, from, to, tokenId, value ] = logData.args;
-              info = { event: "TransferSingle", operator, from, to, tokenId: ethers.BigNumber.from(tokenId).toString(), value: ethers.BigNumber.from(value).toString() };
+              info = { event: "TransferSingle", operator: getAddressIndex(operator), from: getAddressIndex(from), to: getAddressIndex(to), tokenId: ethers.BigNumber.from(tokenId).toString(), value: ethers.BigNumber.from(value).toString() };
 
             // ERC-1155 TransferBatch (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256[] ids, uint256[] values)
             } else if (log.topics[0] == "0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb") {
               const logData = erc1155Interface.parseLog(log);
               const [ operator, from, to, tokenIds, values ] = logData.args;
-              info = { event: "TransferBatch", operator, from, to, tokenIds: tokenIds.map(e => ethers.BigNumber.from(e).toString()), values: values.map(e => ethers.BigNumber.from(e).toString()) };
+              info = { event: "TransferBatch", operator: getAddressIndex(operator), from: getAddressIndex(from), to: getAddressIndex(to), tokenIds: tokenIds.map(e => ethers.BigNumber.from(e).toString()), values: values.map(e => ethers.BigNumber.from(e).toString()) };
 
             // WETH Deposit (index_topic_1 address dst, uint256 wad)
             } else if (log.topics[0] == "0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c") {
               const from = ADDRESS0;
               const to = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
               const tokens = ethers.BigNumber.from(log.data).toString();
-              info = { event: "Transfer", from, to, tokens };
+              info = { event: "Transfer", from: getAddressIndex(from), to: getAddressIndex(to), tokens };
 
             // WETH Withdrawal (index_topic_1 address src, uint256 wad)
             } else if (log.topics[0] == "0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65") {
@@ -184,7 +204,7 @@ const tokenModule = {
               const from = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
               const to = ADDRESS0;
               const tokens = ethers.BigNumber.from(log.data).toString();
-              info = { event: "Transfer", from, to, tokens };
+              info = { event: "Transfer", from: getAddressIndex(from), to: getAddressIndex(to), tokens };
 
             // ERC-20 Approval (index_topic_1 address owner, index_topic_2 address spender, uint256 value)
             // ERC-721 Approval (index_topic_1 address owner, index_topic_2 address approved, index_topic_3 uint256 tokenId)
@@ -193,13 +213,13 @@ const tokenModule = {
                 const owner = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
                 const spender = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
                 const tokens = ethers.BigNumber.from(log.data).toString();
-                info = { event: "Approval", owner, spender, tokens };
+                info = { event: "Approval", owner: getAddressIndex(owner), spender: getAddressIndex(spender), tokens };
 
               } else if (log.topics.length == 4 && context.state.info.type == "erc721") {
                 const owner = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
                 const approved = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
                 const tokenId = ethers.BigNumber.from(log.topics[3]).toString();
-                info = { event: "Approval", owner, approved, tokenId };
+                info = { event: "Approval", owner: getAddressIndex(owner), approved: getAddressIndex(approved), tokenId };
               }
 
             // ERC-721 ApprovalForAll (index_topic_1 address owner, index_topic_2 address operator, bool approved)
@@ -209,7 +229,7 @@ const tokenModule = {
               const owner = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
               const operator = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
               approved = ethers.BigNumber.from(log.data).eq(1);
-              info = { event: "ApprovalForAll", owner, operator, approved };
+              info = { event: "ApprovalForAll", owner: getAddressIndex(owner), operator: getAddressIndex(operator), approved };
 
             }
             if (info) {
@@ -219,7 +239,7 @@ const tokenModule = {
                 blockNumber: log.blockNumber,
                 logIndex: log.logIndex,
                 txIndex: log.transactionIndex,
-                txHash: log.transactionHash,
+                txHash: getTxHashIndex(log.transactionHash),
                 info,
               });
             }
@@ -227,6 +247,11 @@ const tokenModule = {
         }
         // console.log(moment().format("HH:mm:ss") + " tokenModule - actions.syncTokenEvents.processLogs - fromBlock: " + fromBlock + ", toBlock: " + toBlock + ", records: " + JSON.stringify(records, null, 2));
         if (records.length > 0) {
+          await dbSaveCacheData(db, validatedAddress + "_" + chainId + "_token_addresses", addresses);
+          await dbSaveCacheData(db, validatedAddress + "_" + chainId + "_token_addressesIndex", addressesIndex);
+          await dbSaveCacheData(db, validatedAddress + "_" + chainId + "_token_txHashes", txHashes);
+          await dbSaveCacheData(db, validatedAddress + "_" + chainId + "_token_txHashesIndex", txHashesIndex);
+
           await db.tokenEvents.bulkAdd(records).then(function(lastKey) {
             console.log(moment().format("HH:mm:ss") + " tokenModule - actions.syncTokenEvents.processLogs - bulkAdd lastKey: " + JSON.stringify(lastKey));
             }).catch(Dexie.BulkError, function(e) {
@@ -235,7 +260,7 @@ const tokenModule = {
         }
       }
 
-      async function getTokenLogsFromRange(validatedAddress, fromBlock, toBlock) {
+      async function getTokenLogsFromRange(fromBlock, toBlock) {
         console.log(moment().format("HH:mm:ss") + " tokenModule - actions.syncTokenEvents.getTokenLogsFromRange - fromBlock: " + fromBlock + ", toBlock: " + toBlock);
         if (context.state.sync.halt) {
           return;
@@ -273,12 +298,19 @@ const tokenModule = {
         } catch (e) {
           console.error(moment().format("HH:mm:ss") + " tokenModule - actions.syncTokenEvents.getTokenLogsFromRange - Error: " + e.message);
           const mid = parseInt((fromBlock + toBlock) / 2);
-          await getTokenLogsFromRange(validatedAddress, fromBlock, mid);
-          await getTokenLogsFromRange(validatedAddress, parseInt(mid) + 1, toBlock);
+          await getTokenLogsFromRange(fromBlock, mid);
+          await getTokenLogsFromRange(parseInt(mid) + 1, toBlock);
         }
       }
 
-      console.log(now() + " tokenModule - actions.syncTokenEvents - inputAddress: " + inputAddress + ", forceUpdate: " + forceUpdate);
+      const validatedAddress = validateAddress(inputAddress);
+      if (!validatedAddress) {
+        // TODO: Handle error in UI
+        console.error(now() + " tokenModule - actions.syncTokenEvents - INVALID inputAddress: " + inputAddress + ", forceUpdate: " + forceUpdate);
+        return;
+      }
+
+      console.log(now() + " tokenModule - actions.syncTokenEvents - inputAddress: " + inputAddress + ", validatedAddress: " + validatedAddress + ", forceUpdate: " + forceUpdate);
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const chainId = store.getters["chainId"];
       const dbInfo = store.getters["db"];
@@ -286,22 +318,30 @@ const tokenModule = {
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
       const erc1155Interface = new ethers.utils.Interface(ERC1155ABI);
 
-      const validatedAddress = validateAddress(inputAddress);
+      const addresses = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_token_addresses", []);
+      // console.log(now() + " tokenModule - actions.syncTokenEvents - addresses: " + JSON.stringify(addresses));
+      const addressesIndex = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_token_addressesIndex", {});
+      // console.log(now() + " tokenModule - actions.syncTokenEvents - addressesIndex: " + JSON.stringify(addressesIndex));
+      const txHashes = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_token_txHashes", []);
+      const txHashesIndex = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_token_txHashesIndex", {});
+
+      const address0Index = getAddressIndex(ADDRESS0);
+      const tokenIndex = getAddressIndex(validatedAddress);
+
       let info = {};
-      if (validatedAddress) {
-        const block = await provider.getBlock();
-        const latestBlockNumber = block && block.number || null;
-        context.commit('setSyncTotal', latestBlockNumber);
-        context.commit('setSyncCompleted', 0);
-        context.commit('setSyncInfo', "Syncing token events");
-        const latest = await db.tokenEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, validatedAddress, Dexie.minKey, Dexie.minKey],[chainId, validatedAddress, Dexie.maxKey, Dexie.maxKey]).last();
-        // console.log(now() + " tokenModule - actions.syncTokenEvents - latest: " + JSON.stringify(latest, null, 2));
-        const startBlock = latest ? parseInt(latest.blockNumber) + 1: 0;
-        // TODO: Testing
-        // const startBlock = latestBlockNumber - 10000;
-        console.log(now() + " tokenModule - actions.syncTokenEvents - startBlock: " + startBlock + ", latestBlockNumber: " + latestBlockNumber);
-        await getTokenLogsFromRange(validatedAddress, startBlock, latestBlockNumber);
-      }
+      const block = await provider.getBlock();
+      const latestBlockNumber = block && block.number || null;
+      context.commit('setSyncTotal', latestBlockNumber);
+      context.commit('setSyncCompleted', 0);
+      context.commit('setSyncInfo', "Syncing token events");
+      const latest = await db.tokenEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, validatedAddress, Dexie.minKey, Dexie.minKey],[chainId, validatedAddress, Dexie.maxKey, Dexie.maxKey]).last();
+      // console.log(now() + " tokenModule - actions.syncTokenEvents - latest: " + JSON.stringify(latest, null, 2));
+      const startBlock = latest ? parseInt(latest.blockNumber) + 1: 0;
+      // TODO: Testing
+      // const startBlock = latestBlockNumber - 10000;
+      console.log(now() + " tokenModule - actions.syncTokenEvents - startBlock: " + startBlock + ", latestBlockNumber: " + latestBlockNumber);
+      await getTokenLogsFromRange(startBlock, latestBlockNumber);
+
       db.close();
       context.dispatch("collateEventData", inputAddress);
       context.commit('setSyncInfo', null);

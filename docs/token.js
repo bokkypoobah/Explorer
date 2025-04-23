@@ -706,7 +706,7 @@ nftOwnersList: {{ nftOwnersList }}
       if (other > 0) {
         series.push(other);
       }
-      console.log(now() + " Token - computed.erc20OwnersChartSeries - series: " + JSON.stringify(series));
+      // console.log(now() + " Token - computed.erc20OwnersChartSeries - series: " + JSON.stringify(series));
       return series;
     },
     erc20OwnersChartOptions() {
@@ -725,7 +725,7 @@ nftOwnersList: {{ nftOwnersList }}
       if (other > 0) {
         labels.push("Other " + otherPercent.toFixed(4) + "%");
       }
-      console.log(now() + " Token - computed.erc20OwnersChartOptions - labels: " + JSON.stringify(labels));
+      // console.log(now() + " Token - computed.erc20OwnersChartOptions - labels: " + JSON.stringify(labels));
       return {
         chart: {
           width: 540,
