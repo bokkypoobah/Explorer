@@ -174,9 +174,11 @@ nftOwnersList: {{ nftOwnersList }}
           <v-tabs-window-item value="approvals">
             Approvals
             <pre>
-approvals: {{ approvals }}
+approvalsList: {{ approvalsList }}
 
-approvalForAlls: {{ approvalForAlls }}
+<!-- approvals: {{ approvals }} -->
+
+<!-- approvalForAlls: {{ approvalForAlls }} -->
             </pre>
           </v-tabs-window-item>
           <v-tabs-window-item value="events">
@@ -546,6 +548,34 @@ approvalForAlls: {{ approvalForAlls }}
         return b.count - a.count;
       });
       // console.log(now() + " Token - computed.nftOwnersList - results: " + JSON.stringify(results, null, 2));
+      return results;
+    },
+    approvalsList() {
+      const results = [];
+      console.log(now() + " Token - computed.approvalsList - this.approvals: " + JSON.stringify(this.approvals, null, 2));
+      // console.log(now() + " Token - computed.approvalsList - this.approvalForAlls: " + JSON.stringify(this.approvalForAlls, null, 2));
+      if (this.type == "erc20") {
+        for (const [owner, ownerData] of Object.entries(this.approvals)) {
+          for (const [spender, data] of Object.entries(ownerData)) {
+            results.push({ type: "Approval", owner, spender, ...data });
+          }
+        }
+      } else if (this.type == "erc721") {
+        for (const [owner, ownerData] of Object.entries(this.approvals)) {
+          for (const [tokenId, data] of Object.entries(ownerData)) {
+            results.push({ type: "Approval", owner, tokenId, ...data });
+          }
+        }
+        for (const [owner, ownerData] of Object.entries(this.approvalForAlls)) {
+          for (const [operator, data] of Object.entries(ownerData)) {
+            results.push({ type: "ApprovalForAll", owner, operator, ...data });
+          }
+        }
+      }
+      results.sort((a, b) => {
+        return b.blockNumber - a.blockNumber;
+      });
+      console.log(now() + " Token - computed.approvalsList - results: " + JSON.stringify(results, null, 2));
       return results;
     },
     erc20OwnersChartSeries() {

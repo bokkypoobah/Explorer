@@ -356,8 +356,9 @@ const tokenModule = {
                   // console.log("erc721 Transfer: " + JSON.stringify(info));
                   tokens[info.tokenId] = info.to;
                 } else if (info.event == "Approval") {
-                  console.log("erc721 Approval: " + JSON.stringify(info));
-                  if (info.approved != ADDRESS0) {
+                  // console.log("erc721 Approval: " + JSON.stringify(info));
+                  // TODO Make optional to show in history?
+                  if (true || info.approved != ADDRESS0) {
                     if (!(info.owner in approvals)) {
                       approvals[info.owner] = {};
                     }
