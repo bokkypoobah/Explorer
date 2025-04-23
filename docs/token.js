@@ -172,21 +172,80 @@ nftOwnersList: {{ nftOwnersList }}
 
           </v-tabs-window-item>
           <v-tabs-window-item value="approvals">
-
-            <!-- <v-data-table
-              :items="approvalsList"
-              :headers="nftOwnersHeaders"
-              v-model:sort-by="settings.nftOwners.sortBy"
-              v-model:items-per-page="settings.nftOwners.itemsPerPage"
-              v-model:page="settings.nftOwners.currentPage"
-              @update:options="saveSettings();"
-              density="comfortable"
-            > -->
             <v-data-table
               :items="approvalsList"
               :headers="getApprovalsHeaders"
+              v-model:sort-by="settings.approvals.sortBy"
+              v-model:items-per-page="settings.approvals.itemsPerPage"
+              v-model:page="settings.approvals.currentPage"
+              @update:options="saveSettings();"
               density="comfortable"
             >
+            <template v-slot:item.rowNumber="{ index }">
+              {{ (settings.approvals.currentPage - 1) * settings.approvals.itemsPerPage + index + 1 }}
+            </template>
+            <template v-slot:item.blockNumber="{ item }">
+              <render-block-number :block="item.blockNumber" noXPadding></render-block-number>
+            </template>
+            <template v-slot:item.txHash="{ item }">
+              <render-tx-hash :txHash="item.txHash" shortTxHash noXPadding></render-tx-hash>
+            </template>
+            <template v-slot:item.event="{ item }">
+              <v-btn variant="text" class="lowercase-btn ma-0 px-0">
+                {{ item.event }}
+              </v-btn>
+            </template>
+            <template v-slot:item.address1="{ item }">
+              <render-address :address="item.owner" shortAddress noXPadding></render-address>
+            </template>
+            <template v-slot:item.address2="{ item }">
+              <span v-if="type == 'erc20'">
+                <render-address :address="item.spender" shortAddress noXPadding></render-address>
+              </span>
+              <span v-else-if="type == 'erc721'">
+                <span v-if="item.event == 'Approval'">
+                  {{ item.tokenId }}
+                </span>
+                <span v-else-if="item.event == 'ApprovalForAll'">
+                  <render-address :address="item.operator" shortAddress noXPadding></render-address>
+                </span>
+              </span>
+              <span v-else-if="type == 'erc1155'">
+                <render-address :address="item.operator" shortAddress noXPadding></render-address>
+              </span>
+            </template>
+            <template v-slot:item.value1="{ item }">
+              <span v-if="type == 'erc20'">
+                <!-- {{ item.tokens }} -->
+
+                <span v-if="item.tokens.toString().length > 40" v-tooltip="formatUnits(item.tokens, decimals)">
+                  <v-btn variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
+                    &infin;
+                  </v-btn>
+                </span>
+                <span v-else>
+                  <v-btn variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
+                    {{ formatUnits(item.tokens, decimals) }}
+                  </v-btn>
+                </span>
+
+              </span>
+              <span v-else-if="type == 'erc721'">
+                <span v-if="item.event == 'Approval'">
+                  <render-address :address="item.approved" shortAddress noXPadding></render-address>
+                </span>
+                <span v-else-if="item.event == 'ApprovalForAll'">
+                  <v-btn variant="text" class="lowercase-btn ma-0 px-0"  style="min-width: 0px;">
+                    {{ item.approved }}
+                  </v-btn>
+                </span>
+              </span>
+              <span v-else-if="type == 'erc1155'">
+                <v-btn variant="text" class="lowercase-btn ma-0 px-0"  style="min-width: 0px;">
+                  {{ item.approved }}
+                </v-btn>
+              </span>
+            </template>
             </v-data-table>
           </v-tabs-window-item>
           <v-tabs-window-item value="events">
@@ -375,7 +434,12 @@ nftOwnersList: {{ nftOwnersList }}
           currentPage: 1,
           top: 20,
         },
-        version: 3,
+        approvals: {
+          sortBy: [{ key: "blockNumber", order: "desc" }],
+          itemsPerPage: 10,
+          currentPage: 1,
+        },
+        version: 4,
       },
       items: [],
       itemsPerPageOptions: [
@@ -485,33 +549,36 @@ nftOwnersList: {{ nftOwnersList }}
     getApprovalsHeaders() {
       if (this.type == "erc20") {
         return [
-          { title: 'When', value: 'when', sortable: false },
+          { title: '#', value: 'rowNumber', align: 'end', sortable: false },
+          // { title: 'When', value: 'when', sortable: false },
           { title: 'Block #', value: 'blockNumber', sortable: true },
           { title: 'Tx Hash', value: 'txHash', sortable: false },
           { title: 'Event', value: 'event', sortable: false },
-          { title: 'Owner / Owner', value: 'address1', sortable: false },
-          { title: 'Spender / Token Id', value: 'address2', sortable: false },
-          { title: 'Tokens / Approved', value: 'value1', align: 'end', sortable: false },
+          { title: 'Owner', value: 'address1', sortable: false },
+          { title: 'Spender', value: 'address2', sortable: false },
+          { title: 'Tokens', value: 'value1', align: 'end', sortable: false },
         ];
       } else if (this.type == "erc721") {
         return [
-          { title: 'When', value: 'when', sortable: false },
+          { title: '#', value: 'rowNumber', align: 'end', sortable: false },
+          // { title: 'When', value: 'when', sortable: false },
           { title: 'Block #', value: 'blockNumber', sortable: true },
           { title: 'Tx Hash', value: 'txHash', sortable: false },
           { title: 'Event', value: 'event', sortable: false },
-          { title: 'Owner / Owner', value: 'address1', sortable: false },
+          { title: 'Owner', value: 'address1', sortable: false },
           { title: 'Token Id / Operator', value: 'address2', sortable: false },
-          { title: 'Approved / Approved', value: 'value1', align: 'end', sortable: false },
+          { title: 'Approved', value: 'value1', sortable: false },
         ];
       } else {
         return [
-          { title: 'When', value: 'when', sortable: false },
+          { title: '#', value: 'rowNumber', align: 'end', sortable: false },
+          // { title: 'When', value: 'when', sortable: false },
           { title: 'Block #', value: 'blockNumber', sortable: true },
           { title: 'Tx Hash', value: 'txHash', sortable: false },
           { title: 'Event', value: 'event', sortable: false },
-          { title: 'Owner / Owner', value: 'address1', sortable: false },
-          { title: 'Token Id / Operator', value: 'address2', sortable: false },
-          { title: 'Approved / Approved', value: 'value1', align: 'end', sortable: false },
+          { title: 'Owner', value: 'address1', sortable: false },
+          { title: 'Operator', value: 'address2', sortable: false },
+          { title: 'Approved', value: 'value1', sortable: false },
         ];
       }
     },
@@ -593,36 +660,36 @@ nftOwnersList: {{ nftOwnersList }}
     },
     approvalsList() {
       const results = [];
-      console.log(now() + " Token - computed.approvalsList - this.approvals: " + JSON.stringify(this.approvals, null, 2));
+      // console.log(now() + " Token - computed.approvalsList - this.approvals: " + JSON.stringify(this.approvals, null, 2));
       // console.log(now() + " Token - computed.approvalsList - this.approvalForAlls: " + JSON.stringify(this.approvalForAlls, null, 2));
       if (this.type == "erc20") {
         for (const [owner, ownerData] of Object.entries(this.approvals)) {
           for (const [spender, data] of Object.entries(ownerData)) {
-            results.push({ type: "Approval", owner, spender, ...data });
+            results.push({ event: "Approval", owner, spender, ...data });
           }
         }
       } else if (this.type == "erc721") {
         for (const [owner, ownerData] of Object.entries(this.approvals)) {
           for (const [tokenId, data] of Object.entries(ownerData)) {
-            results.push({ type: "Approval", owner, tokenId, ...data });
+            results.push({ event: "Approval", owner, tokenId, ...data });
           }
         }
         for (const [owner, ownerData] of Object.entries(this.approvalForAlls)) {
           for (const [operator, data] of Object.entries(ownerData)) {
-            results.push({ type: "ApprovalForAll", owner, operator, ...data });
+            results.push({ event: "ApprovalForAll", owner, operator, ...data });
           }
         }
       } else if (this.type == "erc1155") {
         for (const [owner, ownerData] of Object.entries(this.approvalForAlls)) {
           for (const [operator, data] of Object.entries(ownerData)) {
-            results.push({ type: "ApprovalForAll", owner, operator, ...data });
+            results.push({ event: "ApprovalForAll", owner, operator, ...data });
           }
         }
       }
       results.sort((a, b) => {
         return b.blockNumber - a.blockNumber;
       });
-      console.log(now() + " Token - computed.approvalsList - results: " + JSON.stringify(results, null, 2));
+      // console.log(now() + " Token - computed.approvalsList - results: " + JSON.stringify(results, null, 2));
       return results;
     },
     erc20OwnersChartSeries() {
