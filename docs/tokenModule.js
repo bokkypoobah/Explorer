@@ -2,6 +2,12 @@ const tokenModule = {
   namespaced: true,
   state: {
     info: {},
+
+    addresses: [],
+    addressesIndex: {},
+    txHashes: [],
+    txHashesIndex: {},
+
     numberOfEvents: null,
     balances: {},
     tokens: {},
@@ -17,6 +23,12 @@ const tokenModule = {
   getters: {
     address: state => state.info.address || null,
     info: state => state.info,
+
+    addresses: state => state.addresses,
+    addressesIndex: state => state.addressesIndex,
+    txHashes: state => state.txHashes,
+    txHashesIndex: state => state.txHashesIndex,
+
     numberOfEvents: state => state.numberOfEvents,
     balances: state => state.balances,
     tokens: state => state.tokens,
@@ -73,6 +85,13 @@ const tokenModule = {
       // console.log(now() + " tokenModule - mutations.setInfo - info: " + JSON.stringify(info));
       state.info = info;
     },
+    setLookups(state, { addresses, addressesIndex, txHashes, txHashesIndex }) {
+      // console.log(now() + " tokenModule - mutations.setLookups - info: " + JSON.stringify(info));
+      state.addresses = addresses;
+      state.addressesIndex = addressesIndex;
+      state.txHashes = txHashes;
+      state.txHashesIndex = txHashesIndex;
+    },
     setEventInfo(state, { numberOfEvents, balances, tokens, approvals, approvalForAlls }) {
       console.log(now() + " tokenModule - mutations.setEventInfo - numberOfEvents: " + JSON.stringify(numberOfEvents));
       state.numberOfEvents = numberOfEvents;
@@ -100,6 +119,13 @@ const tokenModule = {
   },
   actions: {
     async loadToken(context, { inputAddress, forceUpdate }) {
+      const validatedAddress = validateAddress(inputAddress);
+      if (!validatedAddress) {
+        // TODO: Handle error in UI
+        console.error(now() + " tokenModule - actions.loadToken - INVALID inputAddress: " + inputAddress + ", forceUpdate: " + forceUpdate);
+        return;
+      }
+
       console.log(now() + " tokenModule - actions.loadToken - inputAddress: " + inputAddress + ", forceUpdate: " + forceUpdate);
       // TODO - handle offline
       // if (!store.getters['web3'].connected || !window.ethereum) {
@@ -111,23 +137,26 @@ const tokenModule = {
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
 
-      const validatedAddress = validateAddress(inputAddress);
-      let info = {};
-      if (validatedAddress) {
-        info = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_token", {});
-        // console.log(now() + " tokenModule - actions.loadToken - info: " + JSON.stringify(info));
-        if (Object.keys(info).length == 0 || forceUpdate) {
-          info = await getAddressInfo(validatedAddress, provider);
-          console.log(now() + " tokenModule - actions.loadToken - info: " + JSON.stringify(info));
-          await dbSaveCacheData(db, validatedAddress + "_" + chainId + "_token", info);
-        }
-        const addressInfo = store.getters["addresses/getAddressInfo"](validatedAddress);
-        // console.log(now() + " tokenModule - actions.loadToken - addressInfo: " + JSON.stringify(addressInfo));
-        if (!addressInfo.type) {
-          store.dispatch("addresses/addAddress", { address: validatedAddress, type: info.type, version: info.version, ensName: info.ensName });
-        }
+      let info = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_token", {});
+      // console.log(now() + " tokenModule - actions.loadToken - info: " + JSON.stringify(info));
+      if (Object.keys(info).length == 0 || forceUpdate) {
+        info = await getAddressInfo(validatedAddress, provider);
+        console.log(now() + " tokenModule - actions.loadToken - info: " + JSON.stringify(info));
+        await dbSaveCacheData(db, validatedAddress + "_" + chainId + "_token", info);
+      }
+      const addressInfo = store.getters["addresses/getAddressInfo"](validatedAddress);
+      // console.log(now() + " tokenModule - actions.loadToken - addressInfo: " + JSON.stringify(addressInfo));
+      if (!addressInfo.type) {
+        store.dispatch("addresses/addAddress", { address: validatedAddress, type: info.type, version: info.version, ensName: info.ensName });
       }
       context.commit('setInfo', info);
+
+      const addresses = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_token_addresses", []);
+      const addressesIndex = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_token_addressesIndex", {});
+      const txHashes = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_token_txHashes", []);
+      const txHashesIndex = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_token_txHashesIndex", {});
+      context.commit('setLookups', { addresses, addressesIndex, txHashes, txHashesIndex });
+
       context.dispatch("collateEventData", inputAddress);
       db.close();
     },
@@ -319,9 +348,7 @@ const tokenModule = {
       const erc1155Interface = new ethers.utils.Interface(ERC1155ABI);
 
       const addresses = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_token_addresses", []);
-      // console.log(now() + " tokenModule - actions.syncTokenEvents - addresses: " + JSON.stringify(addresses));
       const addressesIndex = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_token_addressesIndex", {});
-      // console.log(now() + " tokenModule - actions.syncTokenEvents - addressesIndex: " + JSON.stringify(addressesIndex));
       const txHashes = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_token_txHashes", []);
       const txHashesIndex = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_token_txHashesIndex", {});
 
