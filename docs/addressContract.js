@@ -10,10 +10,10 @@ const AddressContract = {
             <v-row>
               <v-col cols="2">
                 <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" color="primary" direction="vertical">
+                <v-tab prepend-icon="mdi-text-box" text="Source Code" value="sourcecode" class="lowercase-btn"></v-tab>
                   <v-tab prepend-icon="mdi-code-json" text="ABI" value="abi" class="lowercase-btn"></v-tab>
                   <v-tab prepend-icon="mdi-function" text="Functions" value="functions" class="lowercase-btn"></v-tab>
                   <v-tab prepend-icon="mdi-math-log" text="Events" value="events" class="lowercase-btn"></v-tab>
-                  <v-tab prepend-icon="mdi-text-box" text="Source Code" value="sourcecode" class="lowercase-btn"></v-tab>
                 </v-tabs>
               </v-col>
               <v-col cols="10">
@@ -21,20 +21,6 @@ const AddressContract = {
                   NOTE: The ABI and source code below is from the Safe v{{ info.version }} implementation at {{ info.implementation }}, used by this Gnosis Safe wallet at {{ info.address }}.
                 </div>
                 <v-tabs-window v-model="settings.tab">
-                  <v-tabs-window-item value="abi">
-                    <v-textarea v-model="abi" :rules="jsonRules" label="ABI" rows="10">
-                    </v-textarea>
-                    <v-btn @click="importABIFromEtherscan();" class="ms-2 mt-0 mb-2" style="text-transform: none !important;" text>Import ABI From Etherscan
-                    </v-btn>
-                  </v-tabs-window-item>
-                  <v-tabs-window-item value="functions">
-                    <v-data-table :items="functionsList" :headers="functionsHeaders" @click:row="handleFunctionsClick" density="compact">
-                    </v-data-table>
-                  </v-tabs-window-item>
-                  <v-tabs-window-item value="events">
-                    <v-data-table :items="eventsList" :headers="eventsHeaders" @click:row="handleEventsClick" density="compact">
-                    </v-data-table>
-                  </v-tabs-window-item>
                   <v-tabs-window-item value="sourcecode">
                     <div v-for="(item, itemIndex) of sourceCode">
                       <!-- {{ item }} -->
@@ -49,6 +35,20 @@ const AddressContract = {
                     </div>
                     <v-btn @click="importSourceCodeFromEtherscan();" class="ms-2 mt-0 mb-2" style="text-transform: none !important;" text>Import Source Code From Etherscan</v-btn>
                     <v-btn @click="importSourceCodeFromSourcify();" class="ms-2 mt-0 mb-2" style="text-transform: none !important;" text>Import Source Code From Sourcify</v-btn>
+                  </v-tabs-window-item>
+                  <v-tabs-window-item value="abi">
+                    <v-textarea v-model="abi" :rules="jsonRules" label="ABI" rows="10">
+                    </v-textarea>
+                    <v-btn @click="importABIFromEtherscan();" class="ms-2 mt-0 mb-2" style="text-transform: none !important;" text>Import ABI From Etherscan
+                    </v-btn>
+                  </v-tabs-window-item>
+                  <v-tabs-window-item value="functions">
+                    <v-data-table :items="functionsList" :headers="functionsHeaders" @click:row="handleFunctionsClick" density="compact">
+                    </v-data-table>
+                  </v-tabs-window-item>
+                  <v-tabs-window-item value="events">
+                    <v-data-table :items="eventsList" :headers="eventsHeaders" @click:row="handleEventsClick" density="compact">
+                    </v-data-table>
                   </v-tabs-window-item>
                 </v-tabs-window>
               </v-col>
