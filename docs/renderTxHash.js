@@ -3,7 +3,7 @@ const RenderTxHash = {
     <v-menu location="bottom">
       <template v-slot:activator="{ props }">
         <v-btn v-if="txHash" color="primary" dark v-bind="props" variant="text" :class="noXPadding ? 'ma-0 px-0 lowercase-btn' : 'ma-0 px-2 lowercase-btn'">
-          {{ shortTxHash && txHash.length == 66 ? (txHash.substring(0, 20) + "...") : txHash }}
+          {{ shortTxHash && resolvedTxHash.length == 66 ? (resolvedTxHash.substring(0, 20) + "...") : resolvedTxHash }}
         </v-btn>
       </template>
       <v-list>
@@ -33,6 +33,10 @@ const RenderTxHash = {
     txHash: {
       type: [String, Number],
     },
+    txHashes: {
+      type: Array,
+      default: () => []
+    },
     shortTxHash: {
       type: Boolean,
       default: false,
@@ -51,6 +55,12 @@ const RenderTxHash = {
     };
   },
   computed: {
+    resolvedTxHash() {
+      if (this.txHash.length != 66) {
+        return this.txHashes[this.txHash] || null;
+      }
+      return this.txHash;
+    },
     explorer() {
       return store.getters['explorer'];
     },

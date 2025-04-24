@@ -188,7 +188,7 @@ nftOwnersList: {{ nftOwnersList }}
               <render-block-number :block="item.blockNumber" noXPadding></render-block-number>
             </template>
             <template v-slot:item.txHash="{ item }">
-              <render-tx-hash :txHash="txHashes[item.txHash]" shortTxHash noXPadding></render-tx-hash>
+              <render-tx-hash :txHash="item.txHash" :txHashes="txHashes" shortTxHash noXPadding></render-tx-hash>
             </template>
             <template v-slot:item.event="{ item }">
               <v-btn variant="text" class="lowercase-btn ma-0 px-0">
@@ -275,7 +275,7 @@ nftOwnersList: {{ nftOwnersList }}
                 <render-block-number :block="item.blockNumber" noXPadding></render-block-number>
               </template>
               <template v-slot:item.txHash="{ item }">
-                <render-tx-hash :txHash="txHashes[item.txHash]" shortTxHash noXPadding></render-tx-hash>
+                <render-tx-hash :txHash="item.txHash" :txHashes="txHashes" shortTxHash noXPadding></render-tx-hash>
               </template>
               <template v-slot:item.event="{ item }">
                 <v-btn variant="text" class="lowercase-btn ma-0 px-0">

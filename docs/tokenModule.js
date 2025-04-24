@@ -256,7 +256,6 @@ const tokenModule = {
             // ERC-721 ApprovalForAll (index_topic_1 address owner, index_topic_2 address operator, bool approved)
             // ERC-1155 ApprovalForAll (index_topic_1 address account, index_topic_2 address operator, bool approved)
             } else if (log.topics[0] == "0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31") {
-              info = { event: "ApprovalForAll" };
               const owner = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
               const operator = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
               approved = ethers.BigNumber.from(log.data).eq(1);
