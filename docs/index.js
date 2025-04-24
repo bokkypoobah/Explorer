@@ -375,6 +375,7 @@ app.use(vuetify);
 app.component("connection", Connection);
 app.component("renderAddress", RenderAddress);
 app.component("renderBlockNumber", RenderBlockNumber);
+app.component("renderTokenId", RenderTokenId);
 app.component("renderTxHash", RenderTxHash);
 app.component("apexchart", VueApexCharts);
 app.mount('#app');
