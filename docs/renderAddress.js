@@ -12,7 +12,7 @@ const RenderAddress = {
           <template v-slot:prepend>
             <v-icon>mdi-arrow-right-bold-outline</v-icon>
           </template>
-          <v-list-item-title>View</v-list-item-title>
+          <v-list-item-title>View address</v-list-item-title>
         </v-list-item>
         <v-list-item @click="copyToClipboard(resolvedAddress);">
           <template v-slot:prepend>
@@ -24,13 +24,13 @@ const RenderAddress = {
           <template v-slot:prepend>
             <v-icon>mdi-link-variant</v-icon>
           </template>
-          <v-list-item-title>View this address in the explorer</v-list-item-title>
+          <v-list-item-title>View address in the explorer</v-list-item-title>
         </v-list-item>
         <v-list-item v-if="token" :href="explorer + 'token/' + token + '?a=' + resolvedAddress" target="_blank">
           <template v-slot:prepend>
             <v-icon>mdi-link-variant</v-icon>
           </template>
-          <v-list-item-title>View token filtered by this address in the explorer</v-list-item-title>
+          <v-list-item-title>View address in token contract in the explorer</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-menu>

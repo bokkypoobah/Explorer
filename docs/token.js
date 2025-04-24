@@ -13,8 +13,14 @@ const Token = {
             <v-icon>mdi-refresh</v-icon>
           </v-btn>
           <v-btn v-if="sync.info == null" @click="syncTokenEvents();" color="primary" icon v-tooltip="'Sync Token Events'">
-            <v-icon>mdi-download-multiple</v-icon>
+            <v-icon>mdi-download</v-icon>
           </v-btn>
+          <!-- <v-btn v-if="sync.info == null" @click="syncTokenEvents();" color="primary" icon v-tooltip="'Retrieve Timestamps'">
+            <v-icon>mdi-clock-outline</v-icon>
+          </v-btn> -->
+          <!-- <v-btn v-if="sync.info == null && (type == 'erc721' || type == 'erc1155')" @click="syncTokenEvents();" color="primary" icon v-tooltip="'Sync Token Metadata'">
+            <v-icon>mdi-image-outline</v-icon>
+          </v-btn> -->
           <v-btn v-if="sync.info != null" @click="setSyncHalt();" color="primary" icon v-tooltip="'Halt syncing'">
             <v-icon>mdi-stop</v-icon>
           </v-btn>
@@ -163,11 +169,9 @@ nftOwnersList: {{ nftOwnersList }}
               <template v-slot:item.tokens="{ item }">
                 <span v-if="type == 'erc721'">
                   <render-token-id v-for="token in item.tokens" :tokenId="token" :token="address"></render-token-id>
-                  <!-- {{ item.tokens.join(", ") }} -->
                 </span>
                 <span v-else>
                   <render-token-id v-for="token in item.tokens" :tokenId="token.tokenId" :count="token.count" :token="address"></render-token-id>
-                  <!-- {{ item.tokens.map(e => e.tokenId + "x" + e.count).join(", ") }} -->
                 </span>
               </template>
             </v-data-table>
@@ -846,7 +850,7 @@ nftOwnersList: {{ nftOwnersList }}
     const t = this;
     setTimeout(function() {
       store.dispatch('token/loadToken', { inputAddress: t.inputAddress, forceUpdate: false });
-    }, 1000);
+    }, 100);
 	},
   unmounted() {
     console.log(now() + " Token - unmounted");

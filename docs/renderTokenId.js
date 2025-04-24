@@ -3,9 +3,9 @@ const RenderTokenId = {
     <v-menu location="bottom">
       <template v-slot:activator="{ props }">
         <v-btn v-if="token != null && tokenId != null" color="primary" dark v-bind="props" variant="text" :class="noXPadding ? 'ma-0 px-0 lowercase-btn' : 'ma-0 px-2 lowercase-btn'" style="min-width: 0px;">
-          {{ tokenId }}
+          {{ commify0(tokenId) }}
           <v-chip v-if="count != null" size="small" variant="text">
-            {{ 'x' + count }}
+            {{ 'x' + commify0(count) }}
           </v-chip>
         </v-btn>
       </template>
@@ -86,6 +86,12 @@ const RenderTokenId = {
     },
   },
   methods: {
+    commify0(n) {
+      if (n != null) {
+        return Number(n).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+      }
+      return null;
+    },
     copyToClipboard(str) {
       navigator.clipboard.writeText(str);
     },
