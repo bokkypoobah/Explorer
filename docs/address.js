@@ -116,8 +116,6 @@ const Address = {
         setTimeout(function() {
           store.dispatch('address/loadAddress', { inputAddress: newInputAddress, forceUpdate: false });
         }, 1000);
-
-        // this.$emit('post-updated', newPost);
       }
     },
   },
