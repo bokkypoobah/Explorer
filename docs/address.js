@@ -115,7 +115,7 @@ const Address = {
         console.log(now() + " Address - watch.inputAddress - newInputAddress: " + newInputAddress + ", oldInputAddress: " + oldInputAddress);
         setTimeout(function() {
           store.dispatch('address/loadAddress', { inputAddress: newInputAddress, forceUpdate: false });
-        }, 1000);
+        }, 100);
       }
     },
   },
@@ -138,7 +138,7 @@ const Address = {
     const t = this;
     setTimeout(function() {
       store.dispatch('address/loadAddress', { inputAddress: t.inputAddress, forceUpdate: false });
-    }, 1000);
+    }, 100);
 	},
   unmounted() {
     console.log(now() + " Address - unmounted");
