@@ -86,7 +86,7 @@ const AddressAddress = {
           </v-col>
           <v-col cols="6" align="left">
             <v-btn variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
-              {{ threshold }}
+              {{ threshold }} of {{ owners.length }}
             </v-btn>
           </v-col>
         </v-row>
