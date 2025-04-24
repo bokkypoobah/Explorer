@@ -6,6 +6,12 @@ const ERC1155_INTERFACE = "0xd9b67a26";
 const ERC1155METADATA_INTERFACE = "0x0e89341c";
 const ERC1155TOKENRECEIVER_INTERFACE = "0x4e2312e0";
 
+const TOKENEVENT_TRANSFER = 0;
+const TOKENEVENT_TRANSFERSINGLE = 1;
+const TOKENEVENT_TRANSFERBATCH = 2;
+const TOKENEVENT_APPROVAL = 3;
+const TOKENEVENT_APPROVALFORALL = 4;
+
 const TOKEN_ABI = [
   "function name() public view returns (string)",
   "function symbol() public view returns (string)",

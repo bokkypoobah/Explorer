@@ -201,33 +201,33 @@ const tokenModule = {
                 const from = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
                 const to = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
                 const tokens = ethers.BigNumber.from(log.data).toString();
-                info = { event: "Transfer", from: getAddressIndex(from), to: getAddressIndex(to), tokens };
+                info = [ TOKENEVENT_TRANSFER, getAddressIndex(from), getAddressIndex(to), tokens ];
 
               } else if (log.topics.length == 4 && context.state.info.type == "erc721") {
                 const from = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
                 const to = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
                 const tokenId = ethers.BigNumber.from(log.topics[3]).toString();
-                info = { event: "Transfer", from: getAddressIndex(from), to: getAddressIndex(to), tokenId };
+                info = [ TOKENEVENT_TRANSFER, getAddressIndex(from), getAddressIndex(to), tokenId ];
               }
 
             // ERC-1155 TransferSingle (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256 id, uint256 value)
             } else if (log.topics[0] == "0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62") {
               const logData = erc1155Interface.parseLog(log);
               const [ operator, from, to, tokenId, value ] = logData.args;
-              info = { event: "TransferSingle", operator: getAddressIndex(operator), from: getAddressIndex(from), to: getAddressIndex(to), tokenId: ethers.BigNumber.from(tokenId).toString(), value: ethers.BigNumber.from(value).toString() };
+              info = [ TOKENEVENT_TRANSFERSINGLE, getAddressIndex(operator), getAddressIndex(from), getAddressIndex(to), ethers.BigNumber.from(tokenId).toString(), ethers.BigNumber.from(value).toString() ];
 
             // ERC-1155 TransferBatch (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256[] ids, uint256[] values)
             } else if (log.topics[0] == "0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb") {
               const logData = erc1155Interface.parseLog(log);
               const [ operator, from, to, tokenIds, values ] = logData.args;
-              info = { event: "TransferBatch", operator: getAddressIndex(operator), from: getAddressIndex(from), to: getAddressIndex(to), tokenIds: tokenIds.map(e => ethers.BigNumber.from(e).toString()), values: values.map(e => ethers.BigNumber.from(e).toString()) };
+              info = [ TOKENEVENT_TRANSFERBATCH, getAddressIndex(operator), getAddressIndex(from), getAddressIndex(to), tokenIds.map(e => ethers.BigNumber.from(e).toString()), values.map(e => ethers.BigNumber.from(e).toString()) ];
 
             // WETH Deposit (index_topic_1 address dst, uint256 wad)
             } else if (log.topics[0] == "0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c") {
               const from = ADDRESS0;
               const to = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
               const tokens = ethers.BigNumber.from(log.data).toString();
-              info = { event: "Transfer", from: getAddressIndex(from), to: getAddressIndex(to), tokens };
+              info = [ TOKENEVENT_TRANSFER, getAddressIndex(from), getAddressIndex(to), tokens ];
 
             // WETH Withdrawal (index_topic_1 address src, uint256 wad)
             } else if (log.topics[0] == "0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65") {
@@ -235,7 +235,7 @@ const tokenModule = {
               const from = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
               const to = ADDRESS0;
               const tokens = ethers.BigNumber.from(log.data).toString();
-              info = { event: "Transfer", from: getAddressIndex(from), to: getAddressIndex(to), tokens };
+              info = [ TOKENEVENT_TRANSFER, getAddressIndex(from), getAddressIndex(to), tokens ];
 
             // ERC-20 Approval (index_topic_1 address owner, index_topic_2 address spender, uint256 value)
             // ERC-721 Approval (index_topic_1 address owner, index_topic_2 address approved, index_topic_3 uint256 tokenId)
@@ -244,13 +244,13 @@ const tokenModule = {
                 const owner = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
                 const spender = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
                 const tokens = ethers.BigNumber.from(log.data).toString();
-                info = { event: "Approval", owner: getAddressIndex(owner), spender: getAddressIndex(spender), tokens };
+                info = [ TOKENEVENT_APPROVAL, getAddressIndex(owner), getAddressIndex(spender), tokens ];
 
               } else if (log.topics.length == 4 && context.state.info.type == "erc721") {
                 const owner = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
                 const approved = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
                 const tokenId = ethers.BigNumber.from(log.topics[3]).toString();
-                info = { event: "Approval", owner: getAddressIndex(owner), approved: getAddressIndex(approved), tokenId };
+                info = [ TOKENEVENT_APPROVAL, getAddressIndex(owner), getAddressIndex(approved), tokenId ];
               }
 
             // ERC-721 ApprovalForAll (index_topic_1 address owner, index_topic_2 address operator, bool approved)
@@ -259,7 +259,7 @@ const tokenModule = {
               const owner = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
               const operator = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
               approved = ethers.BigNumber.from(log.data).eq(1);
-              info = { event: "ApprovalForAll", owner: getAddressIndex(owner), operator: getAddressIndex(operator), approved };
+              info = [ TOKENEVENT_APPROVALFORALL, getAddressIndex(owner), getAddressIndex(operator), approved ];
 
             }
             if (info) {
@@ -268,14 +268,12 @@ const tokenModule = {
                 address: log.address,
                 blockNumber: log.blockNumber,
                 logIndex: log.logIndex,
-                txIndex: log.transactionIndex,
-                txHash: getTxHashIndex(log.transactionHash),
-                info,
+                info: [ getTxHashIndex(log.transactionHash), log.transactionIndex, ...info ],
               });
             }
           }
         }
-        // console.log(moment().format("HH:mm:ss") + " tokenModule - actions.syncTokenEvents.processLogs - fromBlock: " + fromBlock + ", toBlock: " + toBlock + ", records: " + JSON.stringify(records, null, 2));
+        console.log(moment().format("HH:mm:ss") + " tokenModule - actions.syncTokenEvents.processLogs - fromBlock: " + fromBlock + ", toBlock: " + toBlock + ", records: " + JSON.stringify(records, null, 2));
         if (records.length > 0) {
           await dbSaveCacheData(db, validatedAddress + "_" + chainId + "_token_addresses", addresses);
           await dbSaveCacheData(db, validatedAddress + "_" + chainId + "_token_addressesIndex", addressesIndex);
@@ -404,85 +402,86 @@ const tokenModule = {
           if (context.state.info.type == "erc20") {
             for (const item of data) {
               const info = item.info;
-              if (info.event == "Transfer") {
+              console.log(moment().format("HH:mm:ss") + " tokenModule - actions.collateEventData - info: " + JSON.stringify(info));
+              if (info[2] == TOKENEVENT_TRANSFER) {
                 if (info.from != ADDRESS0) {
-                  balances[info.from] = ethers.BigNumber.from(balances[info.from] || "0").sub(info.tokens).toString();
+                  balances[info[3]] = ethers.BigNumber.from(balances[info[3]] || "0").sub(info[5]).toString();
                 }
-                balances[info.to] = ethers.BigNumber.from(balances[info.to] || "0").add(info.tokens).toString();
-              } else if (info.event == "Approval") {
-                if (!(info.owner in approvals)) {
-                  approvals[info.owner] = {};
+                balances[info[4]] = ethers.BigNumber.from(balances[info[4]] || "0").add(info[5]).toString();
+              } else if (info[2] == TOKENEVENT_APPROVAL) {
+                if (!(info[3] in approvals)) {
+                  approvals[info[3]] = {};
                 }
-                approvals[info.owner][info.spender] = { tokens: info.tokens, blockNumber: item.blockNumber, txHash: item.txHash, txIndex: item.txIndex };
+                approvals[info[3]][info[4]] = { tokens: info[5], blockNumber: item.blockNumber, txHash: info[0], txIndex: info[1] };
               }
             }
           } else if (context.state.info.type == "erc721") {
             for (const item of data) {
               const info = item.info;
-              if (info.event == "Transfer") {
-                tokens[info.tokenId] = info.to;
-              } else if (info.event == "Approval") {
-                // TODO Make optional to show in history?
-                if (true || info.approved != ADDRESS0) {
-                  if (!(info.owner in approvals)) {
-                    approvals[info.owner] = {};
+              if (info[2] == TOKENEVENT_TRANSFER) {
+                tokens[info[4]] = info[3];
+              } else if (info[2] == TOKENEVENT_APPROVAL) {
+                // TODO Make optional to show in history? 0 = ADDRESS0
+                if (info[4] != 0) {
+                  if (!(info[3] in approvals)) {
+                    approvals[info[3]] = {};
                   }
-                  if (!(info.tokenId in approvals[info.owner])) {
-                    approvals[info.owner][info.tokenId] = { approved: info.approved, blockNumber: item.blockNumber, txHash: item.txHash, txIndex: item.txIndex };
+                  if (!(info[5] in approvals[info[3]])) {
+                    approvals[info[3]][info[5]] = { approved: info[4], blockNumber: item.blockNumber, txHash: info[0], txIndex: info[1] };
                   }
                 } else {
-                  if (approvals[info.owner] && approvals[info.owner][info.tokenId]) {
-                    delete approvals[info.owner][info.tokenId];
-                    if (Object.keys(approvals[info.owner]).length == 0) {
-                      delete approvals[info.owner];
+                  if (approvals[info[3]] && approvals[info[3]][info[5]]) {
+                    delete approvals[info[3]][info[5]];
+                    if (Object.keys(approvals[info[3]]).length == 0) {
+                      delete approvals[info[3]];
                     }
                   }
                 }
-              } else if (info.event == "ApprovalForAll") {
-                if (!(info.owner in approvalForAlls)) {
-                  approvalForAlls[info.owner] = {};
+              } else if (info[2] == TOKENEVENT_APPROVALFORALL) {
+                if (!(info[3] in approvalForAlls)) {
+                  approvalForAlls[info[3]] = {};
                 }
-                approvalForAlls[info.owner][info.operator] = { approved: info.approved, blockNumber: item.blockNumber, txHash: item.txHash, txIndex: item.txIndex };
+                approvalForAlls[info[3]][info[4]] = { approved: info[5], blockNumber: item.blockNumber, txHash: info[0], txIndex: info[1] };
               }
             }
           } else if (context.state.info.type == "erc1155") {
             for (const item of data) {
               const info = item.info;
-              if (info.event == "TransferSingle") {
-                if (!(info.tokenId in tokens)) {
-                  tokens[info.tokenId] = {};
+              if (info[2] == TOKENEVENT_TRANSFERSINGLE) {
+                if (!(info[6] in tokens)) {
+                  tokens[info[6]] = {};
                 }
-                if (info.from in tokens[info.tokenId]) {
-                  tokens[info.tokenId][info.from] = ethers.BigNumber.from(tokens[info.tokenId][info.from]).sub(info.value).toString();
-                  if (tokens[info.tokenId][info.from] == "0") {
-                    delete tokens[info.tokenId][info.from];
+                if (info[4] in tokens[info[6]]) {
+                  tokens[info[6]][info[4]] = ethers.BigNumber.from(tokens[info[6]][info[4]]).sub(info[7]).toString();
+                  if (tokens[info[6]][info[4]] == "0") {
+                    delete tokens[info[6]][info[4]];
                   }
                 }
-                if (!(info.to in tokens[info.tokenId])) {
-                  tokens[info.tokenId][info.to] = "0";
+                if (!(info[5] in tokens[info[6]])) {
+                  tokens[info[6]][info[5]] = "0";
                 }
-                tokens[info.tokenId][info.to] = ethers.BigNumber.from(tokens[info.tokenId][info.to]).add(info.value).toString();
-              } else if (info.event == "TransferBatch") {
-                for (const [index, tokenId] of info.tokenIds.entries()) {
+                tokens[info[6]][info[5]] = ethers.BigNumber.from(tokens[info[6]][info[5]]).add(info[7]).toString();
+              } else if (info[2] == TOKENEVENT_TRANSFERBATCH) {
+                for (const [index, tokenId] of info[6].entries()) {
                   if (!(tokenId in tokens)) {
                     tokens[tokenId] = {};
                   }
-                  if (info.from in tokens[tokenId]) {
-                    tokens[tokenId][info.from] = ethers.BigNumber.from(tokens[tokenId][info.from]).sub(info.values[index]).toString();
-                    if (tokens[tokenId][info.from] == "0") {
-                      delete tokens[tokenId][info.from];
+                  if (info[4] in tokens[tokenId]) {
+                    tokens[tokenId][info[4]] = ethers.BigNumber.from(tokens[tokenId][info[4]]).sub(info[7][index]).toString();
+                    if (tokens[tokenId][info[4]] == "0") {
+                      delete tokens[tokenId][info[4]];
                     }
                   }
                   if (!(info.to in tokens[tokenId])) {
-                    tokens[tokenId][info.to] = "0";
+                    tokens[tokenId][info[5]] = "0";
                   }
-                  tokens[tokenId][info.to] = ethers.BigNumber.from(tokens[tokenId][info.to]).add(info.values[index]).toString();
+                  tokens[tokenId][info[5]] = ethers.BigNumber.from(tokens[tokenId][info[5]]).add(info[7][index]).toString();
                 }
-              } else if (info.event == "ApprovalForAll") {
-                if (!(info.owner in approvalForAlls)) {
-                  approvalForAlls[info.owner] = {};
+              } else if (info[2] == TOKENEVENT_APPROVALFORALL) {
+                if (!(info[3] in approvalForAlls)) {
+                  approvalForAlls[info[3]] = {};
                 }
-                approvalForAlls[info.owner][info.operator] = { approved: info.approved, blockNumber: item.blockNumber, txHash: item.txHash, txIndex: item.txIndex };
+                approvalForAlls[info[3]][info[4]] = { approved: info[5], blockNumber: item.blockNumber, txHash: info[0], txIndex: info[1] };
               }
             }
           }
@@ -492,9 +491,9 @@ const tokenModule = {
         done = data.length < BATCH_SIZE;
       } while (!done);
       console.log(now() + " tokenModule - actions.collateEventData - rows: " + rows);
-      // console.log(now() + " tokenModule - actions.collateEventData - balances: " + JSON.stringify(balances, null, 2));
+      console.log(now() + " tokenModule - actions.collateEventData - balances: " + JSON.stringify(balances, null, 2));
       // console.log(now() + " tokenModule - actions.collateEventData - tokens: " + JSON.stringify(tokens, null, 2));
-      // console.log(now() + " tokenModule - actions.collateEventData - approvals: " + JSON.stringify(approvals, null, 2));
+      console.log(now() + " tokenModule - actions.collateEventData - approvals: " + JSON.stringify(approvals, null, 2));
       // console.log(now() + " tokenModule - actions.collateEventData - approvalForAlls: " + JSON.stringify(approvalForAlls, null, 2));
       context.commit('setEventInfo', { numberOfEvents: rows, balances, tokens, approvals, approvalForAlls });
       db.close();

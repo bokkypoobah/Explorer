@@ -35,7 +35,7 @@ const store = new Vuex.Store({
       version: 1,
     },
     db: {
-      name: "explorer088e",
+      name: "explorer088f",
       version: 1,
       schemaDefinition: {
         blocks: '[chainId+number]',
