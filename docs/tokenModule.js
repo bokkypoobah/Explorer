@@ -498,5 +498,8 @@ const tokenModule = {
       context.commit('setEventInfo', { numberOfEvents: rows, balances, tokens, approvals, approvalForAlls });
       db.close();
     },
+    async syncTokenMetadata(context, address) {
+      console.log(now() + " tokenModule - actions.syncTokenMetadata - address: " + address);
+    },
   },
 };

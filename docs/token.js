@@ -18,9 +18,9 @@ const Token = {
           <!-- <v-btn v-if="sync.info == null" @click="syncTokenEvents();" color="primary" icon v-tooltip="'Retrieve Timestamps'">
             <v-icon>mdi-clock-outline</v-icon>
           </v-btn> -->
-          <!-- <v-btn v-if="sync.info == null && (type == 'erc721' || type == 'erc1155')" @click="syncTokenEvents();" color="primary" icon v-tooltip="'Sync Token Metadata'">
+          <v-btn v-if="sync.info == null && (type == 'erc721' || type == 'erc1155')" @click="syncTokenMetadata();" color="primary" icon v-tooltip="'Sync Token Metadata'">
             <v-icon>mdi-image-outline</v-icon>
-          </v-btn> -->
+          </v-btn>
           <v-btn v-if="sync.info != null" @click="setSyncHalt();" color="primary" icon v-tooltip="'Halt syncing'">
             <v-icon>mdi-stop</v-icon>
           </v-btn>
@@ -771,16 +771,16 @@ nftOwnersList: {{ nftOwnersList }}
   },
   methods: {
     syncToken() {
-      console.log(now() + " Token - methods.syncToken");
-      const address = store.getters["token/address"];
-      console.log(now() + " Token - methods.syncToken - address: " + address);
-      store.dispatch('token/loadToken', { inputAddress: address, forceUpdate: true });
+      console.log(now() + " Token - methods.syncToken - address: " + this.address);
+      store.dispatch('token/loadToken', { inputAddress: this.address, forceUpdate: true });
     },
     syncTokenEvents() {
-      console.log(now() + " Token - methods.syncTokenEvents");
-      const address = store.getters["token/address"];
-      console.log(now() + " Token - methods.syncTokenEvents - address: " + address);
-      store.dispatch('token/syncTokenEvents', { inputAddress: address, forceUpdate: true });
+      console.log(now() + " Token - methods.syncTokenEvents - address: " + this.address);
+      store.dispatch('token/syncTokenEvents', { inputAddress: this.address, forceUpdate: true });
+    },
+    syncTokenMetadata() {
+      console.log(now() + " Token - methods.syncTokenMetadata - address: " + this.address);
+      store.dispatch('token/syncTokenMetadata', this.address);
     },
     setSyncHalt() {
       console.log(now() + " Token - methods.setSyncHalt");
