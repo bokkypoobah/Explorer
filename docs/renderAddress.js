@@ -2,8 +2,8 @@ const RenderAddress = {
   template: `
     <v-menu location="bottom">
       <template v-slot:activator="{ props }">
-        <v-btn v-if="address" color="primary" dark v-bind="props" variant="text" :class="noXPadding ? 'ma-0 px-0 lowercase-btn' : 'ma-0 px-2 lowercase-btn'">
-          {{ shortAddress && address.length == 42 ? (address.substring(0, 10) + "..." + address.slice(-8)) : address }}
+        <v-btn v-if="address != null" color="primary" dark v-bind="props" variant="text" :class="noXPadding ? 'ma-0 px-0 lowercase-btn' : 'ma-0 px-2 lowercase-btn'">
+          {{ shortAddress && resolvedAddress.length == 42 ? (resolvedAddress.substring(0, 10) + "..." + resolvedAddress.slice(-8)) : resolvedAddress }}
         </v-btn>
       </template>
       <v-list>
@@ -33,6 +33,10 @@ const RenderAddress = {
     address: {
       type: [String, Number],
     },
+    addresses: {
+      type: Array,
+      default: () => []
+    },
     shortAddress: {
       type: Boolean,
       default: false,
@@ -47,6 +51,12 @@ const RenderAddress = {
     };
   },
   computed: {
+    resolvedAddress() {
+      if (this.address.length != 42) {
+        return this.addresses[this.address] || this.address;
+      }
+      return this.address;
+    },
     explorer() {
       return store.getters['explorer'];
     },
@@ -56,16 +66,4 @@ const RenderAddress = {
       navigator.clipboard.writeText(str);
     },
   },
-  // beforeCreate() {
-  //   console.log(now() + " RenderAddress - beforeCreate");
-	// },
-  // mounted() {
-  //   console.log(now() + " RenderAddress - mounted");
-	// },
-  // unmounted() {
-  //   console.log(now() + " RenderAddress - unmounted");
-	// },
-  // destroyed() {
-  //   console.log(now() + " RenderAddress - destroyed");
-	// },
 };

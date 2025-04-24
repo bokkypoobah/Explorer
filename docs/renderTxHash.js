@@ -2,7 +2,7 @@ const RenderTxHash = {
   template: `
     <v-menu location="bottom">
       <template v-slot:activator="{ props }">
-        <v-btn v-if="txHash" color="primary" dark v-bind="props" variant="text" :class="noXPadding ? 'ma-0 px-0 lowercase-btn' : 'ma-0 px-2 lowercase-btn'">
+        <v-btn v-if="txHash != null" color="primary" dark v-bind="props" variant="text" :class="noXPadding ? 'ma-0 px-0 lowercase-btn' : 'ma-0 px-2 lowercase-btn'">
           {{ shortTxHash && resolvedTxHash.length == 66 ? (resolvedTxHash.substring(0, 20) + "...") : resolvedTxHash }}
         </v-btn>
       </template>
@@ -57,7 +57,7 @@ const RenderTxHash = {
   computed: {
     resolvedTxHash() {
       if (this.txHash.length != 66) {
-        return this.txHashes[this.txHash] || null;
+        return this.txHashes[this.txHash] || this.txHash;
       }
       return this.txHash;
     },
@@ -76,16 +76,4 @@ const RenderTxHash = {
       navigator.clipboard.writeText(str);
     },
   },
-  // beforeCreate() {
-  //   console.log(now() + " RenderTxHash - beforeCreate");
-	// },
-  // mounted() {
-  //   console.log(now() + " RenderTxHash - mounted");
-	// },
-  // unmounted() {
-  //   console.log(now() + " RenderTxHash - unmounted");
-	// },
-  // destroyed() {
-  //   console.log(now() + " RenderTxHash - destroyed");
-	// },
 };
