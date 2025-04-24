@@ -11,8 +11,8 @@ const AddressFunctions = {
             <v-row>
               <v-col cols="2">
                 <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" color="primary" direction="vertical">
-                  <v-tab prepend-icon="mdi-function" text="Call" value="call" class="lowercase-btn"></v-tab>
-                  <v-tab prepend-icon="mdi-send" text="Execute" value="execute" class="lowercase-btn"></v-tab>
+                  <v-tab prepend-icon="mdi-send-outline" text="Call Function" value="call" class="lowercase-btn"></v-tab>
+                  <v-tab prepend-icon="mdi-send" text="Execute Transaction" value="execute" class="lowercase-btn"></v-tab>
                 </v-tabs>
               </v-col>
               <v-col cols="10">

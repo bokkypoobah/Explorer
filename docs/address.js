@@ -75,12 +75,12 @@ const Address = {
           </v-btn>
           <v-spacer></v-spacer>
           <v-tabs right color="deep-purple-accent-4">
-            <v-tab :disabled="!address" :to="'/address/' + address" class="lowercase-btn">Address</v-tab>
-            <v-tab :disabled="!address" :to="'/address/' + address + '/contract'" class="lowercase-btn">Contract</v-tab>
-            <v-tab :disabled="!address" :to="'/address/' + address + '/functions'" class="lowercase-btn">Functions</v-tab>
-            <v-tab :disabled="!address" :to="'/address/' + address + '/tokens'" class="lowercase-btn">Tokens</v-tab>
-            <v-tab :disabled="!address" :to="'/address/' + address + '/transactions'" class="lowercase-btn">Transactions</v-tab>
-            <v-tab :disabled="!address" :to="'/address/' + address + '/events'" class="lowercase-btn">Events</v-tab>
+            <v-tab :disabled="!address" :to="'/address/' + address" prepend-icon="mdi-text-long" class="lowercase-btn">Address</v-tab>
+            <v-tab :disabled="!address" :to="'/address/' + address + '/contract'" prepend-icon="mdi-code-braces" class="lowercase-btn">Contract</v-tab>
+            <v-tab :disabled="!address" :to="'/address/' + address + '/functions'" prepend-icon="mdi-send" class="lowercase-btn">Execute</v-tab>
+            <!-- <v-tab :disabled="!address" :to="'/address/' + address + '/tokens'" class="lowercase-btn">Tokens</v-tab> -->
+            <!-- <v-tab :disabled="!address" :to="'/address/' + address + '/transactions'" class="lowercase-btn">Transactions</v-tab> -->
+            <v-tab :disabled="!address" :to="'/address/' + address + '/events'" prepend-icon="mdi-math-log" class="lowercase-btn">Events</v-tab>
           </v-tabs>
         </v-toolbar>
         <router-view v-if="inputAddress && address" />
