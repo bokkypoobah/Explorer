@@ -273,7 +273,7 @@ const tokenModule = {
             }
           }
         }
-        console.log(moment().format("HH:mm:ss") + " tokenModule - actions.syncTokenEvents.processLogs - fromBlock: " + fromBlock + ", toBlock: " + toBlock + ", records: " + JSON.stringify(records, null, 2));
+        // console.log(moment().format("HH:mm:ss") + " tokenModule - actions.syncTokenEvents.processLogs - fromBlock: " + fromBlock + ", toBlock: " + toBlock + ", records: " + JSON.stringify(records, null, 2));
         if (records.length > 0) {
           await dbSaveCacheData(db, validatedAddress + "_" + chainId + "_token_addresses", addresses);
           await dbSaveCacheData(db, validatedAddress + "_" + chainId + "_token_addressesIndex", addressesIndex);
@@ -419,7 +419,7 @@ const tokenModule = {
             for (const item of data) {
               const info = item.info;
               if (info[2] == TOKENEVENT_TRANSFER) {
-                tokens[info[4]] = info[3];
+                tokens[info[5]] = info[4];
               } else if (info[2] == TOKENEVENT_APPROVAL) {
                 // TODO Make optional to show in history? 0 = ADDRESS0
                 if (info[4] != 0) {
@@ -491,9 +491,9 @@ const tokenModule = {
         done = data.length < BATCH_SIZE;
       } while (!done);
       console.log(now() + " tokenModule - actions.collateEventData - rows: " + rows);
-      console.log(now() + " tokenModule - actions.collateEventData - balances: " + JSON.stringify(balances, null, 2));
+      // console.log(now() + " tokenModule - actions.collateEventData - balances: " + JSON.stringify(balances, null, 2));
       // console.log(now() + " tokenModule - actions.collateEventData - tokens: " + JSON.stringify(tokens, null, 2));
-      console.log(now() + " tokenModule - actions.collateEventData - approvals: " + JSON.stringify(approvals, null, 2));
+      // console.log(now() + " tokenModule - actions.collateEventData - approvals: " + JSON.stringify(approvals, null, 2));
       // console.log(now() + " tokenModule - actions.collateEventData - approvalForAlls: " + JSON.stringify(approvalForAlls, null, 2));
       context.commit('setEventInfo', { numberOfEvents: rows, balances, tokens, approvals, approvalForAlls });
       db.close();
