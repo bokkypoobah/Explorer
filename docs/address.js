@@ -109,6 +109,18 @@ const Address = {
       return store.getters['explorer'];
     },
   },
+  watch: {
+    inputAddress(newInputAddress, oldInputAddress) {
+      if (newInputAddress !== oldInputAddress) {
+        console.log(now() + " Address - watch.inputAddress - newInputAddress: " + newInputAddress + ", oldInputAddress: " + oldInputAddress);
+        setTimeout(function() {
+          store.dispatch('address/loadAddress', { inputAddress: newInputAddress, forceUpdate: false });
+        }, 1000);
+
+        // this.$emit('post-updated', newPost);
+      }
+    },
+  },
   methods: {
     syncAddress() {
       console.log(now() + " Address - methods.syncAddress");

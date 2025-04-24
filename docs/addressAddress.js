@@ -10,6 +10,16 @@ const AddressAddress = {
             <render-address :address="address"></render-address>
           </v-col>
         </v-row>
+        <v-row v-if="type == 'eoa' || type == 'safe' || type == 'contract'" no-gutters dense>
+          <v-col cols="2" align="right">
+            <p class="my-2">ENS Name:</p>
+          </v-col>
+          <v-col cols="6" align="left">
+            <v-btn variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
+              {{ ensName }}
+            </v-btn>
+          </v-col>
+        </v-row>
         <v-row no-gutters dense>
           <v-col cols="2" align="right">
             <p class="my-2">Balance (Ξ):</p>
@@ -116,16 +126,6 @@ const AddressAddress = {
             </v-btn>
           </v-col>
         </v-row>
-        <v-row v-if="type == 'eoa' || type == 'safe' || type == 'contract'" no-gutters dense>
-          <v-col cols="2" align="right">
-            <p class="my-2">ENS Name:</p>
-          </v-col>
-          <v-col cols="6" align="left">
-            <v-btn variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
-              {{ ensName }}
-            </v-btn>
-          </v-col>
-        </v-row>
         <v-row v-if="type == 'eoa'" no-gutters dense>
           <v-col cols="2" align="right">
             <p class="my-2">Transaction Count:</p>
@@ -155,11 +155,17 @@ const AddressAddress = {
     };
   },
   computed: {
+    info() {
+      return store.getters['address/info'];
+    },
     address() {
       return store.getters['address/address'];
     },
-    info() {
-      return store.getters['address/info'];
+    ensName() {
+      return this.info && this.info.ensName || null;
+    },
+    balance() {
+      return this.info && this.info.balance || null;
     },
     type() {
       return this.info && this.info.type || null;
@@ -190,12 +196,6 @@ const AddressAddress = {
     },
     nonce() {
       return this.info && this.info.nonce || null;
-    },
-    ensName() {
-      return this.info && this.info.ensName || null;
-    },
-    balance() {
-      return this.info && this.info.balance || null;
     },
     transactionCount() {
       return this.info && this.info.transactionCount || null;
