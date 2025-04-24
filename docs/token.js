@@ -118,7 +118,7 @@ const Token = {
                     {{ (settings.erc20Owners.currentPage - 1) * settings.erc20Owners.itemsPerPage + index + 1 }}
                   </template>
                   <template v-slot:item.address="{ item }">
-                    <render-address :address="item.address" :addresses="addresses" noXPadding></render-address>
+                    <render-address :address="item.address" :addresses="addresses" :token="address" noXPadding></render-address>
                   </template>
                   <template v-slot:item.balance="{ item }">
                     {{ formatUnits(item.balance, decimals) }}
@@ -155,7 +155,7 @@ nftOwnersList: {{ nftOwnersList }}
                 {{ (settings.nftOwners.currentPage - 1) * settings.nftOwners.itemsPerPage + index + 1 }}
               </template>
               <template v-slot:item.address="{ item }">
-                <render-address :address="item.address" :addresses="addresses" shortAddress noXPadding></render-address>
+                <render-address :address="item.address" :addresses="addresses" :token="address" shortAddress noXPadding></render-address>
               </template>
               <template v-slot:item.count="{ item }">
                 {{ item.count }}
@@ -196,22 +196,22 @@ nftOwnersList: {{ nftOwnersList }}
               </v-btn>
             </template>
             <template v-slot:item.address1="{ item }">
-              <render-address :address="item.owner" :addresses="addresses" shortAddress noXPadding></render-address>
+              <render-address :address="item.owner" :addresses="addresses" :token="address" shortAddress noXPadding></render-address>
             </template>
             <template v-slot:item.address2="{ item }">
               <span v-if="type == 'erc20'">
-                <render-address :address="item.spender" :addresses="addresses" shortAddress noXPadding></render-address>
+                <render-address :address="item.spender" :addresses="addresses" :token="address" shortAddress noXPadding></render-address>
               </span>
               <span v-else-if="type == 'erc721'">
                 <span v-if="item.event == 'Approval'">
                   {{ item.tokenId }}
                 </span>
                 <span v-else-if="item.event == 'ApprovalForAll'">
-                  <render-address :address="item.operator" :addresses="addresses" shortAddress noXPadding></render-address>
+                  <render-address :address="item.operator" :addresses="addresses" :token="address" shortAddress noXPadding></render-address>
                 </span>
               </span>
               <span v-else-if="type == 'erc1155'">
-                <render-address :address="item.operator" :addresses="addresses" shortAddress noXPadding></render-address>
+                <render-address :address="item.operator" :addresses="addresses" :token="address" shortAddress noXPadding></render-address>
               </span>
             </template>
             <template v-slot:item.value1="{ item }">
@@ -232,7 +232,7 @@ nftOwnersList: {{ nftOwnersList }}
               </span>
               <span v-else-if="type == 'erc721'">
                 <span v-if="item.event == 'Approval'">
-                  <render-address :address="item.approved" :addresses="addresses" shortAddress noXPadding></render-address>
+                  <render-address :address="item.approved" :addresses="addresses" :token="address" shortAddress noXPadding></render-address>
                 </span>
                 <span v-else-if="item.event == 'ApprovalForAll'">
                   <v-btn variant="text" class="lowercase-btn ma-0 px-0"  style="min-width: 0px;">
@@ -285,64 +285,64 @@ nftOwnersList: {{ nftOwnersList }}
               <template v-slot:item.address1="{ item }">
                 <span v-if="type == 'erc20'">
                   <span v-if="item.info.event == 'Transfer'">
-                    <render-address :address="item.info.from" :addresses="addresses" shortAddress noXPadding></render-address>
+                    <render-address :address="item.info.from" :addresses="addresses" :token="address" shortAddress noXPadding></render-address>
                   </span>
                   <span v-else>
-                    <render-address :address="item.info.owner" :addresses="addresses" shortAddress noXPadding></render-address>
+                    <render-address :address="item.info.owner" :addresses="addresses" :token="address" shortAddress noXPadding></render-address>
                   </span>
                 </span>
                 <span v-else-if="type == 'erc721'">
                   <span v-if="item.info.event == 'Transfer'">
-                    <render-address :address="item.info.from" :addresses="addresses" shortAddress noXPadding></render-address>
+                    <render-address :address="item.info.from" :addresses="addresses" :token="address" shortAddress noXPadding></render-address>
                   </span>
                   <span v-else-if="item.info.event == 'Approval'">
-                    <render-address :address="item.info.owner" :addresses="addresses" shortAddress noXPadding></render-address>
+                    <render-address :address="item.info.owner" :addresses="addresses" :token="address" shortAddress noXPadding></render-address>
                   </span>
                   <span v-else>
-                    <render-address :address="item.info.owner" :addresses="addresses" shortAddress noXPadding></render-address>
+                    <render-address :address="item.info.owner" :addresses="addresses" :token="address" shortAddress noXPadding></render-address>
                   </span>
                 </span>
                 <span v-else>
                   <span v-if="item.info.event == 'TransferSingle'">
-                    <render-address :address="item.info.from" :addresses="addresses" shortAddress noXPadding></render-address>
+                    <render-address :address="item.info.from" :addresses="addresses" :token="address" shortAddress noXPadding></render-address>
                   </span>
                   <span v-else-if="item.info.event == 'TransferBatch'">
-                    <render-address :address="item.info.from" :addresses="addresses" shortAddress noXPadding></render-address>
+                    <render-address :address="item.info.from" :addresses="addresses" :token="address" shortAddress noXPadding></render-address>
                   </span>
                   <span v-else-if="item.info.event == 'ApprovalForAll'">
-                    <render-address :address="item.info.owner" :addresses="addresses" shortAddress noXPadding></render-address>
+                    <render-address :address="item.info.owner" :addresses="addresses" :token="address" shortAddress noXPadding></render-address>
                   </span>
                 </span>
               </template>
               <template v-slot:item.address2="{ item }">
                 <span v-if="type == 'erc20'">
                   <span v-if="item.info.event == 'Transfer'">
-                    <render-address :address="item.info.to" :addresses="addresses" shortAddress noXPadding></render-address>
+                    <render-address :address="item.info.to" :addresses="addresses" :token="address" shortAddress noXPadding></render-address>
                   </span>
                   <span v-else>
-                    <render-address :address="item.info.spender" :addresses="addresses" shortAddress noXPadding></render-address>
+                    <render-address :address="item.info.spender" :addresses="addresses" :token="address" shortAddress noXPadding></render-address>
                   </span>
                 </span>
                 <span v-else-if="type == 'erc721'">
                   <span v-if="item.info.event == 'Transfer'">
-                    <render-address :address="item.info.to" :addresses="addresses" shortAddress noXPadding></render-address>
+                    <render-address :address="item.info.to" :addresses="addresses" :token="address" shortAddress noXPadding></render-address>
                   </span>
                   <span v-else-if="item.info.event == 'Approval'">
-                    <render-address :address="item.info.approved" :addresses="addresses" shortAddress noXPadding></render-address>
+                    <render-address :address="item.info.approved" :addresses="addresses" :token="address" shortAddress noXPadding></render-address>
                   </span>
                   <span v-else>
-                    <render-address :address="item.info.operator" :addresses="addresses" shortAddress noXPadding></render-address>
+                    <render-address :address="item.info.operator" :addresses="addresses" :token="address" shortAddress noXPadding></render-address>
                   </span>
                 </span>
                 <span v-else>
                   <span v-if="item.info.event == 'TransferSingle'">
-                    <render-address :address="item.info.to" :addresses="addresses" shortAddress noXPadding></render-address>
+                    <render-address :address="item.info.to" :addresses="addresses" :token="address" shortAddress noXPadding></render-address>
                   </span>
                   <span v-else-if="item.info.event == 'TransferBatch'">
-                    <render-address :address="item.info.to" :addresses="addresses" shortAddress noXPadding></render-address>
+                    <render-address :address="item.info.to" :addresses="addresses" :token="address" shortAddress noXPadding></render-address>
                   </span>
                   <span v-else-if="item.info.event == 'ApprovalForAll'">
-                    <render-address :address="item.info.operator" :addresses="addresses" shortAddress noXPadding></render-address>
+                    <render-address :address="item.info.operator" :addresses="addresses" :token="address" shortAddress noXPadding></render-address>
                   </span>
                 </span>
               </template>

@@ -7,24 +7,30 @@ const RenderAddress = {
         </v-btn>
       </template>
       <v-list>
-        <v-list-subheader>Address {{ address }}</v-list-subheader>
-        <v-list-item :href="'#/address/' + address">
+        <v-list-subheader>Address {{ resolvedAddress }}</v-list-subheader>
+        <v-list-item :href="'#/address/' + resolvedAddress">
           <template v-slot:prepend>
             <v-icon>mdi-arrow-right-bold-outline</v-icon>
           </template>
           <v-list-item-title>View</v-list-item-title>
         </v-list-item>
-        <v-list-item @click="copyToClipboard(address);">
+        <v-list-item @click="copyToClipboard(resolvedAddress);">
           <template v-slot:prepend>
             <v-icon>mdi-content-copy</v-icon>
           </template>
           <v-list-item-title>Copy address to clipboard</v-list-item-title>
         </v-list-item>
-        <v-list-item :href="explorer + 'address/' + address" target="_blank">
+        <v-list-item :href="explorer + 'address/' + resolvedAddress" target="_blank">
           <template v-slot:prepend>
             <v-icon>mdi-link-variant</v-icon>
           </template>
-          <v-list-item-title>View in explorer</v-list-item-title>
+          <v-list-item-title>View this address in the explorer</v-list-item-title>
+        </v-list-item>
+        <v-list-item v-if="token" :href="explorer + 'token/' + token + '?a=' + resolvedAddress" target="_blank">
+          <template v-slot:prepend>
+            <v-icon>mdi-link-variant</v-icon>
+          </template>
+          <v-list-item-title>View token filtered by this address in the explorer</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-menu>
@@ -36,6 +42,10 @@ const RenderAddress = {
     addresses: {
       type: Array,
       default: () => []
+    },
+    token: {
+      type: String,
+      default: null,
     },
     shortAddress: {
       type: Boolean,
