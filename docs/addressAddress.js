@@ -2,13 +2,22 @@ const AddressAddress = {
   template: `
     <v-card>
       <v-card-text>
-
         <v-row no-gutters dense>
           <v-col cols="2" align="right">
             <p class="my-2">Address:</p>
           </v-col>
           <v-col cols="6" align="left">
             <render-address :address="address"></render-address>
+          </v-col>
+        </v-row>
+        <v-row no-gutters dense>
+          <v-col cols="2" align="right">
+            <p class="my-2">Balance (Ξ):</p>
+          </v-col>
+          <v-col cols="6" align="left">
+            <v-btn variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
+              {{ formatETH(balance) }}
+            </v-btn>
           </v-col>
         </v-row>
         <v-row no-gutters dense>
@@ -61,23 +70,59 @@ const AddressAddress = {
             </v-btn>
           </v-col>
         </v-row>
-        <v-row v-if="type == 'eoa' || type == 'contract'" no-gutters dense>
+        <v-row v-if="type == 'safe'" no-gutters dense>
+          <v-col cols="2" align="right">
+            <p class="my-2">Gnosis Safe Version:</p>
+          </v-col>
+          <v-col cols="6" align="left">
+            <v-btn variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
+              {{ version }}
+            </v-btn>
+          </v-col>
+        </v-row>
+        <v-row v-if="type == 'safe'" no-gutters dense>
+          <v-col cols="2" align="right">
+            <p class="my-2">Threshold:</p>
+          </v-col>
+          <v-col cols="6" align="left">
+            <v-btn variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
+              {{ threshold }}
+            </v-btn>
+          </v-col>
+        </v-row>
+        <v-row v-if="type == 'safe'" no-gutters dense>
+          <v-col cols="2" align="right">
+            <p class="my-2">Owners:</p>
+          </v-col>
+          <v-col cols="6" align="left">
+            <render-address v-for="o in owners" :address="o"></render-address>
+          </v-col>
+        </v-row>
+        <v-row v-if="type == 'safe'" no-gutters dense>
+          <v-col cols="2" align="right">
+            <p class="my-2">Implementation:</p>
+          </v-col>
+          <v-col cols="6" align="left">
+            <render-address :address="implementation"></render-address>
+          </v-col>
+        </v-row>
+        <v-row v-if="type == 'safe'" no-gutters dense>
+          <v-col cols="2" align="right">
+            <p class="my-2">Nonce:</p>
+          </v-col>
+          <v-col cols="6" align="left">
+            <v-btn variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
+              {{ nonce }}
+            </v-btn>
+          </v-col>
+        </v-row>
+        <v-row v-if="type == 'eoa' || type == 'safe' || type == 'contract'" no-gutters dense>
           <v-col cols="2" align="right">
             <p class="my-2">ENS Name:</p>
           </v-col>
           <v-col cols="6" align="left">
             <v-btn variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
               {{ ensName }}
-            </v-btn>
-          </v-col>
-        </v-row>
-        <v-row no-gutters dense>
-          <v-col cols="2" align="right">
-            <p class="my-2">Balance (Ξ):</p>
-          </v-col>
-          <v-col cols="6" align="left">
-            <v-btn variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
-              {{ formatETH(balance) }}
             </v-btn>
           </v-col>
         </v-row>
@@ -91,33 +136,14 @@ const AddressAddress = {
             </v-btn>
           </v-col>
         </v-row>
-
-        <!-- <h3 class="ms-2 mt-2">Address {{ address }}</h3> -->
-        <v-textarea :model-value="JSON.stringify(info, null, 2)" label="Info" rows="20">
-        </v-textarea>
-        <!-- <v-textarea :model-value="JSON.stringify(functions, null, 2)" label="Functions" rows="10">
-        </v-textarea>
-        <v-textarea :model-value="JSON.stringify(events, null, 2)" label="Events" rows="10">
+        <!-- <v-textarea :model-value="JSON.stringify(info, null, 2)" label="Info" rows="20">
         </v-textarea> -->
-        <!-- info: {{ info }}
-        <br />
-        address: {{ address }}
-        <br />
-        transactionCount: {{ transactionCount }}
-        <br />
-        balance: {{ balance }} -->
       </v-card-text>
-      <!-- <v-card-actions>
-        <v-btn>Action 1</v-btn>
-        <v-btn>Action 2</v-btn>
-      </v-card-actions> -->
     </v-card>
   `,
   props: ['inputAddress', 'tab'],
   data: function () {
     return {
-      // tab: null,
-      // address: null,
       types: {
         "eoa" : "Externally Owned Account",
         "erc20": "ERC-20 Fungible Token Contract",
@@ -149,6 +175,21 @@ const AddressAddress = {
     },
     totalSupply() {
       return this.info && this.info.totalSupply || null;
+    },
+    version() {
+      return this.info && this.info.version || null;
+    },
+    threshold() {
+      return this.info && this.info.threshold || null;
+    },
+    owners() {
+      return this.info && this.info.owners || null;
+    },
+    implementation() {
+      return this.info && this.info.implementation || null;
+    },
+    nonce() {
+      return this.info && this.info.nonce || null;
     },
     ensName() {
       return this.info && this.info.ensName || null;
