@@ -6,7 +6,7 @@ const Token = {
           <h4 class="ml-2">Token</h4>
           <render-address v-if="address" :address="address"></render-address>
           <p class="ml-5 text-caption text--disabled">
-            {{ type && type.replace(/erc/, "ERC-") || "" }} {{ symbol }} {{ name && ("'" + name + "'") || "" }} {{ decimals }}
+            {{ type && type.substring(0, 3) == "erc" && type.replace(/erc/, "ERC-") || "Not a token contract" }} {{ symbol }} {{ name && ("'" + name + "'") || "" }} {{ decimals }}
           </p>
           <v-spacer></v-spacer>
           <v-btn v-if="sync.info == null" @click="syncToken();" color="primary" icon v-tooltip="'Sync Token Info'">
@@ -18,7 +18,7 @@ const Token = {
           <!-- <v-btn v-if="sync.info == null" @click="syncTokenEvents();" color="primary" icon v-tooltip="'Retrieve Timestamps'">
             <v-icon>mdi-clock-outline</v-icon>
           </v-btn> -->
-          <v-btn v-if="sync.info == null && (type == 'erc721' || type == 'erc1155')" @click="syncTokenMetadata();" color="primary" icon v-tooltip="'Sync Token Metadata'">
+          <v-btn v-if="sync.info == null && (type == 'erc721' || type == 'erc1155')" :disabled="chainId != 1" @click="syncTokenMetadata();" color="primary" icon v-tooltip="'Sync Token Metadata'">
             <v-icon>mdi-image-outline</v-icon>
           </v-btn>
           <v-btn v-if="sync.info != null" @click="setSyncHalt();" color="primary" icon v-tooltip="'Halt syncing'">
@@ -484,6 +484,9 @@ nftOwnersList: {{ nftOwnersList }}
     };
   },
   computed: {
+    chainId() {
+      return store.getters['chainId'];
+    },
     sync() {
       return store.getters['token/sync'];
     },
@@ -649,7 +652,7 @@ nftOwnersList: {{ nftOwnersList }}
         // console.log(now() + " Token - computed.nftOwnersList - owners: " + JSON.stringify(owners, null, 2));
         for (const [address, tokens] of Object.entries(owners)) {
           const percent = tokens.length * 100.0 / totalSupply ;
-          results.push({ address, count: tokens.length, percent: percent.toFixed(4), tokens });
+          results.push({ address, count: tokens.length, percent: parseFloat(percent.toFixed(4)), tokens });
         }
       } else if (this.type == "erc1155") {
         const totalSupply = this.nftTotalSupply;

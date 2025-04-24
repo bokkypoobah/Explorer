@@ -4,7 +4,7 @@ const RenderTokenId = {
       <template v-slot:activator="{ props }">
         <v-btn v-if="token != null && tokenId != null" color="primary" dark v-bind="props" variant="text" :class="noXPadding ? 'ma-0 px-0 lowercase-btn' : 'ma-0 px-2 lowercase-btn'" style="min-width: 0px;">
           {{ commify0(tokenId) }}
-          <v-chip v-if="count != null" size="small" variant="text">
+          <v-chip v-if="count != null" size="small" variant="plain">
             {{ 'x' + commify0(count) }}
           </v-chip>
         </v-btn>
