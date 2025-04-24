@@ -82,6 +82,14 @@ const AddressAddress = {
         </v-row>
         <v-row v-if="type == 'safe'" no-gutters dense>
           <v-col cols="2" align="right">
+            <p class="my-2">Gnosis Safe Implementation:</p>
+          </v-col>
+          <v-col cols="6" align="left">
+            <render-address :address="implementation"></render-address>
+          </v-col>
+        </v-row>
+        <v-row v-if="type == 'safe'" no-gutters dense>
+          <v-col cols="2" align="right">
             <p class="my-2">Threshold:</p>
           </v-col>
           <v-col cols="6" align="left">
@@ -96,14 +104,6 @@ const AddressAddress = {
           </v-col>
           <v-col cols="6" align="left">
             <render-address v-for="o in owners" :address="o"></render-address>
-          </v-col>
-        </v-row>
-        <v-row v-if="type == 'safe'" no-gutters dense>
-          <v-col cols="2" align="right">
-            <p class="my-2">Implementation:</p>
-          </v-col>
-          <v-col cols="6" align="left">
-            <render-address :address="implementation"></render-address>
           </v-col>
         </v-row>
         <v-row v-if="type == 'safe'" no-gutters dense>
