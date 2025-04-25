@@ -499,7 +499,45 @@ const tokenModule = {
       db.close();
     },
     async syncTokenMetadata(context, address) {
-      console.log(now() + " tokenModule - actions.syncTokenMetadata - address: " + address);
+      const validatedAddress = validateAddress(address);
+      if (!validatedAddress) {
+        // TODO: Handle error in UI
+        console.error(now() + " tokenModule - actions.syncTokenMetadata - INVALID address: " + address);
+        return;
+      }
+      console.log(now() + " tokenModule - actions.syncTokenMetadata - validatedAddress: " + validatedAddress);
+      const reservoirData = {};
+      let continuation = null;
+      do {
+        let url = "https://api.reservoir.tools/tokens/v7?collection=" + validatedAddress + "&sortBy=updatedAt&limit=1000&includeTopBid=true&includeAttributes=true&includeLastSale=true";
+        url = url + (continuation != null ? "&continuation=" + continuation : "");
+        console.log(moment().format("HH:mm:ss") + " downloadFromReservoir - url: " + url);
+        const data = await fetch(url)
+          .then(handleErrors)
+          .then(response => response.json())
+          .catch(function(error) {
+            console.error(now() + " tokenModule - actions.syncTokenMetadata - ERROR: " + error);
+            return {};
+          });
+        console.log(now() + " tokenModule - actions.syncTokenMetadata - data.continuation: " + data.continuation);
+        continuation = data.continuation;
+        console.log(now() + " tokenModule - actions.syncTokenMetadata - data: " + JSON.stringify(data, null, 2).substring(0, 200));
+        // parseReservoirData(data, reservoirData);
+        // console.log(now() + " tokenModule - actions.syncTokenMetadata - reservoirData: " + JSON.stringify(reservoirData, null, 2).substring(0, 20000));
+        if (continuation != null) {
+          await delay(1000);
+        }
+      } while (continuation != null);
+      // Vue.set(this.reservoirData, address, reservoirData);
+      // console.log(now() + " tokenModule - actions.syncTokenMetadata - this.reservoirData: " + JSON.stringify(this.reservoirData, null, 2).substring(0, 200));
+      // const db = new Dexie(this.db.name);
+      // db.version(this.db.version).stores(this.db.schemaDefinition);
+      // await db.cache.put({ objectName: "reservoirData", object: this.reservoirData }).then (function() {
+      //   }).catch(function(error) {
+      //     console.error(now() + " tokenModule - actions.syncTokenMetadata - ERROR: " + e.message);
+      //   });
+      // db.close();
+
     },
   },
 };
