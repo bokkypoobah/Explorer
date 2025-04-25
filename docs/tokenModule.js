@@ -519,11 +519,11 @@ const tokenModule = {
             console.error(now() + " tokenModule - actions.syncTokenMetadata - ERROR: " + error);
             return {};
           });
-        console.log(now() + " tokenModule - actions.syncTokenMetadata - data.continuation: " + data.continuation);
+        // console.log(now() + " tokenModule - actions.syncTokenMetadata - data.continuation: " + data.continuation);
         continuation = data.continuation;
-        console.log(now() + " tokenModule - actions.syncTokenMetadata - data: " + JSON.stringify(data, null, 2).substring(0, 200));
-        // parseReservoirData(data, reservoirData);
-        // console.log(now() + " tokenModule - actions.syncTokenMetadata - reservoirData: " + JSON.stringify(reservoirData, null, 2).substring(0, 20000));
+        // console.log(now() + " tokenModule - actions.syncTokenMetadata - data: " + JSON.stringify(data, null, 2).substring(0, 200));
+        parseReservoirData(data, reservoirData);
+        console.log(now() + " tokenModule - actions.syncTokenMetadata - reservoirData: " + JSON.stringify(reservoirData, null, 2).substring(0, 20000));
         if (continuation != null) {
           await delay(1000);
         }
