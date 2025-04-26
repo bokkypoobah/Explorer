@@ -487,11 +487,14 @@ nftOwnersList: {{ nftOwnersList }}
     chainId() {
       return store.getters['chainId'];
     },
-    sync() {
-      return store.getters['token/sync'];
-    },
     address() {
       return store.getters['token/address'];
+    },
+    version() {
+      return store.getters['token/info'].version || null;
+    },
+    implementation() {
+      return store.getters['token/info'].implementation || null;
     },
     type() {
       return store.getters['token/info'].type || null;
@@ -529,11 +532,11 @@ nftOwnersList: {{ nftOwnersList }}
     approvalForAlls() {
       return store.getters['token/approvalForAlls'];
     },
-    version() {
-      return store.getters['token/info'].version || null;
+    metadata() {
+      return store.getters['token/metadata'];
     },
-    implementation() {
-      return store.getters['token/info'].implementation || null;
+    sync() {
+      return store.getters['token/sync'];
     },
     explorer() {
       return store.getters['explorer'];

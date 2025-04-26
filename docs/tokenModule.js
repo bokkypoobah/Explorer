@@ -14,6 +14,8 @@ const tokenModule = {
     approvals: {},
     approvalForAlls: {},
 
+    metadata: {},
+
     sync: {
       info: null,
       completed: null,
@@ -35,6 +37,8 @@ const tokenModule = {
     tokens: state => state.tokens,
     approvals: state => state.approvals,
     approvalForAlls: state => state.approvalForAlls,
+
+    metadata: state => state.metadata,
 
     sync: state => state.sync,
     functions(state) {
@@ -102,6 +106,10 @@ const tokenModule = {
       state.approvals = approvals;
       state.approvalForAlls = approvalForAlls;
     },
+    setMetadata(state, metadata) {
+      console.log(now() + " tokenModule - mutations.setMetadata - metadata: " + JSON.stringify(metadata).substring(0, 200));
+      state.metadata = metadata;
+    },
     setSyncInfo(state, info) {
       // console.log(now() + " tokenModule - mutations.setSyncInfo - info: " + info);
       state.sync.info = info;
@@ -156,6 +164,9 @@ const tokenModule = {
       const txHashes = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_token_txHashes", []);
       const txHashesIndex = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_token_txHashesIndex", {});
       context.commit('setLookups', { addresses, addressesIndex, txHashes, txHashesIndex });
+
+      const metadata = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_token_metadata", {});
+      context.commit('setMetadata', metadata);
 
       context.commit('setInfo', info);
 
@@ -506,7 +517,7 @@ const tokenModule = {
         return;
       }
       console.log(now() + " tokenModule - actions.syncTokenMetadata - validatedAddress: " + validatedAddress);
-      const reservoirData = {};
+      const metadata = {};
       let continuation = null;
       do {
         let url = "https://api.reservoir.tools/tokens/v7?collection=" + validatedAddress + "&sortBy=updatedAt&limit=1000&includeTopBid=true&includeAttributes=true&includeLastSale=true";
@@ -521,24 +532,21 @@ const tokenModule = {
           });
         continuation = data.continuation;
         // console.log(now() + " tokenModule - actions.syncTokenMetadata - data: " + JSON.stringify(data, null, 2).substring(0, 200));
-        parseReservoirData(data, reservoirData);
-        console.log(now() + " tokenModule - actions.syncTokenMetadata - reservoirData - #tokens: " + Object.keys(reservoirData.tokens).length);
+        parseReservoirData(data, metadata);
+        console.log(now() + " tokenModule - actions.syncTokenMetadata - metadata - #tokens: " + Object.keys(metadata.tokens).length);
         if (continuation != null) {
           await delay(1000);
         }
       } while (continuation != null);
-      console.log(now() + " tokenModule - actions.syncTokenMetadata - reservoirData: " + JSON.stringify(reservoirData, null, 2));
+      console.log(now() + " tokenModule - actions.syncTokenMetadata - metadata: " + JSON.stringify(metadata, null, 2));
 
-      // Vue.set(this.reservoirData, address, reservoirData);
-      // console.log(now() + " tokenModule - actions.syncTokenMetadata - this.reservoirData: " + JSON.stringify(this.reservoirData, null, 2).substring(0, 200));
-      // const db = new Dexie(this.db.name);
-      // db.version(this.db.version).stores(this.db.schemaDefinition);
-      // await db.cache.put({ objectName: "reservoirData", object: this.reservoirData }).then (function() {
-      //   }).catch(function(error) {
-      //     console.error(now() + " tokenModule - actions.syncTokenMetadata - ERROR: " + e.message);
-      //   });
-      // db.close();
-
+      const chainId = store.getters["chainId"];
+      const dbInfo = store.getters["db"];
+      const db = new Dexie(dbInfo.name);
+      db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
+      await dbSaveCacheData(db, validatedAddress + "_" + chainId + "_token_metadata", metadata);
+      db.close();
+      context.commit('setMetadata', metadata);
     },
   },
 };
