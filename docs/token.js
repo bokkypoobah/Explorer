@@ -168,10 +168,18 @@ nftOwnersList: {{ nftOwnersList }}
               </template>
               <template v-slot:item.tokens="{ item }">
                 <span v-if="type == 'erc721'">
-                  <render-token-id v-for="token in item.tokens" :tokenId="token" :token="address" :metadata="metadata"></render-token-id>
+                  <v-row dense class="my-2">
+                    <v-col v-for="(token, index) in item.tokens" :key="index">
+                      <render-token-id :tokenId="token" :token="address" :metadata="metadata"></render-token-id>
+                    </v-col>
+                  </v-row>
                 </span>
                 <span v-else>
-                  <render-token-id v-for="token in item.tokens" :tokenId="token.tokenId" :count="token.count" :token="address" :metadata="metadata"></render-token-id>
+                  <v-row dense class="my-2">
+                    <v-col v-for="(token, index) in item.tokens" :key="index">
+                      <render-token-id :tokenId="token.tokenId" :count="token.count" :token="address" :metadata="metadata"></render-token-id>
+                    </v-col>
+                  </v-row>
                 </span>
               </template>
             </v-data-table>
