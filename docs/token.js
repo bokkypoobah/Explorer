@@ -28,6 +28,7 @@ const Token = {
           <v-spacer></v-spacer>
           <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" right color="deep-purple-accent-4">
             <v-tab prepend-icon="mdi-text-long" text="Info" value="info" class="lowercase-btn"></v-tab>
+            <v-tab v-if="type == 'erc721' || type == 'erc1155'" prepend-icon="mdi-cards-playing-heart-multiple-outline" text="Tokens" value="tokens" class="lowercase-btn"></v-tab>
             <v-tab prepend-icon="mdi-account-multiple-outline" text="Owners" value="owners" class="lowercase-btn"></v-tab>
             <v-tab prepend-icon="mdi-check-outline" text="Approvals" value="approvals" class="lowercase-btn"></v-tab>
             <v-tab prepend-icon="mdi-math-log" text="Events" value="events" class="lowercase-btn"></v-tab>

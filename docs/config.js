@@ -96,7 +96,7 @@ const Config = {
     console.log(now() + " Config - beforeCreate");
 	},
   mounted() {
-    console.log(now() + " Config - mounted");
+    console.log(now() + " Config - mounted - CHAINS: " + JSON.stringify(CHAINS, null, 2));
 	},
   unmounted() {
     console.log(now() + " Config - unmounted");
