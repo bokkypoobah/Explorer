@@ -519,15 +519,16 @@ const tokenModule = {
             console.error(now() + " tokenModule - actions.syncTokenMetadata - ERROR: " + error);
             return {};
           });
-        // console.log(now() + " tokenModule - actions.syncTokenMetadata - data.continuation: " + data.continuation);
         continuation = data.continuation;
         // console.log(now() + " tokenModule - actions.syncTokenMetadata - data: " + JSON.stringify(data, null, 2).substring(0, 200));
         parseReservoirData(data, reservoirData);
-        console.log(now() + " tokenModule - actions.syncTokenMetadata - reservoirData: " + JSON.stringify(reservoirData, null, 2).substring(0, 20000));
+        console.log(now() + " tokenModule - actions.syncTokenMetadata - reservoirData - #tokens: " + Object.keys(reservoirData.tokens).length);
         if (continuation != null) {
           await delay(1000);
         }
       } while (continuation != null);
+      console.log(now() + " tokenModule - actions.syncTokenMetadata - reservoirData: " + JSON.stringify(reservoirData, null, 2));
+
       // Vue.set(this.reservoirData, address, reservoirData);
       // console.log(now() + " tokenModule - actions.syncTokenMetadata - this.reservoirData: " + JSON.stringify(this.reservoirData, null, 2).substring(0, 200));
       // const db = new Dexie(this.db.name);

@@ -1,30 +1,18 @@
 function parseReservoirData(data, reservoirData) {
   console.log(moment().format("HH:mm:ss") + " parseReservoirData - data: " + JSON.stringify(data, null, 2).substring(0, 200));
   for (const item of (data && data.tokens || [])) {
-    // console.log(moment().format("HH:mm:ss") + " parseReservoirData - item: " + JSON.stringify(item, null, 2));
     const token = item.token;
-    const chainId = token.chainId;
-    if (!(('' + chainId) in reservoirData)) {
-      reservoirData[chainId] = {};
-    }
+    const market = item.market;
     const contract = ethers.utils.getAddress(token.contract);
-    const type = token.kind;
-    const collectionName = token.collection.name;
-    const collectionSlug = token.collection.slug;
-    if (!(contract in reservoirData[chainId])) {
-      reservoirData[chainId][contract] = {
-        type,
-        name: collectionName,
-        slug: collectionSlug,
-        tokens: {},
-      };
+    if (!("chainId" in reservoirData)) {
+      reservoirData.chainId = token.chainId;
+      reservoirData.contract = contract;
+      reservoirData.type = token.kind;
+      reservoirData.name = token.collection.name;
+      reservoirData.slug = token.collection.slug;
+      reservoirData.tokens = {};
     }
-    const tokenId = token.tokenId;
     const count = item.ownership && item.ownership.tokenCount || null;
-    const name = token.name;
-    const description = token.description;
-    const image = token.image;
-    const media = token.media;
     const acquiredAt = item.ownership && parseInt(Date.parse(item.ownership.acquiredAt)/1000) || null;
     const lastSaleTimestamp = token.lastSale && token.lastSale.timestamp || null;
     const lastSaleCurrency = token.lastSale && token.lastSale.price && token.lastSale.price.currency && token.lastSale.price.currency.symbol || null;
@@ -39,11 +27,11 @@ function parseReservoirData(data, reservoirData) {
         amountUSD: lastSaleAmountUSD,
       };
     }
-    const priceExpiry = token.floorAsk && token.floorAsk.validUntil && parseInt(token.floorAsk.validUntil) || null;
-    const priceSource = token.floorAsk && token.floorAsk.source && token.floorAsk.source.domain || null;
-    const priceCurrency = token.floorAsk && token.floorAsk.price && token.floorAsk.price.currency && token.floorAsk.price.currency.symbol || null;
-    const priceAmount = token.floorAsk && token.floorAsk.price && token.floorAsk.price.amount && token.floorAsk.price.amount.native || null;
-    const priceAmountUSD = token.floorAsk && token.floorAsk.price && token.floorAsk.price.amount && token.floorAsk.price.amount.usd || null;
+    const priceExpiry = market.floorAsk && market.floorAsk.validUntil && parseInt(market.floorAsk.validUntil) || null;
+    const priceSource = market.floorAsk && market.floorAsk.source && market.floorAsk.source.domain || null;
+    const priceCurrency = market.floorAsk && market.floorAsk.price && market.floorAsk.price.currency && market.floorAsk.price.currency.symbol || null;
+    const priceAmount = market.floorAsk && market.floorAsk.price && market.floorAsk.price.amount && market.floorAsk.price.amount.native || null;
+    const priceAmountUSD = market.floorAsk && market.floorAsk.price && market.floorAsk.price.amount && market.floorAsk.price.amount.usd || null;
     let price = null;
     if (priceAmount) {
       price = {
@@ -54,12 +42,12 @@ function parseReservoirData(data, reservoirData) {
         amountUSD: priceAmountUSD,
       };
     }
-    const topBidCurrency = token.topBid && token.topBid.price && token.topBid.price.currency && token.topBid.price.currency.symbol || null;
-    const topBidSource = token.topBid && token.topBid.source && token.topBid.source.domain || null;
-    const topBidAmount = token.topBid && token.topBid.price && token.topBid.price.amount && token.topBid.price.amount.native || null;
-    const topBidAmountUSD = token.topBid && token.topBid.price && token.topBid.price.amount && token.topBid.price.amount.usd || null;
-    const topBidNetAmount = token.topBid && token.topBid.price && token.topBid.price.netAmount && token.topBid.price.netAmount.native || null;
-    const topBidNetAmountUSD = token.topBid && token.topBid.price && token.topBid.price.netAmount && token.topBid.price.netAmount.usd || null;
+    const topBidCurrency = market.topBid && market.topBid.price && market.topBid.price.currency && market.topBid.price.currency.symbol || null;
+    const topBidSource = market.topBid && market.topBid.source && market.topBid.source.domain || null;
+    const topBidAmount = market.topBid && market.topBid.price && market.topBid.price.amount && market.topBid.price.amount.native || null;
+    const topBidAmountUSD = market.topBid && market.topBid.price && market.topBid.price.amount && market.topBid.price.amount.usd || null;
+    const topBidNetAmount = market.topBid && market.topBid.price && market.topBid.price.netAmount && market.topBid.price.netAmount.native || null;
+    const topBidNetAmountUSD = market.topBid && market.topBid.price && market.topBid.price.netAmount && market.topBid.price.netAmount.usd || null;
     let topBid = null;
     if (topBidNetAmount) {
       topBid = {
@@ -71,13 +59,20 @@ function parseReservoirData(data, reservoirData) {
         netAmountUSD: topBidNetAmountUSD,
       };
     }
-    if (!(tokenId in reservoirData[chainId][contract].tokens)) {
-      reservoirData[chainId][contract].tokens[tokenId] = {
+    if (!(token.tokenId in reservoirData.tokens)) {
+      reservoirData.tokens[token.tokenId] = {
+        name: token.name,
+        description: token.description,
+        image: token.image,
+        media: token.media,
+        owner: token.owner || null,
+        mintedAt: token.mintedAt && moment.utc(token.mintedAt).unix() || null,
+        createdAt: token.createdAt && moment.utc(token.createdAt).unix() || null,
+        updatedAt: item.updatedAt && moment.utc(item.updatedAt).unix() || null,
+        attributes: token.attributes.map(e => ({ key: e.key, value: e.value })) || null,
         count,
-        name,
-        description,
-        image,
-        media,
+        supply: token.supply || null,
+        remainingSupply: token.remainingSupply || null,
         acquiredAt,
         lastSale,
         price,
@@ -85,6 +80,6 @@ function parseReservoirData(data, reservoirData) {
       };
     }
   }
-  console.log(moment().format("HH:mm:ss") + " parseReservoirData - reservoirData: " + JSON.stringify(reservoirData, null, 2).substring(0, 200));
+  // console.log(moment().format("HH:mm:ss") + " parseReservoirData - reservoirData: " + JSON.stringify(reservoirData, null, 2).substring(0, 200));
   return reservoirData;
 }
