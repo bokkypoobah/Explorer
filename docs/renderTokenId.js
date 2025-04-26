@@ -2,12 +2,16 @@ const RenderTokenId = {
   template: `
     <v-menu location="bottom">
       <template v-slot:activator="{ props }">
-        <v-btn v-if="token != null && tokenId != null" color="primary" dark v-bind="props" variant="text" :class="noXPadding ? 'ma-0 px-0 lowercase-btn' : 'ma-0 px-2 lowercase-btn'" style="min-width: 0px;">
-          {{ commify0(tokenId) }}
-          <v-chip v-if="count != null" size="small" variant="plain">
-            {{ 'x' + commify0(count) }}
+        <v-btn v-if="token != null && tokenId != null" color="primary" dark v-bind="props" variant="text" :class="noXPadding ? 'ma-0 my-2 px-0 lowercase-btn' : 'ma-0 my-2 px-2 lowercase-btn'" style="min-width: 0px;">
+          <v-img v-if="image" :src="image" contain style="border-radius: 8px; height: 36px; width: 36px;"></v-img>
+          <!-- {{ commify0(tokenId) }} -->
+          <v-chip size="x-small" variant="text">
+            {{ name ? name : commify0(tokenId) }}
           </v-chip>
         </v-btn>
+        <v-chip v-if="count != null" size="small" variant="plain">
+          {{ 'x' + commify0(count) }}
+        </v-chip>
       </template>
       <v-list>
         <v-list-subheader>Token {{ token + ':' + tokenId }}</v-list-subheader>
@@ -57,10 +61,10 @@ const RenderTokenId = {
       type: [String, Number],
       default: null,
     },
-    // addresses: {
-    //   type: Array,
-    //   default: () => []
-    // },
+    metadata: {
+      type: Object,
+      default: () => {}
+    },
     // shortAddress: {
     //   type: Boolean,
     //   default: false,
@@ -75,6 +79,15 @@ const RenderTokenId = {
     };
   },
   computed: {
+    tokens() {
+      return this.metadata.tokens || {};
+    },
+    name() {
+      return this.tokenId != null && this.tokens[this.tokenId] && this.tokens[this.tokenId].name || null;
+    },
+    image() {
+      return this.tokenId != null && this.tokens[this.tokenId] && this.tokens[this.tokenId].image || null;
+    },
     // resolvedAddress() {
     //   if (this.address.length != 42) {
     //     return this.addresses[this.address] || this.address;
