@@ -109,6 +109,9 @@ const Token = {
               </v-card-text>
             </v-card>
           </v-tabs-window-item>
+          <v-tabs-window-item value="tokens">
+            TODO
+          </v-tabs-window-item>
           <v-tabs-window-item value="owners">
             <v-row v-if="type == 'erc20'" no-gutters dense>
               <v-col cols="7">
