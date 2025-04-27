@@ -198,7 +198,7 @@ const BlocksBrowse = {
               await db.blocks.put({ chainId, ...blockData }).then (function() {
                 }).catch(function(e) {
                   console.error(now() + " BlocksBrowse - methods.loadItems - ERROR blocks.put: " + e.message);
-                });              
+                });
             }
           } catch (e) {
             console.error(now() + " BlocksBrowse - methods.loadItems - ERROR provider.getBlockWithTransactions: " + e.message);
