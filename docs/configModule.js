@@ -3,23 +3,11 @@ const configModule = {
   state: {
     config: {
       etherscanAPIKey: null,
-      chains: {
-        // 1: {
-        //   name: "Ethereum Mainnet",
-        //   explorer: "https://etherscan.io/",
-        //   api: "https://api.etherscan.io/v2/api?chainid=1",
-        // },
-        // 11155111: {
-        //   name: "Sepolia Testnet",
-        //   explorer: "https://sepolia.etherscan.io/",
-        //   api: "https://api.etherscan.io/v2/api?chainid=11155111",
-        // },
-      },
+      chains: {},
       version: 2,
     },
   },
   getters: {
-    // name: state => state.info.name || null,
     config: state => state.config,
     chains(state) {
       console.log(now() + " configModule - getters.chains");
@@ -53,7 +41,7 @@ const configModule = {
         }
       }
       store.subscribe((mutation, state) => {
-        if (mutation.type == "config1/setEtherscanAPIKey" || mutation.type == "config1/addChain") {
+        if (mutation.type == "config/setEtherscanAPIKey" || mutation.type == "config/addChain") {
           console.log(now() + " configModule - actions.loadConfig - subscribe - mutation.type: " + mutation.type);
           localStorage.explorerConfig = JSON.stringify(context.state.config);
         }
@@ -62,5 +50,16 @@ const configModule = {
     setEtherscanAPIKey(context, etherscanAPIKey) {
       context.commit('setEtherscanAPIKey', etherscanAPIKey);
     },
+    // TODO:
+    // addChain(context, chain) {
+    //   if (!(chain.chainId in state.config.chains)) {
+    //     state.config.chains[chain.chainId] = {
+    //       name: chain.name,
+    //       explorer: chain.explorer,
+    //       api: chain.api,
+    //       reservoir: chain.reservoir,
+    //     };
+    //   }
+    // },
   },
 };

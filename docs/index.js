@@ -5,22 +5,6 @@ const router = VueRouter.createRouter({
 
 const store = new Vuex.Store({
   state: {
-    config: {
-      etherscanAPIKey: null,
-      chains: {
-        1: {
-          name: "Ethereum Mainnet",
-          explorer: "https://etherscan.io/",
-          api: "https://api.etherscan.io/v2/api?chainid=1",
-        },
-        11155111: {
-          name: "Sepolia Testnet",
-          explorer: "https://sepolia.etherscan.io/",
-          api: "https://api.etherscan.io/v2/api?chainid=11155111",
-        },
-      },
-      version: 1,
-    },
     web3: {
       connected: false,
       error: false,
@@ -43,43 +27,25 @@ const store = new Vuex.Store({
         cache: '&objectName',
       },
     },
-    // testData: 'Hellooo',
-    // name: 'Test'
   },
   getters: {
-    config: state => state.config,
     web3: state => state.web3,
     db: state => state.db,
     chainId: state => state.web3.chainId,
     supportedNetwork(state) {
-      const chain = state.web3.chainId && state.config.chains[state.web3.chainId] || null;
+      const chain = state.web3.chainId && store.getters['config/chains'][state.web3.chainId] || null;
       return !!chain;
     },
     networkName(state) {
-      const chain = state.web3.chainId && state.config.chains[state.web3.chainId] || null;
+      const chain = state.web3.chainId && store.getters['config/chains'][state.web3.chainId] || null;
       return chain && chain.name || "Unknown chainId: " + state.web3.chainId;
     },
     explorer(state) {
-      const chain = state.web3.chainId && state.config.chains[state.web3.chainId] || null;
+      const chain = state.web3.chainId && store.getters['config/chains'][state.web3.chainId] || null;
       return chain && chain.explorer || null;
     },
   },
   mutations: {
-    setConfig(state, config) {
-      state.config = config;
-    },
-    setEtherscanAPIKey(state, apiKey) {
-      state.config.etherscanAPIKey = apiKey;
-    },
-    addChain(state, chain) {
-      if (!(chain.chainId in state.config.chains)) {
-        state.config.chains[chain.chainId] = {
-          name: chain.name,
-          explorer: chain.explorer,
-          api: chain.api,
-        };
-      }
-    },
     setWeb3Info(state, info) {
       state.web3.connected = info.connected;
       state.web3.error = info.error;
@@ -108,18 +74,6 @@ const store = new Vuex.Store({
     },
   },
   actions: {
-    // pretendUpdate({ commit }) {
-    //   commit('setName', 'Updated Name');
-    // }
-    setConfig(context, config) {
-      context.commit('setConfig', config);
-    },
-    setEtherscanAPIKey(context, apiKey) {
-      context.commit('setEtherscanAPIKey', apiKey);
-    },
-    addChain(context, chain) {
-      context.commit('addChain', chain);
-    },
     setWeb3Info(context, info) {
       context.commit('setWeb3Info', info);
     },
@@ -134,7 +88,7 @@ const store = new Vuex.Store({
     },
   },
   modules: {
-    config1: configModule,
+    config: configModule,
     connection: connectionModule,
     block: blockModule,
     blocks: blocksModule,
@@ -147,19 +101,10 @@ const store = new Vuex.Store({
   plugins: [
     function persistSettings(store) {
       store.subscribe((mutation, state) => {
-        if (mutation.type == "setEtherscanAPIKey" || mutation.type == "addChain") {
-          localStorage.explorerConfig = JSON.stringify(state.config);
-        } else if (mutation.type.substring(0, 7) == "setWeb3") {
+        if (mutation.type.substring(0, 7) == "setWeb3") {
           localStorage.explorerWeb3 = JSON.stringify(state.web3);
         }
       });
-
-      if (localStorage.explorerConfig) {
-        const tempConfig = JSON.parse(localStorage.explorerConfig);
-        if ('version' in tempConfig && tempConfig.version == store.getters["config"].version) {
-          store.dispatch('setConfig', tempConfig);
-        }
-      }
       if (localStorage.explorerWeb3) {
         const tempWeb3Info = JSON.parse(localStorage.explorerWeb3);
         if ('version' in tempWeb3Info && tempWeb3Info.version == store.getters["web3"].version) {
@@ -193,9 +138,6 @@ const app = Vue.createApp({
         decimals: null,
         displayDialog: false,
       }
-
-  //     testData: 'Hellooo',
-  //     name: "Testing"
     }
   },
   computed: {
@@ -358,7 +300,7 @@ const app = Vue.createApp({
 	},
   mounted() {
     console.log(now() + " index.js - app.mounted");
-    store.dispatch('config1/loadConfig');
+    store.dispatch('config/loadConfig');
     store.dispatch('addresses/loadAddresses');
     store.dispatch('blocks/startup');
   },

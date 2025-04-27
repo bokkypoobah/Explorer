@@ -58,39 +58,39 @@ const Config = {
   computed: {
     etherscanAPIKey: {
       get: function() {
-        return store.getters['config1/config'].etherscanAPIKey;
+        return store.getters['config/config'].etherscanAPIKey;
       },
       set: function(etherscanAPIKey) {
-        store.dispatch('config1/setEtherscanAPIKey', etherscanAPIKey);
+        store.dispatch('config/setEtherscanAPIKey', etherscanAPIKey);
       },
     },
     chains() {
       const results = [];
-      for (const [chainId, chainData] of Object.entries(store.getters['config1/chains'])) {
+      for (const [chainId, chainData] of Object.entries(store.getters['config/chains'])) {
         results.push({ chainId, ...chainData });
       }
       return results;
     },
   },
   methods: {
-    async importChainlistFromEtherscan() {
-      console.log(now() + " Config - methods.importChainlistFromEtherscan()");
-      const url = "https://api.etherscan.io/v2/chainlist";
-      const data = await fetch(url).then(response => response.json());
-      // console.log(JSON.stringify(data));
-      if (data && data.result) {
-        for (const item of data.result) {
-          if (!(item.chainid in store.getters['config'].chains)) {
-            store.dispatch('addChain', {
-              chainId: item.chainid,
-              name: item.chainname,
-              explorer: item.blockexplorer + (item.blockexplorer.substr(-1) != "/" ? "/" : ""),
-              api: item.apiurl,
-            });
-          }
-        }
-      }
-    },
+    // async importChainlistFromEtherscan() {
+    //   console.log(now() + " Config - methods.importChainlistFromEtherscan()");
+    //   const url = "https://api.etherscan.io/v2/chainlist";
+    //   const data = await fetch(url).then(response => response.json());
+    //   // console.log(JSON.stringify(data));
+    //   if (data && data.result) {
+    //     for (const item of data.result) {
+    //       if (!(item.chainid in store.getters['config'].chains)) {
+    //         store.dispatch('addChain', {
+    //           chainId: item.chainid,
+    //           name: item.chainname,
+    //           explorer: item.blockexplorer + (item.blockexplorer.substr(-1) != "/" ? "/" : ""),
+    //           api: item.apiurl,
+    //         });
+    //       }
+    //     }
+    //   }
+    // },
   },
   beforeCreate() {
     console.log(now() + " Config - beforeCreate");
