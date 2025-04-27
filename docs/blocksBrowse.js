@@ -203,6 +203,7 @@ const BlocksBrowse = {
               this.currentPage = Math.ceil((parseInt(blockNumber) + 1) / this.itemsPerPage);
             }
           }
+          this.loading = false;
         }
       }
     },
