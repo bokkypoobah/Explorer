@@ -14,21 +14,21 @@ const BlocksBrowse = {
           :items="blocks"
           :items-length="blockNumber + 1"
           :loading="loading"
-          :search="live && blockNumber.toString() || null"
+          :search="!searchString && live && blockNumber.toString() || null"
           item-value="name"
           @update:options="loadItems"
           v-model:page="currentPage"
           density="comfortable"
         >
-
           <template v-slot:top>
             <v-toolbar flat color="transparent" density="compact">
               <!-- <v-toolbar-title style="font-size: 0.9rem !important;">Custom Pagination</v-toolbar-title> -->
+              <v-text-field v-model="searchString" @input="search();" hide-details label="🔍" density="compact" variant="plain" class="ml-3 shrink" style="width: 100px" placeholder="block number">
+              </v-text-field>
               <v-spacer></v-spacer>
-              <v-btn text @click="live = !live;" :color="live ? 'primary' : 'secondary'" class="lowercase-btn">
-                <v-icon :icon="live ? 'mdi-lightning-bolt' : 'mdi-lightning-bolt-outline'"></v-icon>{{ live ? "Live" : "Paused"}}
+              <v-btn text :disabled="!!searchString" @click="live = !live;" :color="live ? 'primary' : 'secondary'" class="lowercase-btn">
+                <v-icon :icon="(!searchString && live) ? 'mdi-lightning-bolt' : 'mdi-lightning-bolt-outline'"></v-icon>{{ searchString ? "Search" : (live ? "Live" : "Paused") }}
               </v-btn>
-
               <v-spacer></v-spacer>
               <v-pagination
                 v-model="currentPage"
@@ -82,6 +82,8 @@ const BlocksBrowse = {
   props: ['inputAddress'],
   data: function () {
     return {
+      searchString: null,
+      _timerId: null,
       live: true,
       itemsPerPage: 10,
       blocks: [],
@@ -129,6 +131,25 @@ const BlocksBrowse = {
     },
   },
   methods: {
+
+    async search() {
+      // console.log(now() + " BlocksBrowse - methods.search - this.searchString: " + JSON.stringify(this.searchString));
+      clearTimeout(this._timerId);
+      this._timerId = setTimeout(async () => {
+        await this.searchDebounced();
+      }, 500);
+    },
+    async searchDebounced() {
+      const blockRegex = /^\d+$/;
+      if (blockRegex.test(this.searchString)) {
+        console.log(now() + " BlocksBrowse - methods.searchDebounced - BLOCKNUMBER this.searchString: " + JSON.stringify(this.searchString));
+
+      } else {
+        console.log(now() + " BlocksBrowse - methods.searchDebounced - OTHER this.searchString: " + JSON.stringify(this.searchString));
+
+      }
+    },
+
     async loadItems ({ page, itemsPerPage, sortBy }) {
       if (!this.provider) {
         this.provider = new ethers.providers.Web3Provider(window.ethereum);
