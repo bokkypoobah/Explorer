@@ -152,7 +152,21 @@ const BlocksBrowse = {
         }
       } else {
         console.log(now() + " BlocksBrowse - methods.searchDebounced - OTHER this.searchString: " + JSON.stringify(this.searchString));
-        // TODO
+        let datetime = null;
+        try {
+          datetime = moment(this.searchString).unix();
+          console.log(now() + " BlocksBrowse - methods.searchDebounced - OTHER datetime: " + datetime + " " + moment.unix(datetime).format("YYYY-MM-DD HH:mm:ss"));
+        } catch (e) {
+          console.log(now() + " BlocksBrowse - methods.searchDebounced - Date/Time error: " + e.message);
+        }
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const block1 = await this.provider.getBlock(1);
+        const timestamp1 = block1.timestamp;
+        console.log(now() + " BlocksBrowse - methods.searchDebounced - Date/Time timestamp[1]: " + timestamp1 + " " + this.formatTimestamp(timestamp1));
+        const blockLatest = await this.provider.getBlock("latest");
+        const blockNumberLatest = blockLatest.number;
+        const timestampLatest = blockLatest.timestamp;
+        console.log(now() + " BlocksBrowse - methods.searchDebounced - Date/Time timestamp[" + blockNumberLatest + "]: " + timestampLatest + " " + this.formatTimestamp(timestampLatest));
       }
     },
 
