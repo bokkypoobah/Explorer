@@ -134,6 +134,7 @@ const store = new Vuex.Store({
     },
   },
   modules: {
+    config1: configModule,
     connection: connectionModule,
     block: blockModule,
     blocks: blocksModule,
@@ -357,6 +358,7 @@ const app = Vue.createApp({
 	},
   mounted() {
     console.log(now() + " index.js - app.mounted");
+    store.dispatch('config1/loadConfig');
     store.dispatch('addresses/loadAddresses');
     store.dispatch('blocks/startup');
   },

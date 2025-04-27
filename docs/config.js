@@ -22,7 +22,7 @@ const Config = {
             <v-card-title>Chains</v-card-title>
             <v-data-table :items="chains" density="compact" style="position: relative;">
               <template v-slot:footer.prepend>
-                <v-btn @click="importChainlistFromEtherscan();" text>Import from Etherscan</v-btn>
+                <!-- <v-btn @click="importChainlistFromEtherscan();" text>Import from Etherscan</v-btn> -->
                 <v-spacer></v-spacer>
               </template>
             </v-data-table>
@@ -58,15 +58,15 @@ const Config = {
   computed: {
     etherscanAPIKey: {
       get: function() {
-        return store.getters['config'].etherscanAPIKey;
+        return store.getters['config1/config'].etherscanAPIKey;
       },
       set: function(etherscanAPIKey) {
-        store.dispatch('setEtherscanAPIKey', etherscanAPIKey);
+        store.dispatch('config1/setEtherscanAPIKey', etherscanAPIKey);
       },
     },
     chains() {
       const results = [];
-      for (const [chainId, chainData] of Object.entries(store.getters['config'].chains)) {
+      for (const [chainId, chainData] of Object.entries(store.getters['config1/chains'])) {
         results.push({ chainId, ...chainData });
       }
       return results;
@@ -96,7 +96,7 @@ const Config = {
     console.log(now() + " Config - beforeCreate");
 	},
   mounted() {
-    console.log(now() + " Config - mounted - CHAINS: " + JSON.stringify(CHAINS, null, 2));
+    console.log(now() + " Config - mounted");
 	},
   unmounted() {
     console.log(now() + " Config - unmounted");
