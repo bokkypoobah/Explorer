@@ -142,11 +142,16 @@ const BlocksBrowse = {
     async searchDebounced() {
       const blockRegex = /^\d+$/;
       if (blockRegex.test(this.searchString)) {
-        console.log(now() + " BlocksBrowse - methods.searchDebounced - BLOCKNUMBER this.searchString: " + JSON.stringify(this.searchString));
-
+        if (this.sortBy == "desc") {
+          console.log(now() + " BlocksBrowse - methods.searchDebounced - BLOCKNUMBER DESC this.searchString: " + JSON.stringify(this.searchString));
+          this.currentPage = Math.ceil((parseInt(this.blockNumber) - parseInt(this.searchString)) / this.itemsPerPage);
+        } else {
+          console.log(now() + " BlocksBrowse - methods.searchDebounced - BLOCKNUMBER ASC this.searchString: " + JSON.stringify(this.searchString));
+          this.currentPage = Math.ceil((parseInt(this.searchString) + 1) / this.itemsPerPage);
+        }
       } else {
         console.log(now() + " BlocksBrowse - methods.searchDebounced - OTHER this.searchString: " + JSON.stringify(this.searchString));
-
+        // TODO
       }
     },
 
