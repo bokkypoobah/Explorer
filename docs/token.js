@@ -18,7 +18,7 @@ const Token = {
           <!-- <v-btn v-if="sync.info == null" @click="syncTokenEvents();" color="primary" icon v-tooltip="'Retrieve Timestamps'">
             <v-icon>mdi-clock-outline</v-icon>
           </v-btn> -->
-          <v-btn v-if="sync.info == null && (type == 'erc721' || type == 'erc1155')" :disabled="chainId != 1" @click="syncTokenMetadata();" color="primary" icon v-tooltip="'Sync Token Metadata'">
+          <v-btn v-if="sync.info == null" :disabled="!reservoir" @click="syncTokenMetadata();" color="primary" icon v-tooltip="'Sync Token Metadata'">
             <v-icon>mdi-image-outline</v-icon>
           </v-btn>
           <v-btn v-if="sync.info != null" @click="setSyncHalt();" color="primary" icon v-tooltip="'Halt syncing'">
@@ -554,6 +554,9 @@ nftOwnersList: {{ nftOwnersList }}
     },
     explorer() {
       return store.getters['explorer'];
+    },
+    reservoir() {
+      return store.getters['reservoir'];
     },
     getEventsHeaders() {
       if (this.type == "erc20") {

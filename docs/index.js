@@ -44,6 +44,14 @@ const store = new Vuex.Store({
       const chain = state.web3.chainId && store.getters['config/chains'][state.web3.chainId] || null;
       return chain && chain.explorer || null;
     },
+    api(state) {
+      const chain = state.web3.chainId && store.getters['config/chains'][state.web3.chainId] || null;
+      return chain && chain.api || null;
+    },
+    reservoir(state) {
+      const chain = state.web3.chainId && store.getters['config/chains'][state.web3.chainId] || null;
+      return chain && chain.reservoir || null;
+    },
   },
   mutations: {
     setWeb3Info(state, info) {

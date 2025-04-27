@@ -33,13 +33,13 @@ const AddressContract = {
                       <!-- <v-textarea v-model="item.sourceCode" :label="item.name" rows="10">
                       </v-textarea> -->
                     </div>
-                    <v-btn @click="importSourceCodeFromEtherscan();" class="ms-2 mt-0 mb-2" style="text-transform: none !important;" text>Import Source Code From Etherscan</v-btn>
+                    <v-btn :disabled="!etherscanAPIKey" @click="importSourceCodeFromEtherscan();" class="ms-2 mt-0 mb-2" style="text-transform: none !important;" text>Import Source Code From Etherscan</v-btn>
                     <v-btn @click="importSourceCodeFromSourcify();" class="ms-2 mt-0 mb-2" style="text-transform: none !important;" text>Import Source Code From Sourcify</v-btn>
                   </v-tabs-window-item>
                   <v-tabs-window-item value="abi">
                     <v-textarea v-model="abi" :rules="jsonRules" label="ABI" rows="10">
                     </v-textarea>
-                    <v-btn @click="importABIFromEtherscan();" class="ms-2 mt-0 mb-2" style="text-transform: none !important;" text>Import ABI From Etherscan
+                    <v-btn :disabled="!etherscanAPIKey" @click="importABIFromEtherscan();" class="ms-2 mt-0 mb-2" style="text-transform: none !important;" text>Import ABI From Etherscan
                     </v-btn>
                   </v-tabs-window-item>
                   <v-tabs-window-item value="functions">
@@ -98,6 +98,9 @@ const AddressContract = {
     info() {
       return store.getters['address/info'];
     },
+    etherscanAPIKey() {
+      return store.getters['config/config'].etherscanAPIKey;
+    },
     abi: {
       get: function() {
         // return store.getters['address/info'].abi;
@@ -151,7 +154,7 @@ const AddressContract = {
     async importABIFromEtherscan() {
       console.log(now() + " AddressContract - methods.importABIFromEtherscan");
       const chainId = store.getters["chainId"];
-      const url = "https://api.etherscan.io/v2/api?chainid=" + chainId + "&module=contract&action=getabi&address=" + (this.info.implementation ? this.info.implementation : this.info.address) + "&apikey=" + store.getters['config'].etherscanAPIKey;
+      const url = "https://api.etherscan.io/v2/api?chainid=" + chainId + "&module=contract&action=getabi&address=" + (this.info.implementation ? this.info.implementation : this.info.address) + "&apikey=" + store.getters['config/config'].etherscanAPIKey;
       console.log(now() + " AddressContract - methods.importABIFromEtherscan - url: " + url);
       const data = await fetch(url).then(response => response.json());
       // console.log(now() + " AddressContract - data: " + JSON.stringify(data, null, 2));

@@ -31,7 +31,6 @@ const SAMPLES = {
     { type: "contract", address: "0x83377ea907a08baC9320cE6330993EcabBB48578", info: "ERC-20: WEENUS" },
     { type: "contract", address: "0x4200000000000000000000000000000000000006", info: "ERC-20: WETH" },
     { type: "contract", address: "0x0555E30da8f98308EdB960aa94C0Db47230d2B9c", info: "ERC-20: Wrapped BTC" },
-    { type: "contract", address: "0x0555E30da8f98308EdB960aa94C0Db47230d2B9c", info: "ERC-20: Wrapped BTC" },
     { type: "contract", address: "0x3B794FC87b14601D4Cf455b51B6B246E3D8cd01c", info: "ERC-721: Based OnchainRocks" },
     { type: "contract", address: "0xE7D4DE14e1e5bBC50BE8b0905a056beC56BE7B66", info: "ERC-1155: Nyan Dot Cat" },
   ],
