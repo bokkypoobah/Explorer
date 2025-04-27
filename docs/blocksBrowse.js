@@ -20,11 +20,29 @@ const BlocksBrowse = {
           v-model:page="currentPage"
           density="comfortable"
         >
-          <template v-slot:footer.prepend>
+
+          <template v-slot:top>
+            <v-toolbar flat color="transparent" density="compact">
+              <!-- <v-toolbar-title style="font-size: 0.9rem !important;">Custom Pagination</v-toolbar-title> -->
+              <v-spacer></v-spacer>
+              <v-btn text @click="live = !live;" :color="live ? 'primary' : 'secondary'" class="lowercase-btn">
+                <v-icon :icon="live ? 'mdi-lightning-bolt' : 'mdi-lightning-bolt-outline'"></v-icon>{{ live ? "Live" : "Paused"}}
+              </v-btn>
+
+              <v-spacer></v-spacer>
+              <v-pagination
+                v-model="currentPage"
+                :length="Math.ceil((parseInt(blockNumber) + 1) / itemsPerPage)"
+                total-visible="0"
+                density="comfortable"
+                show-first-last-page
+                class="mr-1"
+              >
+              </v-pagination>
+            </v-toolbar>
+          </template>
+          <!-- <template v-slot:footer.prepend>
             <tr class="d-flex flex-grow-1">
-              <!-- <td>
-                TODO: Search by block
-              </td> -->
               <td class="ml-2">
                 <v-btn v-if="live" @click="live = false;" text color="primary" density="compact">
                   <v-icon>mdi-lightning-bolt</v-icon>Live
@@ -34,7 +52,7 @@ const BlocksBrowse = {
                 </v-btn>
               </td>
             </tr>
-          </template>
+          </template> -->
           <template v-slot:item.number="{ item }">
             <render-block-number v-if="item && item.number != null" :block="item.number" noXPadding></render-block-number>
           </template>
