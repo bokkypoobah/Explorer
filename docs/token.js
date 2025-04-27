@@ -384,12 +384,14 @@ nftOwnersList: {{ nftOwnersList }}
                   <span v-else-if="type == 'erc721'">
                     <span v-if="item.info[2] == 0">
                       <v-btn variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
-                        {{ item.info[5] }}
+                        <render-token-id :tokenId="item.info[5]" :token="address" :metadata="metadata"></render-token-id>
+                        <!-- {{ item.info[5] }} -->
                       </v-btn>
                     </span>
                     <span v-else-if="item.info[2] == 3">
                       <v-btn variant="text" class="lowercase-btn ma-0 px-2" style="min-width: 0px;">
-                        {{ item.info[5] }}
+                        <render-token-id :tokenId="item.info[5]" :token="address" :metadata="metadata"></render-token-id>
+                        <!-- {{ item.info[5] }} -->
                       </v-btn>
                     </span>
                     <span v-else>

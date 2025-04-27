@@ -3,8 +3,8 @@ const RenderTokenId = {
     <v-card>
       <v-menu location="bottom">
         <template v-slot:activator="{ props }">
-          <v-btn v-if="token != null && tokenId != null" color="primary" dark v-bind="props" variant="text" :class="noXPadding ? 'ma-0 my-2 px-0 lowercase-btn' : 'ma-0 my-2 px-2 lowercase-btn'" style="min-width: 0px;">
-            <v-img v-if="image" :src="image" contain style="border-radius: 8px; height: 36px; width: 36px;"></v-img>
+          <v-btn v-if="token != null && tokenId != null" color="primary" dark v-bind="props" variant="text" :class="noXPadding ? 'ma-0 px-0 lowercase-btn' : 'ma-0 px-2 lowercase-btn'" style="min-width: 0px;">
+            <v-img v-if="image" :src="image" contain style="border-radius: 4px; height: 30px; width: 30px;"></v-img>
             <!-- {{ commify0(tokenId) }} -->
             <v-chip size="x-small" variant="text">
               {{ name ? name : commify0(tokenId) }}
