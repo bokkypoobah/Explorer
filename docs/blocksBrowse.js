@@ -23,7 +23,7 @@ const BlocksBrowse = {
           <template v-slot:top>
             <v-toolbar flat color="transparent" density="compact">
               <!-- <v-toolbar-title style="font-size: 0.9rem !important;">Custom Pagination</v-toolbar-title> -->
-              <v-text-field v-model="searchString" @input="search();" hide-details label="🔍" density="compact" variant="plain" class="ml-3 shrink" style="width: 100px" placeholder="block number">
+              <v-text-field v-model="searchString" @input="search();" hide-details label="🔍" density="compact" variant="plain" class="ml-3 shrink" style="width: 100px" placeholder="block number, or yyyy-mm-dd [hh:mm:ss]">
               </v-text-field>
               <v-spacer></v-spacer>
               <v-btn text :disabled="!!searchString" @click="live = !live;" :color="live ? 'primary' : 'secondary'" class="lowercase-btn">
@@ -160,13 +160,50 @@ const BlocksBrowse = {
           console.log(now() + " BlocksBrowse - methods.searchDebounced - Date/Time error: " + e.message);
         }
         const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const block1 = await this.provider.getBlock(1);
-        const timestamp1 = block1.timestamp;
-        console.log(now() + " BlocksBrowse - methods.searchDebounced - Date/Time timestamp[1]: " + timestamp1 + " " + this.formatTimestamp(timestamp1));
-        const blockLatest = await this.provider.getBlock("latest");
-        const blockNumberLatest = blockLatest.number;
-        const timestampLatest = blockLatest.timestamp;
-        console.log(now() + " BlocksBrowse - methods.searchDebounced - Date/Time timestamp[" + blockNumberLatest + "]: " + timestampLatest + " " + this.formatTimestamp(timestampLatest));
+        if (datetime) {
+          this.loading = true;
+          let startBlock = 1;
+          let startTimestamp = (await this.provider.getBlock(startBlock)).timestamp;
+          console.log(now() + " BlocksBrowse - methods.searchDebounced - START timestamp[" + startBlock + "]: " + startTimestamp + " " + this.formatTimestamp(startTimestamp));
+          const blockLatest = await this.provider.getBlock("latest");
+          let endBlock = blockLatest.number;
+          let endTimestamp = blockLatest.timestamp;
+          console.log(now() + " BlocksBrowse - methods.searchDebounced - END timestamp[" + endBlock + "]: " + endTimestamp + " " + this.formatTimestamp(endTimestamp));
+          let blockNumber = null;
+          if (datetime <= startTimestamp) {
+            blockNumber = startBlock;
+          } else if (datetime >= endTimestamp) {
+            blockNumber = endBlock;
+          } else {
+            while (startTimestamp < endTimestamp) {
+              let middleBlock = Math.floor((startBlock + endBlock) / 2);
+              let middleTimestamp = (await this.provider.getBlock(middleBlock)).timestamp;
+              blockNumber = middleBlock;
+              console.log(now() + " BlocksBrowse - methods.searchDebounced - MIDDLE timestamp[" + middleBlock + "]: " + middleTimestamp + " " + this.formatTimestamp(middleTimestamp));
+              if (middleTimestamp < datetime) {
+                startBlock = middleBlock + 1;
+                startTimestamp = (await this.provider.getBlock(startBlock)).timestamp;
+                console.log(now() + " BlocksBrowse - methods.searchDebounced - START timestamp[" + startBlock + "]: " + startTimestamp + " " + this.formatTimestamp(startTimestamp));
+              } else if (middleTimestamp > datetime) {
+                endBlock = middleBlock - 1;
+                endTimestamp = (await this.provider.getBlock(endBlock)).timestamp;
+                console.log(now() + " BlocksBrowse - methods.searchDebounced - END timestamp[" + endBlock + "]: " + endTimestamp + " " + this.formatTimestamp(endTimestamp));
+              } else {
+                break;
+              }
+            }
+            console.log(now() + " BlocksBrowse - methods.searchDebounced - FOUND blockNumber: " + blockNumber);
+          }
+          if (blockNumber) {
+            if (this.sortBy == "desc") {
+              console.log(now() + " BlocksBrowse - methods.searchDebounced - TIMESTAMP DESC blockNumber: " + JSON.stringify(blockNumber));
+              this.currentPage = Math.ceil((parseInt(this.blockNumber) - parseInt(blockNumber)) / this.itemsPerPage);
+            } else {
+              console.log(now() + " BlocksBrowse - methods.searchDebounced - TIMESTAMP ASC blockNumber: " + JSON.stringify(blockNumber));
+              this.currentPage = Math.ceil((parseInt(blockNumber) + 1) / this.itemsPerPage);
+            }
+          }
+        }
       }
     },
 
