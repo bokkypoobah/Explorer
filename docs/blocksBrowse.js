@@ -142,12 +142,13 @@ const BlocksBrowse = {
     async searchDebounced() {
       const blockRegex = /^\d+$/;
       if (blockRegex.test(this.searchString)) {
+        const blockNumber = this.searchString <= this.blockNumber ? this.searchString : this.blockNumber;
         if (this.sortBy == "desc") {
-          console.log(now() + " BlocksBrowse - methods.searchDebounced - BLOCKNUMBER DESC this.searchString: " + JSON.stringify(this.searchString));
-          this.currentPage = Math.ceil((parseInt(this.blockNumber) - parseInt(this.searchString)) / this.itemsPerPage);
+          console.log(now() + " BlocksBrowse - methods.searchDebounced - BLOCKNUMBER DESC blockNumber: " + JSON.stringify(blockNumber));
+          this.currentPage = Math.ceil((parseInt(this.blockNumber) - parseInt(blockNumber)) / this.itemsPerPage);
         } else {
-          console.log(now() + " BlocksBrowse - methods.searchDebounced - BLOCKNUMBER ASC this.searchString: " + JSON.stringify(this.searchString));
-          this.currentPage = Math.ceil((parseInt(this.searchString) + 1) / this.itemsPerPage);
+          console.log(now() + " BlocksBrowse - methods.searchDebounced - BLOCKNUMBER ASC blockNumber: " + JSON.stringify(blockNumber));
+          this.currentPage = Math.ceil((parseInt(blockNumber) + 1) / this.itemsPerPage);
         }
       } else {
         console.log(now() + " BlocksBrowse - methods.searchDebounced - OTHER this.searchString: " + JSON.stringify(this.searchString));
@@ -189,13 +190,19 @@ const BlocksBrowse = {
       for (let blockNumber = startBlock; blockNumber <= endBlock; blockNumber++) {
         if (!blockNumbers.has(blockNumber)) {
           console.log(now() + " BlocksBrowse - methods.loadItems - RETRIEVING blockNumber: " + blockNumber);
-          const block = await this.provider.getBlockWithTransactions(blockNumber);
-          const blockData = JSON.parse(JSON.stringify(block));
-          blocks.push({ chainId, ...blockData });
-          await db.blocks.put({ chainId, ...blockData }).then (function() {
-            }).catch(function(e) {
-              console.error(now() + " BlocksBrowse - methods.loadItems - ERROR blocks.put: " + e.message);
-            });
+          try {
+            const block = await this.provider.getBlockWithTransactions(blockNumber);
+            if (block) {
+              const blockData = JSON.parse(JSON.stringify(block));
+              blocks.push({ chainId, ...blockData });
+              await db.blocks.put({ chainId, ...blockData }).then (function() {
+                }).catch(function(e) {
+                  console.error(now() + " BlocksBrowse - methods.loadItems - ERROR blocks.put: " + e.message);
+                });              
+            }
+          } catch (e) {
+            console.error(now() + " BlocksBrowse - methods.loadItems - ERROR provider.getBlockWithTransactions: " + e.message);
+          }
         }
       }
       const t1 = performance.now();
