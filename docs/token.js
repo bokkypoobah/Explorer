@@ -127,7 +127,13 @@ const Token = {
                               </v-list-item-title>
                               <template v-slot:prepend="{ isSelected, select }">
                                 <v-list-item-action class="flex-column align-end">
-                                  <v-checkbox-btn :model-value="isSelected" @update:model-value="select"></v-checkbox-btn>
+                                  <v-checkbox-btn
+                                    :model-value="settings.attributes[address] && settings.attributes[address][attribute.attribute] && settings.attributes[address][attribute.attribute][option.value] || false"
+                                    @update:modelValue="handleChange({ address, attribute: attribute.attribute, option: option.value, value: $event })"
+                                  >
+                                  <!-- @update:model-value="select" -->
+                                  <!-- @change="handleChange" -->
+                                  </v-checkbox-btn>
                                 </v-list-item-action>
                               </template>
                               <template v-slot:append="{ isSelected, select }">
@@ -146,7 +152,11 @@ const Token = {
                     <!-- <v-list-item link title="List Item 3"></v-list-item> -->
                   </v-col>
                   <v-col cols="10" align="left">
-                    {{ nftAttributesList }}
+                    <pre>
+settings.attributes: {{ settings.attributes }}
+                    <br />
+nftAttributesList: {{ nftAttributesList }}
+                    </pre>
                   </v-col>
                 </v-row>
               </v-card-text>
@@ -503,7 +513,8 @@ nftOwnersList: {{ nftOwnersList }}
           itemsPerPage: 10,
           currentPage: 1,
         },
-        version: 4,
+        attributes: {}, // address -> attribute -> option -> selected?
+        version: 5,
       },
       eventTypes: [
         "Transfer",
@@ -908,6 +919,32 @@ nftOwnersList: {{ nftOwnersList }}
         this.items = data;
       }
       db.close();
+    },
+
+    handleChange(event) {
+      console.log(now() + " Token - methods.handleChange - event: " + JSON.stringify(event));
+      if (event.value) {
+        if (!(event.address in this.settings.attributes)) {
+          this.settings.attributes[event.address] = {};
+        }
+        if (!(event.attribute in this.settings.attributes[event.address])) {
+          this.settings.attributes[event.address][event.attribute] = {};
+        }
+        if (!(event.option in this.settings.attributes[event.address][event.attribute])) {
+          this.settings.attributes[event.address][event.attribute][event.option] = event.value;
+        }
+      } else {
+        if (this.settings.attributes[event.address][event.attribute][event.option]) {
+          delete this.settings.attributes[event.address][event.attribute][event.option];
+        }
+        if (Object.keys(this.settings.attributes[event.address][event.attribute]).length == 0) {
+          delete this.settings.attributes[event.address][event.attribute];
+        }
+        if (Object.keys(this.settings.attributes[event.address]).length == 0) {
+          delete this.settings.attributes[event.address];
+        }
+      }
+      this.saveSettings();
     },
 
     formatUnits(e, decimals) {
