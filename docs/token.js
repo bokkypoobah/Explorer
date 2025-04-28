@@ -110,7 +110,7 @@ const Token = {
             </v-card>
           </v-tabs-window-item>
           <v-tabs-window-item value="tokens">
-            TODO
+            {{ nftAttributesList }}
           </v-tabs-window-item>
           <v-tabs-window-item value="owners">
             <v-row v-if="type == 'erc20'" no-gutters dense>
@@ -656,6 +656,44 @@ nftOwnersList: {{ nftOwnersList }}
         }
       }
       return result;
+    },
+    nftAttributes() {
+      const results = {};
+      if (this.type == "erc721" || this.type == "erc1155") {
+        for (const [tokenId, tokenData] of Object.entries(this.metadata.tokens || {})) {
+          // console.log(tokenId + " => " + JSON.stringify(tokenData.attributes));
+          for (const attribute of tokenData.attributes) {
+            // console.log("  " + JSON.stringify(attribute));
+            if (!(attribute.key in results)) {
+              results[attribute.key] = {};
+            }
+            if (!(attribute.value in results[attribute.key])) {
+              results[attribute.key][attribute.value] = [];
+            }
+            results[attribute.key][attribute.value].push(parseInt(tokenId));
+          }
+        }
+      }
+      // console.log(now() + " Token - computed.nftAttributes - results: " + JSON.stringify(results, null, 2));
+      return results;
+    },
+    nftAttributesList() {
+      const results = [];
+      for (const [attribute, attributeInfo] of Object.entries(this.nftAttributes)) {
+        const array = [];
+        for (const [value, info] of Object.entries(attributeInfo)) {
+          array.push({ value, count: info.length });
+        }
+        array.sort((a, b) => {
+          return a.count - b.count;
+        });
+        results.push({ attribute, options: array });
+      }
+      results.sort((a, b) => {
+        return a.attribute.localeCompare(b.attribute);
+      });
+      // console.log(now() + " Token - computed.nftAttributesList - results: " + JSON.stringify(results, null, 2));
+      return results;
     },
     nftOwnersList() {
       const results = [];
