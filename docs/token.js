@@ -115,13 +115,27 @@ const Token = {
                 <v-row no-gutters dense>
                   <v-col cols="2">
                     <v-expansion-panels flat>
-                      <v-expansion-panel v-for="attribute in nftAttributesList" >
+                      <v-expansion-panel v-for="attribute in nftAttributesList" class="ma-0 pa-0">
                         <v-expansion-panel-title>
                           {{ attribute.attribute }}
                         </v-expansion-panel-title>
-                        <v-expansion-panel-text>
-                          <div v-for="option in attribute.options">
-                            <v-list-item link :title="option.value + ' ' + option.count"></v-list-item>
+                        <v-expansion-panel-text class="ma-0 pa-0">
+                          <div v-for="option in attribute.options" class="ma-0 pa-0">
+                            <v-list-item class="ma-0 pa-0">
+                              <v-list-item-title style="font-size: 12px !important;">
+                                {{ option.value }}
+                              </v-list-item-title>
+                              <template v-slot:prepend="{ isSelected, select }">
+                                <v-list-item-action class="flex-column align-end">
+                                  <v-checkbox-btn :model-value="isSelected" @update:model-value="select"></v-checkbox-btn>
+                                </v-list-item-action>
+                              </template>
+                              <template v-slot:append="{ isSelected, select }">
+                                <v-list-item-action class="flex-column align-end">
+                                  <small class="mt-0 text-high-emphasis opacity-60">{{ option.count }}</small>
+                                </v-list-item-action>
+                              </template>
+                            </v-list-item>
                           </div>
                           <!-- <v-list-item v-for="option in attribute.options" :title="options"></v-list-item> -->
                         </v-expansion-panel-text>
