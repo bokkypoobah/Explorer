@@ -19,6 +19,7 @@ const BlocksBrowse = {
           @update:options="loadItems"
           v-model:page="currentPage"
           density="comfortable"
+          hide-default-footer
         >
           <template v-slot:top>
             <v-toolbar flat color="transparent" density="compact">
@@ -30,6 +31,32 @@ const BlocksBrowse = {
                 <v-icon :icon="(!searchString && live) ? 'mdi-lightning-bolt' : 'mdi-lightning-bolt-outline'"></v-icon>{{ searchString ? "Search" : (live ? "Live" : "Paused") }}
               </v-btn>
               <v-spacer></v-spacer>
+              <v-spacer></v-spacer>
+              <p class="mr-5 text-caption text--disabled">
+                {{ commify0(startBlock) }} - {{ commify0(endBlock) }}
+              </p>
+              <v-pagination
+                v-model="currentPage"
+                :length="Math.ceil((parseInt(blockNumber) + 1) / itemsPerPage)"
+                total-visible="0"
+                density="comfortable"
+                show-first-last-page
+                class="mr-1"
+              >
+              </v-pagination>
+            </v-toolbar>
+          </template>
+          <template v-slot:bottom>
+            <v-toolbar flat color="transparent" density="compact">
+              <v-spacer></v-spacer>
+              <v-select
+                v-model="itemsPerPage"
+                :items="itemsPerPageOptions"
+                variant="plain"
+                density="compact"
+                class="mt-2 mr-2"
+                style="max-width: 60px;"
+              ></v-select>
               <v-pagination
                 v-model="currentPage"
                 :length="Math.ceil((parseInt(blockNumber) + 1) / itemsPerPage)"
@@ -90,6 +117,8 @@ const BlocksBrowse = {
       currentPage: 1,
       sortBy: "desc",
       loading: null,
+      startBlock: null,
+      endBlock: null,
       blocksHeaders: [
         { title: 'Block', value: 'number', align: 'end', sortable: true },
         { title: 'Timestamp', value: 'timestamp', sortable: false },
@@ -235,6 +264,8 @@ const BlocksBrowse = {
         }
       }
       console.log(now() + " BlocksBrowse - methods.loadItems - blockNumber: " + blockNumber + ", this.sortBy: " + this.sortBy + ", page: " + page + ", itemsPerPage: " + itemsPerPage + ", startBlock: " + startBlock + ", endBlock: " + endBlock);
+      this.startBlock = startBlock;
+      this.endBlock = endBlock;
 
       const t0 = performance.now();
       const blocks = await db.blocks.where('[chainId+number]').between([chainId, startBlock],[chainId, endBlock], true, true).toArray();
