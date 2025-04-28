@@ -131,8 +131,6 @@ const Token = {
                                     :model-value="settings.attributes[address] && settings.attributes[address][attribute.attribute] && settings.attributes[address][attribute.attribute][option.value] || false"
                                     @update:modelValue="handleChange({ address, attribute: attribute.attribute, option: option.value, value: $event })"
                                   >
-                                  <!-- @update:model-value="select" -->
-                                  <!-- @change="handleChange" -->
                                   </v-checkbox-btn>
                                 </v-list-item-action>
                               </template>
@@ -143,19 +141,15 @@ const Token = {
                               </template>
                             </v-list-item>
                           </div>
-                          <!-- <v-list-item v-for="option in attribute.options" :title="options"></v-list-item> -->
                         </v-expansion-panel-text>
                       </v-expansion-panel>
                     </v-expansion-panels>
-                    <!-- <v-list-item v-for="attribute in nftAttributesList" :title="attribute.attribute"></v-list-item> -->
-                    <!-- <v-list-item link title="List Item 2"></v-list-item> -->
-                    <!-- <v-list-item link title="List Item 3"></v-list-item> -->
                   </v-col>
                   <v-col cols="10" align="left">
                     <pre>
 settings.attributes: {{ settings.attributes }}
                     <br />
-nftAttributesList: {{ nftAttributesList }}
+nftFilteredTokens: {{ nftFilteredTokens }}
                     </pre>
                   </v-col>
                 </v-row>
@@ -744,6 +738,46 @@ nftOwnersList: {{ nftOwnersList }}
         return a.attribute.localeCompare(b.attribute);
       });
       // console.log(now() + " Token - computed.nftAttributesList - results: " + JSON.stringify(results, null, 2));
+      return results;
+    },
+    nftFilteredTokens() {
+      const results = [];
+      if (this.type == "erc721" || this.type == "erc1155") {
+        if (this.settings.attributes[this.address]) {
+          let tokenIds = null;
+          for (const [attribute, attributeData] of Object.entries(this.settings.attributes[this.address])) {
+            let attributeTokenIds = null;
+            for (const [option, optionData] of Object.entries(attributeData)) {
+              // console.log(attribute + "/" + option + " => " + JSON.stringify(optionData));
+              if (!attributeTokenIds) {
+                attributeTokenIds = new Set(this.nftAttributes[attribute][option]);
+              } else {
+                attributeTokenIds = new Set([...attributeTokenIds, ...this.nftAttributes[attribute][option]]);
+              }
+            }
+            if (!tokenIds) {
+              tokenIds = attributeTokenIds;
+            } else {
+              const newTokenIds = new Set();
+              for (const tokenId of tokenIds) {
+                if ((attributeTokenIds.has(tokenId))) {
+                  newTokenIds.add(tokenId);
+                }
+              }
+              tokenIds = newTokenIds;
+            }
+          }
+          for (const tokenId of tokenIds) {
+            results.push({ tokenId });
+          }
+          // console.log("  tokenIds: " + JSON.stringify([...tokenIds]));
+        } else {
+          for (const [tokenId, tokenData] of Object.entries(this.metadata.tokens || {})) {
+            // console.log(tokenId + " => " + JSON.stringify(tokenData.attributes));
+            results.push({ tokenId });
+          }
+        }
+      }
       return results;
     },
     nftOwnersList() {
