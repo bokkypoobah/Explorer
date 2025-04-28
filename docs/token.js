@@ -149,7 +149,7 @@ const Token = {
                     <pre>
 settings.attributes: {{ settings.attributes }}
                     <br />
-nftFilteredTokens: {{ nftFilteredTokens }}
+nftFilteredTokens.slice(0, 10): {{ nftFilteredTokens.slice(0, 10) }}
                     </pre>
                   </v-col>
                 </v-row>
@@ -768,13 +768,13 @@ nftOwnersList: {{ nftOwnersList }}
             }
           }
           for (const tokenId of tokenIds) {
-            results.push({ tokenId });
+            results.push(this.metadata.tokens[tokenId]);
           }
           // console.log("  tokenIds: " + JSON.stringify([...tokenIds]));
         } else {
           for (const [tokenId, tokenData] of Object.entries(this.metadata.tokens || {})) {
             // console.log(tokenId + " => " + JSON.stringify(tokenData.attributes));
-            results.push({ tokenId });
+            results.push(this.metadata.tokens[tokenId]);
           }
         }
       }
