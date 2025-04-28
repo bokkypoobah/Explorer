@@ -80,23 +80,25 @@ ERC-721 Larva Chad @ `0x8FA600364B93C53e0c71C7A33d2adE21f4351da3` events
 
 After clicking on [Sync Token Metadata]
 
-<kbd><img src="images/SampleScreen24.png" width="800" /></kbd>
+<kbd><img src="images/SampleScreen24.png?" width="800" /></kbd>
 
-<kbd><img src="images/SampleScreen25.png" width="800" /></kbd>
+<kbd><img src="images/SampleScreen25.png?" width="800" /></kbd>
 
-<kbd><img src="images/SampleScreen26.png" width="800" /></kbd>
+<kbd><img src="images/SampleScreen26.png?" width="800" /></kbd>
+
+<kbd><img src="images/SampleScreen27.png?" width="800" /></kbd>
 
 ERC-1155 NYAN CAT @ `0xB32979486938AA9694BFC898f35DBED459F44424` events
 
-<kbd><img src="images/SampleScreen27.png" width="800" /></kbd>
+<kbd><img src="images/SampleScreen28.png?" width="800" /></kbd>
 
 After clicking on [Sync Token Metadata]
 
-<kbd><img src="images/SampleScreen28.png" width="800" /></kbd>
+<kbd><img src="images/SampleScreen29.png?" width="800" /></kbd>
 
-<kbd><img src="images/SampleScreen29.png" width="800" /></kbd>
+<kbd><img src="images/SampleScreen30.png?" width="800" /></kbd>
 
-<kbd><img src="images/SampleScreen30.png" width="800" /></kbd>
+<kbd><img src="images/SampleScreen31.png?" width="800" /></kbd>
 
 <br />
 

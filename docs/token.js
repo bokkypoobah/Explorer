@@ -112,6 +112,22 @@ const Token = {
           <v-tabs-window-item value="tokens">
             <v-card>
               <v-card-text class="ma-0 pa-0">
+                <v-toolbar flat color="transparent" density="compact">
+                  <v-spacer></v-spacer>
+                  <p class="mr-5 text-caption text--disabled">
+                    {{ nftFilteredTokens.length }}
+                  </p>
+                  <v-pagination
+                    v-model="settings.tokens.currentPage"
+                    :length="Math.ceil((parseInt(nftFilteredTokens.length)) / settings.tokens.itemsPerPage)"
+                    total-visible="0"
+                    density="comfortable"
+                    show-first-last-page
+                    class="mr-1"
+                    @update:modelValue="saveSettings();"
+                  >
+                  </v-pagination>
+                </v-toolbar>
                 <v-row no-gutters dense>
                   <v-col cols="2">
                     <v-expansion-panels flat>
@@ -147,7 +163,7 @@ const Token = {
                   </v-col>
                   <v-col cols="10" align="left">
                     <v-row no-gutters dense>
-                      <v-col v-for="(item, index) in nftFilteredTokens" :key="index" align="center">
+                      <v-col v-for="(item, index) in nftFilteredTokensPaged" :key="index" align="center">
                         <v-avatar class="ma-3" rounded="0" size="200">
                           <v-img :src="item.image"></v-img>
                         </v-avatar>
@@ -160,6 +176,28 @@ settings.attributes: {{ settings.attributes }}
                     <br />
 nftFilteredTokens.slice(0, 10): {{ nftFilteredTokens.slice(0, 10) }}
                     </pre> -->
+                    <v-toolbar flat color="transparent" density="compact">
+                      <v-spacer></v-spacer>
+                      <v-select
+                        v-model="settings.tokens.itemsPerPage"
+                        :items="itemsPerPageOptions"
+                        variant="plain"
+                        density="compact"
+                        class="mt-2 mr-2"
+                        style="max-width: 60px;"
+                        @update:modelValue="saveSettings();"
+                      ></v-select>
+                      <v-pagination
+                        v-model="settings.tokens.currentPage"
+                        :length="Math.ceil((parseInt(nftFilteredTokens.length)) / settings.tokens.itemsPerPage)"
+                        total-visible="0"
+                        density="comfortable"
+                        show-first-last-page
+                        class="mr-1"
+                        @update:modelValue="saveSettings();"
+                      >
+                      </v-pagination>
+                    </v-toolbar>
                   </v-col>
                 </v-row>
               </v-card-text>
@@ -505,6 +543,12 @@ nftOwnersList: {{ nftOwnersList }}
           currentPage: 1,
           top: 20,
         },
+        tokens: {
+          showFilter: false,
+          sortBy: [{ key: "count", order: "desc" }],
+          itemsPerPage: 10,
+          currentPage: 1,
+        },
         nftOwners: {
           sortBy: [{ key: "count", order: "desc" }],
           itemsPerPage: 10,
@@ -517,7 +561,7 @@ nftOwnersList: {{ nftOwnersList }}
           currentPage: 1,
         },
         attributes: {}, // address -> attribute -> option -> selected?
-        version: 5,
+        version: 6,
       },
       eventTypes: [
         "Transfer",
@@ -785,6 +829,9 @@ nftOwnersList: {{ nftOwnersList }}
       }
       return results;
     },
+    nftFilteredTokensPaged() {
+      return this.nftFilteredTokens.slice((this.settings.tokens.currentPage - 1) * this.settings.tokens.itemsPerPage, this.settings.tokens.currentPage * this.settings.tokens.itemsPerPage);
+    },
     nftOwnersList() {
       const results = [];
       // console.log(now() + " Token - computed.nftOwnersList - this.tokens: " + JSON.stringify(this.tokens, null, 2));
@@ -999,7 +1046,7 @@ nftOwnersList: {{ nftOwnersList }}
       return null;
     },
     saveSettings() {
-      // console.log(now() + " Token - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
+      console.log(now() + " Token - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
       if (this.initialised) {
         localStorage.explorerTokenSettings = JSON.stringify(this.settings);
       }
