@@ -55,7 +55,7 @@ const BlocksBrowse = {
                 variant="plain"
                 density="compact"
                 class="mt-2 mr-2"
-                style="max-width: 60px;"
+                style="max-width: 70px;"
               ></v-select>
               <v-pagination
                 v-model="currentPage"

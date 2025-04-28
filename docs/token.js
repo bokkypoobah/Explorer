@@ -184,7 +184,7 @@ nftFilteredTokens.slice(0, 10): {{ nftFilteredTokens.slice(0, 10) }}
                         variant="plain"
                         density="compact"
                         class="mt-2 mr-2"
-                        style="max-width: 60px;"
+                        style="max-width: 70px;"
                         @update:modelValue="saveSettings();"
                       ></v-select>
                       <v-pagination
