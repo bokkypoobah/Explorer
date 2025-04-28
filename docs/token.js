@@ -146,11 +146,20 @@ const Token = {
                     </v-expansion-panels>
                   </v-col>
                   <v-col cols="10" align="left">
-                    <pre>
+                    <v-row no-gutters dense>
+                      <v-col v-for="(item, index) in nftFilteredTokens" :key="index" align="center">
+                        <v-avatar class="ma-3" rounded="0" size="200">
+                          <v-img :src="item.image"></v-img>
+                        </v-avatar>
+                        <br />
+                        {{ item.name }}
+                      </v-col>
+                    </v-row>
+                    <!-- <pre>
 settings.attributes: {{ settings.attributes }}
                     <br />
 nftFilteredTokens.slice(0, 10): {{ nftFilteredTokens.slice(0, 10) }}
-                    </pre>
+                    </pre> -->
                   </v-col>
                 </v-row>
               </v-card-text>
@@ -675,15 +684,12 @@ nftOwnersList: {{ nftOwnersList }}
     },
     erc20OwnersList() {
       const results = [];
-      // console.log(now() + " Token - computed.erc20OwnersList - this.balances: " + JSON.stringify(this.balances, null, 2));
       for (const [address, balance] of Object.entries(this.balances)) {
         const percent = ethers.BigNumber.from(balance).mul(1000000).div(this.totalSupply) / 10000.0;
-        // results.push({ address, balance: ethers.utils.formatUnits(balance, this.decimals), percent });
         results.push({ address, balance, percent });
       }
       results.sort((a, b) => {
         return ethers.BigNumber.from(b.balance).sub(a.balance);
-        // return b.balance - a.balance;
       });
       return results;
     },
@@ -693,9 +699,7 @@ nftOwnersList: {{ nftOwnersList }}
         result = Object.keys(this.tokens).length;
       } else if (this.type == "erc1155") {
         for (const [tokenId, ownerData] of Object.entries(this.tokens)) {
-          // console.log(tokenId + " => " + JSON.stringify(ownerData));
           for (const [owner, count] of Object.entries(ownerData)) {
-            // console.log(tokenId + "/" + owner + " => " + count);
             result += parseInt(count);
           }
         }
@@ -706,9 +710,7 @@ nftOwnersList: {{ nftOwnersList }}
       const results = {};
       if (this.type == "erc721" || this.type == "erc1155") {
         for (const [tokenId, tokenData] of Object.entries(this.metadata.tokens || {})) {
-          // console.log(tokenId + " => " + JSON.stringify(tokenData.attributes));
           for (const attribute of tokenData.attributes) {
-            // console.log("  " + JSON.stringify(attribute));
             if (!(attribute.key in results)) {
               results[attribute.key] = {};
             }
@@ -719,7 +721,6 @@ nftOwnersList: {{ nftOwnersList }}
           }
         }
       }
-      // console.log(now() + " Token - computed.nftAttributes - results: " + JSON.stringify(results, null, 2));
       return results;
     },
     nftAttributesList() {
@@ -737,7 +738,6 @@ nftOwnersList: {{ nftOwnersList }}
       results.sort((a, b) => {
         return a.attribute.localeCompare(b.attribute);
       });
-      // console.log(now() + " Token - computed.nftAttributesList - results: " + JSON.stringify(results, null, 2));
       return results;
     },
     nftFilteredTokens() {
@@ -748,7 +748,6 @@ nftOwnersList: {{ nftOwnersList }}
           for (const [attribute, attributeData] of Object.entries(this.settings.attributes[this.address])) {
             let attributeTokenIds = null;
             for (const [option, optionData] of Object.entries(attributeData)) {
-              // console.log(attribute + "/" + option + " => " + JSON.stringify(optionData));
               if (!attributeTokenIds) {
                 attributeTokenIds = new Set(this.nftAttributes[attribute][option]);
               } else {
@@ -768,13 +767,19 @@ nftOwnersList: {{ nftOwnersList }}
             }
           }
           for (const tokenId of tokenIds) {
-            results.push(this.metadata.tokens[tokenId]);
+            if (this.type == "erc721") {
+              results.push({ ...this.metadata.tokens[tokenId], owner: this.tokens[tokenId] || null });
+            } else {
+              results.push({ ...this.metadata.tokens[tokenId], owners: this.tokens[tokenId] || null, owner: undefined });
+            }
           }
-          // console.log("  tokenIds: " + JSON.stringify([...tokenIds]));
         } else {
           for (const [tokenId, tokenData] of Object.entries(this.metadata.tokens || {})) {
-            // console.log(tokenId + " => " + JSON.stringify(tokenData.attributes));
-            results.push(this.metadata.tokens[tokenId]);
+            if (this.type == "erc721") {
+              results.push({ ...this.metadata.tokens[tokenId], owner: this.tokens[tokenId] || null });
+            } else {
+              results.push({ ...this.metadata.tokens[tokenId], owners: this.tokens[tokenId] || null, owner: undefined });
+            }
           }
         }
       }
