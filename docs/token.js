@@ -110,7 +110,33 @@ const Token = {
             </v-card>
           </v-tabs-window-item>
           <v-tabs-window-item value="tokens">
-            {{ nftAttributesList }}
+            <v-card>
+              <v-card-text class="ma-0 pa-0">
+                <v-row no-gutters dense>
+                  <v-col cols="2">
+                    <v-expansion-panels flat>
+                      <v-expansion-panel v-for="attribute in nftAttributesList" >
+                        <v-expansion-panel-title>
+                          {{ attribute.attribute }}
+                        </v-expansion-panel-title>
+                        <v-expansion-panel-text>
+                          <div v-for="option in attribute.options">
+                            <v-list-item link :title="option.value + ' ' + option.count"></v-list-item>
+                          </div>
+                          <!-- <v-list-item v-for="option in attribute.options" :title="options"></v-list-item> -->
+                        </v-expansion-panel-text>
+                      </v-expansion-panel>
+                    </v-expansion-panels>
+                    <!-- <v-list-item v-for="attribute in nftAttributesList" :title="attribute.attribute"></v-list-item> -->
+                    <!-- <v-list-item link title="List Item 2"></v-list-item> -->
+                    <!-- <v-list-item link title="List Item 3"></v-list-item> -->
+                  </v-col>
+                  <v-col cols="10" align="left">
+                    {{ nftAttributesList }}
+                  </v-col>
+                </v-row>
+              </v-card-text>
+            </v-card>
           </v-tabs-window-item>
           <v-tabs-window-item value="owners">
             <v-row v-if="type == 'erc20'" no-gutters dense>
