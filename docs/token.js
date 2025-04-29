@@ -164,7 +164,7 @@ const Token = {
                   <v-col cols="10" align="left">
                     <v-row dense>
                       <v-col v-for="(item, index) in nftFilteredTokensPaged" :key="index" align="center">
-                        <v-card>
+                        <v-card class="pt-3">
                           <v-img :src="item.image" width="300" cover class="align-end text-white">
                             <v-card-title class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">{{ item.name }}</v-card-title>
                           </v-img>
