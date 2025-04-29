@@ -117,6 +117,12 @@ const Token = {
                     <v-icon :icon="settings.tokens.showFilter ? 'mdi-filter' : 'mdi-filter-outline'"></v-icon>
                   </v-btn>
                   <v-spacer></v-spacer>
+                  <div v-for="(attributeData, attribute) of (settings.attributes[address] || {})">
+                    <v-chip v-for="(optionData, option) of attributeData" class="ma-1" size="x-small" variant="tonal" color="primary" closable @click:close="updateAttributes({ address, attribute, option, value: false });">
+                      {{ attribute }}: {{ option }}
+                    </v-chip>
+                  </div>
+                  <v-spacer></v-spacer>
                   <v-btn-toggle v-model="settings.tokens.view" variant="plain" class="mr-2" @update:modelValue="saveSettings();">
                     <v-btn icon value="large">
                       <v-icon color="primary">mdi-view-grid</v-icon>
@@ -161,7 +167,7 @@ const Token = {
                                   <v-list-item-action class="flex-column align-end">
                                     <v-checkbox-btn
                                       :model-value="settings.attributes[address] && settings.attributes[address][attribute.attribute] && settings.attributes[address][attribute.attribute][option.value] || false"
-                                      @update:modelValue="handleChange({ address, attribute: attribute.attribute, option: option.value, value: $event })"
+                                      @update:modelValue="updateAttributes({ address, attribute: attribute.attribute, option: option.value, value: $event })"
                                     >
                                     </v-checkbox-btn>
                                   </v-list-item-action>
@@ -1091,8 +1097,8 @@ nftOwnersList: {{ nftOwnersList }}
       db.close();
     },
 
-    handleChange(event) {
-      console.log(now() + " Token - methods.handleChange - event: " + JSON.stringify(event));
+    updateAttributes(event) {
+      console.log(now() + " Token - methods.updateAttributes - event: " + JSON.stringify(event));
       if (event.value) {
         if (!(event.address in this.settings.attributes)) {
           this.settings.attributes[event.address] = {};
