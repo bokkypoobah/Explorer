@@ -113,6 +113,9 @@ const Token = {
             <v-card>
               <v-card-text class="ma-0 pa-0">
                 <v-toolbar flat color="transparent" density="compact">
+                  <v-btn icon @click="settings.tokens.showFilter = !settings.tokens.showFilter;" color="primary" class="lowercase-btn" v-tooltip="'Attributes filter'">
+                    <v-icon :icon="settings.tokens.showFilter ? 'mdi-filter' : 'mdi-filter-outline'"></v-icon>
+                  </v-btn>
                   <v-spacer></v-spacer>
                   <p class="mr-5 text-caption text--disabled">
                     {{ nftFilteredTokens.length }}
@@ -129,43 +132,45 @@ const Token = {
                   </v-pagination>
                 </v-toolbar>
                 <v-row no-gutters dense>
-                  <v-col cols="2">
-                    <v-expansion-panels flat>
-                      <v-expansion-panel v-for="attribute in nftAttributesList" class="ma-0 pa-0">
-                        <v-expansion-panel-title>
-                          {{ attribute.attribute }}
-                        </v-expansion-panel-title>
-                        <v-expansion-panel-text class="ma-0 pa-0">
-                          <div v-for="option in attribute.options" class="ma-0 pa-0">
-                            <v-list-item class="ma-0 pa-0">
-                              <v-list-item-title style="font-size: 12px !important;">
-                                {{ option.value }}
-                              </v-list-item-title>
-                              <template v-slot:prepend="{ isSelected, select }">
-                                <v-list-item-action class="flex-column align-end">
-                                  <v-checkbox-btn
-                                    :model-value="settings.attributes[address] && settings.attributes[address][attribute.attribute] && settings.attributes[address][attribute.attribute][option.value] || false"
-                                    @update:modelValue="handleChange({ address, attribute: attribute.attribute, option: option.value, value: $event })"
-                                  >
-                                  </v-checkbox-btn>
-                                </v-list-item-action>
-                              </template>
-                              <template v-slot:append="{ isSelected, select }">
-                                <v-list-item-action class="flex-column align-end">
-                                  <small class="mt-0 text-high-emphasis opacity-60">{{ option.count }}</small>
-                                </v-list-item-action>
-                              </template>
-                            </v-list-item>
-                          </div>
-                        </v-expansion-panel-text>
-                      </v-expansion-panel>
-                    </v-expansion-panels>
+                  <v-col v-if="settings.tokens.showFilter" cols="2">
+                    <v-card>
+                      <v-expansion-panels flat>
+                        <v-expansion-panel v-for="attribute in nftAttributesList" class="ma-0 pa-0">
+                          <v-expansion-panel-title>
+                            {{ attribute.attribute }}
+                          </v-expansion-panel-title>
+                          <v-expansion-panel-text class="ma-0 pa-0">
+                            <div v-for="option in attribute.options" class="ma-0 pa-0">
+                              <v-list-item class="ma-0 pa-0">
+                                <v-list-item-title style="font-size: 12px !important;">
+                                  {{ option.value }}
+                                </v-list-item-title>
+                                <template v-slot:prepend="{ isSelected, select }">
+                                  <v-list-item-action class="flex-column align-end">
+                                    <v-checkbox-btn
+                                      :model-value="settings.attributes[address] && settings.attributes[address][attribute.attribute] && settings.attributes[address][attribute.attribute][option.value] || false"
+                                      @update:modelValue="handleChange({ address, attribute: attribute.attribute, option: option.value, value: $event })"
+                                    >
+                                    </v-checkbox-btn>
+                                  </v-list-item-action>
+                                </template>
+                                <template v-slot:append="{ isSelected, select }">
+                                  <v-list-item-action class="flex-column align-end">
+                                    <small class="mt-0 text-high-emphasis opacity-60">{{ option.count }}</small>
+                                  </v-list-item-action>
+                                </template>
+                              </v-list-item>
+                            </div>
+                          </v-expansion-panel-text>
+                        </v-expansion-panel>
+                      </v-expansion-panels>
+                    </v-card>
                   </v-col>
-                  <v-col cols="10" align="left">
-                    <v-row dense>
+                  <v-col :cols="settings.tokens.showFilter ? 10 : 12" align="left">
+                    <v-row dense class="d-flex flex-wrap" align="stretch">
                       <v-col v-for="(item, index) in nftFilteredTokensPaged" :key="index" align="center">
-                        <v-card class="pt-3">
-                          <v-img :src="item.image" width="300" cover class="align-end text-white">
+                        <v-card class="pb-2" max-width="200">
+                          <v-img :src="item.image" width="200" cover class="align-end text-white">
                             <v-card-title class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">{{ item.name }}</v-card-title>
                           </v-img>
                           <v-card-subtitle class="ma-1 d-flex">
@@ -180,7 +185,7 @@ const Token = {
                               &nbsp;
                             </div>
                           </v-card-subtitle>
-                          <v-card-subtitle class="ma-1 d-flex">
+                          <v-card-subtitle class="ma-0 px-1 d-flex">
                             <div v-if="item.lastSale" v-tooltip="'Last sale @ ' + formatTimestamp(item.lastSale.timestamp) + ' ~' + item.lastSale.amountUSD + ' USD'">
                               <small class="mb-4 text-high-emphasis opacity-60">{{ item.lastSale.amount + " " + item.lastSale.currency }}</small>
                             </div>
