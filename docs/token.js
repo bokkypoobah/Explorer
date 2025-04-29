@@ -243,9 +243,12 @@ const Token = {
                       density="comfortable"
                       hide-default-footer
                     >
-                    <template v-slot:item.rowNumber="{ index }">
-                      {{ (settings.tokens.currentPage - 1) * settings.tokens.itemsPerPage + index + 1 }}
-                    </template>
+                      <template v-slot:item.rowNumber="{ index }">
+                        {{ (settings.tokens.currentPage - 1) * settings.tokens.itemsPerPage + index + 1 }}
+                      </template>
+                      <template v-slot:item.owner="{ item }">
+                        <render-address :address="item.owner" :addresses="addresses" :token="address" noXPadding></render-address>
+                      </template>
                     </v-data-table>
                     <v-toolbar flat color="transparent" density="compact">
                       <v-spacer></v-spacer>
