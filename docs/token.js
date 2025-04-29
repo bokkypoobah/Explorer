@@ -118,7 +118,7 @@ const Token = {
                   </v-btn>
                   <v-spacer></v-spacer>
                   <div v-for="(attributeData, attribute) of (settings.attributes[address] || {})">
-                    <v-chip v-for="(optionData, option) of attributeData" class="ma-1" size="x-small" variant="tonal" color="primary" closable @click:close="updateAttributes({ address, attribute, option, value: false });">
+                    <v-chip v-for="(optionData, option) of attributeData" class="ma-1" size="x-small" variant="elevated" color="primary" closable @click:close="updateAttributes({ address, attribute, option, value: false });">
                       {{ attribute }}: {{ option }}
                     </v-chip>
                   </div>
