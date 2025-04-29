@@ -117,8 +117,19 @@ const Token = {
                     <v-icon :icon="settings.tokens.showFilter ? 'mdi-filter' : 'mdi-filter-outline'"></v-icon>
                   </v-btn>
                   <v-spacer></v-spacer>
+                  <v-btn-toggle v-model="settings.tokens.view" variant="plain" class="mr-2" @update:modelValue="saveSettings();">
+                    <v-btn icon value="large">
+                      <v-icon color="primary">mdi-view-grid</v-icon>
+                    </v-btn>
+                    <v-btn icon value="medium">
+                      <v-icon color="primary">mdi-view-comfy</v-icon>
+                    </v-btn>
+                    <v-btn icon value="list">
+                      <v-icon color="primary">mdi-view-list</v-icon>
+                    </v-btn>
+                  </v-btn-toggle>
                   <p class="mr-5 text-caption text--disabled">
-                    {{ nftFilteredTokens.length }}
+                    {{ commify0(nftFilteredTokens.length) }}
                   </p>
                   <v-pagination
                     v-model="settings.tokens.currentPage"
@@ -128,6 +139,7 @@ const Token = {
                     show-first-last-page
                     class="mr-1"
                     @update:modelValue="saveSettings();"
+                    color="primary"
                   >
                   </v-pagination>
                 </v-toolbar>
@@ -167,11 +179,12 @@ const Token = {
                     </v-card>
                   </v-col>
                   <v-col :cols="settings.tokens.showFilter ? 10 : 12" align="left">
-                    <v-row dense class="d-flex flex-wrap" align="stretch">
+                    <v-row v-if="settings.tokens.view == 'medium' || settings.tokens.view == 'large'" dense class="d-flex flex-wrap" align="stretch">
                       <v-col v-for="(item, index) in nftFilteredTokensPaged" :key="index" align="center">
-                        <v-card class="pb-2" max-width="260">
-                          <v-img :src="item.image" width="260" cover class="align-end text-white">
-                            <v-card-title class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-size: 1em;">{{ item.name }}</v-card-title>
+                        <v-card class="pb-2" :max-width="settings.tokens.view == 'large' ? 260 : 130">
+                          <v-img :src="item.image" :width="settings.tokens.view == 'large' ? 260 : 130" cover class="align-end text-white">
+                            <v-card-title v-if="settings.tokens.view == 'large'" class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-size: 1em;">{{ item.name }}</v-card-title>
+                            <v-card-title v-if="settings.tokens.view == 'medium'" class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-size: 0.7em;">{{ item.name }}</v-card-title>
                           </v-img>
                           <v-card-text class="ma-0 pa-0 px-2 pt-1 d-flex">
                             <div v-if="type == 'erc721'">
@@ -185,7 +198,7 @@ const Token = {
                               {{ item.price.amount + " " + item.price.currency }}
                             </div>
                           </v-card-text>
-                          <v-card-subtitle class="ma-0 px-2 pt-0 d-flex">
+                          <v-card-subtitle v-if="settings.tokens.view == 'large'" class="ma-0 px-2 pt-0 d-flex">
                             <div v-if="item.lastSale" v-tooltip="'Last sale @ ' + formatTimestamp(item.lastSale.timestamp) + ' ~ ' + commify2(item.lastSale.amountUSD) + ' USD'">
                               <small class="mb-4 text-high-emphasis opacity-60">{{ item.lastSale.amount + " " + item.lastSale.currency }}</small>
                             </div>
@@ -218,6 +231,22 @@ const Token = {
                         </v-card>
                       </v-col>
                     </v-row>
+
+                    <v-data-table
+                      v-if="settings.tokens.view == 'list'"
+                      :items="nftFilteredTokens"
+                      :headers="nftTokensHeaders"
+                      v-model:sort-by="settings.tokens.sortBy"
+                      v-model:items-per-page="settings.tokens.itemsPerPage"
+                      v-model:page="settings.tokens.currentPage"
+                      @update:options="saveSettings();"
+                      density="comfortable"
+                      hide-default-footer
+                    >
+                    <template v-slot:item.rowNumber="{ index }">
+                      {{ (settings.tokens.currentPage - 1) * settings.tokens.itemsPerPage + index + 1 }}
+                    </template>
+                    </v-data-table>
                     <v-toolbar flat color="transparent" density="compact">
                       <v-spacer></v-spacer>
                       <v-select
@@ -237,6 +266,7 @@ const Token = {
                         show-first-last-page
                         class="mr-1"
                         @update:modelValue="saveSettings();"
+                        color="primary"
                       >
                       </v-pagination>
                     </v-toolbar>
@@ -587,6 +617,7 @@ nftOwnersList: {{ nftOwnersList }}
         },
         tokens: {
           showFilter: false,
+          view: "large",
           sortBy: [{ key: "count", order: "desc" }],
           itemsPerPage: 10,
           currentPage: 1,
@@ -603,7 +634,7 @@ nftOwnersList: {{ nftOwnersList }}
           currentPage: 1,
         },
         attributes: {}, // address -> attribute -> option -> selected?
-        version: 6,
+        version: 7,
       },
       eventTypes: [
         "Transfer",
@@ -627,6 +658,12 @@ nftOwnersList: {{ nftOwnersList }}
         { title: 'Address', value: 'address', sortable: true, sortRaw: (a, b) => a.address.localeCompare(b.address) },
         { title: 'Balance', value: 'balance', align: 'end', sortable: true, sortRaw: (a, b) => ethers.BigNumber.from(a.balance).sub(b.balance) },
         { title: '%', value: 'percent', align: 'end', sortable: false },
+      ],
+      nftTokensHeaders: [
+        { title: '#', value: 'rowNumber', align: 'end', sortable: false },
+        { title: 'Token Id', value: 'tokenId', align: 'end', sortable: false },
+        { title: 'Name', value: 'name', sortable: false },
+        { title: 'Owner', value: 'owner', sortable: false },
       ],
       nftOwnersHeaders: [
         { title: '#', value: 'rowNumber', align: 'end', sortable: false },
@@ -854,17 +891,17 @@ nftOwnersList: {{ nftOwnersList }}
           }
           for (const tokenId of tokenIds) {
             if (this.type == "erc721") {
-              results.push({ ...this.metadata.tokens[tokenId], owner: this.tokens[tokenId] || null });
+              results.push({ tokenId, ...this.metadata.tokens[tokenId], owner: this.tokens[tokenId] || null });
             } else {
-              results.push({ ...this.metadata.tokens[tokenId], owners: this.tokens[tokenId] || null, owner: undefined });
+              results.push({ tokenId, ...this.metadata.tokens[tokenId], owners: this.tokens[tokenId] || null, owner: undefined });
             }
           }
         } else {
           for (const [tokenId, tokenData] of Object.entries(this.metadata.tokens || {})) {
             if (this.type == "erc721") {
-              results.push({ ...this.metadata.tokens[tokenId], owner: this.tokens[tokenId] || null });
+              results.push({ tokenId, ...this.metadata.tokens[tokenId], owner: this.tokens[tokenId] || null });
             } else {
-              results.push({ ...this.metadata.tokens[tokenId], owners: this.tokens[tokenId] || null, owner: undefined });
+              results.push({ tokenId, ...this.metadata.tokens[tokenId], owners: this.tokens[tokenId] || null, owner: undefined });
             }
           }
         }

@@ -42,6 +42,7 @@ const BlocksBrowse = {
                 density="comfortable"
                 show-first-last-page
                 class="mr-1"
+                color="primary"
               >
               </v-pagination>
             </v-toolbar>
@@ -64,6 +65,7 @@ const BlocksBrowse = {
                 density="comfortable"
                 show-first-last-page
                 class="mr-1"
+                color="primary"
               >
               </v-pagination>
             </v-toolbar>
