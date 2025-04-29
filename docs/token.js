@@ -113,7 +113,7 @@ const Token = {
             <v-card>
               <v-card-text class="ma-0 pa-0">
                 <v-toolbar flat color="transparent" density="compact">
-                  <v-btn icon @click="settings.tokens.showFilter = !settings.tokens.showFilter;" color="primary" class="lowercase-btn" v-tooltip="'Attributes filter'">
+                  <v-btn icon @click="settings.tokens.showFilter = !settings.tokens.showFilter; saveSettings();" color="primary" class="lowercase-btn" v-tooltip="'Attributes filter'">
                     <v-icon :icon="settings.tokens.showFilter ? 'mdi-filter' : 'mdi-filter-outline'"></v-icon>
                   </v-btn>
                   <v-spacer></v-spacer>
@@ -169,23 +169,23 @@ const Token = {
                   <v-col :cols="settings.tokens.showFilter ? 10 : 12" align="left">
                     <v-row dense class="d-flex flex-wrap" align="stretch">
                       <v-col v-for="(item, index) in nftFilteredTokensPaged" :key="index" align="center">
-                        <v-card class="pb-2" max-width="200">
-                          <v-img :src="item.image" width="200" cover class="align-end text-white">
-                            <v-card-title class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">{{ item.name }}</v-card-title>
+                        <v-card class="pb-2" max-width="260">
+                          <v-img :src="item.image" width="260" cover class="align-end text-white">
+                            <v-card-title class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-size: 1em;">{{ item.name }}</v-card-title>
                           </v-img>
-                          <v-card-subtitle class="ma-1 d-flex">
-                            <!-- <div v-if="item.lastSale" v-tooltip="'Last sale @ ' + formatTimestamp(item.lastSale.timestamp) + ' ~' + item.lastSale.amountUSD + ' USD'">
-                              <small class="mb-4 text-high-emphasis opacity-60">{{ item.lastSale.amount + " " + item.lastSale.currency }}</small>
-                            </div> -->
-                            <v-spacer></v-spacer>
-                            <div v-if="item.price" v-tooltip="'Price on ' + item.price.source + ' ~' + item.price.amountUSD + ' USD'">
-                              {{ item.price.amount + " " + item.price.currency }}
+                          <v-card-text class="ma-0 pa-0 px-2 pt-1 d-flex">
+                            <div v-if="type == 'erc721'">
+                              <render-address :address="item.owner" :addresses="addresses" miniAddress noXPadding></render-address>
                             </div>
-                            <div v-else>
+                            <div>
                               &nbsp;
                             </div>
-                          </v-card-subtitle>
-                          <v-card-subtitle class="ma-0 px-1 d-flex">
+                            <v-spacer></v-spacer>
+                            <div v-if="item.price" v-tooltip="'Price on ' + item.price.source + ' ~' + item.price.amountUSD + ' USD'" class="mt-2">
+                              {{ item.price.amount + " " + item.price.currency }}
+                            </div>
+                          </v-card-text>
+                          <v-card-subtitle class="ma-0 px-2 pt-0 d-flex">
                             <div v-if="item.lastSale" v-tooltip="'Last sale @ ' + formatTimestamp(item.lastSale.timestamp) + ' ~' + item.lastSale.amountUSD + ' USD'">
                               <small class="mb-4 text-high-emphasis opacity-60">{{ item.lastSale.amount + " " + item.lastSale.currency }}</small>
                             </div>
