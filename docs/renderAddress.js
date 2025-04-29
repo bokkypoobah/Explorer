@@ -2,7 +2,8 @@ const RenderAddress = {
   template: `
     <v-menu location="bottom">
       <template v-slot:activator="{ props }">
-        <v-btn v-if="address != null" color="primary" dark v-bind="props" variant="text" :class="noXPadding ? 'ma-0 px-0 lowercase-btn' : 'ma-0 px-2 lowercase-btn'">
+        <!-- <v-btn v-if="address != null" color="primary" dark v-bind="props" :size="miniAddress ? 'x-small' : 'regular'" variant="text" :class="noXPadding ? 'ma-0 px-0 lowercase-btn' : 'ma-0 px-2 lowercase-btn'"> -->
+        <v-btn v-if="address != null" color="primary" dark v-bind="props" :size="miniAddress ? 'x-small' : ''" variant="text" :class="noXPadding ? 'ma-0 px-0 lowercase-btn' : 'ma-0 px-2 pt-2 lowercase-btn'">
           <span v-if="miniAddress">
             {{ resolvedAddress.length == 42 ? (resolvedAddress.substring(0, 10)) : resolvedAddress }}
           </span>

@@ -134,6 +134,17 @@ const Token = {
                       <v-icon color="primary">mdi-view-list</v-icon>
                     </v-btn>
                   </v-btn-toggle>
+
+                  <v-select
+                    v-model="settings.tokens.sortOption"
+                    :items="tokensSortOptions"
+                    variant="plain"
+                    density="compact"
+                    class="mt-3 mr-2"
+                    style="max-width: 200px;"
+                    @update:modelValue="saveSettings();"
+                  ></v-select>
+
                   <p class="mr-5 text-caption text--disabled">
                     {{ commify0(nftFilteredTokens.length) }}
                   </p>
@@ -627,7 +638,7 @@ nftOwnersList: {{ nftOwnersList }}
         tokens: {
           showFilter: false,
           view: "large",
-          sortBy: [{ key: "count", order: "desc" }],
+          sortOption: "tokenidasc",
           itemsPerPage: 10,
           currentPage: 1,
         },
@@ -643,7 +654,7 @@ nftOwnersList: {{ nftOwnersList }}
           currentPage: 1,
         },
         attributes: {}, // address -> attribute -> option -> selected?
-        version: 7,
+        version: 8,
       },
       eventTypes: [
         "Transfer",
@@ -661,6 +672,10 @@ nftOwnersList: {{ nftOwnersList }}
         { value: 40, title: "40" },
         { value: 50, title: "50" },
         { value: 100, title: "100" },
+      ],
+      tokensSortOptions: [
+        { value: "tokenidasc", title: "▲ Token Id" },
+        { value: "tokeniddsc", title: "▼ Token Id" },
       ],
       erc20OwnersHeaders: [
         { title: '#', value: 'rowNumber', align: 'end', sortable: false },
@@ -914,6 +929,15 @@ nftOwnersList: {{ nftOwnersList }}
             }
           }
         }
+      }
+      if (this.settings.tokens.sortOption == "tokenidasc") {
+        results.sort((a, b) => {
+          return a.tokenId - b.tokenId;
+        });
+      } else if (this.settings.tokens.sortOption == "tokeniddsc") {
+        results.sort((a, b) => {
+          return b.tokenId - a.tokenId;
+        });
       }
       return results;
     },
