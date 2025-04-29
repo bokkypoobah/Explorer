@@ -162,20 +162,41 @@ const Token = {
                     </v-expansion-panels>
                   </v-col>
                   <v-col cols="10" align="left">
-                    <v-row no-gutters dense>
+                    <v-row dense>
                       <v-col v-for="(item, index) in nftFilteredTokensPaged" :key="index" align="center">
-                        <v-avatar class="ma-3" rounded="0" size="200">
-                          <v-img :src="item.image"></v-img>
-                        </v-avatar>
-                        <br />
-                        {{ item.name }}
+                        <v-card>
+                          <v-img :src="item.image" width="300" cover class="align-end text-white">
+                            <v-card-title class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">{{ item.name }}</v-card-title>
+                          </v-img>
+                          <v-card-subtitle class="pt-1 d-flex">
+                            <div v-if="item.lastSale" v-tooltip="'Last sale @ ' + formatTimestamp(item.lastSale.timestamp) + ' ~' + item.lastSale.amountUSD + ' USD'">{{ item.lastSale.amount + " " + item.lastSale.currency }}</div>
+                            <v-spacer></v-spacer>
+                            <div v-if="item.topBid" v-tooltip="'Top bid on ' + item.topBid.source + ' ~' + item.topBid.amountUSD + ' USD'">{{ item.topBid.amount + " " + item.topBid.currency }}</div>
+                          </v-card-subtitle>
+                          <!-- <v-card-text>
+                            <div>Whitehaven Beach</div>
+                            <div>Whitsunday Island, Whitsunday Islands</div>
+                          </v-card-text> -->
+                          <!-- <v-card-actions>
+                            <v-btn color="orange" text="Share"></v-btn>
+                            <v-btn color="orange" text="Explore"></v-btn>
+                          </v-card-actions> -->
+                          <!-- <v-card-actions>
+                            <div class="flex-column align-start">
+                              <small class="mb-4 text-high-emphasis opacity-60">{{ 'item.action' }}</small>
+                              <v-spacer></v-spacer>
+                              <v-icon color="yellow-darken-3">mdi-star</v-icon>
+                            </div>
+                            <v-spacer></v-spacer>
+                            <div class="flex-column align-end">
+                              <small class="mb-4 text-high-emphasis opacity-60">{{ 'item.action' }}</small>
+                              <v-spacer></v-spacer>
+                              <v-icon color="yellow-darken-3" class="text-right">mdi-star</v-icon>
+                            </div>
+                          </v-card-actions> -->
+                        </v-card>
                       </v-col>
                     </v-row>
-                    <!-- <pre>
-settings.attributes: {{ settings.attributes }}
-                    <br />
-nftFilteredTokens.slice(0, 10): {{ nftFilteredTokens.slice(0, 10) }}
-                    </pre> -->
                     <v-toolbar flat color="transparent" density="compact">
                       <v-spacer></v-spacer>
                       <v-select
@@ -830,7 +851,9 @@ nftOwnersList: {{ nftOwnersList }}
       return results;
     },
     nftFilteredTokensPaged() {
-      return this.nftFilteredTokens.slice((this.settings.tokens.currentPage - 1) * this.settings.tokens.itemsPerPage, this.settings.tokens.currentPage * this.settings.tokens.itemsPerPage);
+      const results = this.nftFilteredTokens.slice((this.settings.tokens.currentPage - 1) * this.settings.tokens.itemsPerPage, this.settings.tokens.currentPage * this.settings.tokens.itemsPerPage);
+      console.log(now() + " Token - computed.nftFilteredTokensPaged - results: " + JSON.stringify(results, null, 2));
+      return results;
     },
     nftOwnersList() {
       const results = [];
@@ -1039,6 +1062,12 @@ nftOwnersList: {{ nftOwnersList }}
       }
       return null;
     },
+    formatTimestamp(ts) {
+      if (ts != null) {
+        return moment.unix(ts).format("YYYY-MM-DD HH:mm:ss");
+      }
+      return null;
+    },
     commify0(n) {
       if (n != null) {
         return Number(n).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
@@ -1046,7 +1075,7 @@ nftOwnersList: {{ nftOwnersList }}
       return null;
     },
     saveSettings() {
-      console.log(now() + " Token - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
+      // console.log(now() + " Token - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
       if (this.initialised) {
         localStorage.explorerTokenSettings = JSON.stringify(this.settings);
       }
