@@ -168,10 +168,26 @@ const Token = {
                           <v-img :src="item.image" width="300" cover class="align-end text-white">
                             <v-card-title class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">{{ item.name }}</v-card-title>
                           </v-img>
-                          <v-card-subtitle class="pt-1 d-flex">
-                            <div v-if="item.lastSale" v-tooltip="'Last sale @ ' + formatTimestamp(item.lastSale.timestamp) + ' ~' + item.lastSale.amountUSD + ' USD'">{{ item.lastSale.amount + " " + item.lastSale.currency }}</div>
+                          <v-card-subtitle class="ma-1 d-flex">
+                            <!-- <div v-if="item.lastSale" v-tooltip="'Last sale @ ' + formatTimestamp(item.lastSale.timestamp) + ' ~' + item.lastSale.amountUSD + ' USD'">
+                              <small class="mb-4 text-high-emphasis opacity-60">{{ item.lastSale.amount + " " + item.lastSale.currency }}</small>
+                            </div> -->
                             <v-spacer></v-spacer>
-                            <div v-if="item.topBid" v-tooltip="'Top bid on ' + item.topBid.source + ' ~' + item.topBid.amountUSD + ' USD'">{{ item.topBid.amount + " " + item.topBid.currency }}</div>
+                            <div v-if="item.price" v-tooltip="'Price on ' + item.price.source + ' ~' + item.price.amountUSD + ' USD'">
+                              {{ item.price.amount + " " + item.price.currency }}
+                            </div>
+                            <div v-else>
+                              &nbsp;
+                            </div>
+                          </v-card-subtitle>
+                          <v-card-subtitle class="ma-1 d-flex">
+                            <div v-if="item.lastSale" v-tooltip="'Last sale @ ' + formatTimestamp(item.lastSale.timestamp) + ' ~' + item.lastSale.amountUSD + ' USD'">
+                              <small class="mb-4 text-high-emphasis opacity-60">{{ item.lastSale.amount + " " + item.lastSale.currency }}</small>
+                            </div>
+                            <v-spacer></v-spacer>
+                            <div v-if="item.topBid" v-tooltip="'Top bid on ' + item.topBid.source + ' ~' + item.topBid.amountUSD + ' USD'">
+                              <small class="mb-4 text-high-emphasis opacity-60">{{ item.topBid.amount + " " + item.topBid.currency }}</small>
+                            </div>
                           </v-card-subtitle>
                           <!-- <v-card-text>
                             <div>Whitehaven Beach</div>
