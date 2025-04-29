@@ -181,16 +181,16 @@ const Token = {
                               &nbsp;
                             </div>
                             <v-spacer></v-spacer>
-                            <div v-if="item.price" v-tooltip="'Price on ' + item.price.source + ' ~' + item.price.amountUSD + ' USD'" class="mt-2">
+                            <div v-if="item.price" v-tooltip="'Price on ' + item.price.source + ' ~ ' + commify2(item.price.amountUSD) + ' USD'" class="mt-2">
                               {{ item.price.amount + " " + item.price.currency }}
                             </div>
                           </v-card-text>
                           <v-card-subtitle class="ma-0 px-2 pt-0 d-flex">
-                            <div v-if="item.lastSale" v-tooltip="'Last sale @ ' + formatTimestamp(item.lastSale.timestamp) + ' ~' + item.lastSale.amountUSD + ' USD'">
+                            <div v-if="item.lastSale" v-tooltip="'Last sale @ ' + formatTimestamp(item.lastSale.timestamp) + ' ~ ' + commify2(item.lastSale.amountUSD) + ' USD'">
                               <small class="mb-4 text-high-emphasis opacity-60">{{ item.lastSale.amount + " " + item.lastSale.currency }}</small>
                             </div>
                             <v-spacer></v-spacer>
-                            <div v-if="item.topBid" v-tooltip="'Top bid on ' + item.topBid.source + ' ~' + item.topBid.amountUSD + ' USD'">
+                            <div v-if="item.topBid" v-tooltip="'Top bid on ' + item.topBid.source + ' ~ ' + commify2(item.topBid.amountUSD) + ' USD'">
                               <small class="mb-4 text-high-emphasis opacity-60">{{ item.topBid.amount + " " + item.topBid.currency }}</small>
                             </div>
                           </v-card-subtitle>
@@ -1092,6 +1092,12 @@ nftOwnersList: {{ nftOwnersList }}
     commify0(n) {
       if (n != null) {
         return Number(n).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+      }
+      return null;
+    },
+    commify2(n) {
+      if (n != null) {
+        return Number(n).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
       }
       return null;
     },
