@@ -108,6 +108,12 @@ const routes = [
     props: true,
   },
   {
+    path: '/punks/:inputPunkId?',
+    name: "Punks",
+    component: Punks,
+    props: true,
+  },
+  {
     path: '/name/:inputName?',
     name: "Name",
     component: Name,
