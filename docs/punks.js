@@ -10,7 +10,9 @@ const Punks = {
           </v-btn>
           <v-spacer></v-spacer>
         </v-toolbar>
-        {{ attributes }}
+        <pre>
+{{ JSON.stringify(attributes, null, 2).substring(0, 20000) }}
+        </pre>
       </v-container>
     </div>
   `,
