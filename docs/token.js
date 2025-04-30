@@ -24,7 +24,7 @@ const Token = {
           <v-btn v-if="sync.info != null" @click="setSyncHalt();" color="primary" icon v-tooltip="'Halt syncing'">
             <v-icon>mdi-stop</v-icon>
           </v-btn>
-          <v-progress-circular v-if="sync.info != null" color="primary" :model-value="sync.total ? (parseInt(sync.completed * 100 / sync.total)) : 0" :size="30" :width="6" v-tooltip="sync.info + ': ' + commify0(sync.completed) + ' of ' + commify0(sync.total)"></v-progress-circular>
+          <v-progress-circular v-if="sync.info != null" color="primary" :model-value="sync.total ? (parseInt(sync.completed * 100 / sync.total)) : 0" :size="30" :width="6" v-tooltip="sync.info + ': Block #' + commify0(sync.completed) + ' of ' + commify0(sync.total)"></v-progress-circular>
           <v-spacer></v-spacer>
           <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" right color="deep-purple-accent-4">
             <v-tab prepend-icon="mdi-text-long" text="Info" value="info" class="lowercase-btn"></v-tab>
@@ -33,7 +33,7 @@ const Token = {
             <v-tab prepend-icon="mdi-check-outline" text="Approvals" value="approvals" class="lowercase-btn"></v-tab>
             <v-tab prepend-icon="mdi-math-log" text="Events" value="events" class="lowercase-btn"></v-tab>
           </v-tabs>
-        </v-toolbar density="compact" class="mt-1">
+        </v-toolbar>
         <v-tabs-window v-model="settings.tab">
           <v-tabs-window-item value="info">
             <v-card>
@@ -118,9 +118,12 @@ const Token = {
                   </v-btn>
                   <v-spacer></v-spacer>
                   <div v-for="(attributeData, attribute) of (settings.attributes[address] || {})">
-                    <v-chip v-for="(optionData, option) of attributeData" class="ma-1" size="x-small" variant="elevated" color="primary" closable @click:close="updateAttributes({ address, attribute, option, value: false });">
+                    <v-btn v-for="(optionData, option) of attributeData" class="ma-1" size="x-small" variant="elevated" append-icon="mdi-close" @click="updateAttributes({ address, attribute, option, value: false });" class="ma-1 pa-1 lowercase-btn">
                       {{ attribute }}: {{ option }}
-                    </v-chip>
+                      <template v-slot:append>
+                        <v-icon color="primary"></v-icon>
+                      </template>
+                    </v-btn>
                   </div>
                   <v-spacer></v-spacer>
                   <v-select
