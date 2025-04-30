@@ -10,6 +10,7 @@ const Punks = {
           </v-btn>
           <v-spacer></v-spacer>
         </v-toolbar>
+        {{ attributes }}
       </v-container>
     </div>
   `,
@@ -22,9 +23,9 @@ const Punks = {
     chainId() {
       return store.getters['chainId'];
     },
-    // latestCount() {
-    //   return store.getters['blocks/latestCount'];
-    // },
+    attributes() {
+      return store.getters['punks/attributes'];
+    },
     // address() {
     //   return store.getters['address/address'];
     // },

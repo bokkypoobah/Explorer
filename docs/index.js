@@ -19,11 +19,12 @@ const store = new Vuex.Store({
       version: 1,
     },
     db: {
-      name: "explorer088f",
+      name: "explorer088g",
       version: 1,
       schemaDefinition: {
         blocks: '[chainId+number]',
         tokenEvents: '[chainId+address+blockNumber+logIndex]',
+        punkEvents: '[chainId+address+blockNumber+logIndex]',
         cache: '&objectName',
       },
     },
