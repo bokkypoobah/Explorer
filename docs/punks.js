@@ -5,9 +5,9 @@ const Punks = {
         <v-toolbar density="compact" class="mt-1">
           <h4 class="ml-2">Punks</h4>
           <v-spacer></v-spacer>
-          <!-- <v-btn @click="syncAddress();" color="primary" icon>
+          <v-btn @click="syncPunks();" color="primary" icon>
             <v-icon>mdi-refresh</v-icon>
-          </v-btn> -->
+          </v-btn>
           <v-spacer></v-spacer>
           <!-- <v-tabs right color="deep-purple-accent-4">
             <v-tab :to="'/blocks/browse'" prepend-icon="mdi-format-list-numbered" class="lowercase-btn">Browse</v-tab>
@@ -23,9 +23,9 @@ const Punks = {
     };
   },
   computed: {
-    latestCount() {
-      return store.getters['blocks/latestCount'];
-    },
+    // latestCount() {
+    //   return store.getters['blocks/latestCount'];
+    // },
     // address() {
     //   return store.getters['address/address'];
     // },
@@ -43,6 +43,10 @@ const Punks = {
     // },
   },
   methods: {
+    syncPunks() {
+      console.log(now() + " Token - methods.syncPunks");
+      store.dispatch('punks/syncPunks');
+    },
     // syncAddress() {
     //   console.log(now() + " Punks - methods.syncAddress");
     //   const address = store.getters["address/address"];
@@ -58,10 +62,10 @@ const Punks = {
 	},
   mounted() {
     console.log(now() + " Punks - mounted");
-    // const t = this;
-    // setTimeout(function() {
-    //   store.dispatch('address/loadAddress', { inputAddress: t.inputAddress, forceUpdate: false });
-    // }, 1000);
+    const t = this;
+    setTimeout(function() {
+      store.dispatch('punks/startup');
+    }, 100);
 	},
   unmounted() {
     console.log(now() + " Punks - unmounted");

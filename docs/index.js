@@ -96,15 +96,16 @@ const store = new Vuex.Store({
     },
   },
   modules: {
-    config: configModule,
-    connection: connectionModule,
-    block: blockModule,
-    blocks: blocksModule,
-    transaction: transactionModule,
     address: addressModule,
     addresses: addressesModule,
-    token: tokenModule,
+    block: blockModule,
+    blocks: blocksModule,
+    config: configModule,
+    connection: connectionModule,
     name: nameModule,
+    punks: punksModule,
+    token: tokenModule,
+    transaction: transactionModule,
   },
   plugins: [
     function persistSettings(store) {
