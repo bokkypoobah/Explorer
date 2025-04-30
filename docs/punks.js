@@ -5,24 +5,23 @@ const Punks = {
         <v-toolbar density="compact" class="mt-1">
           <h4 class="ml-2">Punks</h4>
           <v-spacer></v-spacer>
-          <v-btn @click="syncPunks();" color="primary" icon>
+          <v-btn :disabled="chainId != 1" @click="syncPunks();" color="primary" icon>
             <v-icon>mdi-refresh</v-icon>
           </v-btn>
           <v-spacer></v-spacer>
-          <!-- <v-tabs right color="deep-purple-accent-4">
-            <v-tab :to="'/blocks/browse'" prepend-icon="mdi-format-list-numbered" class="lowercase-btn">Browse</v-tab>
-          </v-tabs> -->
         </v-toolbar>
-        <router-view />
       </v-container>
     </div>
   `,
-  // props: ['inputAddress'],
+  props: ['inputPunkId'],
   data: function () {
     return {
     };
   },
   computed: {
+    chainId() {
+      return store.getters['chainId'];
+    },
     // latestCount() {
     //   return store.getters['blocks/latestCount'];
     // },
@@ -44,7 +43,7 @@ const Punks = {
   },
   methods: {
     syncPunks() {
-      console.log(now() + " Token - methods.syncPunks");
+      console.log(now() + " Token - methods.syncPunks - this.inputPunkId: " + this.inputPunkId);
       store.dispatch('punks/syncPunks');
     },
     // syncAddress() {
@@ -61,7 +60,7 @@ const Punks = {
     console.log(now() + " Punks - beforeCreate");
 	},
   mounted() {
-    console.log(now() + " Punks - mounted");
+    console.log(now() + " Punks - mounted - this.inputPunkId: " + this.inputPunkId);
     const t = this;
     setTimeout(function() {
       store.dispatch('punks/startup');
