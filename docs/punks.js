@@ -10,9 +10,14 @@ const Punks = {
           </v-btn>
           <v-spacer></v-spacer>
         </v-toolbar>
-        <pre>
-{{ JSON.stringify(attributes, null, 2).substring(0, 20000) }}
-        </pre>
+        Punk #0
+        <v-img :src="'data:image/png;base64,' + images[0]" width="400" style="image-rendering: pixelated;">
+        </v-img>
+        {{ attributes[0] }}
+        <!-- <pre>
+images: {{ JSON.stringify(images, null, 2).substring(0, 20000) }}
+attributes: {{ JSON.stringify(attributes, null, 2).substring(0, 20000) }}
+        </pre> -->
       </v-container>
     </div>
   `,
@@ -27,6 +32,9 @@ const Punks = {
     },
     attributes() {
       return store.getters['punks/attributes'];
+    },
+    images() {
+      return PUNK_IMAGES;
     },
     // address() {
     //   return store.getters['address/address'];
