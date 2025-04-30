@@ -10,6 +10,10 @@ const Punks = {
           </v-btn>
           <v-spacer></v-spacer>
         </v-toolbar>
+        attributesList: {{ attributesList }}
+        <br />
+        <!-- attributesMap: {{ attributesMap }}
+        <br /> -->
         Punk #0
         <v-img :src="'data:image/png;base64,' + images[0]" width="400" style="image-rendering: pixelated;">
         </v-img>
@@ -36,6 +40,42 @@ attributes: {{ JSON.stringify(attributes, null, 2).substring(0, 20000) }}
     images() {
       return PUNK_IMAGES;
     },
+    attributesMap() {
+      const results = {};
+      for (const [punkId, attributes] of this.attributes.entries()) {
+        // console.log(punkId + " => " + JSON.stringify(attributes));
+        for (const attribute of attributes) {
+          const [trait, option] = attribute;
+          // console.log(punkId + " => " + trait + " " + option);
+          if (!(trait in results)) {
+            results[trait] = {};
+          }
+          if (!(option in results[trait])) {
+            results[trait][option] = [];
+          }
+          results[trait][option].push(parseInt(punkId));
+        }
+      }
+      // console.log("results: " + JSON.stringify(results, null, 2));
+      return results;
+    },
+    attributesList() {
+      const results = [];
+      for (const [trait, traitInfo] of Object.entries(this.attributesMap)) {
+        // console.log(trait + " => " + JSON.stringify(traitInfo));
+        const array = [];
+        for (const [option, punkIds] of Object.entries(traitInfo)) {
+          // console.log(trait + "/" + option + " => " + JSON.stringify(punkIds));
+          array.push({ option, count: punkIds.length });
+        }
+        array.sort((a, b) => {
+          return a.count - b.count;
+        });
+        results.push({ trait, options: array });
+      }
+      console.log("results: " + JSON.stringify(results, null, 2));
+      return results;
+    },
     // address() {
     //   return store.getters['address/address'];
     // },
@@ -55,7 +95,7 @@ attributes: {{ JSON.stringify(attributes, null, 2).substring(0, 20000) }}
   methods: {
     syncPunks() {
       console.log(now() + " Token - methods.syncPunks - this.inputPunkId: " + this.inputPunkId);
-      store.dispatch('punks/syncPunks');
+      store.dispatch('punks/syncPunks', true);
     },
     // syncAddress() {
     //   console.log(now() + " Punks - methods.syncAddress");
