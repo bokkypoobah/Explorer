@@ -205,8 +205,8 @@ const Token = {
                             <div v-if="type == 'erc721'">
                               <render-address :address="item.owner" :addresses="addresses" miniAddress noXPadding></render-address>
                             </div>
-                            <div>
-                              &nbsp;
+                            <div class="mt-2">
+                              {{ Object.keys(item.owners || {}).length + ' owners' }}
                             </div>
                             <v-spacer></v-spacer>
                             <div v-if="item.price" v-tooltip="'Price on ' + item.price.source + ' ~ ' + commify2(item.price.amountUSD) + ' USD'" class="mt-2">
