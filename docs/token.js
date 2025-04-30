@@ -123,29 +123,27 @@ const Token = {
                     </v-chip>
                   </div>
                   <v-spacer></v-spacer>
-                  <v-btn-toggle v-model="settings.tokens.view" variant="plain" class="mr-2" @update:modelValue="saveSettings();">
-                    <v-btn icon value="large">
-                      <v-icon color="primary">mdi-view-grid</v-icon>
-                    </v-btn>
-                    <v-btn icon value="medium">
-                      <v-icon color="primary">mdi-view-comfy</v-icon>
-                    </v-btn>
-                    <v-btn icon value="list">
-                      <v-icon color="primary">mdi-view-list</v-icon>
-                    </v-btn>
-                  </v-btn-toggle>
-
                   <v-select
                     v-model="settings.tokens.sortOption"
                     :items="tokensSortOptions"
                     variant="plain"
                     density="compact"
-                    class="mt-3 mr-2"
+                    class="mt-3 mr-3"
                     style="max-width: 200px;"
                     @update:modelValue="saveSettings();"
                   ></v-select>
-
-                  <p class="mr-5 text-caption text--disabled">
+                  <v-btn-toggle v-model="settings.tokens.view" variant="plain" class="mr-3" @update:modelValue="saveSettings();" density="compact">
+                    <v-btn icon value="large">
+                      <v-icon color="primary">mdi-grid-large</v-icon>
+                    </v-btn>
+                    <v-btn icon value="medium">
+                      <v-icon color="primary">mdi-grid</v-icon>
+                    </v-btn>
+                    <v-btn icon value="list">
+                      <v-icon color="primary">mdi-format-list-bulleted-square</v-icon>
+                    </v-btn>
+                  </v-btn-toggle>
+                  <p class="mr-1 text-caption text--disabled">
                     {{ commify0(nftFilteredTokens.length) }}
                   </p>
                   <v-pagination
@@ -196,10 +194,10 @@ const Token = {
                     </v-card>
                   </v-col>
                   <v-col :cols="settings.tokens.showFilter ? 10 : 12" align="left">
-                    <v-row v-if="settings.tokens.view == 'medium' || settings.tokens.view == 'large'" dense class="d-flex flex-wrap" align="stretch">
+                    <v-row v-if="settings.tokens.view != 'list'" dense class="d-flex flex-wrap" align="stretch">
                       <v-col v-for="(item, index) in nftFilteredTokensPaged" :key="index" align="center">
-                        <v-card class="pb-2" :max-width="settings.tokens.view == 'large' ? 260 : 130">
-                          <v-img :src="item.image" :width="settings.tokens.view == 'large' ? 260 : 130" cover class="align-end text-white">
+                        <v-card class="pb-2" :max-width="settings.tokens.view != 'medium' ? 260 : 130">
+                          <v-img :src="item.image" :width="settings.tokens.view != 'medium' ? 260 : 130" cover class="align-end text-white">
                             <v-card-title v-if="settings.tokens.view == 'large'" class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-size: 1em;">{{ item.name }}</v-card-title>
                             <v-card-title v-if="settings.tokens.view == 'medium'" class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-size: 0.7em;">{{ item.name }}</v-card-title>
                           </v-img>

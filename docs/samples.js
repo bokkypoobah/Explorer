@@ -5,6 +5,8 @@ const SAMPLES = {
     { type: "contract", address: "0xA35923162C49cF95e6BF26623385eb431ad920D3", info: "ERC-20: TURBO" },
     { type: "contract", address: "0x2823589Ae095D99bD64dEeA80B4690313e2fB519", info: "ERC-20: WEENUS" },
     { type: "contract", address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", info: "ERC-20: WETH" },
+    { type: "contract", address: "0x9126B817CCca682BeaA9f4EaE734948EE1166Af1", info: "ERC-721: BASTARD GAN CRYPTOPUNKS" },
+    { type: "contract", address: "0x31385d3520bCED94f77AaE104b406994D8F2168C", info: "ERC-721: BASTARD GAN CRYPTOPUNKS V2" },
     { type: "contract", address: "0x42069ABFE407C60cf4ae4112bEDEaD391dBa1cdB", info: "ERC-721: CryptoDickButts" },
     { type: "contract", address: "0x8FA600364B93C53e0c71C7A33d2adE21f4351da3", info: "ERC-721: Larva Chads" },
     { type: "contract", address: "0xB32979486938AA9694BFC898f35DBED459F44424", info: "ERC-1155: Nyan Cat" },
