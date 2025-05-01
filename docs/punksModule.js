@@ -8,6 +8,8 @@ const punksModule = {
     txHashes: [],
     txHashesIndex: {},
 
+    owners: {},
+
     sync: {
       info: null,
       completed: null,
@@ -23,6 +25,8 @@ const punksModule = {
     txHashes: state => state.txHashes,
     txHashesIndex: state => state.txHashesIndex,
 
+    owners: state => state.owners,
+
     sync: state => state.sync,
   },
   mutations: {
@@ -30,13 +34,17 @@ const punksModule = {
       // console.log(now() + " punksModule - mutations.setAttributes - attributes: " + JSON.stringify(attributes));
       state.attributes = attributes;
     },
-
     setLookups(state, { addresses, addressesIndex, txHashes, txHashesIndex }) {
       // console.log(now() + " punksModule - mutations.setLookups - { addresses, addressesIndex, txHashes, txHashesIndex }: " + JSON.stringify({ addresses, addressesIndex, txHashes, txHashesIndex }));
       state.addresses = addresses;
       state.addressesIndex = addressesIndex;
       state.txHashes = txHashes;
       state.txHashesIndex = txHashesIndex;
+    },
+    setEventInfo(state, { numberOfEvents, owners }) {
+      console.log(now() + " tokenModule - mutations.setEventInfo - numberOfEvents: " + JSON.stringify(numberOfEvents));
+      state.numberOfEvents = numberOfEvents;
+      state.owners = owners;
     },
 
     setSyncInfo(state, info) {
@@ -133,42 +141,60 @@ const punksModule = {
       async function processLogs(fromBlock, toBlock, logs) {
         console.log(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - fromBlock: " + fromBlock + ", toBlock: " + toBlock + ", logs.length: " + logs.length);
         const records = [];
+        let lastTransferTo = null; // acceptBidForPunk() emits PunkBought with toAddress = 0x0, so using last Transfer to address
         for (const log of logs) {
           if (!log.removed) {
             let info = null;
             const logData = punkInterface.parseLog(log);
             const event = PUNKEVENT_STRING_TO_INT[logData.eventFragment.name];
             if (event == PUNKEVENT_ASSIGN) {
-              // console.log(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - ASSIGN logData: " + JSON.stringify(logData));
               const [ to, punkId ] = logData.args;
+              if (punkId == 0) {
+                console.error(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - TRACE ASSIGN logData: " + JSON.stringify(logData));
+              }
               info = [event, getAddressIndex(to), parseInt(punkId) ];
             } else if (event == PUNKEVENT_TRANSFER) {
-              // console.log(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - TRANSFER logData: " + JSON.stringify(logData));
               const [ from, to, value ] = logData.args;
+              lastTransferTo = to;
+              // if (punkId == 0) {
+              //   console.error(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - TRACE TRANSFER logData: " + JSON.stringify(logData));
+              // }
               info = [event, getAddressIndex(from), getAddressIndex(to), parseInt(value) ];
             } else if (event == PUNKEVENT_PUNKTRANSFER) {
-              // console.log(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - PUNKTRANSFER logData: " + JSON.stringify(logData));
               const [ from, to, punkId ] = logData.args;
+              if (punkId == 0) {
+                console.error(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - TRACE PUNKTRANSFER logData: " + JSON.stringify(logData));
+              }
               info = [event, getAddressIndex(from), getAddressIndex(to), parseInt(punkId) ];
             } else if (event == PUNKEVENT_PUNKOFFERED) {
-              // console.log(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - PUNKOFFERED logData: " + JSON.stringify(logData));
               const [ punkId, minValue, toAddress ] = logData.args;
+              // if (punkId == 0) {
+              //   console.error(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - TRACE PUNKOFFERED logData: " + JSON.stringify(logData));
+              // }
               info = [event, parseInt(punkId), ethers.BigNumber.from(minValue).toString(), getAddressIndex(toAddress) ];
             } else if (event == PUNKEVENT_PUNKBIDENTERED) {
-              // console.log(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - PUNKBIDENTERED logData: " + JSON.stringify(logData));
               const [ punkId, value, fromAddress ] = logData.args;
+              // if (punkId == 0) {
+              //   console.error(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - TRACE PUNKBIDENTERED logData: " + JSON.stringify(logData));
+              // }
               info = [event, parseInt(punkId), ethers.BigNumber.from(value).toString(), getAddressIndex(fromAddress) ];
             } else if (event == PUNKEVENT_PUNKBIDWITHDRAWN) {
-              // console.log(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - PUNKBIDWITHDRAWN logData: " + JSON.stringify(logData));
               const [ punkId, value, fromAddress ] = logData.args;
+              // if (punkId == 0) {
+              //   console.error(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - TRACE PUNKBIDWITHDRAWN logData: " + JSON.stringify(logData));
+              // }
               info = [event, parseInt(punkId), ethers.BigNumber.from(value).toString(), getAddressIndex(fromAddress) ];
             } else if (event == PUNKEVENT_PUNKBOUGHT) {
-              // console.log(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - PUNKBOUGHT logData: " + JSON.stringify(logData));
               const [ punkId, value, fromAddress, toAddress ] = logData.args;
-              info = [event, parseInt(punkId), ethers.BigNumber.from(value).toString(), getAddressIndex(fromAddress), getAddressIndex(toAddress) ];
+              if (punkId == 0) {
+                console.error(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - TRACE PUNKBOUGHT logData: " + JSON.stringify(logData));
+              }
+              info = [event, parseInt(punkId), ethers.BigNumber.from(value).toString(), getAddressIndex(fromAddress), getAddressIndex(toAddress == ADDRESS0 ? lastTransferTo : toAddress) ];
             } else if (event == PUNKEVENT_PUNKNOLONGERFORSALE) {
-              // console.log(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - PUNKNOLONGERFORSALE logData: " + JSON.stringify(logData));
               const [ punkId ] = logData.args;
+              // if (punkId == 0) {
+              //   console.error(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - TRACE PUNKNOLONGERFORSALE logData: " + JSON.stringify(logData));
+              // }
               info = [event, parseInt(punkId) ];
             }
             if (info) {
@@ -301,6 +327,11 @@ const punksModule = {
       console.log(now() + " punksModule - actions.collateEventData - rows: " + rows);
       console.log(now() + " punksModule - actions.collateEventData - Object.keys(owners).length: " + Object.keys(owners).length);
       console.log(now() + " punksModule - actions.collateEventData - owners: " + JSON.stringify(owners, null, 2));
+      // context.commit('setEventInfo', { numberOfEvents: rows, balances, tokens, approvals, approvalForAlls });
+      context.commit('setEventInfo', { numberOfEvents: rows, owners });
+      // TODO: Persist numberOfEvents?
+      await dbSaveCacheData(db, CRYPTOPUNKSMARKET_V2_ADDRESS + "_" + chainId + "_punk_owners", owners);
+      db.close();
     },
   },
 };

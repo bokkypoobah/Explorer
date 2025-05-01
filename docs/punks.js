@@ -190,6 +190,9 @@ filteredTokensPaged: {{ JSON.stringify(filteredTokensPaged, null, 2) }}
                   </v-tabs-window-item>
                   <v-tabs-window-item value="owners">
                     TODO: Owners
+                    <pre>
+{{ owners }}
+                    </pre>
                   </v-tabs-window-item>
                   <v-tabs-window-item value="charts">
                     TODO: Charts
@@ -296,6 +299,9 @@ filteredTokensPaged: {{ JSON.stringify(filteredTokensPaged, null, 2) }}
     },
     txHashes() {
       return store.getters['punks/txHashes'];
+    },
+    owners() {
+      return store.getters['punks/owners'];
     },
     sync() {
       return store.getters['punks/sync'];
