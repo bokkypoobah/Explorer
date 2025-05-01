@@ -1,3 +1,42 @@
+// CryptoPunksMarket v2
+// event Assign(address indexed to, uint256 punkIndex);
+// event Transfer(address indexed from, address indexed to, uint256 value);
+// event PunkTransfer(address indexed from, address indexed to, uint256 punkIndex);
+// event PunkOffered(uint indexed punkIndex, uint minValue, address indexed toAddress);
+// event PunkBidEntered(uint indexed punkIndex, uint value, address indexed fromAddress);
+// event PunkBidWithdrawn(uint indexed punkIndex, uint value, address indexed fromAddress);
+// event PunkBought(uint indexed punkIndex, uint value, address indexed fromAddress, address indexed toAddress);
+// event PunkNoLongerForSale(uint indexed punkIndex);
+const PUNKEVENT_ASSIGN = 0;
+const PUNKEVENT_TRANSFER = 1;
+const PUNKEVENT_PUNKTRANSFER = 2;
+const PUNKEVENT_PUNKOFFERED = 3;
+const PUNKEVENT_PUNKBIDENTERED = 4;
+const PUNKEVENT_PUNKBIDWITHDRAWN = 5;
+const PUNKEVENT_PUNKBOUGHT = 6;
+const PUNKEVENT_PUNKNOLONGERFORSALE = 7;
+
+const PUNKEVENT_INT_TO_STRING = [
+  "Assign",
+  "Transfer",
+  "PunkTransfer",
+  "PunkOffered",
+  "PunkBidEntered",
+  "PunkBidWithdrawn",
+  "PunkBought",
+  "PunkNoLongerForSale",
+];
+const PUNKEVENT_STRING_TO_INT = {
+  "Assign": 0,
+  "Transfer": 1,
+  "PunkTransfer": 2,
+  "PunkOffered": 3,
+  "PunkBidEntered": 4,
+  "PunkBidWithdrawn": 5,
+  "PunkBought": 6,
+  "PunkNoLongerForSale": 7,
+};
+
 const CRYPTOPUNKSMARKET_V1_ADDRESS = "0x6Ba6f2207e343923BA692e5Cae646Fb0F566DB8D";
 const CRYPTOPUNKSMARKET_V2_ADDRESS = "0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB";
 const WRAPPED_CRYPTOPUNKS_V1_ADDRESS = "0x282BDD42f4eb70e7A9D9F40c8fEA0825B7f68C5D";
