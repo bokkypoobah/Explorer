@@ -63,7 +63,6 @@ const Punks = {
             @update:modelValue="saveSettings();"
             color="primary"
           >
-          <!-- :length="Math.ceil((parseInt(nftFilteredTokens.length)) / settings.tokens.itemsPerPage)" -->
           </v-pagination>
         </v-toolbar>
         <v-row dense>
@@ -103,12 +102,73 @@ const Punks = {
           </v-col>
           <v-col :cols="settings.tokens.showFilter ? 10 : 12" align="left">
             <v-card>
-              <v-card-text class="ma-0 pa-1">
+              <v-card-text class="ma-0 pa-2">
                 <v-tabs-window v-model="settings.tab">
                   <v-tabs-window-item value="punks">
-                    <pre>
+
+                    <!-- <v-row v-if="settings.tokens.view != 'list'" dense class="d-flex flex-wrap" align="stretch">
+                      <v-col v-for="(item, index) in nftFilteredTokensPaged" :key="index" align="center">
+                        <v-card class="pb-2" :max-width="settings.tokens.view != 'medium' ? 260 : 130">
+                          <v-img :src="item.image" :width="settings.tokens.view != 'medium' ? 260 : 130" cover class="align-end text-white">
+                            <v-card-title v-if="settings.tokens.view == 'large'" class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-size: 1em;">{{ item.name }}</v-card-title>
+                            <v-card-title v-if="settings.tokens.view == 'medium'" class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-size: 0.7em;">{{ item.name }}</v-card-title>
+                          </v-img>
+                          <v-card-text class="ma-0 pa-0 px-2 pt-1 d-flex">
+                            <div v-if="type == 'erc721'">
+                              <render-address :address="item.owner" :addresses="addresses" miniAddress noXPadding></render-address>
+                            </div>
+                            <div class="mt-2">
+                              {{ Object.keys(item.owners || {}).length + ' owners' }}
+                            </div>
+                            <v-spacer></v-spacer>
+                            <div v-if="item.price" v-tooltip="'Price on ' + item.price.source + ' ~ ' + commify2(item.price.amountUSD) + ' USD'" class="mt-2">
+                              {{ item.price.amount + " " + item.price.currency }}
+                            </div>
+                          </v-card-text>
+                          <v-card-subtitle v-if="settings.tokens.view == 'large'" class="ma-0 px-2 pt-0 d-flex">
+                            <div v-if="item.lastSale" v-tooltip="'Last sale @ ' + formatTimestamp(item.lastSale.timestamp) + ' ~ ' + commify2(item.lastSale.amountUSD) + ' USD'">
+                              <small class="mb-4 text-high-emphasis opacity-60">{{ item.lastSale.amount + " " + item.lastSale.currency }}</small>
+                            </div>
+                            <v-spacer></v-spacer>
+                            <div v-if="item.topBid" v-tooltip="'Top bid on ' + item.topBid.source + ' ~ ' + commify2(item.topBid.amountUSD) + ' USD'">
+                              <small class="mb-4 text-high-emphasis opacity-60">{{ item.topBid.amount + " " + item.topBid.currency }}</small>
+                            </div>
+                          </v-card-subtitle>
+                        </v-card>
+                      </v-col>
+                    </v-row> -->
+
+                    <v-data-table
+                      v-if="settings.tokens.view == 'list'"
+                      :items="filteredTokens"
+                      :headers="tokensHeaders"
+                      v-model:sort-by="settings.tokens.sortBy"
+                      v-model:items-per-page="settings.tokens.itemsPerPage"
+                      v-model:page="settings.tokens.currentPage"
+                      @update:options="saveSettings();"
+                      density="comfortable"
+                      hide-default-footer
+                    >
+                      <template v-slot:item.rowNumber="{ index }">
+                        {{ (settings.tokens.currentPage - 1) * settings.tokens.itemsPerPage + index + 1 }}
+                      </template>
+                      <template v-slot:item.punkId="{ item }">
+                        {{ item[0] }}
+                      </template>
+                      <template v-slot:item.image="{ item }">
+                        <v-img :src="'data:image/png;base64,' + images[item[0]]" width="60" style="image-rendering: pixelated;" class="ma-2 pa-0">
+                        </v-img>
+                      </template>
+                      <template v-slot:item.attributes="{ item }">
+                        {{ item[1] }}
+                      </template>
+                      <!-- <template v-slot:item.owner="{ item }">
+                        <render-address :address="item.owner" :addresses="addresses" :token="address" noXPadding></render-address>
+                      </template> -->
+                    </v-data-table>
+                    <!-- <pre>
 filteredTokensPaged: {{ JSON.stringify(filteredTokensPaged, null, 2) }}
-                    </pre>
+                    </pre> -->
                   </v-tabs-window-item>
                   <v-tabs-window-item value="owners">
                     TODO: Owners
@@ -125,23 +185,32 @@ filteredTokensPaged: {{ JSON.stringify(filteredTokensPaged, null, 2) }}
                   </v-tabs-window-item>
                 </v-tabs-window>
               </v-card-text>
+              <v-toolbar flat color="transparent" density="compact">
+                <v-spacer></v-spacer>
+                <v-select
+                  v-model="settings.tokens.itemsPerPage"
+                  :items="itemsPerPageOptions"
+                  variant="plain"
+                  density="compact"
+                  class="mt-2 mr-2"
+                  style="max-width: 70px;"
+                  @update:modelValue="saveSettings();"
+                ></v-select>
+                <v-pagination
+                  v-model="settings.tokens.currentPage"
+                  :length="Math.ceil(filteredTokens.length / settings.tokens.itemsPerPage)"
+                  total-visible="0"
+                  density="comfortable"
+                  show-first-last-page
+                  class="mr-1"
+                  @update:modelValue="saveSettings();"
+                  color="primary"
+                >
+                </v-pagination>
+              </v-toolbar>
             </v-card>
           </v-col>
         </v-row>
-        <v-toolbar flat color="transparent" density="compact">
-          <v-spacer></v-spacer>
-          <v-pagination
-            v-model="settings.tokens.currentPage"
-            :length="Math.ceil(filteredTokens.length / settings.tokens.itemsPerPage)"
-            total-visible="0"
-            density="comfortable"
-            show-first-last-page
-            class="mr-1"
-            @update:modelValue="saveSettings();"
-            color="primary"
-          >
-          </v-pagination>
-        </v-toolbar>
       </v-container>
     </div>
   `,
@@ -168,9 +237,25 @@ filteredTokensPaged: {{ JSON.stringify(filteredTokensPaged, null, 2) }}
         attributes: {}, // address -> attribute -> option -> selected?
         version: 0,
       },
+      itemsPerPageOptions: [
+        { value: 5, title: "5" },
+        { value: 10, title: "10" },
+        { value: 20, title: "20" },
+        { value: 30, title: "30" },
+        { value: 40, title: "40" },
+        { value: 50, title: "50" },
+        { value: 100, title: "100" },
+      ],
       tokensSortOptions: [
         { value: "punkidasc", title: "▲ Punk Id" },
         { value: "punkiddsc", title: "▼ Punk Id" },
+      ],
+      tokensHeaders: [
+        { title: '#', value: 'rowNumber', align: 'end', sortable: false },
+        { title: 'Punk Id', value: 'punkId', align: 'end', sortable: false },
+        { title: 'Image', value: 'image', sortable: false },
+        { title: 'Attributes', value: 'attributes', sortable: false },
+        // { title: 'Owner', value: 'owner', sortable: false },
       ],
     };
   },
