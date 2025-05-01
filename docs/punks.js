@@ -153,14 +153,19 @@ const Punks = {
                         {{ (settings.tokens.currentPage - 1) * settings.tokens.itemsPerPage + index + 1 }}
                       </template>
                       <template v-slot:item.punkId="{ item }">
-                        {{ item[0] }}
+                        {{ commify0(item[0]) }}
                       </template>
                       <template v-slot:item.image="{ item }">
                         <v-img :src="'data:image/png;base64,' + images[item[0]]" width="60" style="image-rendering: pixelated;" class="ma-2 pa-0">
                         </v-img>
                       </template>
                       <template v-slot:item.attributes="{ item }">
-                        {{ item[1] }}
+                        <v-chip v-for="attribute of item[1]" size="small" variant="tonal" color="secondary" class="ma-2">
+                          {{ attribute[0] + ": " + attribute[1] }}
+                        </v-chip>
+                      </template>
+                      <template v-slot:item.attributeCount="{ item }">
+                        {{ item[1].length }}
                       </template>
                       <!-- <template v-slot:item.owner="{ item }">
                         <render-address :address="item.owner" :addresses="addresses" :token="address" noXPadding></render-address>
@@ -255,6 +260,7 @@ filteredTokensPaged: {{ JSON.stringify(filteredTokensPaged, null, 2) }}
         { title: 'Punk Id', value: 'punkId', align: 'end', sortable: false },
         { title: 'Image', value: 'image', sortable: false },
         { title: 'Attributes', value: 'attributes', sortable: false },
+        { title: '# Attributes', value: 'attributeCount', sortable: false },
         // { title: 'Owner', value: 'owner', sortable: false },
       ],
     };
