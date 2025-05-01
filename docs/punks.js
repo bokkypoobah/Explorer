@@ -70,11 +70,11 @@ const Punks = {
             <v-card>
               <v-expansion-panels flat>
                 <v-expansion-panel v-for="attribute in attributesList" class="ma-0 pa-0">
-                  <v-expansion-panel-title>
+                  <v-expansion-panel-title class="ma-1 pa-1">
                     {{ attribute.attribute }}
                   </v-expansion-panel-title>
                   <v-expansion-panel-text class="ma-0 pa-0">
-                    <div v-for="option in attribute.options" class="ma-0 pa-0">
+                    <span v-for="option in attribute.options" class="ma-0 pa-0">
                       <v-list-item class="ma-0 pa-0">
                         <v-list-item-title style="font-size: 12px !important;">
                           {{ option.value }}
@@ -90,11 +90,11 @@ const Punks = {
                         </template>
                         <template v-slot:append="{ isSelected, select }">
                           <v-list-item-action class="flex-column align-end">
-                            <small class="mt-0 text-high-emphasis opacity-60">{{ option.count }}</small>
+                            <small class="mt-0 text-high-emphasis opacity-60">{{ commify0(option.count) }}</small>
                           </v-list-item-action>
                         </template>
                       </v-list-item>
-                    </div>
+                    </span>
                   </v-expansion-panel-text>
                 </v-expansion-panel>
               </v-expansion-panels>
