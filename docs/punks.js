@@ -25,7 +25,7 @@ const Punks = {
                   </v-btn>
                   <v-spacer></v-spacer>
                   <div v-for="(attributeData, attribute) of settings.attributes">
-                    <v-btn v-for="(optionData, option) of attributeData" class="ma-1" size="x-small" variant="elevated" append-icon="mdi-close" @click="updateAttributes({ attribute, option, value: false });" class="ma-1 pa-1 lowercase-btn">
+                    <v-btn v-for="(optionData, option) of attributeData" size="x-small" variant="elevated" append-icon="mdi-close" @click="updateAttributes({ attribute, option, value: false });" class="ma-1 pa-1 lowercase-btn">
                       {{ attribute }}: {{ option }}
                       <template v-slot:append>
                         <v-icon color="primary"></v-icon>
@@ -54,12 +54,11 @@ const Punks = {
                     </v-btn>
                   </v-btn-toggle>
                   <p class="mr-1 text-caption text--disabled">
-                    10,000
-                    <!-- {{ commify0(nftFilteredTokens.length) }} -->
+                    {{ commify0(filteredTokens.length) + '/' + commify0(attributes.length) }}
                   </p>
                   <v-pagination
                     v-model="settings.tokens.currentPage"
-                    :length="Math.ceil(10000 / settings.tokens.itemsPerPage)"
+                    :length="Math.ceil(filteredTokens.length / settings.tokens.itemsPerPage)"
                     total-visible="0"
                     density="comfortable"
                     show-first-last-page
@@ -107,9 +106,7 @@ const Punks = {
                   </v-col>
                   <v-col :cols="settings.tokens.showFilter ? 10 : 12" align="left">
                     <pre>
-settings.attributes: {{ JSON.stringify(settings.attributes, null, 2) }}
-                    <br />
-attributesList: {{ JSON.stringify(attributesList, null, 2) }}
+filteredTokensPaged: {{ JSON.stringify(filteredTokensPaged, null, 2) }}
                     </pre>
                   </v-col>
                 </v-row>
@@ -211,6 +208,52 @@ attributes: {{ JSON.stringify(attributes, null, 2).substring(0, 20000) }}
       // console.log("results: " + JSON.stringify(results, null, 2));
       return results;
     },
+    filteredTokens() {
+      const results = [];
+      if (Object.keys(this.settings.attributes).length > 0 && this.attributesList.length > 0) {
+        console.log("this.attributesMap: " + JSON.stringify(this.attributesMap));
+        let punkIds = null;
+        for (const [attribute, attributeData] of Object.entries(this.settings.attributes)) {
+          console.log(attribute + " => " + JSON.stringify(attributeData));
+          console.log(attribute + " => " + JSON.stringify(this.attributesMap[attribute]));
+          let attributePunkIds = null;
+          for (const [option, value] of Object.entries(attributeData)) {
+            console.log(attribute + "/" + option + " => " + JSON.stringify(value));
+            console.log("this.attributes[attribute][option]: " + JSON.stringify(this.attributesMap[attribute][option]));
+            if (!attributePunkIds) {
+              attributePunkIds = new Set(this.attributesMap[attribute][option]);
+            } else {
+              attributePunkIds = new Set([...attributePunkIds, ...this.attributesMap[attribute][option]]);
+            }
+          }
+          if (!punkIds) {
+            punkIds = attributePunkIds;
+          } else {
+            const newPunkIds = new Set();
+            for (const tokenId of punkIds) {
+              if ((attributePunkIds.has(tokenId))) {
+                newPunkIds.add(tokenId);
+              }
+            }
+            punkIds = newPunkIds;
+          }
+        }
+        for (const punkId of punkIds) {
+          results.push([ punkId, this.attributes[punkId] ]);
+        }
+      } else {
+        for (const [punkId, attribute] of this.attributes.entries()) {
+          results.push([ punkId, attribute ]);
+        }
+      }
+      return results;
+    },
+    filteredTokensPaged() {
+      // return this.filteredTokens;
+      const results = this.filteredTokens.slice((this.settings.tokens.currentPage - 1) * this.settings.tokens.itemsPerPage, this.settings.tokens.currentPage * this.settings.tokens.itemsPerPage);
+      console.log(now() + " Token - computed.filteredTokensPaged - results: " + JSON.stringify(results, null, 2));
+      return results;
+    },
     // address() {
     //   return store.getters['address/address'];
     // },
@@ -261,6 +304,12 @@ attributes: {{ JSON.stringify(attributes, null, 2).substring(0, 20000) }}
     // copyToClipboard(str) {
     //   navigator.clipboard.writeText(str);
     // },
+    commify0(n) {
+      if (n != null) {
+        return Number(n).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+      }
+      return null;
+    },
     saveSettings() {
       // console.log(now() + " Punks - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
       if (this.initialised) {
