@@ -265,13 +265,42 @@ const punksModule = {
       const BATCH_SIZE = 100000;
       let rows = 0;
       let done = false;
+      const owners = {};
       do {
         const data = await db.punkEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.minKey, Dexie.minKey],[chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(BATCH_SIZE).toArray();
+        for (const item of data) {
+          const info = item.info;
+          if (info[2] == PUNKEVENT_ASSIGN) {
+            // console.log(now() + " punksModule - actions.collateEventData - ASSIGN blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
+            owners[info[4]] = info[3];
+          } else if (info[2] == PUNKEVENT_TRANSFER) {
+            // console.log(now() + " punksModule - actions.collateEventData - TRANSFER blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
+          } else if (info[2] == PUNKEVENT_PUNKTRANSFER) {
+            // console.log(now() + " punksModule - actions.collateEventData - PUNKTRANSFER blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
+            owners[info[5]] = info[4];
+          } else if (info[2] == PUNKEVENT_PUNKOFFERED) {
+            // console.log(now() + " punksModule - actions.collateEventData - PUNKOFFERED blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
+            // TODO
+          } else if (info[2] == PUNKEVENT_PUNKBIDENTERED) {
+            // console.log(now() + " punksModule - actions.collateEventData - PUNKBIDENTERED blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
+            // TODO
+          } else if (info[2] == PUNKEVENT_PUNKBIDWITHDRAWN) {
+            // console.log(now() + " punksModule - actions.collateEventData - PUNKBIDWITHDRAWN blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
+            // TODO
+          } else if (info[2] == PUNKEVENT_PUNKBOUGHT) {
+            // console.log(now() + " punksModule - actions.collateEventData - PUNKBOUGHT blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
+            owners[info[3]] = info[6];
+          } else {
+            // console.log(now() + " punksModule - actions.collateEventData - OTHER blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
+          }
+        }
         rows = parseInt(rows) + data.length;
         console.log(now() + " punksModule - actions.collateEventData - rows: " + rows);
         done = data.length < BATCH_SIZE;
       } while (!done);
       console.log(now() + " punksModule - actions.collateEventData - rows: " + rows);
+      console.log(now() + " punksModule - actions.collateEventData - Object.keys(owners).length: " + Object.keys(owners).length);
+      console.log(now() + " punksModule - actions.collateEventData - owners: " + JSON.stringify(owners, null, 2));
     },
   },
 };
