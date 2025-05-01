@@ -141,14 +141,14 @@ attributes: {{ JSON.stringify(attributes, null, 2).substring(0, 20000) }}
         tokens: {
           showFilter: false,
           view: "large",
-          sortOption: "tokenidasc",
+          sortOption: "punkidasc",
           itemsPerPage: 10,
           currentPage: 1,
         },
         owners: {
           showFilter: false,
           view: "large",
-          sortOption: "tokenidasc",
+          sortOption: "punkidasc",
           itemsPerPage: 10,
           currentPage: 1,
         },
@@ -156,8 +156,8 @@ attributes: {{ JSON.stringify(attributes, null, 2).substring(0, 20000) }}
         version: 0,
       },
       tokensSortOptions: [
-        { value: "tokenidasc", title: "▲ Token Id" },
-        { value: "tokeniddsc", title: "▼ Token Id" },
+        { value: "punkidasc", title: "▲ Punk Id" },
+        { value: "punkiddsc", title: "▼ Punk Id" },
       ],
     };
   },
@@ -211,15 +211,10 @@ attributes: {{ JSON.stringify(attributes, null, 2).substring(0, 20000) }}
     filteredTokens() {
       const results = [];
       if (Object.keys(this.settings.attributes).length > 0 && this.attributesList.length > 0) {
-        console.log("this.attributesMap: " + JSON.stringify(this.attributesMap));
         let punkIds = null;
         for (const [attribute, attributeData] of Object.entries(this.settings.attributes)) {
-          console.log(attribute + " => " + JSON.stringify(attributeData));
-          console.log(attribute + " => " + JSON.stringify(this.attributesMap[attribute]));
           let attributePunkIds = null;
           for (const [option, value] of Object.entries(attributeData)) {
-            console.log(attribute + "/" + option + " => " + JSON.stringify(value));
-            console.log("this.attributes[attribute][option]: " + JSON.stringify(this.attributesMap[attribute][option]));
             if (!attributePunkIds) {
               attributePunkIds = new Set(this.attributesMap[attribute][option]);
             } else {
@@ -246,12 +241,20 @@ attributes: {{ JSON.stringify(attributes, null, 2).substring(0, 20000) }}
           results.push([ punkId, attribute ]);
         }
       }
+      if (this.settings.tokens.sortOption == "punkidasc") {
+        results.sort((a, b) => {
+          return a[0] - b[0];
+        });
+      } else if (this.settings.tokens.sortOption == "punkiddsc") {
+        results.sort((a, b) => {
+          return b[0] - a[0];
+        });
+      }
       return results;
     },
     filteredTokensPaged() {
-      // return this.filteredTokens;
       const results = this.filteredTokens.slice((this.settings.tokens.currentPage - 1) * this.settings.tokens.itemsPerPage, this.settings.tokens.currentPage * this.settings.tokens.itemsPerPage);
-      console.log(now() + " Token - computed.filteredTokensPaged - results: " + JSON.stringify(results, null, 2));
+      // console.log(now() + " Token - computed.filteredTokensPaged - results: " + JSON.stringify(results, null, 2));
       return results;
     },
     // address() {
