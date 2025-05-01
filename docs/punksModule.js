@@ -257,6 +257,21 @@ const punksModule = {
     },
     async collateEventData(context) {
       console.log(now() + " punksModule - actions.collateEventData");
+      const chainId = store.getters["chainId"];
+      const dbInfo = store.getters["db"];
+      const db = new Dexie(dbInfo.name);
+      db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
+
+      const BATCH_SIZE = 100000;
+      let rows = 0;
+      let done = false;
+      do {
+        const data = await db.punkEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.minKey, Dexie.minKey],[chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(BATCH_SIZE).toArray();
+        rows = parseInt(rows) + data.length;
+        console.log(now() + " punksModule - actions.collateEventData - rows: " + rows);
+        done = data.length < BATCH_SIZE;
+      } while (!done);
+      console.log(now() + " punksModule - actions.collateEventData - rows: " + rows);
     },
   },
 };

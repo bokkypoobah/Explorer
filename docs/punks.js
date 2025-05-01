@@ -112,7 +112,6 @@ const Punks = {
               <v-card-text class="ma-0 pa-2">
                 <v-tabs-window v-model="settings.tab">
                   <v-tabs-window-item value="punks">
-
                     <v-row v-if="settings.tokens.view != 'list'" dense class="d-flex flex-wrap" align="stretch">
                       <v-col v-for="(item, index) in filteredTokensPaged" :key="index" align="center">
                         <v-card class="pb-2" :max-width="settings.tokens.view != 'medium' ? 260 : 130">
@@ -291,6 +290,12 @@ filteredTokensPaged: {{ JSON.stringify(filteredTokensPaged, null, 2) }}
     },
     images() {
       return PUNK_IMAGES;
+    },
+    addresses() {
+      return store.getters['punks/addresses'];
+    },
+    txHashes() {
+      return store.getters['punks/txHashes'];
     },
     sync() {
       return store.getters['punks/sync'];
