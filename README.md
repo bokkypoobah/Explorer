@@ -100,6 +100,12 @@ After clicking on [Sync Token Metadata]
 
 <kbd><img src="images/SampleScreen31.png" width="800" /></kbd>
 
+#### Punks on Ethereum Mainnet
+
+<kbd><img src="images/SampleScreen32.png" width="800" /></kbd>
+
+<kbd><img src="images/SampleScreen33.png" width="800" /></kbd>
+
 <br />
 
 ---
