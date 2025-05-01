@@ -121,7 +121,10 @@ const punksModule = {
       context.commit('setAttributes', attributes);
       db.close();
     },
-
+    setSyncHalt(context) {
+      console.log(moment().format("HH:mm:ss") + " punksModule - actions.setSyncHalt");
+      context.commit('setSyncHalt', true);
+    },
     async syncPunksEvents(context, forceUpdate) {
       function getAddressIndex(address) {
         if (!(address in addressesIndex)) {
@@ -149,22 +152,20 @@ const punksModule = {
             const event = PUNKEVENT_STRING_TO_INT[logData.eventFragment.name];
             if (event == PUNKEVENT_ASSIGN) {
               const [ to, punkId ] = logData.args;
-              if (punkId == 0) {
-                console.error(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - TRACE ASSIGN logData: " + JSON.stringify(logData));
-              }
+              // if (punkId == 0) {
+              //   console.error(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - TRACE ASSIGN logData: " + JSON.stringify(logData));
+              // }
               info = [event, getAddressIndex(to), parseInt(punkId) ];
             } else if (event == PUNKEVENT_TRANSFER) {
               const [ from, to, value ] = logData.args;
               lastTransferTo = to;
-              // if (punkId == 0) {
               //   console.error(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - TRACE TRANSFER logData: " + JSON.stringify(logData));
-              // }
               info = [event, getAddressIndex(from), getAddressIndex(to), parseInt(value) ];
             } else if (event == PUNKEVENT_PUNKTRANSFER) {
               const [ from, to, punkId ] = logData.args;
-              if (punkId == 0) {
-                console.error(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - TRACE PUNKTRANSFER logData: " + JSON.stringify(logData));
-              }
+              // if (punkId == 0) {
+              //   console.error(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - TRACE PUNKTRANSFER logData: " + JSON.stringify(logData));
+              // }
               info = [event, getAddressIndex(from), getAddressIndex(to), parseInt(punkId) ];
             } else if (event == PUNKEVENT_PUNKOFFERED) {
               const [ punkId, minValue, toAddress ] = logData.args;
@@ -186,9 +187,9 @@ const punksModule = {
               info = [event, parseInt(punkId), ethers.BigNumber.from(value).toString(), getAddressIndex(fromAddress) ];
             } else if (event == PUNKEVENT_PUNKBOUGHT) {
               const [ punkId, value, fromAddress, toAddress ] = logData.args;
-              if (punkId == 0) {
-                console.error(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - TRACE PUNKBOUGHT logData: " + JSON.stringify(logData));
-              }
+              // if (punkId == 0) {
+              //   console.error(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - TRACE PUNKBOUGHT logData: " + JSON.stringify(logData));
+              // }
               info = [event, parseInt(punkId), ethers.BigNumber.from(value).toString(), getAddressIndex(fromAddress), getAddressIndex(toAddress == ADDRESS0 ? lastTransferTo : toAddress) ];
             } else if (event == PUNKEVENT_PUNKNOLONGERFORSALE) {
               const [ punkId ] = logData.args;
@@ -268,7 +269,7 @@ const punksModule = {
       // const latestBlockNumber = parseInt(3914495) + 10000;
       context.commit('setSyncTotal', latestBlockNumber);
       context.commit('setSyncCompleted', 0);
-      context.commit('setSyncInfo', "Syncing token events");
+      context.commit('setSyncInfo', "Syncing punk events");
       const latest = await db.punkEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.minKey, Dexie.minKey],[chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.maxKey, Dexie.maxKey]).last();
       // console.log(now() + " punksModule - actions.syncTokenEvents - latest: " + JSON.stringify(latest, null, 2));
       const startBlock = latest ? parseInt(latest.blockNumber) + 1: 0;

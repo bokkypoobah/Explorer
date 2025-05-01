@@ -421,6 +421,10 @@ filteredTokensPaged: {{ JSON.stringify(filteredTokensPaged, null, 2) }}
       console.log(now() + " Punks - methods.syncPunksEvents");
       store.dispatch('punks/syncPunksEvents', true);
     },
+    setSyncHalt() {
+      console.log(now() + " Punks - methods.setSyncHalt");
+      store.dispatch('punks/setSyncHalt');
+    },
     updateAttributes(event) {
       console.log(now() + " Punks - methods.updateAttributes - event: " + JSON.stringify(event));
       if (event.value) {
