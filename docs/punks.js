@@ -12,123 +12,136 @@ const Punks = {
           <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" right color="deep-purple-accent-4">
             <v-tab prepend-icon="mdi-emoticon-cool-outline" text="Punks" value="punks" class="lowercase-btn"></v-tab>
             <v-tab prepend-icon="mdi-account-multiple-outline" text="Owners" value="owners" class="lowercase-btn"></v-tab>
+            <v-tab prepend-icon="mdi-chart-line" text="Charts" value="charts" class="lowercase-btn"></v-tab>
             <v-tab prepend-icon="mdi-math-log" text="Events" value="events" class="lowercase-btn"></v-tab>
           </v-tabs>
         </v-toolbar>
-        <v-tabs-window v-model="settings.tab">
-          <v-tabs-window-item value="punks">
+        <v-toolbar flat color="transparent" density="compact">
+          <v-btn icon @click="settings.tokens.showFilter = !settings.tokens.showFilter; saveSettings();" color="primary" class="lowercase-btn" v-tooltip="'Attributes filter'">
+            <v-icon :icon="settings.tokens.showFilter ? 'mdi-filter' : 'mdi-filter-outline'"></v-icon>
+          </v-btn>
+          <v-spacer></v-spacer>
+          <div v-for="(attributeData, attribute) of settings.attributes">
+            <v-btn v-for="(optionData, option) of attributeData" size="x-small" variant="elevated" append-icon="mdi-close" @click="updateAttributes({ attribute, option, value: false });" class="ma-1 pa-1 lowercase-btn">
+              {{ attribute }}: {{ option }}
+              <template v-slot:append>
+                <v-icon color="primary"></v-icon>
+              </template>
+            </v-btn>
+          </div>
+          <v-spacer></v-spacer>
+          <v-select
+            v-model="settings.tokens.sortOption"
+            :items="tokensSortOptions"
+            variant="plain"
+            density="compact"
+            class="mt-3 mr-3"
+            style="max-width: 200px;"
+            @update:modelValue="saveSettings();"
+          ></v-select>
+          <v-btn-toggle v-model="settings.tokens.view" variant="plain" class="mr-3" @update:modelValue="saveSettings();" density="compact">
+            <v-btn icon value="large">
+              <v-icon color="primary">mdi-grid-large</v-icon>
+            </v-btn>
+            <v-btn icon value="medium">
+              <v-icon color="primary">mdi-grid</v-icon>
+            </v-btn>
+            <v-btn icon value="list">
+              <v-icon color="primary">mdi-format-list-bulleted-square</v-icon>
+            </v-btn>
+          </v-btn-toggle>
+          <p class="mr-1 text-caption text--disabled">
+            {{ commify0(filteredTokens.length) + '/' + commify0(attributes.length) }}
+          </p>
+          <v-pagination
+            v-model="settings.tokens.currentPage"
+            :length="Math.ceil(filteredTokens.length / settings.tokens.itemsPerPage)"
+            total-visible="0"
+            density="comfortable"
+            show-first-last-page
+            class="mr-1"
+            @update:modelValue="saveSettings();"
+            color="primary"
+          >
+          <!-- :length="Math.ceil((parseInt(nftFilteredTokens.length)) / settings.tokens.itemsPerPage)" -->
+          </v-pagination>
+        </v-toolbar>
+        <v-row dense>
+          <v-col v-if="settings.tokens.showFilter" cols="2">
             <v-card>
-              <v-card-text class="ma-0 pa-0">
-                <v-toolbar flat color="transparent" density="compact">
-                  <v-btn icon @click="settings.tokens.showFilter = !settings.tokens.showFilter; saveSettings();" color="primary" class="lowercase-btn" v-tooltip="'Attributes filter'">
-                    <v-icon :icon="settings.tokens.showFilter ? 'mdi-filter' : 'mdi-filter-outline'"></v-icon>
-                  </v-btn>
-                  <v-spacer></v-spacer>
-                  <div v-for="(attributeData, attribute) of settings.attributes">
-                    <v-btn v-for="(optionData, option) of attributeData" size="x-small" variant="elevated" append-icon="mdi-close" @click="updateAttributes({ attribute, option, value: false });" class="ma-1 pa-1 lowercase-btn">
-                      {{ attribute }}: {{ option }}
-                      <template v-slot:append>
-                        <v-icon color="primary"></v-icon>
-                      </template>
-                    </v-btn>
-                  </div>
-                  <v-spacer></v-spacer>
-                  <v-select
-                    v-model="settings.tokens.sortOption"
-                    :items="tokensSortOptions"
-                    variant="plain"
-                    density="compact"
-                    class="mt-3 mr-3"
-                    style="max-width: 200px;"
-                    @update:modelValue="saveSettings();"
-                  ></v-select>
-                  <v-btn-toggle v-model="settings.tokens.view" variant="plain" class="mr-3" @update:modelValue="saveSettings();" density="compact">
-                    <v-btn icon value="large">
-                      <v-icon color="primary">mdi-grid-large</v-icon>
-                    </v-btn>
-                    <v-btn icon value="medium">
-                      <v-icon color="primary">mdi-grid</v-icon>
-                    </v-btn>
-                    <v-btn icon value="list">
-                      <v-icon color="primary">mdi-format-list-bulleted-square</v-icon>
-                    </v-btn>
-                  </v-btn-toggle>
-                  <p class="mr-1 text-caption text--disabled">
-                    {{ commify0(filteredTokens.length) + '/' + commify0(attributes.length) }}
-                  </p>
-                  <v-pagination
-                    v-model="settings.tokens.currentPage"
-                    :length="Math.ceil(filteredTokens.length / settings.tokens.itemsPerPage)"
-                    total-visible="0"
-                    density="comfortable"
-                    show-first-last-page
-                    class="mr-1"
-                    @update:modelValue="saveSettings();"
-                    color="primary"
-                  >
-                  <!-- :length="Math.ceil((parseInt(nftFilteredTokens.length)) / settings.tokens.itemsPerPage)" -->
-                  </v-pagination>
-                </v-toolbar>
-                <v-row no-gutters dense>
-                  <v-col v-if="settings.tokens.showFilter" cols="2">
-                    <v-card>
-                      <v-expansion-panels flat>
-                        <v-expansion-panel v-for="attribute in attributesList" class="ma-0 pa-0">
-                          <v-expansion-panel-title>
-                            {{ attribute.attribute }}
-                          </v-expansion-panel-title>
-                          <v-expansion-panel-text class="ma-0 pa-0">
-                            <div v-for="option in attribute.options" class="ma-0 pa-0">
-                              <v-list-item class="ma-0 pa-0">
-                                <v-list-item-title style="font-size: 12px !important;">
-                                  {{ option.value }}
-                                </v-list-item-title>
-                                <template v-slot:prepend="{ isSelected, select }">
-                                  <v-list-item-action class="flex-column align-end">
-                                    <v-checkbox-btn
-                                      :model-value="settings.attributes[attribute.attribute] && settings.attributes[attribute.attribute][option.value] || false"
-                                      @update:modelValue="updateAttributes({ attribute: attribute.attribute, option: option.value, value: $event })"
-                                    >
-                                    </v-checkbox-btn>
-                                  </v-list-item-action>
-                                </template>
-                                <template v-slot:append="{ isSelected, select }">
-                                  <v-list-item-action class="flex-column align-end">
-                                    <small class="mt-0 text-high-emphasis opacity-60">{{ option.count }}</small>
-                                  </v-list-item-action>
-                                </template>
-                              </v-list-item>
-                            </div>
-                          </v-expansion-panel-text>
-                        </v-expansion-panel>
-                      </v-expansion-panels>
-                    </v-card>
-                  </v-col>
-                  <v-col :cols="settings.tokens.showFilter ? 10 : 12" align="left">
+              <v-expansion-panels flat>
+                <v-expansion-panel v-for="attribute in attributesList" class="ma-0 pa-0">
+                  <v-expansion-panel-title>
+                    {{ attribute.attribute }}
+                  </v-expansion-panel-title>
+                  <v-expansion-panel-text class="ma-0 pa-0">
+                    <div v-for="option in attribute.options" class="ma-0 pa-0">
+                      <v-list-item class="ma-0 pa-0">
+                        <v-list-item-title style="font-size: 12px !important;">
+                          {{ option.value }}
+                        </v-list-item-title>
+                        <template v-slot:prepend="{ isSelected, select }">
+                          <v-list-item-action class="flex-column align-end">
+                            <v-checkbox-btn
+                              :model-value="settings.attributes[attribute.attribute] && settings.attributes[attribute.attribute][option.value] || false"
+                              @update:modelValue="updateAttributes({ attribute: attribute.attribute, option: option.value, value: $event })"
+                            >
+                            </v-checkbox-btn>
+                          </v-list-item-action>
+                        </template>
+                        <template v-slot:append="{ isSelected, select }">
+                          <v-list-item-action class="flex-column align-end">
+                            <small class="mt-0 text-high-emphasis opacity-60">{{ option.count }}</small>
+                          </v-list-item-action>
+                        </template>
+                      </v-list-item>
+                    </div>
+                  </v-expansion-panel-text>
+                </v-expansion-panel>
+              </v-expansion-panels>
+            </v-card>
+          </v-col>
+          <v-col :cols="settings.tokens.showFilter ? 10 : 12" align="left">
+            <v-card>
+              <v-card-text class="ma-0 pa-1">
+                <v-tabs-window v-model="settings.tab">
+                  <v-tabs-window-item value="punks">
                     <pre>
 filteredTokensPaged: {{ JSON.stringify(filteredTokensPaged, null, 2) }}
                     </pre>
-                  </v-col>
-                </v-row>
+                  </v-tabs-window-item>
+                  <v-tabs-window-item value="owners">
+                    TODO: Owners
+                  </v-tabs-window-item>
+                  <v-tabs-window-item value="charts">
+                    TODO: Charts
+                    Punk #0
+                    <v-img :src="'data:image/png;base64,' + images[0]" width="400" style="image-rendering: pixelated;">
+                    </v-img>
+                    {{ attributes[0] }}
+                  </v-tabs-window-item>
+                  <v-tabs-window-item value="events">
+                    TODO: Events
+                  </v-tabs-window-item>
+                </v-tabs-window>
               </v-card-text>
             </v-card>
-          </v-tabs-window-item>
-          <v-tabs-window-item value="owners">
-            <v-card>
-              <v-card-text>
-                TODO: Owners
-              </v-card-text>
-            </v-card>
-          </v-tabs-window-item>
-        </v-tabs-window>
-        Punk #0
-        <v-img :src="'data:image/png;base64,' + images[0]" width="400" style="image-rendering: pixelated;">
-        </v-img>
-        {{ attributes[0] }}
-        <!-- <pre>
-images: {{ JSON.stringify(images, null, 2).substring(0, 20000) }}
-attributes: {{ JSON.stringify(attributes, null, 2).substring(0, 20000) }}
-        </pre> -->
+          </v-col>
+        </v-row>
+        <v-toolbar flat color="transparent" density="compact">
+          <v-spacer></v-spacer>
+          <v-pagination
+            v-model="settings.tokens.currentPage"
+            :length="Math.ceil(filteredTokens.length / settings.tokens.itemsPerPage)"
+            total-visible="0"
+            density="comfortable"
+            show-first-last-page
+            class="mr-1"
+            @update:modelValue="saveSettings();"
+            color="primary"
+          >
+          </v-pagination>
+        </v-toolbar>
       </v-container>
     </div>
   `,
