@@ -422,15 +422,6 @@ filteredTokensPaged: {{ JSON.stringify(filteredTokensPaged, null, 2) }}
       this.saveSettings();
     },
 
-    // syncAddress() {
-    //   console.log(now() + " Punks - methods.syncAddress");
-    //   const address = store.getters["address/address"];
-    //   console.log(now() + " Punks - methods.syncAddress - address: " + address);
-    //   store.dispatch('address/loadAddress', { inputAddress: address, forceUpdate: true });
-    // },
-    // copyToClipboard(str) {
-    //   navigator.clipboard.writeText(str);
-    // },
     commify0(n) {
       if (n != null) {
         return Number(n).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
@@ -443,6 +434,9 @@ filteredTokensPaged: {{ JSON.stringify(filteredTokensPaged, null, 2) }}
         localStorage.explorerPunksSettings = JSON.stringify(this.settings);
       }
     },
+    // copyToClipboard(str) {
+    //   navigator.clipboard.writeText(str);
+    // },
   },
   beforeCreate() {
     console.log(now() + " Punks - beforeCreate");

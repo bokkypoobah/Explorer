@@ -179,11 +179,6 @@ const tokenModule = {
     },
     async syncTokenEvents(context, { inputAddress, forceUpdate }) {
 
-      // const addresses = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_token_addresses", []);
-      // const addressesIndex = await dbGetCachedData(db, validatedAddress + "_" + chainId + "_token_addressesIndex", {});
-      // const txHashes = await dbGetCachedData(db, chainId, validatedAddress + "_" + chainId + "_token_txHashes", []);
-      // const txHashesIndex = await dbGetCachedData(db, chainId, validatedAddress + "_" + chainId + "_token_txHashesIndex", {});
-
       function getAddressIndex(address) {
         if (!(address in addressesIndex)) {
           addressesIndex[address] = addresses.length;
