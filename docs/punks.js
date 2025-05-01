@@ -109,10 +109,10 @@ const Punks = {
                     <v-row v-if="settings.tokens.view != 'list'" dense class="d-flex flex-wrap" align="stretch">
                       <v-col v-for="(item, index) in filteredTokensPaged" :key="index" align="center">
                         <v-card class="pb-2" :max-width="settings.tokens.view != 'medium' ? 260 : 130">
-                          <v-img :src="'data:image/png;base64,' + images[item[0]]" :width="settings.tokens.view != 'medium' ? 260 : 130" cover align="left" class="align-end text-white" style="image-rendering: pixelated;">
+                          <v-img :src="'data:image/png;base64,' + images[item[0]]" :width="settings.tokens.view != 'medium' ? 260 : 130" cover align="left" class="align-end text-white" style="image-rendering: pixelated; background-color: #638596;">
                             <!-- <v-card-title v-if="settings.tokens.view == 'large'" class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-size: 1em;">{{ item[0] }}</v-card-title>
                             <v-card-title v-if="settings.tokens.view == 'medium'" class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-size: 0.7em;">{{ item[0] }}</v-card-title> -->
-                            <v-chip label size="x-small" variant="tonal" color="secondary" class="ma-1">
+                            <v-chip label size="x-small" variant="flat" color="secondary" class="ma-1">
                               {{ commify0(item[0]) }}
                             </v-chip>
                           </v-img>
@@ -163,7 +163,7 @@ const Punks = {
                         {{ commify0(item[0]) }}
                       </template>
                       <template v-slot:item.image="{ item }">
-                        <v-img :src="'data:image/png;base64,' + images[item[0]]" width="60" class="ma-2 pa-0" style="image-rendering: pixelated;">
+                        <v-img :src="'data:image/png;base64,' + images[item[0]]" width="60" class="ma-2 pa-0" style="image-rendering: pixelated; background-color: #638596;">
                         </v-img>
                       </template>
                       <template v-slot:item.attributes="{ item }">
