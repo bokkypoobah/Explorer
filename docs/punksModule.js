@@ -2,14 +2,37 @@ const punksModule = {
   namespaced: true,
   state: {
     attributes: [],
+    sync: {
+      info: null,
+      completed: null,
+      total: null,
+      halt: false,
+    },
   },
   getters: {
     attributes: state => state.attributes,
+    sync: state => state.sync,
   },
   mutations: {
     setAttributes(state, attributes) {
       // console.log(now() + " punksModule - mutations.setAttributes - attributes: " + JSON.stringify(attributes));
       state.attributes = attributes;
+    },
+    setSyncInfo(state, info) {
+      console.log(now() + " punksModule - mutations.setSyncInfo - info: " + info);
+      state.sync.info = info;
+    },
+    setSyncCompleted(state, completed) {
+      console.log(now() + " punksModule - mutations.setSyncCompleted - completed: " + completed);
+      state.sync.completed = completed;
+    },
+    setSyncTotal(state, total) {
+      console.log(now() + " punksModule - mutations.setSyncTotal - total: " + total);
+      state.sync.total = total;
+    },
+    setSyncHalt(state, halt) {
+      console.log(now() + " punksModule - mutations.setSyncHalt - halt: " + halt);
+      state.sync.halt = halt;
     },
   },
   actions: {
@@ -25,7 +48,7 @@ const punksModule = {
       db.close();
     },
     async syncPunks(context, forceUpdate) {
-      console.log(now() + " punksModule - actions.syncPunks");
+      console.log(now() + " punksModule - actions.syncPunks - forceUpdate: " + forceUpdate);
       const chainId = store.getters["chainId"];
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const contract = new ethers.Contract(CRYPTOPUNKS_HELPER_ADDRESS, CRYPTOPUNKS_HELPER_ABI, provider);
@@ -56,12 +79,14 @@ const punksModule = {
           }
           attributes[index] = list;
         }
-        console.log("attributes: " + JSON.stringify(attributes, null, 2));
+        // console.log("attributes: " + JSON.stringify(attributes, null, 2));
         await dbSaveCacheData(db, CRYPTOPUNKSMARKET_V2_ADDRESS + "_" + chainId + "_punks_attributes", attributes);
       }
-
       context.commit('setAttributes', attributes);
       db.close();
+    },
+    async syncPunksEvents(context, forceUpdate) {
+      console.log(now() + " punksModule - actions.syncPunksEvents - forceUpdate: " + forceUpdate);
     },
   },
 };

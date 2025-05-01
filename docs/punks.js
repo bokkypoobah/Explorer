@@ -8,6 +8,9 @@ const Punks = {
           <v-btn :disabled="chainId != 1" @click="syncPunks();" color="primary" icon>
             <v-icon>mdi-refresh</v-icon>
           </v-btn>
+          <v-btn v-if="sync.info == null" :disabled="chainId != 1" @click="syncPunksEvents();" color="primary" icon v-tooltip="'Sync Punks Events'">
+            <v-icon>mdi-download</v-icon>
+          </v-btn>
           <v-spacer></v-spacer>
           <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" right color="deep-purple-accent-4">
             <v-tab prepend-icon="mdi-emoticon-cool-outline" text="Punks" value="punks" class="lowercase-btn"></v-tab>
@@ -257,6 +260,9 @@ filteredTokensPaged: {{ JSON.stringify(filteredTokensPaged, null, 2) }}
         { value: 40, title: "40" },
         { value: 50, title: "50" },
         { value: 100, title: "100" },
+        { value: 250, title: "250" },
+        { value: 500, title: "500" },
+        { value: 1000, title: "1000" },
       ],
       tokensSortOptions: [
         { value: "punkidasc", title: "▲ Punk Id" },
@@ -281,6 +287,9 @@ filteredTokensPaged: {{ JSON.stringify(filteredTokensPaged, null, 2) }}
     },
     images() {
       return PUNK_IMAGES;
+    },
+    sync() {
+      return store.getters['punks/sync'];
     },
     attributesMap() {
       const results = {};
@@ -388,6 +397,10 @@ filteredTokensPaged: {{ JSON.stringify(filteredTokensPaged, null, 2) }}
     syncPunks() {
       console.log(now() + " Punks - methods.syncPunks - this.inputPunkId: " + this.inputPunkId);
       store.dispatch('punks/syncPunks', true);
+    },
+    syncPunksEvents() {
+      console.log(now() + " Punks - methods.syncPunksEvents");
+      store.dispatch('punks/syncPunksEvents', true);
     },
     updateAttributes(event) {
       console.log(now() + " Punks - methods.updateAttributes - event: " + JSON.stringify(event));
