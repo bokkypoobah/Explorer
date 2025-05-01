@@ -2,6 +2,12 @@ const punksModule = {
   namespaced: true,
   state: {
     attributes: [],
+
+    addresses: [],
+    addressesIndex: {},
+    txHashes: [],
+    txHashesIndex: {},
+
     sync: {
       info: null,
       completed: null,
@@ -11,6 +17,12 @@ const punksModule = {
   },
   getters: {
     attributes: state => state.attributes,
+
+    addresses: state => state.addresses,
+    addressesIndex: state => state.addressesIndex,
+    txHashes: state => state.txHashes,
+    txHashesIndex: state => state.txHashesIndex,
+
     sync: state => state.sync,
   },
   mutations: {
@@ -18,6 +30,15 @@ const punksModule = {
       // console.log(now() + " punksModule - mutations.setAttributes - attributes: " + JSON.stringify(attributes));
       state.attributes = attributes;
     },
+
+    setLookups(state, { addresses, addressesIndex, txHashes, txHashesIndex }) {
+      // console.log(now() + " punksModule - mutations.setLookups - { addresses, addressesIndex, txHashes, txHashesIndex }: " + JSON.stringify({ addresses, addressesIndex, txHashes, txHashesIndex }));
+      state.addresses = addresses;
+      state.addressesIndex = addressesIndex;
+      state.txHashes = txHashes;
+      state.txHashesIndex = txHashesIndex;
+    },
+
     setSyncInfo(state, info) {
       console.log(now() + " punksModule - mutations.setSyncInfo - info: " + info);
       state.sync.info = info;
@@ -45,6 +66,13 @@ const punksModule = {
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
       let attributes = await dbGetCachedData(db, CRYPTOPUNKSMARKET_V2_ADDRESS + "_" + chainId + "_punks_attributes", {});
       context.commit('setAttributes', attributes);
+
+      const addresses = await dbGetCachedData(db, CRYPTOPUNKSMARKET_V2_ADDRESS + "_" + chainId + "_punk_addresses", []);
+      const addressesIndex = await dbGetCachedData(db, CRYPTOPUNKSMARKET_V2_ADDRESS + "_" + chainId + "_punk_addressesIndex", {});
+      const txHashes = await dbGetCachedData(db, CRYPTOPUNKSMARKET_V2_ADDRESS + "_" + chainId + "_punk_txHashes", []);
+      const txHashesIndex = await dbGetCachedData(db, CRYPTOPUNKSMARKET_V2_ADDRESS + "_" + chainId + "_punk_txHashesIndex", {});
+      context.commit('setLookups', { addresses, addressesIndex, txHashes, txHashesIndex });
+
       db.close();
     },
     async syncPunks(context, forceUpdate) {
@@ -109,27 +137,7 @@ const punksModule = {
           if (!log.removed) {
             let info = null;
             const logData = punkInterface.parseLog(log);
-            // console.log("logData: " + JSON.stringify(logData));
-            // event Assign(address indexed to, uint256 punkIndex);
-            // event Transfer(address indexed from, address indexed to, uint256 value);
-            // event PunkTransfer(address indexed from, address indexed to, uint256 punkIndex);
-            // event PunkOffered(uint indexed punkIndex, uint minValue, address indexed toAddress);
-            // event PunkBidEntered(uint indexed punkIndex, uint value, address indexed fromAddress);
-            // event PunkBidWithdrawn(uint indexed punkIndex, uint value, address indexed fromAddress);
-            // event PunkBought(uint indexed punkIndex, uint value, address indexed fromAddress, address indexed toAddress);
-            // event PunkNoLongerForSale(uint indexed punkIndex);
-            // const PUNKEVENT_ASSIGN = 0;
-            // const PUNKEVENT_TRANSFER = 1;
-            // const PUNKEVENT_PUNKTRANSFER = 2;
-            // const PUNKEVENT_PUNKOFFERED = 3;
-            // const PUNKEVENT_PUNKBIDENTERED = 4;
-            // const PUNKEVENT_PUNKBIDWITHDRAWN = 5;
-            // const PUNKEVENT_PUNKBOUGHT = 6;
-            // const PUNKEVENT_PUNKNOLONGERFORSALE = 7;
             const event = PUNKEVENT_STRING_TO_INT[logData.eventFragment.name];
-            if (event == null) {
-              console.error("logData: " + JSON.stringify(logData));
-            }
             if (event == PUNKEVENT_ASSIGN) {
               // console.log(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - ASSIGN logData: " + JSON.stringify(logData));
               const [ to, punkId ] = logData.args;
@@ -174,13 +182,12 @@ const punksModule = {
             }
           }
         }
-        console.log(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - fromBlock: " + fromBlock + ", toBlock: " + toBlock + ", records: " + JSON.stringify(records, null, 2));
+        // console.log(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - fromBlock: " + fromBlock + ", toBlock: " + toBlock + ", records: " + JSON.stringify(records, null, 2));
         if (records.length > 0) {
           await dbSaveCacheData(db, CRYPTOPUNKSMARKET_V2_ADDRESS + "_" + chainId + "_punk_addresses", addresses);
           await dbSaveCacheData(db, CRYPTOPUNKSMARKET_V2_ADDRESS + "_" + chainId + "_punk_addressesIndex", addressesIndex);
           await dbSaveCacheData(db, CRYPTOPUNKSMARKET_V2_ADDRESS + "_" + chainId + "_punk_txHashes", txHashes);
           await dbSaveCacheData(db, CRYPTOPUNKSMARKET_V2_ADDRESS + "_" + chainId + "_punk_txHashesIndex", txHashesIndex);
-
           await db.punkEvents.bulkAdd(records).then(function(lastKey) {
             console.log(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - bulkAdd lastKey: " + JSON.stringify(lastKey));
             }).catch(Dexie.BulkError, function(e) {
@@ -237,19 +244,19 @@ const punksModule = {
       context.commit('setSyncCompleted', 0);
       context.commit('setSyncInfo', "Syncing token events");
       const latest = await db.punkEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.minKey, Dexie.minKey],[chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.maxKey, Dexie.maxKey]).last();
-      console.log(now() + " punksModule - actions.syncTokenEvents - latest: " + JSON.stringify(latest, null, 2));
+      // console.log(now() + " punksModule - actions.syncTokenEvents - latest: " + JSON.stringify(latest, null, 2));
       const startBlock = latest ? parseInt(latest.blockNumber) + 1: 0;
-      // TODO: Testing
-      // const startBlock = latestBlockNumber - 10000;
-      // const startBlock = 3914495;
       console.log(now() + " punksModule - actions.syncTokenEvents - startBlock: " + startBlock + ", latestBlockNumber: " + latestBlockNumber);
       await getTokenLogsFromRange(startBlock, latestBlockNumber);
-      // context.commit('setLookups', { addresses, addressesIndex, txHashes, txHashesIndex });
+      context.commit('setLookups', { addresses, addressesIndex, txHashes, txHashesIndex });
 
       db.close();
-      // context.dispatch("collateEventData", inputAddress);
+      context.dispatch("collateEventData");
       context.commit('setSyncInfo', null);
       context.commit('setSyncHalt', false);
+    },
+    async collateEventData(context) {
+      console.log(now() + " punksModule - actions.collateEventData");
     },
   },
 };
