@@ -11,6 +11,10 @@ const Punks = {
           <v-btn v-if="sync.info == null" :disabled="chainId != 1" @click="syncPunksEvents();" color="primary" icon v-tooltip="'Sync Punks Events'">
             <v-icon>mdi-download</v-icon>
           </v-btn>
+          <v-btn v-if="sync.info != null" @click="setSyncHalt();" color="primary" icon v-tooltip="'Halt syncing'">
+            <v-icon>mdi-stop</v-icon>
+          </v-btn>
+          <v-progress-circular v-if="sync.info != null" color="primary" :model-value="sync.total ? (parseInt(sync.completed * 100 / sync.total)) : 0" :size="30" :width="6" v-tooltip="sync.info + ': Block #' + commify0(sync.completed) + ' of ' + commify0(sync.total)"></v-progress-circular>
           <v-spacer></v-spacer>
           <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" right color="deep-purple-accent-4">
             <v-tab prepend-icon="mdi-emoticon-cool-outline" text="Punks" value="punks" class="lowercase-btn"></v-tab>
@@ -293,18 +297,20 @@ filteredTokensPaged: {{ JSON.stringify(filteredTokensPaged, null, 2) }}
     },
     attributesMap() {
       const results = {};
-      for (const [punkId, attributes] of this.attributes.entries()) {
-        // console.log(punkId + " => " + JSON.stringify(attributes));
-        for (const attributeRecord of attributes) {
-          const [attribute, option] = attributeRecord;
-          // console.log(punkId + " => " + attribute + " " + option);
-          if (!(attribute in results)) {
-            results[attribute] = {};
+      if (this.attributes && this.attributes.length > 0) {
+        for (const [punkId, attributes] of this.attributes.entries()) {
+          // console.log(punkId + " => " + JSON.stringify(attributes));
+          for (const attributeRecord of attributes) {
+            const [attribute, option] = attributeRecord;
+            // console.log(punkId + " => " + attribute + " " + option);
+            if (!(attribute in results)) {
+              results[attribute] = {};
+            }
+            if (!(option in results[attribute])) {
+              results[attribute][option] = [];
+            }
+            results[attribute][option].push(parseInt(punkId));
           }
-          if (!(option in results[attribute])) {
-            results[attribute][option] = [];
-          }
-          results[attribute][option].push(parseInt(punkId));
         }
       }
       // console.log("results: " + JSON.stringify(results, null, 2));
@@ -357,8 +363,10 @@ filteredTokensPaged: {{ JSON.stringify(filteredTokensPaged, null, 2) }}
           results.push([ punkId, this.attributes[punkId] ]);
         }
       } else {
-        for (const [punkId, attribute] of this.attributes.entries()) {
-          results.push([ punkId, attribute ]);
+        if (this.attributes && this.attributes.length > 0) {
+          for (const [punkId, attribute] of this.attributes.entries()) {
+            results.push([ punkId, attribute ]);
+          }
         }
       }
       if (this.settings.tokens.sortOption == "punkidasc") {

@@ -109,7 +109,7 @@ const punksModule = {
           if (!log.removed) {
             let info = null;
             const logData = punkInterface.parseLog(log);
-            console.log("logData: " + JSON.stringify(logData));
+            // console.log("logData: " + JSON.stringify(logData));
             // event Assign(address indexed to, uint256 punkIndex);
             // event Transfer(address indexed from, address indexed to, uint256 value);
             // event PunkTransfer(address indexed from, address indexed to, uint256 punkIndex);
@@ -126,99 +126,67 @@ const punksModule = {
             // const PUNKEVENT_PUNKBIDWITHDRAWN = 5;
             // const PUNKEVENT_PUNKBOUGHT = 6;
             // const PUNKEVENT_PUNKNOLONGERFORSALE = 7;
-
-            // ERC-20 Transfer (index_topic_1 address from, index_topic_2 address to, uint256 tokens)
-            // ERC-721 Transfer (index_topic_1 address from, index_topic_2 address to, index_topic_3 uint256 id)
-            // if (log.topics[0] == "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef") {
-            //   if (log.topics.length == 3 && context.state.info.type == "erc20") {
-            //     const from = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
-            //     const to = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
-            //     const tokens = ethers.BigNumber.from(log.data).toString();
-            //     info = [ TOKENEVENT_TRANSFER, getAddressIndex(from), getAddressIndex(to), tokens ];
-            //
-            //   } else if (log.topics.length == 4 && context.state.info.type == "erc721") {
-            //     const from = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
-            //     const to = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
-            //     const tokenId = ethers.BigNumber.from(log.topics[3]).toString();
-            //     info = [ TOKENEVENT_TRANSFER, getAddressIndex(from), getAddressIndex(to), tokenId ];
-            //   }
-            //
-            // // ERC-1155 TransferSingle (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256 id, uint256 value)
-            // } else if (log.topics[0] == "0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62") {
-            //   const logData = erc1155Interface.parseLog(log);
-            //   const [ operator, from, to, tokenId, value ] = logData.args;
-            //   info = [ TOKENEVENT_TRANSFERSINGLE, getAddressIndex(operator), getAddressIndex(from), getAddressIndex(to), ethers.BigNumber.from(tokenId).toString(), ethers.BigNumber.from(value).toString() ];
-            //
-            // // ERC-1155 TransferBatch (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256[] ids, uint256[] values)
-            // } else if (log.topics[0] == "0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb") {
-            //   const logData = erc1155Interface.parseLog(log);
-            //   const [ operator, from, to, tokenIds, values ] = logData.args;
-            //   info = [ TOKENEVENT_TRANSFERBATCH, getAddressIndex(operator), getAddressIndex(from), getAddressIndex(to), tokenIds.map(e => ethers.BigNumber.from(e).toString()), values.map(e => ethers.BigNumber.from(e).toString()) ];
-            //
-            // // WETH Deposit (index_topic_1 address dst, uint256 wad)
-            // } else if (log.topics[0] == "0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c") {
-            //   const from = ADDRESS0;
-            //   const to = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
-            //   const tokens = ethers.BigNumber.from(log.data).toString();
-            //   info = [ TOKENEVENT_TRANSFER, getAddressIndex(from), getAddressIndex(to), tokens ];
-            //
-            // // WETH Withdrawal (index_topic_1 address src, uint256 wad)
-            // } else if (log.topics[0] == "0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65") {
-            //   info = { event: "Withdrawal" };
-            //   const from = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
-            //   const to = ADDRESS0;
-            //   const tokens = ethers.BigNumber.from(log.data).toString();
-            //   info = [ TOKENEVENT_TRANSFER, getAddressIndex(from), getAddressIndex(to), tokens ];
-            //
-            // // ERC-20 Approval (index_topic_1 address owner, index_topic_2 address spender, uint256 value)
-            // // ERC-721 Approval (index_topic_1 address owner, index_topic_2 address approved, index_topic_3 uint256 tokenId)
-            // } else if (log.topics[0] == "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925") {
-            //   if (log.topics.length == 3 && context.state.info.type == "erc20") {
-            //     const owner = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
-            //     const spender = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
-            //     const tokens = ethers.BigNumber.from(log.data).toString();
-            //     info = [ TOKENEVENT_APPROVAL, getAddressIndex(owner), getAddressIndex(spender), tokens ];
-            //
-            //   } else if (log.topics.length == 4 && context.state.info.type == "erc721") {
-            //     const owner = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
-            //     const approved = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
-            //     const tokenId = ethers.BigNumber.from(log.topics[3]).toString();
-            //     info = [ TOKENEVENT_APPROVAL, getAddressIndex(owner), getAddressIndex(approved), tokenId ];
-            //   }
-            //
-            // // ERC-721 ApprovalForAll (index_topic_1 address owner, index_topic_2 address operator, bool approved)
-            // // ERC-1155 ApprovalForAll (index_topic_1 address account, index_topic_2 address operator, bool approved)
-            // } else if (log.topics[0] == "0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31") {
-            //   const owner = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
-            //   const operator = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
-            //   approved = ethers.BigNumber.from(log.data).eq(1);
-            //   info = [ TOKENEVENT_APPROVALFORALL, getAddressIndex(owner), getAddressIndex(operator), approved ];
-            //
-            // }
+            const event = PUNKEVENT_STRING_TO_INT[logData.eventFragment.name];
+            if (event == null) {
+              console.error("logData: " + JSON.stringify(logData));
+            }
+            if (event == PUNKEVENT_ASSIGN) {
+              // console.log(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - ASSIGN logData: " + JSON.stringify(logData));
+              const [ to, punkId ] = logData.args;
+              info = [event, getAddressIndex(to), parseInt(punkId) ];
+            } else if (event == PUNKEVENT_TRANSFER) {
+              // console.log(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - TRANSFER logData: " + JSON.stringify(logData));
+              const [ from, to, value ] = logData.args;
+              info = [event, getAddressIndex(from), getAddressIndex(to), parseInt(value) ];
+            } else if (event == PUNKEVENT_PUNKTRANSFER) {
+              // console.log(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - PUNKTRANSFER logData: " + JSON.stringify(logData));
+              const [ from, to, punkId ] = logData.args;
+              info = [event, getAddressIndex(from), getAddressIndex(to), parseInt(punkId) ];
+            } else if (event == PUNKEVENT_PUNKOFFERED) {
+              // console.log(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - PUNKOFFERED logData: " + JSON.stringify(logData));
+              const [ punkId, minValue, toAddress ] = logData.args;
+              info = [event, parseInt(punkId), ethers.BigNumber.from(minValue).toString(), getAddressIndex(toAddress) ];
+            } else if (event == PUNKEVENT_PUNKBIDENTERED) {
+              // console.log(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - PUNKBIDENTERED logData: " + JSON.stringify(logData));
+              const [ punkId, value, fromAddress ] = logData.args;
+              info = [event, parseInt(punkId), ethers.BigNumber.from(value).toString(), getAddressIndex(fromAddress) ];
+            } else if (event == PUNKEVENT_PUNKBIDWITHDRAWN) {
+              // console.log(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - PUNKBIDWITHDRAWN logData: " + JSON.stringify(logData));
+              const [ punkId, value, fromAddress ] = logData.args;
+              info = [event, parseInt(punkId), ethers.BigNumber.from(value).toString(), getAddressIndex(fromAddress) ];
+            } else if (event == PUNKEVENT_PUNKBOUGHT) {
+              // console.log(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - PUNKBOUGHT logData: " + JSON.stringify(logData));
+              const [ punkId, value, fromAddress, toAddress ] = logData.args;
+              info = [event, parseInt(punkId), ethers.BigNumber.from(value).toString(), getAddressIndex(fromAddress), getAddressIndex(toAddress) ];
+            } else if (event == PUNKEVENT_PUNKNOLONGERFORSALE) {
+              // console.log(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - PUNKNOLONGERFORSALE logData: " + JSON.stringify(logData));
+              const [ punkId ] = logData.args;
+              info = [event, parseInt(punkId) ];
+            }
             if (info) {
-              // records.push({
-              //   chainId,
-              //   address: log.address,
-              //   blockNumber: log.blockNumber,
-              //   logIndex: log.logIndex,
-              //   info: [ getTxHashIndex(log.transactionHash), log.transactionIndex, ...info ],
-              // });
+              records.push({
+                chainId,
+                address: log.address,
+                blockNumber: log.blockNumber,
+                logIndex: log.logIndex,
+                info: [ getTxHashIndex(log.transactionHash), log.transactionIndex, ...info ],
+              });
             }
           }
         }
-        // // console.log(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - fromBlock: " + fromBlock + ", toBlock: " + toBlock + ", records: " + JSON.stringify(records, null, 2));
-        // if (records.length > 0) {
-        //   await dbSaveCacheData(db, validatedAddress + "_" + chainId + "_punk_addresses", addresses);
-        //   await dbSaveCacheData(db, validatedAddress + "_" + chainId + "_punk_addressesIndex", addressesIndex);
-        //   await dbSaveCacheData(db, validatedAddress + "_" + chainId + "_punk_txHashes", txHashes);
-        //   await dbSaveCacheData(db, validatedAddress + "_" + chainId + "_punk_txHashesIndex", txHashesIndex);
-        //
-        //   await db.tokenEvents.bulkAdd(records).then(function(lastKey) {
-        //     console.log(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - bulkAdd lastKey: " + JSON.stringify(lastKey));
-        //     }).catch(Dexie.BulkError, function(e) {
-        //       console.log(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - bulkAdd e: " + JSON.stringify(e.failures, null, 2));
-        //     });
-        // }
+        console.log(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - fromBlock: " + fromBlock + ", toBlock: " + toBlock + ", records: " + JSON.stringify(records, null, 2));
+        if (records.length > 0) {
+          await dbSaveCacheData(db, CRYPTOPUNKSMARKET_V2_ADDRESS + "_" + chainId + "_punk_addresses", addresses);
+          await dbSaveCacheData(db, CRYPTOPUNKSMARKET_V2_ADDRESS + "_" + chainId + "_punk_addressesIndex", addressesIndex);
+          await dbSaveCacheData(db, CRYPTOPUNKSMARKET_V2_ADDRESS + "_" + chainId + "_punk_txHashes", txHashes);
+          await dbSaveCacheData(db, CRYPTOPUNKSMARKET_V2_ADDRESS + "_" + chainId + "_punk_txHashesIndex", txHashesIndex);
+
+          await db.punkEvents.bulkAdd(records).then(function(lastKey) {
+            console.log(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - bulkAdd lastKey: " + JSON.stringify(lastKey));
+            }).catch(Dexie.BulkError, function(e) {
+              console.log(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - bulkAdd e: " + JSON.stringify(e.failures, null, 2));
+            });
+        }
       }
 
       async function getTokenLogsFromRange(fromBlock, toBlock) {
@@ -227,26 +195,6 @@ const punksModule = {
           return;
         }
         try {
-          // topics = [[
-          //     // ERC-20 Transfer (index_topic_1 address from, index_topic_2 address to, uint256 tokens)
-          //     // ERC-721 Transfer (index_topic_1 address from, index_topic_2 address to, index_topic_3 uint256 id)
-          //     '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
-          //     // ERC-1155 TransferSingle (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256 id, uint256 value)
-          //     '0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62',
-          //     // ERC-1155 TransferBatch (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256[] ids, uint256[] values)
-          //     '0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb',
-          //     // WETH Deposit (index_topic_1 address dst, uint256 wad)
-          //     '0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c',
-          //     // WETH Withdrawal (index_topic_1 address src, uint256 wad)
-          //     '0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65',
-          //     // ERC-20 Approval (index_topic_1 address owner, index_topic_2 address spender, uint256 value)
-          //     // ERC-721 Approval (index_topic_1 address owner, index_topic_2 address approved, index_topic_3 uint256 tokenId)
-          //     '0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925',
-          //     // ERC-721 ApprovalForAll (index_topic_1 address owner, index_topic_2 address operator, bool approved)
-          //     // ERC-1155 ApprovalForAll (index_topic_1 address account, index_topic_2 address operator, bool approved)
-          //     '0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31',
-          //   ],
-          // ];
           const logs = await provider.getLogs({
             address: CRYPTOPUNKSMARKET_V2_ADDRESS,
             fromBlock,
@@ -283,17 +231,17 @@ const punksModule = {
 
       let info = {};
       const block = await provider.getBlock();
-      // const latestBlockNumber = block && block.number || null;
-      const latestBlockNumber = parseInt(3914495) + 10000;
+      const latestBlockNumber = block && block.number || null;
+      // const latestBlockNumber = parseInt(3914495) + 10000;
       context.commit('setSyncTotal', latestBlockNumber);
       context.commit('setSyncCompleted', 0);
       context.commit('setSyncInfo', "Syncing token events");
-      // const latest = await db.tokenEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, validatedAddress, Dexie.minKey, Dexie.minKey],[chainId, validatedAddress, Dexie.maxKey, Dexie.maxKey]).last();
-      // console.log(now() + " punksModule - actions.syncTokenEvents - latest: " + JSON.stringify(latest, null, 2));
-      // const startBlock = latest ? parseInt(latest.blockNumber) + 1: 0;
+      const latest = await db.punkEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.minKey, Dexie.minKey],[chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.maxKey, Dexie.maxKey]).last();
+      console.log(now() + " punksModule - actions.syncTokenEvents - latest: " + JSON.stringify(latest, null, 2));
+      const startBlock = latest ? parseInt(latest.blockNumber) + 1: 0;
       // TODO: Testing
       // const startBlock = latestBlockNumber - 10000;
-      const startBlock = 3914495;
+      // const startBlock = 3914495;
       console.log(now() + " punksModule - actions.syncTokenEvents - startBlock: " + startBlock + ", latestBlockNumber: " + latestBlockNumber);
       await getTokenLogsFromRange(startBlock, latestBlockNumber);
       // context.commit('setLookups', { addresses, addressesIndex, txHashes, txHashesIndex });
