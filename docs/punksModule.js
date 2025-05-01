@@ -46,11 +46,12 @@ const punksModule = {
           const attributeList = attribute.split(", ");
           const list = [];
           for (const option of attributeList) {
-            const trait = traitsLookup[option] || null;
+            const modifiedOption = option; // .replace(/ \d$/, "");
+            const trait = traitsLookup[modifiedOption] || null;
             if (!trait) {
-              console.error("Punk " + index + " " + option);
+              console.error("Punk " + index + " " + modifiedOption);
             } else {
-              list.push([ trait, option ]);
+              list.push([ trait, modifiedOption ]);
             }
           }
           attributes[index] = list;
