@@ -106,26 +106,33 @@ const Punks = {
                 <v-tabs-window v-model="settings.tab">
                   <v-tabs-window-item value="punks">
 
-                    <!-- <v-row v-if="settings.tokens.view != 'list'" dense class="d-flex flex-wrap" align="stretch">
-                      <v-col v-for="(item, index) in nftFilteredTokensPaged" :key="index" align="center">
+                    <v-row v-if="settings.tokens.view != 'list'" dense class="d-flex flex-wrap" align="stretch">
+                      <v-col v-for="(item, index) in filteredTokensPaged" :key="index" align="center">
                         <v-card class="pb-2" :max-width="settings.tokens.view != 'medium' ? 260 : 130">
-                          <v-img :src="item.image" :width="settings.tokens.view != 'medium' ? 260 : 130" cover class="align-end text-white">
-                            <v-card-title v-if="settings.tokens.view == 'large'" class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-size: 1em;">{{ item.name }}</v-card-title>
-                            <v-card-title v-if="settings.tokens.view == 'medium'" class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-size: 0.7em;">{{ item.name }}</v-card-title>
+                          <v-img :src="'data:image/png;base64,' + images[item[0]]" :width="settings.tokens.view != 'medium' ? 260 : 130" cover class="align-end text-white" style="image-rendering: pixelated;">
+                            <!-- <v-card-title v-if="settings.tokens.view == 'large'" class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-size: 1em;">{{ item[0] }}</v-card-title>
+                            <v-card-title v-if="settings.tokens.view == 'medium'" class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-size: 0.7em;">{{ item[0] }}</v-card-title> -->
                           </v-img>
+
                           <v-card-text class="ma-0 pa-0 px-2 pt-1 d-flex">
-                            <div v-if="type == 'erc721'">
+                            <v-chip size="x-small" variant="tonal" color="secondary" class="ma-0">
+                              {{ commify0(item[0]) }}
+                            </v-chip>
+                            <!-- <v-chip v-for="attribute of item[1]" size="x-small" variant="tonal" color="secondary" class="ma-0">
+                              {{ attribute[1] }}
+                            </v-chip> -->
+                            <!-- <div v-if="type == 'erc721'">
                               <render-address :address="item.owner" :addresses="addresses" miniAddress noXPadding></render-address>
-                            </div>
-                            <div class="mt-2">
+                            </div> -->
+                            <!-- <div class="mt-2">
                               {{ Object.keys(item.owners || {}).length + ' owners' }}
-                            </div>
+                            </div> -->
                             <v-spacer></v-spacer>
-                            <div v-if="item.price" v-tooltip="'Price on ' + item.price.source + ' ~ ' + commify2(item.price.amountUSD) + ' USD'" class="mt-2">
+                            <!-- <div v-if="item.price" v-tooltip="'Price on ' + item.price.source + ' ~ ' + commify2(item.price.amountUSD) + ' USD'" class="mt-2">
                               {{ item.price.amount + " " + item.price.currency }}
-                            </div>
+                            </div> -->
                           </v-card-text>
-                          <v-card-subtitle v-if="settings.tokens.view == 'large'" class="ma-0 px-2 pt-0 d-flex">
+                          <!-- <v-card-subtitle v-if="settings.tokens.view == 'large'" class="ma-0 px-2 pt-0 d-flex">
                             <div v-if="item.lastSale" v-tooltip="'Last sale @ ' + formatTimestamp(item.lastSale.timestamp) + ' ~ ' + commify2(item.lastSale.amountUSD) + ' USD'">
                               <small class="mb-4 text-high-emphasis opacity-60">{{ item.lastSale.amount + " " + item.lastSale.currency }}</small>
                             </div>
@@ -133,10 +140,10 @@ const Punks = {
                             <div v-if="item.topBid" v-tooltip="'Top bid on ' + item.topBid.source + ' ~ ' + commify2(item.topBid.amountUSD) + ' USD'">
                               <small class="mb-4 text-high-emphasis opacity-60">{{ item.topBid.amount + " " + item.topBid.currency }}</small>
                             </div>
-                          </v-card-subtitle>
+                          </v-card-subtitle> -->
                         </v-card>
                       </v-col>
-                    </v-row> -->
+                    </v-row>
 
                     <v-data-table
                       v-if="settings.tokens.view == 'list'"
@@ -156,7 +163,7 @@ const Punks = {
                         {{ commify0(item[0]) }}
                       </template>
                       <template v-slot:item.image="{ item }">
-                        <v-img :src="'data:image/png;base64,' + images[item[0]]" width="60" style="image-rendering: pixelated;" class="ma-2 pa-0">
+                        <v-img :src="'data:image/png;base64,' + images[item[0]]" width="60" class="ma-2 pa-0" style="image-rendering: pixelated;">
                         </v-img>
                       </template>
                       <template v-slot:item.attributes="{ item }">
