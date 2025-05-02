@@ -124,6 +124,7 @@ const Punks = {
                           </v-img>
 
                           <v-card-text class="ma-0 pa-0 px-2 pt-1 d-flex">
+                            <render-address :address="item[2]" :addresses="addresses" miniAddress noXPadding></render-address>
                             <!-- <v-chip v-for="attribute of item[1]" size="x-small" variant="tonal" color="secondary" class="ma-0">
                               {{ attribute[1] }}
                             </v-chip> -->
@@ -171,6 +172,9 @@ const Punks = {
                       <template v-slot:item.image="{ item }">
                         <v-img :src="'data:image/png;base64,' + images[item[0]]" width="60" class="ma-2 pa-0" style="image-rendering: pixelated; background-color: #638596;">
                         </v-img>
+                      </template>
+                      <template v-slot:item.owner="{ item }">
+                        <render-address :address="item[2]" :addresses="addresses" shortAddress noXPadding></render-address>
                       </template>
                       <template v-slot:item.attributes="{ item }">
                         <v-chip v-for="attribute of item[1]" size="small" variant="tonal" color="secondary" class="ma-2">
@@ -278,6 +282,7 @@ filteredTokensPaged: {{ JSON.stringify(filteredTokensPaged, null, 2) }}
         { title: '#', value: 'rowNumber', align: 'end', sortable: false },
         { title: 'Punk Id', value: 'punkId', align: 'end', sortable: false },
         { title: 'Image', value: 'image', sortable: false },
+        { title: 'Owner', value: 'owner', sortable: false },
         { title: 'Attributes', value: 'attributes', sortable: false },
         { title: '# Attributes', value: 'attributeCount', sortable: false },
         // { title: 'Owner', value: 'owner', sortable: false },
@@ -371,12 +376,12 @@ filteredTokensPaged: {{ JSON.stringify(filteredTokensPaged, null, 2) }}
           }
         }
         for (const punkId of punkIds) {
-          results.push([ punkId, this.attributes[punkId] ]);
+          results.push([ punkId, this.attributes[punkId], this.owners[punkId] ]);
         }
       } else {
         if (this.attributes && this.attributes.length > 0) {
           for (const [punkId, attribute] of this.attributes.entries()) {
-            results.push([ punkId, attribute ]);
+            results.push([ punkId, attribute, this.owners[punkId] ]);
           }
         }
       }
@@ -393,7 +398,7 @@ filteredTokensPaged: {{ JSON.stringify(filteredTokensPaged, null, 2) }}
     },
     filteredTokensPaged() {
       const results = this.filteredTokens.slice((this.settings.tokens.currentPage - 1) * this.settings.tokens.itemsPerPage, this.settings.tokens.currentPage * this.settings.tokens.itemsPerPage);
-      // console.log(now() + " Token - computed.filteredTokensPaged - results: " + JSON.stringify(results, null, 2));
+      console.log(now() + " Token - computed.filteredTokensPaged - results: " + JSON.stringify(results, null, 2));
       return results;
     },
     // address() {

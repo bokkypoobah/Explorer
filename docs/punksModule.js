@@ -8,7 +8,10 @@ const punksModule = {
     txHashes: [],
     txHashesIndex: {},
 
-    owners: {},
+    numberOfEvents: null,
+    owners: [],
+    bids: {},
+    offers: {},
 
     sync: {
       info: null,
@@ -25,7 +28,10 @@ const punksModule = {
     txHashes: state => state.txHashes,
     txHashesIndex: state => state.txHashesIndex,
 
+    numberOfEvents: state => state.numberOfEvents,
     owners: state => state.owners,
+    bids: state => state.bids,
+    offers: state => state.offers,
 
     sync: state => state.sync,
   },
@@ -41,10 +47,12 @@ const punksModule = {
       state.txHashes = txHashes;
       state.txHashesIndex = txHashesIndex;
     },
-    setEventInfo(state, { numberOfEvents, owners }) {
+    setEventInfo(state, { numberOfEvents, owners, bids, offers }) {
       console.log(now() + " tokenModule - mutations.setEventInfo - numberOfEvents: " + JSON.stringify(numberOfEvents));
       state.numberOfEvents = numberOfEvents;
       state.owners = owners;
+      state.bids = bids;
+      state.offers = offers;
     },
 
     setSyncInfo(state, info) {
@@ -80,6 +88,13 @@ const punksModule = {
       const txHashes = await dbGetCachedData(db, CRYPTOPUNKSMARKET_V2_ADDRESS + "_" + chainId + "_punk_txHashes", []);
       const txHashesIndex = await dbGetCachedData(db, CRYPTOPUNKSMARKET_V2_ADDRESS + "_" + chainId + "_punk_txHashesIndex", {});
       context.commit('setLookups', { addresses, addressesIndex, txHashes, txHashesIndex });
+
+      const info = await dbGetCachedData(db, CRYPTOPUNKSMARKET_V2_ADDRESS + "_" + chainId + "_punk_data", {});
+      const numberOfEvents = info.numberOfEvents || null;
+      const owners = info.owners || [];
+      const bids = info.bids || {};
+      const offers = info.offers || {};
+      context.commit('setEventInfo', { numberOfEvents, owners, bids, offers });
 
       db.close();
     },
