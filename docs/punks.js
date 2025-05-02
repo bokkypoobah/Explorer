@@ -57,7 +57,7 @@ const Punks = {
             style="max-width: 200px;"
             @update:modelValue="saveSettings();"
           ></v-select>
-          <v-btn-toggle v-model="settings.tokens.view" variant="plain" class="mr-3" @update:modelValue="saveSettings();" density="compact">
+          <v-btn-toggle v-if="settings.tab == 'punks'" v-model="settings.tokens.view" variant="plain" class="mr-3" @update:modelValue="saveSettings();" density="compact">
             <v-btn icon value="large">
               <v-icon color="primary">mdi-grid-large</v-icon>
             </v-btn>
@@ -211,18 +211,44 @@ const Punks = {
                       <template v-slot:item.attributeCount="{ item }">
                         {{ item[1].length }}
                       </template>
-                      <!-- <template v-slot:item.owner="{ item }">
-                        <render-address :address="item.owner" :addresses="addresses" :token="address" noXPadding></render-address>
-                      </template> -->
                     </v-data-table>
-                    <!-- <pre>
-filteredTokensPaged: {{ JSON.stringify(filteredTokensPaged, null, 2) }}
-                    </pre> -->
                   </v-tabs-window-item>
                   <v-tabs-window-item value="owners">
-                    <pre>
-{{ filteredOwnersList }}
-                    </pre>
+                    <v-data-table
+                      :items="filteredOwnersList"
+                      :headers="ownersHeaders"
+                      v-model:sort-by="settings.owners.sortBy"
+                      v-model:items-per-page="settings.owners.itemsPerPage"
+                      v-model:page="settings.owners.currentPage"
+                      @update:options="saveSettings();"
+                      density="comfortable"
+                      hide-default-footer
+                    >
+                      <template v-slot:item.rowNumber="{ index }">
+                        {{ (settings.owners.currentPage - 1) * settings.owners.itemsPerPage + index + 1 }}
+                      </template>
+                      <!-- <template v-slot:item.punkId="{ item }">
+                        {{ commify0(item[0]) }}
+                      </template> -->
+                      <!-- <template v-slot:item.image="{ item }">
+                        <v-img :src="'data:image/png;base64,' + images[item[0]]" width="60" class="ma-2 pa-0" style="image-rendering: pixelated; background-color: #638596;">
+                        </v-img>
+                      </template> -->
+                      <template v-slot:item.owner="{ item }">
+                        <render-address :address="item.owner" :addresses="addresses" shortAddress noXPadding></render-address>
+                      </template>
+                      <template v-slot:item.punks="{ item }">
+                        {{ item.punks }}
+                      </template>
+                      <!-- <template v-slot:item.attributes="{ item }">
+                        <v-chip v-for="attribute of item[1]" size="small" variant="tonal" color="secondary" class="ma-2">
+                          {{ attribute[0] + ": " + attribute[1] }}
+                        </v-chip>
+                      </template> -->
+                      <template v-slot:item.punksCount="{ item }">
+                        {{ commify0(item.count) }}
+                      </template>
+                    </v-data-table>
                   </v-tabs-window-item>
                   <v-tabs-window-item value="charts">
                     TODO: Charts
@@ -239,7 +265,18 @@ filteredTokensPaged: {{ JSON.stringify(filteredTokensPaged, null, 2) }}
               <v-toolbar flat color="transparent" density="compact">
                 <v-spacer></v-spacer>
                 <v-select
+                  v-if="settings.tab == 'punks'"
                   v-model="settings.tokens.itemsPerPage"
+                  :items="itemsPerPageOptions"
+                  variant="plain"
+                  density="compact"
+                  class="mt-2 mr-2"
+                  style="max-width: 70px;"
+                  @update:modelValue="saveSettings();"
+                ></v-select>
+                <v-select
+                  v-if="settings.tab == 'owners'"
+                  v-model="settings.owners.itemsPerPage"
                   :items="itemsPerPageOptions"
                   variant="plain"
                   density="compact"
@@ -315,7 +352,12 @@ filteredTokensPaged: {{ JSON.stringify(filteredTokensPaged, null, 2) }}
         { title: 'Owner', value: 'owner', sortable: false },
         { title: 'Attributes', value: 'attributes', sortable: false },
         { title: '# Attributes', value: 'attributeCount', sortable: false },
-        // { title: 'Owner', value: 'owner', sortable: false },
+      ],
+      ownersHeaders: [
+        { title: '#', value: 'rowNumber', align: 'end', sortable: false },
+        { title: 'Owner', value: 'owner', sortable: false },
+        { title: '# Punks', value: 'punksCount', sortable: false },
+        { title: 'Punks', value: 'punks', align: 'end', sortable: false },
       ],
     };
   },
@@ -450,8 +492,8 @@ filteredTokensPaged: {{ JSON.stringify(filteredTokensPaged, null, 2) }}
       }
       // console.log(now() + " Token - computed.filteredOwnersList - collator: " + JSON.stringify(collator, null, 2));
       const results = [];
-      for (const [owner, punkIds] of Object.entries(collator)) {
-        results.push({ owner, punkIds, count: punkIds.length });
+      for (const [owner, punks] of Object.entries(collator)) {
+        results.push({ owner, punks, count: punks.length });
       }
       if (this.settings.owners.sortOption == "ownercountasc") {
         results.sort((a, b) => {
@@ -470,7 +512,7 @@ filteredTokensPaged: {{ JSON.stringify(filteredTokensPaged, null, 2) }}
           }
         });
       }
-      console.log(now() + " Token - computed.filteredOwnersList - results: " + JSON.stringify(results, null, 2));
+      // console.log(now() + " Token - computed.filteredOwnersList - results: " + JSON.stringify(results, null, 2));
       return results;
     },
   },
