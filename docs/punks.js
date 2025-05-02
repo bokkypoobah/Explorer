@@ -144,7 +144,7 @@ const Punks = {
                         <v-card class="pb-2" :max-width="settings.tokens.view != 'medium' ? 260 : 130">
                           <v-img :src="'data:image/png;base64,' + images[item[0]]" :width="settings.tokens.view != 'medium' ? 260 : 130" cover align="left" class="align-end text-white" style="image-rendering: pixelated; background-color: #638596;">
                             <!-- <v-card-title v-if="settings.tokens.view == 'large'" class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-size: 1em;">{{ item[0] }}</v-card-title>
-                            <v-card-title v-if="settings.tokens.view == 'medium'" class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-size: 0.7em;">{{ item[0] }}</v-card-title> -->
+                            <!-- <v-card-title v-if="settings.tokens.view == 'medium'" class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-size: 0.7em;">{{ item[0] }}</v-card-title> --> -->
                             <v-chip label size="x-small" variant="flat" color="secondary" class="ma-1">
                               {{ commify0(item[0]) }}
                             </v-chip>
@@ -238,7 +238,20 @@ const Punks = {
                         <render-address :address="item.owner" :addresses="addresses" shortAddress noXPadding></render-address>
                       </template>
                       <template v-slot:item.punks="{ item }">
-                        {{ item.punks }}
+                        <v-row dense class="d-flex flex-row justify-start">
+                          <v-col v-for="punkId in item.punkIds">
+                            <v-card class="pa-0" max-width="72">
+                              <v-img :src="'data:image/png;base64,' + images[punkId]" width="72" cover align="left" class="align-end text-white" style="image-rendering: pixelated; background-color: #638596;">
+                                <!-- <v-card-title v-if="settings.tokens.view == 'large'" class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-size: 1em;">{{ punkId }}</v-card-title>
+                                <v-card-title v-if="settings.tokens.view == 'medium'" class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-size: 0.7em;">{{ punkId }}</v-card-title> -->
+                              </v-img>
+                              <v-chip label size="x-small" variant="tonal" color="secondary" class="ma-1">
+                                {{ commify0(punkId) }}
+                              </v-chip>
+                            </v-card>
+                          </v-col>
+                          <!-- <v-spacer></v-spacer> -->
+                        </v-row>
                       </template>
                       <!-- <template v-slot:item.attributes="{ item }">
                         <v-chip v-for="attribute of item[1]" size="small" variant="tonal" color="secondary" class="ma-2">
@@ -285,8 +298,21 @@ const Punks = {
                   @update:modelValue="saveSettings();"
                 ></v-select>
                 <v-pagination
+                  v-if="settings.tab == 'punks'"
                   v-model="settings.tokens.currentPage"
                   :length="Math.ceil(filteredTokens.length / settings.tokens.itemsPerPage)"
+                  total-visible="0"
+                  density="comfortable"
+                  show-first-last-page
+                  class="mr-1"
+                  @update:modelValue="saveSettings();"
+                  color="primary"
+                >
+                </v-pagination>
+                <v-pagination
+                  v-if="settings.tab == 'owners'"
+                  v-model="settings.owners.currentPage"
+                  :length="Math.ceil(filteredOwnersList.length / settings.owners.itemsPerPage)"
                   total-visible="0"
                   density="comfortable"
                   show-first-last-page
@@ -356,8 +382,8 @@ const Punks = {
       ownersHeaders: [
         { title: '#', value: 'rowNumber', align: 'end', sortable: false },
         { title: 'Owner', value: 'owner', sortable: false },
-        { title: '# Punks', value: 'punksCount', sortable: false },
-        { title: 'Punks', value: 'punks', align: 'end', sortable: false },
+        { title: 'Count', value: 'punksCount', sortable: false },
+        { title: 'Punks', value: 'punks', sortable: false },
       ],
     };
   },
@@ -492,8 +518,8 @@ const Punks = {
       }
       // console.log(now() + " Token - computed.filteredOwnersList - collator: " + JSON.stringify(collator, null, 2));
       const results = [];
-      for (const [owner, punks] of Object.entries(collator)) {
-        results.push({ owner, punks, count: punks.length });
+      for (const [owner, punkIds] of Object.entries(collator)) {
+        results.push({ owner, punkIds, count: punkIds.length });
       }
       if (this.settings.owners.sortOption == "ownercountasc") {
         results.sort((a, b) => {
