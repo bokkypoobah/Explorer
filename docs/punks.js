@@ -38,8 +38,19 @@ const Punks = {
           </div>
           <v-spacer></v-spacer>
           <v-select
+            v-if="settings.tab == 'punks'"
             v-model="settings.tokens.sortOption"
             :items="tokensSortOptions"
+            variant="plain"
+            density="compact"
+            class="mt-3 mr-3"
+            style="max-width: 200px;"
+            @update:modelValue="saveSettings();"
+          ></v-select>
+          <v-select
+            v-if="settings.tab == 'owners'"
+            v-model="settings.owners.sortOption"
+            :items="ownersSortOptions"
             variant="plain"
             density="compact"
             class="mt-3 mr-3"
@@ -57,12 +68,30 @@ const Punks = {
               <v-icon color="primary">mdi-format-list-bulleted-square</v-icon>
             </v-btn>
           </v-btn-toggle>
-          <p class="mr-1 text-caption text--disabled">
+          <p v-if="settings.tab == 'punks'" class="mr-1 text-caption text--disabled">
             {{ commify0(filteredTokens.length) + '/' + commify0(attributes.length) }}
           </p>
+          <p v-if="settings.tab == 'owners'" class="mr-1 text-caption text--disabled">
+            <!-- {{ commify0(filteredOwners.length) + '/' + commify0(totalOwners) }} -->
+            TODO
+          </p>
           <v-pagination
+            v-if="settings.tab == 'punks'"
             v-model="settings.tokens.currentPage"
             :length="Math.ceil(filteredTokens.length / settings.tokens.itemsPerPage)"
+            total-visible="0"
+            density="comfortable"
+            show-first-last-page
+            class="mr-1"
+            @update:modelValue="saveSettings();"
+            color="primary"
+          >
+          </v-pagination>
+          <!-- TODO: filteredTokens below -->
+          <v-pagination
+            v-if="settings.tab == 'owners'"
+            v-model="settings.owners.currentPage"
+            :length="Math.ceil(filteredTokens.length / settings.owners.itemsPerPage)"
             total-visible="0"
             density="comfortable"
             show-first-last-page
@@ -255,12 +284,12 @@ filteredTokensPaged: {{ JSON.stringify(filteredTokensPaged, null, 2) }}
         owners: {
           showFilter: false,
           view: "large",
-          sortOption: "punkidasc",
+          sortOption: "ownercountdsc",
           itemsPerPage: 10,
           currentPage: 1,
         },
         attributes: {}, // address -> attribute -> option -> selected?
-        version: 0,
+        version: 1,
       },
       itemsPerPageOptions: [
         { value: 5, title: "5" },
@@ -277,6 +306,10 @@ filteredTokensPaged: {{ JSON.stringify(filteredTokensPaged, null, 2) }}
       tokensSortOptions: [
         { value: "punkidasc", title: "▲ Punk Id" },
         { value: "punkiddsc", title: "▼ Punk Id" },
+      ],
+      ownersSortOptions: [
+        { value: "ownercountasc", title: "▲ Owner Count" },
+        { value: "ownercountdsc", title: "▼ Owner Count" },
       ],
       tokensHeaders: [
         { title: '#', value: 'rowNumber', align: 'end', sortable: false },
