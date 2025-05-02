@@ -205,7 +205,8 @@ const punksModule = {
               // if (punkId == 0) {
               //   console.error(moment().format("HH:mm:ss") + " punksModule - actions.syncTokenEvents.processLogs - TRACE PUNKBOUGHT logData: " + JSON.stringify(logData));
               // }
-              info = [event, parseInt(punkId), ethers.BigNumber.from(value).toString(), getAddressIndex(fromAddress), getAddressIndex(toAddress == ADDRESS0 ? lastTransferTo : toAddress) ];
+              // Last parameter - buyPunkOrAcceptBidForPunk = 0 if buyPunk and 1 if acceptBidForPunk - there's a bug in the contract that sets toAddress to 0x0
+              info = [event, parseInt(punkId), ethers.BigNumber.from(value).toString(), getAddressIndex(fromAddress), getAddressIndex(toAddress == ADDRESS0 ? lastTransferTo : toAddress), toAddress == ADDRESS0 ? 1 : 0 ];
             } else if (event == PUNKEVENT_PUNKNOLONGERFORSALE) {
               const [ punkId ] = logData.args;
               // if (punkId == 0) {
@@ -267,7 +268,6 @@ const punksModule = {
       const dbInfo = store.getters["db"];
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
-      // const erc1155Interface = new ethers.utils.Interface(ERC1155ABI);
       const punkInterface = new ethers.utils.Interface(CRYPTOPUNKSMARKET_V2_ABI);
 
       const addresses = await dbGetCachedData(db, CRYPTOPUNKSMARKET_V2_ADDRESS + "_" + chainId + "_punk_addresses", []);
@@ -325,35 +325,41 @@ const punksModule = {
           } else if (info[2] == PUNKEVENT_PUNKOFFERED) {
             // event PunkOffered(uint indexed punkIndex, uint minValue, address indexed toAddress);
             // [241748,28,3,6456,"25000000000000000000",0]
-            if (info[3] == 6456) {
+            if (info[3] == 0) {
               console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKOFFERED blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
             }
             offers[info[3]] = [ info[4], info[5] ];
             // TODO
           } else if (info[2] == PUNKEVENT_PUNKBIDENTERED) {
             // event PunkBidEntered(uint indexed punkIndex, uint value, address indexed fromAddress);
-            if (info[3] == 6456) {
+            if (info[3] == 0) {
               console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBIDENTERED blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
             }
             bids[info[3]] = [ info[4], info[5] ];
             // TODO
           } else if (info[2] == PUNKEVENT_PUNKBIDWITHDRAWN) {
             // event PunkBidWithdrawn(uint indexed punkIndex, uint value, address indexed fromAddress);
-            if (info[3] == 6456) {
+            if (info[3] == 0) {
               console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBIDWITHDRAWN blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
             }
             delete bids[info[3]];
             // TODO
           } else if (info[2] == PUNKEVENT_PUNKBOUGHT) {
+            // From CryptoPunksMarket.sol
+            // buyPunk(uint punkIndex)
+
+
+
+
             // event PunkBought(uint indexed punkIndex, uint value, address indexed fromAddress, address indexed toAddress);
-            if (info[3] == 6456) {
+            if (info[3] == 0) {
               console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBOUGHT blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
             }
             owners[info[3]] = info[6];
             // TODO: Cancel offers
           } else if (info[2] == PUNKEVENT_PUNKNOLONGERFORSALE) {
             // event PunkNoLongerForSale(uint indexed punkIndex);
-            if (info[3] == 6456) {
+            if (info[3] == 0) {
               console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKNOLONGERFORSALE blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
             }
             delete offers[info[3]];
