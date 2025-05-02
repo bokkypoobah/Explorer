@@ -227,20 +227,13 @@ const Punks = {
                       <template v-slot:item.rowNumber="{ index }">
                         {{ (settings.owners.currentPage - 1) * settings.owners.itemsPerPage + index + 1 }}
                       </template>
-                      <!-- <template v-slot:item.punkId="{ item }">
-                        {{ commify0(item[0]) }}
-                      </template> -->
-                      <!-- <template v-slot:item.image="{ item }">
-                        <v-img :src="'data:image/png;base64,' + images[item[0]]" width="60" class="ma-2 pa-0" style="image-rendering: pixelated; background-color: #638596;">
-                        </v-img>
-                      </template> -->
                       <template v-slot:item.owner="{ item }">
                         <render-address :address="item.owner" :addresses="addresses" shortAddress noXPadding></render-address>
                       </template>
                       <template v-slot:item.punks="{ item }">
                         <v-row dense class="d-flex flex-row justify-start">
                           <v-col v-for="punkId in item.punkIds">
-                            <v-card class="pa-0" max-width="72">
+                            <v-card class="ma-1" max-width="72">
                               <v-img :src="'data:image/png;base64,' + images[punkId]" width="72" cover align="left" class="align-end text-white" style="image-rendering: pixelated; background-color: #638596;">
                                 <!-- <v-card-title v-if="settings.tokens.view == 'large'" class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-size: 1em;">{{ punkId }}</v-card-title>
                                 <v-card-title v-if="settings.tokens.view == 'medium'" class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-size: 0.7em;">{{ punkId }}</v-card-title> -->
@@ -250,14 +243,9 @@ const Punks = {
                               </v-chip>
                             </v-card>
                           </v-col>
-                          <!-- <v-spacer></v-spacer> -->
+                          <v-spacer></v-spacer>
                         </v-row>
                       </template>
-                      <!-- <template v-slot:item.attributes="{ item }">
-                        <v-chip v-for="attribute of item[1]" size="small" variant="tonal" color="secondary" class="ma-2">
-                          {{ attribute[0] + ": " + attribute[1] }}
-                        </v-chip>
-                      </template> -->
                       <template v-slot:item.punksCount="{ item }">
                         {{ commify0(item.count) }}
                       </template>
