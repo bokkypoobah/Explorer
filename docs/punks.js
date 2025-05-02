@@ -72,8 +72,7 @@ const Punks = {
             {{ commify0(filteredTokens.length) + '/' + commify0(attributes.length) }}
           </p>
           <p v-if="settings.tab == 'owners'" class="mr-1 text-caption text--disabled">
-            <!-- {{ commify0(filteredOwners.length) + '/' + commify0(totalOwners) }} -->
-            TODO
+            {{ commify0(filteredOwnersList.length) + "/" + commify0(totalOwners) }}
           </p>
           <v-pagination
             v-if="settings.tab == 'punks'"
@@ -87,11 +86,10 @@ const Punks = {
             color="primary"
           >
           </v-pagination>
-          <!-- TODO: filteredTokens below -->
           <v-pagination
             v-if="settings.tab == 'owners'"
             v-model="settings.owners.currentPage"
-            :length="Math.ceil(filteredTokens.length / settings.owners.itemsPerPage)"
+            :length="Math.ceil(filteredOwnersList.length / settings.owners.itemsPerPage)"
             total-visible="0"
             density="comfortable"
             show-first-last-page
@@ -222,9 +220,8 @@ filteredTokensPaged: {{ JSON.stringify(filteredTokensPaged, null, 2) }}
                     </pre> -->
                   </v-tabs-window-item>
                   <v-tabs-window-item value="owners">
-                    TODO: Owners
                     <pre>
-{{ owners }}
+{{ filteredOwnersList }}
                     </pre>
                   </v-tabs-window-item>
                   <v-tabs-window-item value="charts">
@@ -431,24 +428,51 @@ filteredTokensPaged: {{ JSON.stringify(filteredTokensPaged, null, 2) }}
     },
     filteredTokensPaged() {
       const results = this.filteredTokens.slice((this.settings.tokens.currentPage - 1) * this.settings.tokens.itemsPerPage, this.settings.tokens.currentPage * this.settings.tokens.itemsPerPage);
-      console.log(now() + " Token - computed.filteredTokensPaged - results: " + JSON.stringify(results, null, 2));
+      // console.log(now() + " Token - computed.filteredTokensPaged - results: " + JSON.stringify(results, null, 2));
       return results;
     },
-    // address() {
-    //   return store.getters['address/address'];
-    // },
-    // type() {
-    //   return store.getters['address/info'].type || null;
-    // },
-    // version() {
-    //   return store.getters['address/info'].version || null;
-    // },
-    // implementation() {
-    //   return store.getters['address/info'].implementation || null;
-    // },
-    // explorer() {
-    //   return store.getters['explorer'];
-    // },
+    totalOwners() {
+      const collator = {};
+      for (const [punkId, owner] of this.owners.entries()) {
+        if (!(owner in collator)) {
+          collator[owner] = true;
+        }
+      }
+      return Object.keys(collator).length;
+    },
+    filteredOwnersList() {
+      const collator = {};
+      for (const item of this.filteredTokens) {
+        if (!(item[2] in collator)) {
+          collator[item[2]] = [];
+        }
+        collator[item[2]].push(item[0]);
+      }
+      // console.log(now() + " Token - computed.filteredOwnersList - collator: " + JSON.stringify(collator, null, 2));
+      const results = [];
+      for (const [owner, punkIds] of Object.entries(collator)) {
+        results.push({ owner, punkIds, count: punkIds.length });
+      }
+      if (this.settings.owners.sortOption == "ownercountasc") {
+        results.sort((a, b) => {
+          if (a.count == b.count) {
+            return a.owner - b.owner;
+          } else {
+            return a.count - b.count;
+          }
+        });
+      } else if (this.settings.owners.sortOption == "ownercountdsc") {
+        results.sort((a, b) => {
+          if (a.count == b.count) {
+            return a.owner - b.owner;
+          } else {
+            return b.count - a.count;
+          }
+        });
+      }
+      console.log(now() + " Token - computed.filteredOwnersList - results: " + JSON.stringify(results, null, 2));
+      return results;
+    },
   },
   methods: {
     syncPunks() {
