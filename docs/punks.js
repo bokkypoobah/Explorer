@@ -222,7 +222,9 @@ const Punks = {
                         </span>
                       </template>
                       <template v-slot:item.last="{ item }">
-                        <!-- {{ item[1].length }} -->
+                        <span v-if="item[5]">
+                          {{ formatETH(item[5][0]) }}
+                        </span>
                       </template>
                     </v-data-table>
                   </v-tabs-window-item>
@@ -416,6 +418,9 @@ const Punks = {
     offers() {
       return store.getters['punks/offers'];
     },
+    last() {
+      return store.getters['punks/last'];
+    },
     sync() {
       return store.getters['punks/sync'];
     },
@@ -484,12 +489,12 @@ const Punks = {
           }
         }
         for (const punkId of punkIds) {
-          results.push([ punkId, this.attributes[punkId], this.owners[punkId], this.bids[punkId] || null, this.offers[punkId] || null ]);
+          results.push([ punkId, this.attributes[punkId], this.owners[punkId], this.bids[punkId] || null, this.offers[punkId] || null, this.last[punkId] || null ]);
         }
       } else {
         if (this.attributes && this.attributes.length > 0) {
           for (const [punkId, attribute] of this.attributes.entries()) {
-            results.push([ punkId, attribute, this.owners[punkId], this.bids[punkId] || null, this.offers[punkId] || null ]);
+            results.push([ punkId, attribute, this.owners[punkId], this.bids[punkId] || null, this.offers[punkId] || null, this.last[punkId] || null ]);
           }
         }
       }
@@ -502,7 +507,7 @@ const Punks = {
           return b[0] - a[0];
         });
       }
-      // console.log(now() + " Token - computed.filteredTokens - results: " + JSON.stringify(results, null, 2));
+      console.log(now() + " Token - computed.filteredTokens - results: " + JSON.stringify(results, null, 2));
       return results;
     },
     filteredTokensPaged() {
