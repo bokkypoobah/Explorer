@@ -27,6 +27,7 @@ const Punks = {
           <v-btn icon @click="settings.tokens.showFilter = !settings.tokens.showFilter; saveSettings();" color="primary" class="lowercase-btn" v-tooltip="'Attributes filter'">
             <v-icon :icon="settings.tokens.showFilter ? 'mdi-filter' : 'mdi-filter-outline'"></v-icon>
           </v-btn>
+          <v-text-field variant="outlined" density="compact" prepend-icon="mdi-magnify" hide-details single-line class="ml-2" style="max-width: 200px;" placeholder="id, range or regex"></v-text-field>          
           <v-spacer></v-spacer>
           <div v-for="(attributeData, attribute) of settings.attributes">
             <v-btn v-for="(optionData, option) of attributeData" size="x-small" variant="elevated" append-icon="mdi-close" @click="updateAttributes({ attribute, option, value: false });" class="ma-1 pa-1 lowercase-btn">
@@ -103,6 +104,19 @@ const Punks = {
           <v-col v-if="settings.tokens.showFilter" cols="2">
             <v-card>
               <v-expansion-panels flat>
+                <v-expansion-panel class="ma-0 pa-0">
+                  <v-expansion-panel-title class="ma-1 pa-1">
+                    Price
+                  </v-expansion-panel-title>
+                  <v-expansion-panel-text class="ma-0 pa-0">
+                    <v-list-item class="ma-0 pa-1">
+                      <v-text-field label="Min" variant="underlined" density="compact" class="my-1"></v-text-field>
+                    </v-list-item>
+                    <v-list-item class="ma-0 pa-1">
+                      <v-text-field label="Max" variant="underlined" density="compact" class="my-1"></v-text-field>
+                    </v-list-item>
+                  </v-expansion-panel-text>
+                </v-expansion-panel>
                 <v-expansion-panel v-for="attribute in attributesList" class="ma-0 pa-0">
                   <v-expansion-panel-title class="ma-1 pa-1">
                     {{ attribute.attribute }}

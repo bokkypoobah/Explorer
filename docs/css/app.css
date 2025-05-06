@@ -7,3 +7,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.v-expansion-panel-text__wrapper {
+  padding: 8px 8px 8px !important;
+}
