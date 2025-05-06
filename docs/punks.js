@@ -27,7 +27,7 @@ const Punks = {
           <v-btn icon @click="settings.tokens.showFilter = !settings.tokens.showFilter; saveSettings();" color="primary" class="lowercase-btn" v-tooltip="'Attributes filter'">
             <v-icon :icon="settings.tokens.showFilter ? 'mdi-filter' : 'mdi-filter-outline'"></v-icon>
           </v-btn>
-          <v-text-field variant="outlined" density="compact" prepend-icon="mdi-magnify" hide-details single-line class="ml-2" style="max-width: 200px;" placeholder="id, range or regex"></v-text-field>          
+          <v-text-field :model-value="settings.tokens.filter" @update:modelValue="filterUpdated($event);" variant="solo" flat density="compact" prepend-inner-icon="mdi-magnify" hide-details single-line class="ml-2" style="max-width: 200px;" placeholder="single id or range" v-tooltip="'e.g., 123 or 1234-2345'"></v-text-field>
           <v-spacer></v-spacer>
           <div v-for="(attributeData, attribute) of settings.attributes">
             <v-btn v-for="(optionData, option) of attributeData" size="x-small" variant="elevated" append-icon="mdi-close" @click="updateAttributes({ attribute, option, value: false });" class="ma-1 pa-1 lowercase-btn">
@@ -104,7 +104,7 @@ const Punks = {
           <v-col v-if="settings.tokens.showFilter" cols="2">
             <v-card>
               <v-expansion-panels flat>
-                <v-expansion-panel class="ma-0 pa-0">
+                <!-- <v-expansion-panel class="ma-0 pa-0">
                   <v-expansion-panel-title class="ma-1 pa-1">
                     Price
                   </v-expansion-panel-title>
@@ -116,7 +116,7 @@ const Punks = {
                       <v-text-field label="Max" variant="underlined" density="compact" class="my-1"></v-text-field>
                     </v-list-item>
                   </v-expansion-panel-text>
-                </v-expansion-panel>
+                </v-expansion-panel> -->
                 <v-expansion-panel v-for="attribute in attributesList" class="ma-0 pa-0">
                   <v-expansion-panel-title class="ma-1 pa-1">
                     {{ attribute.attribute }}
@@ -352,6 +352,7 @@ const Punks = {
       settings: {
         tab: null,
         tokens: {
+          filter: null,
           showFilter: false,
           view: "large",
           sortOption: "punkidasc",
@@ -366,8 +367,9 @@ const Punks = {
           currentPage: 1,
         },
         attributes: {}, // address -> attribute -> option -> selected?
-        version: 1,
+        version: 2,
       },
+      _timerId: null,
       itemsPerPageOptions: [
         { value: 5, title: "5" },
         { value: 10, title: "10" },
@@ -442,10 +444,8 @@ const Punks = {
       const results = {};
       if (this.attributes && this.attributes.length > 0) {
         for (const [punkId, attributes] of this.attributes.entries()) {
-          // console.log(punkId + " => " + JSON.stringify(attributes));
           for (const attributeRecord of attributes) {
             const [attribute, option] = attributeRecord;
-            // console.log(punkId + " => " + attribute + " " + option);
             if (!(attribute in results)) {
               results[attribute] = {};
             }
@@ -456,7 +456,6 @@ const Punks = {
           }
         }
       }
-      // console.log("results: " + JSON.stringify(results, null, 2));
       return results;
     },
     attributesList() {
@@ -474,10 +473,28 @@ const Punks = {
       results.sort((a, b) => {
         return a.attribute.localeCompare(b.attribute);
       });
-      // console.log("results: " + JSON.stringify(results, null, 2));
       return results;
     },
     filteredTokens() {
+      const idRegex = /^\d+$/;
+      const rangeRegex = /^\d+\-\d+$/;
+
+      const filter = this.settings.tokens.filter;
+      let [ id, minId, maxId ] = [ null, null, null ];
+      if (idRegex.test(filter)) {
+        console.log(now() + " Token - computed.filteredTokens - ID filter: " + filter);
+        id = parseInt(filter);
+      } else if (rangeRegex.test(filter)) {
+        const parts = filter.split(/-/);
+        minId = parts[0];
+        maxId = parts[1];
+        console.log(now() + " Token - computed.filteredTokens - RANGE filter: " + filter);
+      } else {
+        id = 999999;
+        console.log(now() + " Token - computed.filteredTokens - OTHER filter: " + filter);
+      }
+      console.log(now() + " Token - computed.filteredTokens - id: " + id + ", minId: " + minId + ", maxId: " + maxId);
+
       const results = [];
       if (Object.keys(this.settings.attributes).length > 0 && this.attributesList.length > 0) {
         let punkIds = null;
@@ -503,12 +520,16 @@ const Punks = {
           }
         }
         for (const punkId of punkIds) {
-          results.push([ punkId, this.attributes[punkId], this.owners[punkId], this.bids[punkId] || null, this.offers[punkId] || null, this.last[punkId] || null ]);
+          if (!filter || ((id == null || punkId == id) && (minId == null || punkId >= minId) && (maxId == null || punkId <= maxId))) {
+            results.push([ punkId, this.attributes[punkId], this.owners[punkId], this.bids[punkId] || null, this.offers[punkId] || null, this.last[punkId] || null ]);
+          }
         }
       } else {
         if (this.attributes && this.attributes.length > 0) {
           for (const [punkId, attribute] of this.attributes.entries()) {
-            results.push([ punkId, attribute, this.owners[punkId], this.bids[punkId] || null, this.offers[punkId] || null, this.last[punkId] || null ]);
+            if (!filter || ((id == null || punkId == id) && (minId == null || punkId >= minId) && (maxId == null || punkId <= maxId))) {
+              results.push([ punkId, attribute, this.owners[punkId], this.bids[punkId] || null, this.offers[punkId] || null, this.last[punkId] || null ]);
+            }
           }
         }
       }
@@ -521,7 +542,7 @@ const Punks = {
           return b[0] - a[0];
         });
       }
-      console.log(now() + " Token - computed.filteredTokens - results: " + JSON.stringify(results, null, 2));
+      // console.log(now() + " Token - computed.filteredTokens - results: " + JSON.stringify(results, null, 2));
       return results;
     },
     filteredTokensPaged() {
@@ -584,6 +605,18 @@ const Punks = {
     setSyncHalt() {
       console.log(now() + " Punks - methods.setSyncHalt");
       store.dispatch('punks/setSyncHalt');
+    },
+    filterUpdated(filter) {
+      console.log(now() + " Punks - methods.filterUpdated - filter: " + filter);
+      clearTimeout(this._timerId);
+      this._timerId = setTimeout(async () => {
+        this.filterUpdatedDebounced(filter);
+      }, 1000);
+    },
+    filterUpdatedDebounced(filter) {
+      console.log(now() + " Punks - methods.filterUpdatedDebounced - filter: " + filter);
+      this.settings.tokens.filter = filter;
+      this.saveSettings();
     },
     updateAttributes(event) {
       console.log(now() + " Punks - methods.updateAttributes - event: " + JSON.stringify(event));
