@@ -325,91 +325,100 @@ const punksModule = {
           } else if (info[2] == PUNKEVENT_PUNKOFFERED) {
             // event PunkOffered(uint indexed punkIndex, uint minValue, address indexed toAddress);
             // [241748,28,3,6456,"25000000000000000000",0]
-            if (info[3] == 0) {
+            if (info[3] == 0 || info[3] == 2276) {
               console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKOFFERED blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
             }
             offers[info[3]] = [ info[4], info[5] ];
             // TODO
           } else if (info[2] == PUNKEVENT_PUNKBIDENTERED) {
             // event PunkBidEntered(uint indexed punkIndex, uint value, address indexed fromAddress);
-            if (info[3] == 0) {
+            if (info[3] == 0 || info[3] == 2276) {
               console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBIDENTERED blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
             }
             bids[info[3]] = [ info[4], info[5] ];
             // TODO
           } else if (info[2] == PUNKEVENT_PUNKBIDWITHDRAWN) {
             // event PunkBidWithdrawn(uint indexed punkIndex, uint value, address indexed fromAddress);
-            if (info[3] == 0) {
+            if (info[3] == 0 || info[3] == 2276) {
               console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBIDWITHDRAWN blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
             }
             delete bids[info[3]];
             // TODO
           } else if (info[2] == PUNKEVENT_PUNKBOUGHT) {
-            // From CryptoPunksMarket.sol
-            // buyPunk(uint punkIndex)
-
-            // function buyPunk(uint punkIndex) payable {
-            //     if (!allPunksAssigned) throw;
-            //     Offer offer = punksOfferedForSale[punkIndex];
-            //     if (punkIndex >= 10000) throw;
-            //     if (!offer.isForSale) throw;                // punk not actually for sale
-            //     if (offer.onlySellTo != 0x0 && offer.onlySellTo != msg.sender) throw;  // punk not supposed to be sold to this user
-            //     if (msg.value < offer.minValue) throw;      // Didn't send enough ETH
-            //     if (offer.seller != punkIndexToAddress[punkIndex]) throw; // Seller no longer owner of punk
-            //
-            //     address seller = offer.seller;
-            //
-            //     punkIndexToAddress[punkIndex] = msg.sender;
-            //     balanceOf[seller]--;
-            //     balanceOf[msg.sender]++;
-            //     Transfer(seller, msg.sender, 1);
-            //
-            //     punkNoLongerForSale(punkIndex);
-            //     pendingWithdrawals[seller] += msg.value;
-            //     PunkBought(punkIndex, msg.value, seller, msg.sender);
-            //
-            //     // Check for the case where there is a bid from the new owner and refund it.
-            //     // Any other bid can stay in place.
-            //     Bid bid = punkBids[punkIndex];
-            //     if (bid.bidder == msg.sender) {
-            //         // Kill bid and refund value
-            //         pendingWithdrawals[msg.sender] += bid.value;
-            //         punkBids[punkIndex] = Bid(false, punkIndex, 0x0, 0);
-            //     }
-            // }
-
-            // function acceptBidForPunk(uint punkIndex, uint minPrice) {
-            //     if (punkIndex >= 10000) throw;
-            //     if (!allPunksAssigned) throw;
-            //     if (punkIndexToAddress[punkIndex] != msg.sender) throw;
-            //     address seller = msg.sender;
-            //     Bid bid = punkBids[punkIndex];
-            //     if (bid.value == 0) throw;
-            //     if (bid.value < minPrice) throw;
-            //
-            //     punkIndexToAddress[punkIndex] = bid.bidder;
-            //     balanceOf[seller]--;
-            //     balanceOf[bid.bidder]++;
-            //     Transfer(seller, bid.bidder, 1);
-            //
-            //     punksOfferedForSale[punkIndex] = Offer(false, punkIndex, bid.bidder, 0, 0x0);
-            //     uint amount = bid.value;
-            //     punkBids[punkIndex] = Bid(false, punkIndex, 0x0, 0);
-            //     pendingWithdrawals[seller] += amount;
-            //     PunkBought(punkIndex, bid.value, seller, bid.bidder);
-            // }
-
-
-
             // event PunkBought(uint indexed punkIndex, uint value, address indexed fromAddress, address indexed toAddress);
-            if (info[3] == 0) {
-              console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBOUGHT blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
+            // Last parameter - buyPunkOrAcceptBidForPunk = 0 if buyPunk and 1 if acceptBidForPunk - there's a bug in the contract that sets toAddress to 0x0
+            if (info[7] == 0) {
+              // function buyPunk(uint punkIndex) payable {
+              //     if (!allPunksAssigned) throw;
+              //     Offer offer = punksOfferedForSale[punkIndex];
+              //     if (punkIndex >= 10000) throw;
+              //     if (!offer.isForSale) throw;                // punk not actually for sale
+              //     if (offer.onlySellTo != 0x0 && offer.onlySellTo != msg.sender) throw;  // punk not supposed to be sold to this user
+              //     if (msg.value < offer.minValue) throw;      // Didn't send enough ETH
+              //     if (offer.seller != punkIndexToAddress[punkIndex]) throw; // Seller no longer owner of punk
+              //
+              //     address seller = offer.seller;
+              //
+              //     punkIndexToAddress[punkIndex] = msg.sender;
+              //     balanceOf[seller]--;
+              //     balanceOf[msg.sender]++;
+              //     Transfer(seller, msg.sender, 1);
+              //
+              //     punkNoLongerForSale(punkIndex);
+              //     pendingWithdrawals[seller] += msg.value;
+              //     PunkBought(punkIndex, msg.value, seller, msg.sender);
+              //
+              //     // Check for the case where there is a bid from the new owner and refund it.
+              //     // Any other bid can stay in place.
+              //     Bid bid = punkBids[punkIndex];
+              //     if (bid.bidder == msg.sender) {
+              //         // Kill bid and refund value
+              //         pendingWithdrawals[msg.sender] += bid.value;
+              //         punkBids[punkIndex] = Bid(false, punkIndex, 0x0, 0);
+              //     }
+              // }
+              if (info[3] == 0 || info[3] == 2276) {
+                console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBOUGHT BUY blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
+                console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBOUGHT - bid: " + JSON.stringify(bids[info[3]]));
+                // Check for the case where there is a bid from the new owner and refund it.
+                if (bids[info[3]] && info[3] == bids[info[3]][1]) {
+                  console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBOUGHT - DELETING bid: " + JSON.stringify(bids[info[3]]));
+                  delete bids[info[3]];
+                }
+                delete offers[info[3]];
+              }
+            } else {
+              // function acceptBidForPunk(uint punkIndex, uint minPrice) {
+              //     if (punkIndex >= 10000) throw;
+              //     if (!allPunksAssigned) throw;
+              //     if (punkIndexToAddress[punkIndex] != msg.sender) throw;
+              //     address seller = msg.sender;
+              //     Bid bid = punkBids[punkIndex];
+              //     if (bid.value == 0) throw;
+              //     if (bid.value < minPrice) throw;
+              //
+              //     punkIndexToAddress[punkIndex] = bid.bidder;
+              //     balanceOf[seller]--;
+              //     balanceOf[bid.bidder]++;
+              //     Transfer(seller, bid.bidder, 1);
+              //
+              //     punksOfferedForSale[punkIndex] = Offer(false, punkIndex, bid.bidder, 0, 0x0);
+              //     uint amount = bid.value;
+              //     punkBids[punkIndex] = Bid(false, punkIndex, 0x0, 0);
+              //     pendingWithdrawals[seller] += amount;
+              //     PunkBought(punkIndex, bid.value, seller, bid.bidder);
+              // }
+              // TODO: Cancel bid and offer
+              if (info[3] == 0 || info[3] == 2276) {
+                console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBOUGHT ACCEPT BID blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
+              }
+              delete bids[info[3]];
+              delete offers[info[3]];
             }
             owners[info[3]] = info[6];
-            // TODO: Cancel offers
           } else if (info[2] == PUNKEVENT_PUNKNOLONGERFORSALE) {
             // event PunkNoLongerForSale(uint indexed punkIndex);
-            if (info[3] == 0) {
+            if (info[3] == 0 || info[3] == 2276) {
               console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKNOLONGERFORSALE blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
             }
             delete offers[info[3]];
@@ -423,15 +432,13 @@ const punksModule = {
         done = data.length < BATCH_SIZE;
       } while (!done);
       console.log(now() + " punksModule - actions.collateEventData - rows: " + rows);
-      console.log(now() + " punksModule - actions.collateEventData - Object.keys(owners).length: " + Object.keys(owners).length);
-      console.log(now() + " punksModule - actions.collateEventData - owners: " + JSON.stringify(owners, null, 2));
-      console.log(now() + " punksModule - actions.collateEventData - Object.keys(bids).length: " + Object.keys(bids).length);
-      console.log(now() + " punksModule - actions.collateEventData - bids: " + JSON.stringify(bids, null, 2));
-      console.log(now() + " punksModule - actions.collateEventData - Object.keys(offers).length: " + Object.keys(offers).length);
-      console.log(now() + " punksModule - actions.collateEventData - offers: " + JSON.stringify(offers, null, 2));
-      // context.commit('setEventInfo', { numberOfEvents: rows, balances, tokens, approvals, approvalForAlls });
+      // console.log(now() + " punksModule - actions.collateEventData - Object.keys(owners).length: " + Object.keys(owners).length);
+      // console.log(now() + " punksModule - actions.collateEventData - owners: " + JSON.stringify(owners, null, 2));
+      // console.log(now() + " punksModule - actions.collateEventData - Object.keys(bids).length: " + Object.keys(bids).length);
+      // console.log(now() + " punksModule - actions.collateEventData - bids: " + JSON.stringify(bids, null, 2));
+      // console.log(now() + " punksModule - actions.collateEventData - Object.keys(offers).length: " + Object.keys(offers).length);
+      // console.log(now() + " punksModule - actions.collateEventData - offers: " + JSON.stringify(offers, null, 2));
       context.commit('setEventInfo', { numberOfEvents: rows, owners, bids, offers });
-      // TODO: Persist numberOfEvents?
       await dbSaveCacheData(db, CRYPTOPUNKSMARKET_V2_ADDRESS + "_" + chainId + "_punk_data", { numberOfEvents: rows, owners, bids, offers });
       db.close();
     },

@@ -502,7 +502,7 @@ const Punks = {
           return b[0] - a[0];
         });
       }
-      console.log(now() + " Token - computed.filteredTokens - results: " + JSON.stringify(results, null, 2));
+      // console.log(now() + " Token - computed.filteredTokens - results: " + JSON.stringify(results, null, 2));
       return results;
     },
     filteredTokensPaged() {
