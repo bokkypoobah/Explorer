@@ -348,6 +348,56 @@ const punksModule = {
             // From CryptoPunksMarket.sol
             // buyPunk(uint punkIndex)
 
+            // function buyPunk(uint punkIndex) payable {
+            //     if (!allPunksAssigned) throw;
+            //     Offer offer = punksOfferedForSale[punkIndex];
+            //     if (punkIndex >= 10000) throw;
+            //     if (!offer.isForSale) throw;                // punk not actually for sale
+            //     if (offer.onlySellTo != 0x0 && offer.onlySellTo != msg.sender) throw;  // punk not supposed to be sold to this user
+            //     if (msg.value < offer.minValue) throw;      // Didn't send enough ETH
+            //     if (offer.seller != punkIndexToAddress[punkIndex]) throw; // Seller no longer owner of punk
+            //
+            //     address seller = offer.seller;
+            //
+            //     punkIndexToAddress[punkIndex] = msg.sender;
+            //     balanceOf[seller]--;
+            //     balanceOf[msg.sender]++;
+            //     Transfer(seller, msg.sender, 1);
+            //
+            //     punkNoLongerForSale(punkIndex);
+            //     pendingWithdrawals[seller] += msg.value;
+            //     PunkBought(punkIndex, msg.value, seller, msg.sender);
+            //
+            //     // Check for the case where there is a bid from the new owner and refund it.
+            //     // Any other bid can stay in place.
+            //     Bid bid = punkBids[punkIndex];
+            //     if (bid.bidder == msg.sender) {
+            //         // Kill bid and refund value
+            //         pendingWithdrawals[msg.sender] += bid.value;
+            //         punkBids[punkIndex] = Bid(false, punkIndex, 0x0, 0);
+            //     }
+            // }
+
+            // function acceptBidForPunk(uint punkIndex, uint minPrice) {
+            //     if (punkIndex >= 10000) throw;
+            //     if (!allPunksAssigned) throw;
+            //     if (punkIndexToAddress[punkIndex] != msg.sender) throw;
+            //     address seller = msg.sender;
+            //     Bid bid = punkBids[punkIndex];
+            //     if (bid.value == 0) throw;
+            //     if (bid.value < minPrice) throw;
+            //
+            //     punkIndexToAddress[punkIndex] = bid.bidder;
+            //     balanceOf[seller]--;
+            //     balanceOf[bid.bidder]++;
+            //     Transfer(seller, bid.bidder, 1);
+            //
+            //     punksOfferedForSale[punkIndex] = Offer(false, punkIndex, bid.bidder, 0, 0x0);
+            //     uint amount = bid.value;
+            //     punkBids[punkIndex] = Bid(false, punkIndex, 0x0, 0);
+            //     pendingWithdrawals[seller] += amount;
+            //     PunkBought(punkIndex, bid.value, seller, bid.bidder);
+            // }
 
 
 
@@ -373,12 +423,12 @@ const punksModule = {
         done = data.length < BATCH_SIZE;
       } while (!done);
       console.log(now() + " punksModule - actions.collateEventData - rows: " + rows);
-      // console.log(now() + " punksModule - actions.collateEventData - Object.keys(owners).length: " + Object.keys(owners).length);
-      // console.log(now() + " punksModule - actions.collateEventData - owners: " + JSON.stringify(owners, null, 2));
+      console.log(now() + " punksModule - actions.collateEventData - Object.keys(owners).length: " + Object.keys(owners).length);
+      console.log(now() + " punksModule - actions.collateEventData - owners: " + JSON.stringify(owners, null, 2));
       console.log(now() + " punksModule - actions.collateEventData - Object.keys(bids).length: " + Object.keys(bids).length);
       console.log(now() + " punksModule - actions.collateEventData - bids: " + JSON.stringify(bids, null, 2));
-      // console.log(now() + " punksModule - actions.collateEventData - Object.keys(offers).length: " + Object.keys(offers).length);
-      // console.log(now() + " punksModule - actions.collateEventData - offers: " + JSON.stringify(offers, null, 2));
+      console.log(now() + " punksModule - actions.collateEventData - Object.keys(offers).length: " + Object.keys(offers).length);
+      console.log(now() + " punksModule - actions.collateEventData - offers: " + JSON.stringify(offers, null, 2));
       // context.commit('setEventInfo', { numberOfEvents: rows, balances, tokens, approvals, approvalForAlls });
       context.commit('setEventInfo', { numberOfEvents: rows, owners, bids, offers });
       // TODO: Persist numberOfEvents?

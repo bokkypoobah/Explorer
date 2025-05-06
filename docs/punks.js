@@ -211,6 +211,19 @@ const Punks = {
                       <template v-slot:item.attributeCount="{ item }">
                         {{ item[1].length }}
                       </template>
+                      <template v-slot:item.bid="{ item }">
+                        <span v-if="item[3]">
+                          {{ formatETH(item[3][0]) }}
+                        </span>
+                      </template>
+                      <template v-slot:item.offer="{ item }">
+                        <span v-if="item[4]">
+                          {{ formatETH(item[4][0]) }}
+                        </span>
+                      </template>
+                      <template v-slot:item.last="{ item }">
+                        <!-- {{ item[1].length }} -->
+                      </template>
                     </v-data-table>
                   </v-tabs-window-item>
                   <v-tabs-window-item value="owners">
@@ -361,11 +374,14 @@ const Punks = {
       ],
       tokensHeaders: [
         { title: '#', value: 'rowNumber', align: 'end', sortable: false },
-        { title: 'Punk Id', value: 'punkId', align: 'end', sortable: false },
+        { title: 'PunkId', value: 'punkId', align: 'end', sortable: false },
         { title: 'Image', value: 'image', sortable: false },
         { title: 'Owner', value: 'owner', sortable: false },
         { title: 'Attributes', value: 'attributes', sortable: false },
-        { title: '# Attributes', value: 'attributeCount', sortable: false },
+        { title: '#Attributes', value: 'attributeCount', sortable: false },
+        { title: 'Bid', value: 'bid', sortable: false },
+        { title: 'Offer', value: 'offer', sortable: false },
+        { title: 'Last', value: 'last', sortable: false },
       ],
       ownersHeaders: [
         { title: '#', value: 'rowNumber', align: 'end', sortable: false },
@@ -393,6 +409,12 @@ const Punks = {
     },
     owners() {
       return store.getters['punks/owners'];
+    },
+    bids() {
+      return store.getters['punks/bids'];
+    },
+    offers() {
+      return store.getters['punks/offers'];
     },
     sync() {
       return store.getters['punks/sync'];
@@ -462,12 +484,12 @@ const Punks = {
           }
         }
         for (const punkId of punkIds) {
-          results.push([ punkId, this.attributes[punkId], this.owners[punkId] ]);
+          results.push([ punkId, this.attributes[punkId], this.owners[punkId], this.bids[punkId] || null, this.offers[punkId] || null ]);
         }
       } else {
         if (this.attributes && this.attributes.length > 0) {
           for (const [punkId, attribute] of this.attributes.entries()) {
-            results.push([ punkId, attribute, this.owners[punkId] ]);
+            results.push([ punkId, attribute, this.owners[punkId], this.bids[punkId] || null, this.offers[punkId] || null ]);
           }
         }
       }
@@ -480,6 +502,7 @@ const Punks = {
           return b[0] - a[0];
         });
       }
+      console.log(now() + " Token - computed.filteredTokens - results: " + JSON.stringify(results, null, 2));
       return results;
     },
     filteredTokensPaged() {
@@ -563,6 +586,12 @@ const Punks = {
       this.saveSettings();
     },
 
+    formatETH(e) {
+      if (e) {
+        return ethers.utils.formatEther(e).replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+      }
+      return null;
+    },
     commify0(n) {
       if (n != null) {
         return Number(n).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
