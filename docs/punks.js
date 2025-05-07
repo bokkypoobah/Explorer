@@ -218,7 +218,7 @@ const Punks = {
                         <render-address :address="item[2]" :addresses="addresses" shortAddress noXPadding></render-address>
                       </template>
                       <template v-slot:item.attributes="{ item }">
-                        <v-chip v-for="attribute of item[1]" size="small" variant="tonal" color="secondary" class="ma-2">
+                        <v-chip v-for="attribute of item[1]" size="x-small" variant="tonal" color="secondary" class="ma-2">
                           {{ attribute[0] + ": " + attribute[1] }}
                         </v-chip>
                       </template>
