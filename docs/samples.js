@@ -15,6 +15,8 @@ const SAMPLES = {
     { type: "contract", address: "0x23d23d8F243e57d0b924bff3A3191078Af325101", info: "BokkyPooBahsDateTimeLibrary:BokkyPooBahsDateTimeContract" },
     { type: "contract", address: "0x78F96B2D5F717fa9ad416957B79D825cc4ccE69d", info: "BokkyPooBahsDateTimeLibrary:TestDateTime" },
     { type: "contract", address: "0x0eE1d7943890D8335110B879C25271e864Ee7CA8", info: "ERC721Helper" },
+    { type: "contract", address: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789", info: "ERC-4338 Entry Point 0.6.0" },
+    { type: "contract", address: "0x0000000071727De22E5E9d8BAf0edAc6f37da032", info: "ERC-4338 Entry Point 0.7.0" },
   ],
   // Sepolia Testnet
   "11155111": [
