@@ -385,6 +385,12 @@ const Punks = {
       tokensSortOptions: [
         { value: "punkidasc", title: "▲ Punk Id" },
         { value: "punkiddsc", title: "▼ Punk Id" },
+        { value: "bidasc", title: "▲ Bid, ▲ Punk Id" },
+        { value: "biddsc", title: "▼ Bid, ▲ Punk Id" },
+        { value: "offerasc", title: "▲ Offer, ▲ Punk Id" },
+        { value: "offerdsc", title: "▼ Offer, ▲ Punk Id" },
+        { value: "lastasc", title: "▲ Last, ▲ Punk Id" },
+        { value: "lastdsc", title: "▼ Last, ▲ Punk Id" },
       ],
       ownersSortOptions: [
         { value: "ownercountasc", title: "▲ Owner Count" },
@@ -540,8 +546,68 @@ const Punks = {
         results.sort((a, b) => {
           return b[0] - a[0];
         });
+      } else if (this.settings.tokens.sortOption == "bidasc") {
+        results.sort((a, b) => {
+          const bidA = ethers.BigNumber.from(a[3] && a[3][0] || -1);
+          const bidB = ethers.BigNumber.from(b[3] && b[3][0] || -1);
+          if (bidA.eq(bidB)) {
+            return a[0] - b[0];
+          } else {
+            return bidA.sub(bidB);
+          }
+        });
+      } else if (this.settings.tokens.sortOption == "biddsc") {
+        results.sort((a, b) => {
+          const bidA = ethers.BigNumber.from(a[3] && a[3][0] || -1);
+          const bidB = ethers.BigNumber.from(b[3] && b[3][0] || -1);
+          if (bidA.eq(bidB)) {
+            return a[0] - b[0];
+          } else {
+            return bidB.sub(bidA);
+          }
+        });
+      } else if (this.settings.tokens.sortOption == "offerasc") {
+        results.sort((a, b) => {
+          const offerA = ethers.BigNumber.from(a[4] && a[4][0] || -1);
+          const offerB = ethers.BigNumber.from(b[4] && b[4][0] || -1);
+          if (offerA.eq(offerB)) {
+            return a[0] - b[0];
+          } else {
+            return offerA.sub(offerB);
+          }
+        });
+      } else if (this.settings.tokens.sortOption == "offerdsc") {
+        results.sort((a, b) => {
+          const offerA = ethers.BigNumber.from(a[4] && a[4][0] || -1);
+          const offerB = ethers.BigNumber.from(b[4] && b[4][0] || -1);
+          if (offerA.eq(offerB)) {
+            return a[0] - b[0];
+          } else {
+            return offerB.sub(offerA);
+          }
+        });
+      } else if (this.settings.tokens.sortOption == "lastasc") {
+        results.sort((a, b) => {
+          const lastA = ethers.BigNumber.from(a[5] || -1);
+          const lastB = ethers.BigNumber.from(b[5] || -1);
+          if (lastA.eq(lastB)) {
+            return a[0] - b[0];
+          } else {
+            return lastA.sub(lastB);
+          }
+        });
+      } else if (this.settings.tokens.sortOption == "lastdsc") {
+        results.sort((a, b) => {
+          const lastA = ethers.BigNumber.from(a[5] || -1);
+          const lastB = ethers.BigNumber.from(b[5] || -1);
+          if (lastA.eq(lastB)) {
+            return a[0] - b[0];
+          } else {
+            return lastB.sub(lastA);
+          }
+        });
       }
-      // console.log(now() + " Token - computed.filteredTokens - results.filter(e => e[0] == 1234): " + JSON.stringify(results.filter(e => e[0] == 1234), null, 2));
+      console.log(now() + " Token - computed.filteredTokens - results.filter(e => e[0] == 1234): " + JSON.stringify(results.filter(e => e[0] == 1234), null, 2));
       return results;
     },
     filteredTokensPaged() {
