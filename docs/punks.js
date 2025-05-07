@@ -27,7 +27,7 @@ const Punks = {
           <v-btn icon @click="settings.tokens.showFilter = !settings.tokens.showFilter; saveSettings();" color="primary" class="lowercase-btn" v-tooltip="'Attributes filter'">
             <v-icon :icon="settings.tokens.showFilter ? 'mdi-filter' : 'mdi-filter-outline'"></v-icon>
           </v-btn>
-          <v-text-field :model-value="settings.tokens.filter" @update:modelValue="filterUpdated($event);" variant="solo" flat density="compact" prepend-inner-icon="mdi-magnify" hide-details single-line class="ml-2" style="max-width: 200px;" placeholder="single id or range" v-tooltip="'e.g., 123 or 1234-2345'"></v-text-field>
+          <v-text-field :model-value="settings.tokens.filter" @update:modelValue="filterUpdated($event);" variant="solo" flat density="compact" prepend-inner-icon="mdi-magnify" hide-details single-line class="ml-2" style="max-width: 240px;" placeholder="eg 123 234 345-347"></v-text-field>
           <v-spacer></v-spacer>
           <div v-for="(attributeData, attribute) of settings.attributes">
             <v-btn v-for="(optionData, option) of attributeData" size="x-small" variant="elevated" append-icon="mdi-close" @click="updateAttributes({ attribute, option, value: false });" class="ma-1 pa-1 lowercase-btn">
@@ -479,21 +479,20 @@ const Punks = {
       const idRegex = /^\d+$/;
       const rangeRegex = /^\d+\-\d+$/;
 
-      const filter = this.settings.tokens.filter;
-      let [ id, minId, maxId ] = [ null, null, null ];
-      if (idRegex.test(filter)) {
-        console.log(now() + " Token - computed.filteredTokens - ID filter: " + filter);
-        id = parseInt(filter);
-      } else if (rangeRegex.test(filter)) {
-        const parts = filter.split(/-/);
-        minId = parts[0];
-        maxId = parts[1];
-        console.log(now() + " Token - computed.filteredTokens - RANGE filter: " + filter);
-      } else {
-        id = 999999;
-        console.log(now() + " Token - computed.filteredTokens - OTHER filter: " + filter);
+      let filterSet = null;
+      if (this.settings.tokens.filter) {
+        filterSet = new Set();
+        for (const part of this.settings.tokens.filter.split(/ /)) {
+          if (idRegex.test(part)) {
+            filterSet.add(parseInt(part));
+          } else if (rangeRegex.test(part)) {
+            const [min, max] = part.split(/-/);
+            for (let i = parseInt(min); i <= parseInt(max); i++) {
+              filterSet.add(i);
+            }
+          }
+        }
       }
-      console.log(now() + " Token - computed.filteredTokens - id: " + id + ", minId: " + minId + ", maxId: " + maxId);
 
       const results = [];
       if (Object.keys(this.settings.attributes).length > 0 && this.attributesList.length > 0) {
@@ -520,14 +519,14 @@ const Punks = {
           }
         }
         for (const punkId of punkIds) {
-          if (!filter || ((id == null || punkId == id) && (minId == null || punkId >= minId) && (maxId == null || punkId <= maxId))) {
+          if (!filterSet || filterSet.has(punkId)) {
             results.push([ punkId, this.attributes[punkId], this.owners[punkId], this.bids[punkId] || null, this.offers[punkId] || null, this.last[punkId] || null ]);
           }
         }
       } else {
         if (this.attributes && this.attributes.length > 0) {
           for (const [punkId, attribute] of this.attributes.entries()) {
-            if (!filter || ((id == null || punkId == id) && (minId == null || punkId >= minId) && (maxId == null || punkId <= maxId))) {
+            if (!filterSet || filterSet.has(punkId)) {
               results.push([ punkId, attribute, this.owners[punkId], this.bids[punkId] || null, this.offers[punkId] || null, this.last[punkId] || null ]);
             }
           }
