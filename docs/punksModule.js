@@ -329,21 +329,21 @@ const punksModule = {
             owners[info[5]] = info[4];
           } else if (info[2] == PUNKEVENT_PUNKOFFERED) {
             // event PunkOffered(uint indexed punkIndex, uint minValue, address indexed toAddress);
-            // if (info[3] == 0 || info[3] == 2276) {
-            //   console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKOFFERED blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
-            // }
+            if (info[3] == 1234) {
+              console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKOFFERED blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
+            }
             offers[info[3]] = [ info[4], info[5] ];
           } else if (info[2] == PUNKEVENT_PUNKBIDENTERED) {
             // event PunkBidEntered(uint indexed punkIndex, uint value, address indexed fromAddress);
-            // if (info[3] == 0 || info[3] == 2276) {
-            //   console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBIDENTERED blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
-            // }
+            if (info[3] == 1234) {
+              console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBIDENTERED blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
+            }
             bids[info[3]] = [ info[4], info[5] ];
           } else if (info[2] == PUNKEVENT_PUNKBIDWITHDRAWN) {
             // event PunkBidWithdrawn(uint indexed punkIndex, uint value, address indexed fromAddress);
-            // if (info[3] == 0 || info[3] == 2276) {
-            //   console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBIDWITHDRAWN blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
-            // }
+            if (info[3] == 1234) {
+              console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBIDWITHDRAWN blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
+            }
             delete bids[info[3]];
           } else if (info[2] == PUNKEVENT_PUNKBOUGHT) {
             // event PunkBought(uint indexed punkIndex, uint value, address indexed fromAddress, address indexed toAddress);
@@ -378,7 +378,7 @@ const punksModule = {
               //         punkBids[punkIndex] = Bid(false, punkIndex, 0x0, 0);
               //     }
               // }
-              if (info[3] == 0 || info[3] == 2276) {
+              if (info[3] == 1234) {
                 console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBOUGHT BUY blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
                 console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBOUGHT - bid: " + JSON.stringify(bids[info[3]]));
               }
@@ -410,7 +410,7 @@ const punksModule = {
               //     pendingWithdrawals[seller] += amount;
               //     PunkBought(punkIndex, bid.value, seller, bid.bidder);
               // }
-              if (info[3] == 0 || info[3] == 2276) {
+              if (info[3] == 1234) {
                 console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBOUGHT ACCEPT BID blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
                 console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBOUGHT - CURRENT bid: " + JSON.stringify(bids[info[3]]));
               }
@@ -419,14 +419,14 @@ const punksModule = {
               delete offers[info[3]];
             }
             owners[info[3]] = info[6];
-            if (info[3] == 0 || info[3] == 2276) {
+            if (info[3] == 1234) {
               console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBOUGHT - last[info[3]]: " + JSON.stringify(last[info[3]]));
             }
           } else if (info[2] == PUNKEVENT_PUNKNOLONGERFORSALE) {
             // event PunkNoLongerForSale(uint indexed punkIndex);
-            // if (info[3] == 0 || info[3] == 2276) {
-            //   console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKNOLONGERFORSALE blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
-            // }
+            if (info[3] == 1234) {
+              console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKNOLONGERFORSALE blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
+            }
             delete offers[info[3]];
           } else {
             // console.log(now() + " punksModule - actions.collateEventData - OTHER blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
@@ -444,7 +444,7 @@ const punksModule = {
       // console.log(now() + " punksModule - actions.collateEventData - Object.keys(offers).length: " + Object.keys(offers).length);
       // console.log(now() + " punksModule - actions.collateEventData - offers: " + JSON.stringify(offers, null, 2));
       console.log(now() + " punksModule - actions.collateEventData - Object.keys(last).length: " + Object.keys(last).length);
-      console.log(now() + " punksModule - actions.collateEventData - last: " + JSON.stringify(last, null, 2));
+      console.log(now() + " punksModule - actions.collateEventData - last[1234]: " + JSON.stringify(last[1234], null, 2));
       context.commit('setEventInfo', { numberOfEvents: rows, owners, bids, offers, last });
       await dbSaveCacheData(db, CRYPTOPUNKSMARKET_V2_ADDRESS + "_" + chainId + "_punk_data", { numberOfEvents: rows, owners, bids, offers, last });
       db.close();

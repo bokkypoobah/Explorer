@@ -17,7 +17,7 @@ const Punks = {
           <v-progress-circular v-if="sync.info != null" color="primary" :model-value="sync.total ? (parseInt(sync.completed * 100 / sync.total)) : 0" :size="30" :width="6" v-tooltip="sync.info + ': Block #' + commify0(sync.completed) + ' of ' + commify0(sync.total)"></v-progress-circular>
           <v-spacer></v-spacer>
           <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" right color="deep-purple-accent-4">
-            <v-tab prepend-icon="mdi-emoticon-cool-outline" text="Punks" value="punks" class="lowercase-btn"></v-tab>
+            <v-tab prepend-icon="mdi-account-cowboy-hat" text="Punks" value="punks" class="lowercase-btn"></v-tab>
             <v-tab prepend-icon="mdi-account-multiple-outline" text="Owners" value="owners" class="lowercase-btn"></v-tab>
             <v-tab prepend-icon="mdi-chart-line" text="Charts" value="charts" class="lowercase-btn"></v-tab>
             <v-tab prepend-icon="mdi-math-log" text="Events" value="events" class="lowercase-btn"></v-tab>
@@ -237,7 +237,7 @@ const Punks = {
                       </template>
                       <template v-slot:item.last="{ item }">
                         <span v-if="item[5]">
-                          {{ formatETH(item[5][0]) }}
+                          {{ formatETH(item[5]) }}
                         </span>
                       </template>
                     </v-data-table>
@@ -542,7 +542,7 @@ const Punks = {
           return b[0] - a[0];
         });
       }
-      // console.log(now() + " Token - computed.filteredTokens - results: " + JSON.stringify(results, null, 2));
+      console.log(now() + " Token - computed.filteredTokens - results.filter(e => e[0] == 1234): " + JSON.stringify(results.filter(e => e[0] == 1234), null, 2));
       return results;
     },
     filteredTokensPaged() {
