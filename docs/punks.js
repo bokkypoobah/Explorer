@@ -27,7 +27,7 @@ const Punks = {
           <v-btn icon @click="settings.tokens.showFilter = !settings.tokens.showFilter; saveSettings();" color="primary" class="lowercase-btn" v-tooltip="'Attributes filter'">
             <v-icon :icon="settings.tokens.showFilter ? 'mdi-filter' : 'mdi-filter-outline'"></v-icon>
           </v-btn>
-          <v-text-field :model-value="settings.tokens.filter" @update:modelValue="filterUpdated($event);" variant="solo" flat density="compact" prepend-inner-icon="mdi-magnify" hide-details single-line class="ml-2" style="max-width: 240px;" placeholder="eg 123 234 345-347"></v-text-field>
+          <v-text-field :model-value="settings.tokens.filter" @update:modelValue="filterUpdated($event);" variant="solo" flat density="compact" prepend-inner-icon="mdi-magnify" hide-details single-line class="ml-2" style="max-width: 240px;" v-tooltip:bottom="'e.g., 123 234 345-347'"></v-text-field>
           <v-spacer></v-spacer>
           <div v-for="(attributeData, attribute) of settings.attributes">
             <v-btn v-for="(optionData, option) of attributeData" size="x-small" variant="elevated" append-icon="mdi-close" @click="updateAttributes({ attribute, option, value: false });" class="ma-1 pa-1 lowercase-btn">
@@ -480,9 +480,9 @@ const Punks = {
       const rangeRegex = /^\d+\-\d+$/;
 
       let filterSet = null;
-      if (this.settings.tokens.filter) {
+      if (this.settings.tokens.filter && this.settings.tokens.filter.trim().length > 0) {
         filterSet = new Set();
-        for (const part of this.settings.tokens.filter.split(/ /)) {
+        for (const part of this.settings.tokens.filter.trim().split(/\s+/)) {
           if (idRegex.test(part)) {
             filterSet.add(parseInt(part));
           } else if (rangeRegex.test(part)) {
@@ -541,7 +541,7 @@ const Punks = {
           return b[0] - a[0];
         });
       }
-      console.log(now() + " Token - computed.filteredTokens - results.filter(e => e[0] == 1234): " + JSON.stringify(results.filter(e => e[0] == 1234), null, 2));
+      // console.log(now() + " Token - computed.filteredTokens - results.filter(e => e[0] == 1234): " + JSON.stringify(results.filter(e => e[0] == 1234), null, 2));
       return results;
     },
     filteredTokensPaged() {
@@ -606,7 +606,7 @@ const Punks = {
       store.dispatch('punks/setSyncHalt');
     },
     filterUpdated(filter) {
-      console.log(now() + " Punks - methods.filterUpdated - filter: " + filter);
+      // console.log(now() + " Punks - methods.filterUpdated - filter: " + filter);
       clearTimeout(this._timerId);
       this._timerId = setTimeout(async () => {
         this.filterUpdatedDebounced(filter);
