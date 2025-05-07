@@ -118,7 +118,7 @@ const Token = {
                   </v-btn>
                   <v-spacer></v-spacer>
                   <div v-for="(attributeData, attribute) of (settings.attributes[address] || {})">
-                    <v-btn v-for="(optionData, option) of attributeData" class="ma-1" size="x-small" variant="elevated" append-icon="mdi-close" @click="updateAttributes({ address, attribute, option, value: false });" class="ma-1 pa-1 lowercase-btn">
+                    <v-btn v-for="(optionData, option) of attributeData" size="x-small" variant="elevated" append-icon="mdi-close" @click="updateAttributes({ address, attribute, option, value: false });" class="ma-1 pa-1 lowercase-btn">
                       {{ attribute }}: {{ option }}
                       <template v-slot:append>
                         <v-icon color="primary"></v-icon>
@@ -468,7 +468,7 @@ nftOwnersList: {{ nftOwnersList }}
               v-if="address"
               :headers="getEventsHeaders"
               :items-length="numberOfEvents || 0"
-              :items="items"
+              :items="eventItems"
               :search="numberOfEvents && numberOfEvents.toString() || null"
               @update:options="loadEvents"
               :items-per-page-options="itemsPerPageOptions"
@@ -664,7 +664,7 @@ nftOwnersList: {{ nftOwnersList }}
         "Approval",
         "ApprovalForAll",
       ],
-      items: [],
+      eventItems: [],
       itemsPerPageOptions: [
         { value: 5, title: "5" },
         { value: 10, title: "10" },
@@ -1117,7 +1117,7 @@ nftOwnersList: {{ nftOwnersList }}
         } else {
           data = await db.tokenEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, address, Dexie.minKey, Dexie.minKey],[chainId, address, Dexie.maxKey, Dexie.maxKey]).reverse().offset(row).limit(itemsPerPage).toArray();
         }
-        this.items = data;
+        this.eventItems = data;
       }
       db.close();
     },
