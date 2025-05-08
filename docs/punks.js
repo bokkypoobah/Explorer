@@ -75,6 +75,9 @@ const Punks = {
           <p v-if="settings.tab == 'owners'" class="mr-1 text-caption text--disabled">
             {{ commify0(filteredOwnersList.length) + "/" + commify0(totalOwners) }}
           </p>
+          <p v-if="settings.tab == 'events'" class="mr-1 text-caption text--disabled">
+            {{ commify0(numberOfEvents) }}
+          </p>
           <v-pagination
             v-if="settings.tab == 'punks'"
             v-model="settings.tokens.currentPage"
@@ -91,6 +94,18 @@ const Punks = {
             v-if="settings.tab == 'owners'"
             v-model="settings.owners.currentPage"
             :length="Math.ceil(filteredOwnersList.length / settings.owners.itemsPerPage)"
+            total-visible="0"
+            density="comfortable"
+            show-first-last-page
+            class="mr-1"
+            @update:modelValue="saveSettings();"
+            color="primary"
+          >
+          </v-pagination>
+          <v-pagination
+            v-if="settings.tab == 'events'"
+            v-model="settings.events.currentPage"
+            :length="Math.ceil(numberOfEvents / settings.events.itemsPerPage)"
             total-visible="0"
             density="comfortable"
             show-first-last-page
@@ -205,7 +220,7 @@ const Punks = {
                       hide-default-footer
                     >
                       <template v-slot:item.rowNumber="{ index }">
-                        {{ (settings.tokens.currentPage - 1) * settings.tokens.itemsPerPage + index + 1 }}
+                        {{ commify0((settings.tokens.currentPage - 1) * settings.tokens.itemsPerPage + index + 1) }}
                       </template>
                       <template v-slot:item.punkId="{ item }">
                         {{ commify0(item[0]) }}
@@ -254,7 +269,7 @@ const Punks = {
                       hide-default-footer
                     >
                       <template v-slot:item.rowNumber="{ index }">
-                        {{ (settings.owners.currentPage - 1) * settings.owners.itemsPerPage + index + 1 }}
+                        {{ commify0((settings.owners.currentPage - 1) * settings.owners.itemsPerPage + index + 1) }}
                       </template>
                       <template v-slot:item.owner="{ item }">
                         <render-address :address="item.owner" :addresses="addresses" shortAddress noXPadding></render-address>
@@ -297,9 +312,10 @@ const Punks = {
                       :items-per-page-options="itemsPerPageOptions"
                       v-model:items-per-page="settings.events.itemsPerPage"
                       v-model:page="settings.events.currentPage"
+                      hide-default-footer
                     >
                       <template v-slot:item.rowNumber="{ index }">
-                        {{ (settings.events.currentPage - 1) * settings.events.itemsPerPage + index + 1 }}
+                        {{ commify0((settings.events.currentPage - 1) * settings.events.itemsPerPage + index + 1) }}
                       </template>
                       <template v-slot:item.blockNumber="{ item }">
                         <render-block-number :block="item.blockNumber" noXPadding></render-block-number>
@@ -345,6 +361,8 @@ const Punks = {
                       <template v-slot:item.punkId="{ item }">
                         <span v-if="item.info[2] == 0">
                           <!-- event Assign(address indexed to, uint256 punkIndex); -->
+                          <v-img :src="'data:image/png;base64,' + images[item.info[4]]" width="80" cover align="left" class="align-end text-white" style="image-rendering: pixelated; background-color: #638596;">
+                          </v-img>
                           {{ commify0(item.info[4]) }}
                         </span>
                         <span v-else-if="item.info[2] == 1">
@@ -353,6 +371,8 @@ const Punks = {
                         </span>
                         <span v-else-if="item.info[2] == 2">
                           <!-- event PunkTransfer(address indexed from, address indexed to, uint256 punkIndex); -->
+                          <v-img :src="'data:image/png;base64,' + images[item.info[5]]" width="80" cover align="left" class="align-end text-white" style="image-rendering: pixelated; background-color: #638596;">
+                          </v-img>
                           {{ commify0(item.info[5]) }}
                         </span>
                         <span v-else-if="item.info[2] >= 3 && item.info[2] <= 7">
@@ -361,6 +381,8 @@ const Punks = {
                           <!-- event PunkBidWithdrawn(uint indexed punkIndex, uint value, address indexed fromAddress); -->
                           <!-- event PunkBought(uint indexed punkIndex, uint value, address indexed fromAddress, address indexed toAddress); -->
                           <!-- event PunkNoLongerForSale(uint indexed punkIndex); -->
+                          <v-img :src="'data:image/png;base64,' + images[item.info[3]]" width="80" cover align="left" class="align-end text-white" style="image-rendering: pixelated; background-color: #638596;">
+                          </v-img>
                           {{ commify0(item.info[3]) }}
                         </span>
                       </template>
@@ -399,6 +421,16 @@ const Punks = {
                   style="max-width: 70px;"
                   @update:modelValue="saveSettings();"
                 ></v-select>
+                <v-select
+                  v-if="settings.tab == 'events'"
+                  v-model="settings.events.itemsPerPage"
+                  :items="itemsPerPageOptions"
+                  variant="plain"
+                  density="compact"
+                  class="mt-2 mr-2"
+                  style="max-width: 70px;"
+                  @update:modelValue="saveSettings();"
+                ></v-select>
                 <v-pagination
                   v-if="settings.tab == 'punks'"
                   v-model="settings.tokens.currentPage"
@@ -415,6 +447,18 @@ const Punks = {
                   v-if="settings.tab == 'owners'"
                   v-model="settings.owners.currentPage"
                   :length="Math.ceil(filteredOwnersList.length / settings.owners.itemsPerPage)"
+                  total-visible="0"
+                  density="comfortable"
+                  show-first-last-page
+                  class="mr-1"
+                  @update:modelValue="saveSettings();"
+                  color="primary"
+                >
+                </v-pagination>
+                <v-pagination
+                  v-if="settings.tab == 'events'"
+                  v-model="settings.events.currentPage"
+                  :length="Math.ceil(numberOfEvents / settings.events.itemsPerPage)"
                   total-visible="0"
                   density="comfortable"
                   show-first-last-page
