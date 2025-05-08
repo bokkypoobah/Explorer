@@ -305,7 +305,18 @@ const Punks = {
                       :search="numberOfEvents && numberOfEvents.toString() || null"
                       @update:options="loadEvents"
                       :items-per-page-options="itemsPerPageOptions"
+                      v-model:items-per-page="settings.events.itemsPerPage"
+                      v-model:page="settings.events.currentPage"
                     >
+                      <template v-slot:item.rowNumber="{ index }">
+                        {{ (settings.events.currentPage - 1) * settings.events.itemsPerPage + index + 1 }}
+                      </template>
+                      <template v-slot:item.blockNumber="{ item }">
+                        <render-block-number :block="item.blockNumber" noXPadding></render-block-number>
+                      </template>
+                      <template v-slot:item.txHash="{ item }">
+                        <render-tx-hash :txHash="item.info[0]" :txHashes="txHashes" shortTxHash noXPadding></render-tx-hash>
+                      </template>
                     </v-data-table-server>
                   </v-tabs-window-item>
                 </v-tabs-window>
@@ -384,8 +395,12 @@ const Punks = {
           itemsPerPage: 10,
           currentPage: 1,
         },
+        events: {
+          itemsPerPage: 10,
+          currentPage: 1,
+        },
         attributes: {}, // address -> attribute -> option -> selected?
-        version: 2,
+        version: 3,
       },
       totalEventsItems: null,
       eventsItems: [],
@@ -437,8 +452,8 @@ const Punks = {
         { title: '#', value: 'rowNumber', align: 'end', sortable: false },
         { title: 'When', value: 'when', sortable: false },
         { title: 'Block #', value: 'blockNumber', sortable: true },
-        // { title: 'Tx Hash', value: 'txHash', sortable: false },
-        // { title: 'Event', value: 'event', sortable: false },
+        { title: 'Tx Hash', value: 'txHash', sortable: false },
+        { title: 'Event', value: 'event', sortable: false },
         // { title: 'From / Owner', value: 'address1', sortable: false },
         // { title: 'To / Spender', value: 'address2', sortable: false },
         // { title: 'Tokens', value: 'value1', align: 'end', sortable: false },
