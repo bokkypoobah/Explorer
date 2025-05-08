@@ -288,7 +288,25 @@ const Punks = {
                     {{ attributes[0] }}
                   </v-tabs-window-item>
                   <v-tabs-window-item value="events">
-                    TODO: Events
+                    <!-- <v-data-table-server
+                      v-if="address"
+                      :headers="getEventsHeaders"
+                      :items-length="numberOfEvents || 0"
+                      :items="eventItems"
+                      :search="numberOfEvents && numberOfEvents.toString() || null"
+                      @update:options="loadEvents"
+                      :items-per-page-options="itemsPerPageOptions"
+                    >
+                    </v-data-table-server> -->
+                    <v-data-table-server
+                      :headers="eventsHeaders"
+                      :items-length="totalEventsItems != null && totalEventsItems || numberOfEvents || 0"
+                      :items="eventsItems"
+                      :search="numberOfEvents && numberOfEvents.toString() || null"
+                      @update:options="loadEvents"
+                      :items-per-page-options="itemsPerPageOptions"
+                    >
+                    </v-data-table-server>
                   </v-tabs-window-item>
                 </v-tabs-window>
               </v-card-text>
@@ -369,6 +387,8 @@ const Punks = {
         attributes: {}, // address -> attribute -> option -> selected?
         version: 2,
       },
+      totalEventsItems: null,
+      eventsItems: [],
       _timerId: null,
       itemsPerPageOptions: [
         { value: 5, title: "5" },
@@ -413,6 +433,19 @@ const Punks = {
         { title: 'Count', value: 'punksCount', sortable: false },
         { title: 'Punks', value: 'punks', sortable: false },
       ],
+      eventsHeaders: [
+        { title: '#', value: 'rowNumber', align: 'end', sortable: false },
+        { title: 'When', value: 'when', sortable: false },
+        { title: 'Block #', value: 'blockNumber', sortable: true },
+        // { title: 'Tx Hash', value: 'txHash', sortable: false },
+        // { title: 'Event', value: 'event', sortable: false },
+        // { title: 'From / Owner', value: 'address1', sortable: false },
+        // { title: 'To / Spender', value: 'address2', sortable: false },
+        // { title: 'Tokens', value: 'value1', align: 'end', sortable: false },
+        // { title: 'Owner', value: 'owner', sortable: false },
+        // { title: 'Count', value: 'punksCount', sortable: false },
+        // { title: 'Punks', value: 'punks', sortable: false },
+      ],
     };
   },
   computed: {
@@ -430,6 +463,9 @@ const Punks = {
     },
     txHashes() {
       return store.getters['punks/txHashes'];
+    },
+    numberOfEvents() {
+      return store.getters['punks/numberOfEvents'];
     },
     owners() {
       return store.getters['punks/owners'];
@@ -701,6 +737,25 @@ const Punks = {
         }
       }
       this.saveSettings();
+    },
+    async loadEvents({ page, itemsPerPage, sortBy }) {
+      const sort = !sortBy || sortBy.length == 0 || (sortBy[0].key == "blockNumber" && sortBy[0].order == "desc") ? "desc" : "asc";
+      console.log(now() + " Punks - methods.loadEvents - page: " + page + ", itemsPerPage: " + itemsPerPage + ", sortBy: " + JSON.stringify(sortBy) + ", sort: " + sort);
+      const dbInfo = store.getters["db"];
+      const db = new Dexie(dbInfo.name);
+      db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
+      const chainId = store.getters["chainId"];
+      const row = (page - 1) * itemsPerPage;
+        let data;
+        if (sort == "asc") {
+          data = await db.punkEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.minKey, Dexie.minKey],[chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.maxKey, Dexie.maxKey]).offset(row).limit(itemsPerPage).toArray();
+        } else {
+          data = await db.punkEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.minKey, Dexie.minKey],[chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.maxKey, Dexie.maxKey]).reverse().offset(row).limit(itemsPerPage).toArray();
+        }
+        this.eventsItems = data;
+        console.log(now() + " Punks - methods.loadEvents - this.eventsItems: " + JSON.stringify(this.eventsItems, null, 2));
+        // this.eventsItems = [{ blockNumber: 10 }, { blockNumber: 20 }];
+      db.close();
     },
 
     formatETH(e) {
