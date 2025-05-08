@@ -855,6 +855,7 @@ const Punks = {
       this.saveSettings();
     },
     async loadEvents({ page, itemsPerPage, sortBy }) {
+      const t0 = performance.now();
       const sort = !sortBy || sortBy.length == 0 || (sortBy[0].key == "blockNumber" && sortBy[0].order == "desc") ? "desc" : "asc";
       console.log(now() + " Punks - methods.loadEvents - page: " + page + ", itemsPerPage: " + itemsPerPage + ", sortBy: " + JSON.stringify(sortBy) + ", sort: " + sort);
       const dbInfo = store.getters["db"];
@@ -862,16 +863,41 @@ const Punks = {
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
       const chainId = store.getters["chainId"];
       const row = (page - 1) * itemsPerPage;
-        let data;
-        if (sort == "asc") {
-          data = await db.punkEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.minKey, Dexie.minKey],[chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.maxKey, Dexie.maxKey]).offset(row).limit(itemsPerPage).toArray();
-        } else {
-          data = await db.punkEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.minKey, Dexie.minKey],[chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.maxKey, Dexie.maxKey]).reverse().offset(row).limit(itemsPerPage).toArray();
-        }
-        this.eventsItems = data;
-        console.log(now() + " Punks - methods.loadEvents - this.eventsItems: " + JSON.stringify(this.eventsItems, null, 2));
-        // this.eventsItems = [{ blockNumber: 10 }, { blockNumber: 20 }];
+
+      // const collection = this.table
+      //     .orderBy(orderBy)
+      //     .filter(filterFav)
+      //     .filter(filterSearch)
+      //     .reverse();
+      // const countPromise = collection.count();
+      // const itemsPromise = collection
+      //     .offset(page * ITEMS_PER_PAGE)
+      //     .limit(ITEMS_PER_PAGE)
+      //     .toArray();
+      // return Promise.all([itemsPromise, countPromise]);
+
+      let collection = db.punkEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.minKey, Dexie.minKey],[chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.maxKey, Dexie.maxKey]);
+      if (sort == "desc") {
+        collection = collection.reverse();
+      }
+      let count = await collection.count();
+      console.log(now() + " Punks - methods.loadEvents - count: " + count);
+      let data = await collection.offset(row).limit(itemsPerPage).toArray()
+
+      // let data;
+      // if (sort == "asc") {
+      //   // data = await db.punkEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.minKey, Dexie.minKey],[chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.maxKey, Dexie.maxKey]).and(e => e.info[2] == 4).offset(row).limit(itemsPerPage).toArray();
+      //   data = await db.punkEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.minKey, Dexie.minKey],[chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.maxKey, Dexie.maxKey]).offset(row).limit(itemsPerPage).toArray();
+      // } else {
+      //   // data = await db.punkEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.minKey, Dexie.minKey],[chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.maxKey, Dexie.maxKey]).and(e => e.info[2] == 4).reverse().offset(row).limit(itemsPerPage).toArray();
+      //   data = await db.punkEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.minKey, Dexie.minKey],[chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.maxKey, Dexie.maxKey]).reverse().offset(row).limit(itemsPerPage).toArray();
+      // }
+      this.eventsItems = data;
+      console.log(now() + " Punks - methods.loadEvents - this.eventsItems: " + JSON.stringify(this.eventsItems, null, 2));
+      // this.eventsItems = [{ blockNumber: 10 }, { blockNumber: 20 }];
       db.close();
+      const t1 = performance.now();
+      console.log(now() + " Punks - methods.loadEvents - elapsed: " + (t1 - t0) + " ms");
     },
 
     formatETH(e) {
