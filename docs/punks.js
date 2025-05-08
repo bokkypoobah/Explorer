@@ -310,26 +310,67 @@ const Punks = {
                       <template v-slot:item.event="{ item }">
                         {{ PUNKEVENT_INT_TO_STRING[item.info[2]] }}
                       </template>
+                      <template v-slot:item.from="{ item }">
+                        <span v-if="item.info[2] == 1 || item.info[2] == 2">
+                          <!-- event Transfer(address indexed from, address indexed to, uint256 value); -->
+                          <!-- event PunkTransfer(address indexed from, address indexed to, uint256 punkIndex); -->
+                          <render-address :address="item.info[3]" :addresses="addresses" shortAddress noXPadding></render-address>
+                        </span>
+                        <span v-else-if="item.info[2] >= 4 && item.info[2] <= 6">
+                          <!-- event PunkBidEntered(uint indexed punkIndex, uint value, address indexed fromAddress); -->
+                          <!-- event PunkBidWithdrawn(uint indexed punkIndex, uint value, address indexed fromAddress); -->
+                          <!-- event PunkBought(uint indexed punkIndex, uint value, address indexed fromAddress, address indexed toAddress); -->
+                          <render-address :address="item.info[5]" :addresses="addresses" shortAddress noXPadding></render-address>
+                        </span>
+                      </template>
+                      <template v-slot:item.to="{ item }">
+                        <span v-if="item.info[2] == 0">
+                          <!-- event Assign(address indexed to, uint256 punkIndex); -->
+                          <render-address :address="item.info[3]" :addresses="addresses" shortAddress noXPadding></render-address>
+                        </span>
+                        <span v-else-if="item.info[2] == 1 || item.info[2] == 2">
+                          <!-- event Transfer(address indexed from, address indexed to, uint256 value); -->
+                          <!-- event PunkTransfer(address indexed from, address indexed to, uint256 punkIndex); -->
+                          <render-address :address="item.info[4]" :addresses="addresses" shortAddress noXPadding></render-address>
+                        </span>
+                        <span v-else-if="item.info[2] == 3">
+                          <!-- event PunkOffered(uint indexed punkIndex, uint minValue, address indexed toAddress); -->
+                          <render-address :address="item.info[5]" :addresses="addresses" shortAddress noXPadding></render-address>
+                        </span>
+                        <span v-else-if="item.info[2] == 6">
+                          <!-- event PunkOffered(uint indexed punkIndex, uint minValue, address indexed toAddress); -->
+                          <render-address :address="item.info[6]" :addresses="addresses" shortAddress noXPadding></render-address>
+                        </span>
+                      </template>
                       <template v-slot:item.punkId="{ item }">
                         <span v-if="item.info[2] == 0">
                           <!-- event Assign(address indexed to, uint256 punkIndex); -->
                           {{ commify0(item.info[4]) }}
                         </span>
-                        <span v-if="item.info[2] == 1">
+                        <span v-else-if="item.info[2] == 1">
                           <!-- event Transfer(address indexed from, address indexed to, uint256 value); -->
-                          n/a
+                          1x
                         </span>
-                        <span v-if="item.info[2] == 2">
+                        <span v-else-if="item.info[2] == 2">
                           <!-- event PunkTransfer(address indexed from, address indexed to, uint256 punkIndex); -->
                           {{ commify0(item.info[5]) }}
                         </span>
-                        <span v-if="item.info[2] >= 3 && item.info[2] <= 7">
+                        <span v-else-if="item.info[2] >= 3 && item.info[2] <= 7">
                           <!-- event PunkOffered(uint indexed punkIndex, uint minValue, address indexed toAddress); -->
                           <!-- event PunkBidEntered(uint indexed punkIndex, uint value, address indexed fromAddress); -->
                           <!-- event PunkBidWithdrawn(uint indexed punkIndex, uint value, address indexed fromAddress); -->
                           <!-- event PunkBought(uint indexed punkIndex, uint value, address indexed fromAddress, address indexed toAddress); -->
                           <!-- event PunkNoLongerForSale(uint indexed punkIndex); -->
                           {{ commify0(item.info[3]) }}
+                        </span>
+                      </template>
+                      <template v-slot:item.value="{ item }">
+                        <span v-if="item.info[2] >= 3 && item.info[2] <= 6">
+                          <!-- event PunkOffered(uint indexed punkIndex, uint minValue, address indexed toAddress); -->
+                          <!-- event PunkBidEntered(uint indexed punkIndex, uint value, address indexed fromAddress); -->
+                          <!-- event PunkBidWithdrawn(uint indexed punkIndex, uint value, address indexed fromAddress); -->
+                          <!-- event PunkBought(uint indexed punkIndex, uint value, address indexed fromAddress, address indexed toAddress); -->
+                          {{ formatETH(item.info[4]) }}
                         </span>
                       </template>
                     </v-data-table-server>
@@ -469,13 +510,10 @@ const Punks = {
         { title: 'Block #', value: 'blockNumber', sortable: true },
         { title: 'Tx Hash', value: 'txHash', sortable: false },
         { title: 'Event', value: 'event', sortable: false },
+        { title: 'From', value: 'from', sortable: false },
+        { title: 'To', value: 'to', sortable: false },
         { title: 'Punk Id', value: 'punkId', sortable: false },
-        // { title: 'From / Owner', value: 'address1', sortable: false },
-        // { title: 'To / Spender', value: 'address2', sortable: false },
-        // { title: 'Tokens', value: 'value1', align: 'end', sortable: false },
-        // { title: 'Owner', value: 'owner', sortable: false },
-        // { title: 'Count', value: 'punksCount', sortable: false },
-        // { title: 'Punks', value: 'punks', sortable: false },
+        { title: 'Value', value: 'value', sortable: false },
       ],
     };
   },
