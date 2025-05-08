@@ -288,16 +288,6 @@ const Punks = {
                     {{ attributes[0] }}
                   </v-tabs-window-item>
                   <v-tabs-window-item value="events">
-                    <!-- <v-data-table-server
-                      v-if="address"
-                      :headers="getEventsHeaders"
-                      :items-length="numberOfEvents || 0"
-                      :items="eventItems"
-                      :search="numberOfEvents && numberOfEvents.toString() || null"
-                      @update:options="loadEvents"
-                      :items-per-page-options="itemsPerPageOptions"
-                    >
-                    </v-data-table-server> -->
                     <v-data-table-server
                       :headers="eventsHeaders"
                       :items-length="totalEventsItems != null && totalEventsItems || numberOfEvents || 0"
@@ -316,6 +306,31 @@ const Punks = {
                       </template>
                       <template v-slot:item.txHash="{ item }">
                         <render-tx-hash :txHash="item.info[0]" :txHashes="txHashes" shortTxHash noXPadding></render-tx-hash>
+                      </template>
+                      <template v-slot:item.event="{ item }">
+                        {{ PUNKEVENT_INT_TO_STRING[item.info[2]] }}
+                      </template>
+                      <template v-slot:item.punkId="{ item }">
+                        <span v-if="item.info[2] == 0">
+                          <!-- event Assign(address indexed to, uint256 punkIndex); -->
+                          {{ commify0(item.info[4]) }}
+                        </span>
+                        <span v-if="item.info[2] == 1">
+                          <!-- event Transfer(address indexed from, address indexed to, uint256 value); -->
+                          n/a
+                        </span>
+                        <span v-if="item.info[2] == 2">
+                          <!-- event PunkTransfer(address indexed from, address indexed to, uint256 punkIndex); -->
+                          {{ commify0(item.info[5]) }}
+                        </span>
+                        <span v-if="item.info[2] >= 3 && item.info[2] <= 7">
+                          <!-- event PunkOffered(uint indexed punkIndex, uint minValue, address indexed toAddress); -->
+                          <!-- event PunkBidEntered(uint indexed punkIndex, uint value, address indexed fromAddress); -->
+                          <!-- event PunkBidWithdrawn(uint indexed punkIndex, uint value, address indexed fromAddress); -->
+                          <!-- event PunkBought(uint indexed punkIndex, uint value, address indexed fromAddress, address indexed toAddress); -->
+                          <!-- event PunkNoLongerForSale(uint indexed punkIndex); -->
+                          {{ commify0(item.info[3]) }}
+                        </span>
                       </template>
                     </v-data-table-server>
                   </v-tabs-window-item>
@@ -454,6 +469,7 @@ const Punks = {
         { title: 'Block #', value: 'blockNumber', sortable: true },
         { title: 'Tx Hash', value: 'txHash', sortable: false },
         { title: 'Event', value: 'event', sortable: false },
+        { title: 'Punk Id', value: 'punkId', sortable: false },
         // { title: 'From / Owner', value: 'address1', sortable: false },
         // { title: 'To / Spender', value: 'address2', sortable: false },
         // { title: 'Tokens', value: 'value1', align: 'end', sortable: false },
@@ -472,6 +488,9 @@ const Punks = {
     },
     images() {
       return PUNK_IMAGES;
+    },
+    PUNKEVENT_INT_TO_STRING() {
+      return PUNKEVENT_INT_TO_STRING;
     },
     addresses() {
       return store.getters['punks/addresses'];
