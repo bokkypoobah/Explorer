@@ -171,11 +171,11 @@ const Punks = {
                     <v-row v-if="settings.tokens.view != 'list'" dense class="d-flex flex-wrap" align="stretch">
                       <v-col v-for="(item, index) in filteredTokensPaged" :key="index" align="center">
                         <v-card class="pb-2" :max-width="settings.tokens.view != 'medium' ? 260 : 130">
-                          <v-img :src="'data:image/png;base64,' + images[item[0]]" :width="settings.tokens.view != 'medium' ? 260 : 130" cover align="left" class="align-end text-white" style="image-rendering: pixelated; background-color: #638596;">
-                            <!-- <v-card-title v-if="settings.tokens.view == 'large'" class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-size: 1em;">{{ item[0] }}</v-card-title>
-                            <!-- <v-card-title v-if="settings.tokens.view == 'medium'" class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-size: 0.7em;">{{ item[0] }}</v-card-title> -->
+                          <v-img :src="'data:image/png;base64,' + images[item.id]" :width="settings.tokens.view != 'medium' ? 260 : 130" cover align="left" class="align-end text-white" style="image-rendering: pixelated; background-color: #638596;">
+                            <!-- <v-card-title v-if="settings.tokens.view == 'large'" class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-size: 1em;">{{ item.id }}</v-card-title>
+                            <!-- <v-card-title v-if="settings.tokens.view == 'medium'" class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-size: 0.7em;">{{ item.id }}</v-card-title> -->
                             <v-chip label size="x-small" variant="flat" color="secondary" class="ma-1">
-                              {{ commify0(item[0]) }}
+                              {{ commify0(item.id) }}
                             </v-chip>
                           </v-img>
 
@@ -587,8 +587,6 @@ const Punks = {
       return results;
     },
     filteredTokens() {
-      // TODO
-      return [];
       const idRegex = /^\d+$/;
       const rangeRegex = /^\d+\-\d+$/;
 
@@ -714,7 +712,8 @@ const Punks = {
           }
         });
       }
-      console.log(now() + " Token - computed.filteredTokens - results.filter(e => e[0] == 1234): " + JSON.stringify(results.filter(e => e[0] == 1234), null, 2));
+      // console.log(now() + " Token - computed.filteredTokens - results.filter(e => e[0] == 1234): " + JSON.stringify(results.filter(e => e[0] == 1234), null, 2));
+      // console.log(now() + " Token - computed.filteredTokens - results: " + JSON.stringify(results, null, 2));
       return results;
     },
     filteredTokensPaged() {
@@ -833,15 +832,23 @@ const Punks = {
       //     .toArray();
       // return Promise.all([itemsPromise, countPromise]);
 
-      const selectedTokenIds = new Set();
-      for (const token of this.filteredTokens) {
-        selectedTokenIds.add(token[0]);
+      let selectedTokenIds = null;
+      if (this.filteredTokens.length != 10000) {
+        selectedTokenIds = new Set();
+        for (const token of this.filteredTokens) {
+          selectedTokenIds.add(token[0]);
+        }
+        console.log("selectedTokenIds: " + JSON.stringify([...selectedTokenIds]));
       }
-      console.log("selectedTokenIds: " + JSON.stringify([...selectedTokenIds]));
 
       // let collection = db.punkEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.minKey, Dexie.minKey],[chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.maxKey, Dexie.maxKey]).and(e => e[0] in selectedTokenIds);
       // let collection = db.punkEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.minKey, Dexie.minKey],[chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.maxKey, Dexie.maxKey]).and(e => selectedTokenIds.has(e[0]));
-      let collection = db.punkEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.minKey, Dexie.minKey],[chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.maxKey, Dexie.maxKey]);
+      let collection = null;
+      if (selectedTokenIds) {
+        collection = db.punkEvents.where('id').anyOf([...selectedTokenIds]);
+      } else {
+        collection = db.punkEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.minKey, Dexie.minKey],[chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.maxKey, Dexie.maxKey]);
+      }
       if (sort == "desc") {
         collection = collection.reverse();
       }
@@ -858,8 +865,7 @@ const Punks = {
       //   data = await db.punkEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.minKey, Dexie.minKey],[chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.maxKey, Dexie.maxKey]).reverse().offset(row).limit(itemsPerPage).toArray();
       // }
       this.eventsItems = data;
-      console.log(now() + " Punks - methods.loadEvents - this.eventsItems: " + JSON.stringify(this.eventsItems, null, 2));
-      // this.eventsItems = [{ blockNumber: 10 }, { blockNumber: 20 }];
+      // console.log(now() + " Punks - methods.loadEvents - this.eventsItems: " + JSON.stringify(this.eventsItems, null, 2));
       db.close();
       const t1 = performance.now();
       console.log(now() + " Punks - methods.loadEvents - elapsed: " + (t1 - t0) + " ms");
