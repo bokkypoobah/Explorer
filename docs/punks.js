@@ -634,6 +634,8 @@ const Punks = {
       return results;
     },
     filteredTokens() {
+      // TODO
+      return [];
       const idRegex = /^\d+$/;
       const rangeRegex = /^\d+\-\d+$/;
 
@@ -777,6 +779,8 @@ const Punks = {
       return Object.keys(collator).length;
     },
     filteredOwnersList() {
+      // TODO
+      return [];
       const collator = {};
       for (const item of this.filteredTokens) {
         if (!(item[2] in collator)) {
@@ -876,6 +880,14 @@ const Punks = {
       //     .toArray();
       // return Promise.all([itemsPromise, countPromise]);
 
+      const selectedTokenIds = new Set();
+      for (const token of this.filteredTokens) {
+        selectedTokenIds.add(token[0]);
+      }
+      console.log("selectedTokenIds: " + JSON.stringify([...selectedTokenIds]));
+
+      // let collection = db.punkEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.minKey, Dexie.minKey],[chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.maxKey, Dexie.maxKey]).and(e => e[0] in selectedTokenIds);
+      // let collection = db.punkEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.minKey, Dexie.minKey],[chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.maxKey, Dexie.maxKey]).and(e => selectedTokenIds.has(e[0]));
       let collection = db.punkEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.minKey, Dexie.minKey],[chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.maxKey, Dexie.maxKey]);
       if (sort == "desc") {
         collection = collection.reverse();
