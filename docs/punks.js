@@ -321,78 +321,31 @@ const Punks = {
                         <render-block-number :block="item.blockNumber" noXPadding></render-block-number>
                       </template>
                       <template v-slot:item.txHash="{ item }">
-                        <render-tx-hash :txHash="item.info[0]" :txHashes="txHashes" shortTxHash noXPadding></render-tx-hash>
+                        <render-tx-hash :txHash="item.txHash" :txHashes="txHashes" shortTxHash noXPadding></render-tx-hash>
                       </template>
                       <template v-slot:item.event="{ item }">
-                        {{ PUNKEVENT_INT_TO_STRING[item.info[2]] }}
+                        {{ PUNKEVENT_INT_TO_STRING[item.type] }}
                       </template>
                       <template v-slot:item.from="{ item }">
-                        <span v-if="item.info[2] == 1 || item.info[2] == 2">
-                          <!-- event Transfer(address indexed from, address indexed to, uint256 value); -->
-                          <!-- event PunkTransfer(address indexed from, address indexed to, uint256 punkIndex); -->
-                          <render-address :address="item.info[3]" :addresses="addresses" shortAddress noXPadding></render-address>
-                        </span>
-                        <span v-else-if="item.info[2] >= 4 && item.info[2] <= 6">
-                          <!-- event PunkBidEntered(uint indexed punkIndex, uint value, address indexed fromAddress); -->
-                          <!-- event PunkBidWithdrawn(uint indexed punkIndex, uint value, address indexed fromAddress); -->
-                          <!-- event PunkBought(uint indexed punkIndex, uint value, address indexed fromAddress, address indexed toAddress); -->
-                          <render-address :address="item.info[5]" :addresses="addresses" shortAddress noXPadding></render-address>
+                        <span v-if="item.from != null">
+                          <render-address :address="item.from" :addresses="addresses" shortAddress noXPadding></render-address>
                         </span>
                       </template>
                       <template v-slot:item.to="{ item }">
-                        <span v-if="item.info[2] == 0">
-                          <!-- event Assign(address indexed to, uint256 punkIndex); -->
-                          <render-address :address="item.info[3]" :addresses="addresses" shortAddress noXPadding></render-address>
-                        </span>
-                        <span v-else-if="item.info[2] == 1 || item.info[2] == 2">
-                          <!-- event Transfer(address indexed from, address indexed to, uint256 value); -->
-                          <!-- event PunkTransfer(address indexed from, address indexed to, uint256 punkIndex); -->
-                          <render-address :address="item.info[4]" :addresses="addresses" shortAddress noXPadding></render-address>
-                        </span>
-                        <span v-else-if="item.info[2] == 3">
-                          <!-- event PunkOffered(uint indexed punkIndex, uint minValue, address indexed toAddress); -->
-                          <render-address :address="item.info[5]" :addresses="addresses" shortAddress noXPadding></render-address>
-                        </span>
-                        <span v-else-if="item.info[2] == 6">
-                          <!-- event PunkOffered(uint indexed punkIndex, uint minValue, address indexed toAddress); -->
-                          <render-address :address="item.info[6]" :addresses="addresses" shortAddress noXPadding></render-address>
+                        <span v-if="item.to != null">
+                          <render-address :address="item.to" :addresses="addresses" shortAddress noXPadding></render-address>
                         </span>
                       </template>
                       <template v-slot:item.punkId="{ item }">
-                        <span v-if="item.info[2] == 0">
-                          <!-- event Assign(address indexed to, uint256 punkIndex); -->
-                          <v-img :src="'data:image/png;base64,' + images[item.info[4]]" width="80" cover align="left" class="align-end text-white" style="image-rendering: pixelated; background-color: #638596;">
+                        <span v-if="item.id != null">
+                          <v-img :src="'data:image/png;base64,' + images[item.id]" width="80" cover align="left" class="align-end text-white" style="image-rendering: pixelated; background-color: #638596;">
                           </v-img>
-                          {{ commify0(item.info[4]) }}
-                        </span>
-                        <span v-else-if="item.info[2] == 1">
-                          <!-- event Transfer(address indexed from, address indexed to, uint256 value); -->
-                          1x
-                        </span>
-                        <span v-else-if="item.info[2] == 2">
-                          <!-- event PunkTransfer(address indexed from, address indexed to, uint256 punkIndex); -->
-                          <v-img :src="'data:image/png;base64,' + images[item.info[5]]" width="80" cover align="left" class="align-end text-white" style="image-rendering: pixelated; background-color: #638596;">
-                          </v-img>
-                          {{ commify0(item.info[5]) }}
-                        </span>
-                        <span v-else-if="item.info[2] >= 3 && item.info[2] <= 7">
-                          <!-- event PunkOffered(uint indexed punkIndex, uint minValue, address indexed toAddress); -->
-                          <!-- event PunkBidEntered(uint indexed punkIndex, uint value, address indexed fromAddress); -->
-                          <!-- event PunkBidWithdrawn(uint indexed punkIndex, uint value, address indexed fromAddress); -->
-                          <!-- event PunkBought(uint indexed punkIndex, uint value, address indexed fromAddress, address indexed toAddress); -->
-                          <!-- event PunkNoLongerForSale(uint indexed punkIndex); -->
-                          <v-img :src="'data:image/png;base64,' + images[item.info[3]]" width="80" cover align="left" class="align-end text-white" style="image-rendering: pixelated; background-color: #638596;">
-                          </v-img>
-                          {{ commify0(item.info[3]) }}
+                          {{ commify0(item.id) }}
                         </span>
                       </template>
                       <template v-slot:item.value="{ item }">
-                        <span v-if="item.info[2] >= 3 && item.info[2] <= 6">
-                          <!-- event PunkOffered(uint indexed punkIndex, uint minValue, address indexed toAddress); -->
-                          <!-- event PunkBidEntered(uint indexed punkIndex, uint value, address indexed fromAddress); -->
-                          <!-- event PunkBidWithdrawn(uint indexed punkIndex, uint value, address indexed fromAddress); -->
-                          <!-- event PunkBought(uint indexed punkIndex, uint value, address indexed fromAddress, address indexed toAddress); -->
-                          {{ formatETH(item.info[4]) }}
+                        <span v-if="item.value != null">
+                          {{ formatETH(item.value) }}
                         </span>
                       </template>
                     </v-data-table-server>
