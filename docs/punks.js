@@ -105,7 +105,7 @@ const Punks = {
           <v-pagination
             v-if="settings.tab == 'events'"
             v-model="settings.events.currentPage"
-            :length="Math.ceil(numberOfEvents / settings.events.itemsPerPage)"
+            :length="Math.ceil(totalEventsItems / settings.events.itemsPerPage)"
             total-visible="0"
             density="comfortable"
             show-first-last-page
@@ -307,7 +307,7 @@ const Punks = {
                       :headers="eventsHeaders"
                       :items-length="totalEventsItems != null && totalEventsItems || numberOfEvents || 0"
                       :items="eventsItems"
-                      :search="numberOfEvents && numberOfEvents.toString() && filteredTokens.length.toString() && settings.tokens.filter || 'yeah'"
+                      :search="refresh.toString() || 'yeah'"
                       @update:options="loadEvents"
                       :items-per-page-options="itemsPerPageOptions"
                       v-model:items-per-page="settings.events.itemsPerPage"
@@ -412,7 +412,7 @@ const Punks = {
                 <v-pagination
                   v-if="settings.tab == 'events'"
                   v-model="settings.events.currentPage"
-                  :length="Math.ceil(numberOfEvents / settings.events.itemsPerPage)"
+                  :length="Math.ceil(totalEventsItems / settings.events.itemsPerPage)"
                   total-visible="0"
                   density="comfortable"
                   show-first-last-page
@@ -458,6 +458,7 @@ const Punks = {
       },
       totalEventsItems: null,
       eventsItems: [],
+      refresh: 0,
       _timerId: null,
       itemsPerPageOptions: [
         { value: 5, title: "5" },
@@ -592,6 +593,8 @@ const Punks = {
       return results;
     },
     filteredTokens() {
+      const results = this.refresh % 2 == 0 ? [] : [];
+
       const idRegex = /^\d+$/;
       const rangeRegex = /^\d+\-\d+$/;
 
@@ -610,7 +613,6 @@ const Punks = {
         }
       }
 
-      const results = [];
       if (Object.keys(this.settings.attributes).length > 0 && this.attributesList.length > 0) {
         let punkIds = null;
         for (const [attribute, attributeData] of Object.entries(this.settings.attributes)) {
@@ -775,10 +777,12 @@ const Punks = {
     syncPunks() {
       console.log(now() + " Punks - methods.syncPunks - this.inputPunkId: " + this.inputPunkId);
       store.dispatch('punks/syncPunks', true);
+      this.refresh = parseInt(this.refresh) + 1;
     },
     syncPunksEvents() {
       console.log(now() + " Punks - methods.syncPunksEvents");
       store.dispatch('punks/syncPunksEvents', true);
+      this.refresh = parseInt(this.refresh) + 1;
     },
     setSyncHalt() {
       console.log(now() + " Punks - methods.setSyncHalt");
@@ -795,6 +799,7 @@ const Punks = {
       console.log(now() + " Punks - methods.filterUpdatedDebounced - filter: " + filter);
       this.settings.tokens.filter = filter;
       this.saveSettings();
+      this.refresh = parseInt(this.refresh) + 1;
     },
     updateAttributes(event) {
       console.log(now() + " Punks - methods.updateAttributes - event: " + JSON.stringify(event));
@@ -814,6 +819,7 @@ const Punks = {
         }
       }
       this.saveSettings();
+      this.refresh = parseInt(this.refresh) + 1;
     },
     async loadEvents({ page, itemsPerPage, sortBy }) {
       const t0 = performance.now();
@@ -835,7 +841,7 @@ const Punks = {
         console.log("selectedTokenIds: " + JSON.stringify([...selectedTokenIds]));
       }
       if (sort == "desc") {
-        if (selectedTokenIds && selectedTokenIds.size > 0) {
+        if (selectedTokenIds) {
           await db.punkEvents.where("punkId").anyOf(selectedTokenIds).reverse().sortBy("blockNumber")
             .then(sortedCollection => {
               console.log(now() + " Punks - methods.loadEvents - sortedCollection.slice(row, row + itemsPerPage): " + JSON.stringify(sortedCollection.slice(row, row + itemsPerPage), null, 2).substring(0, 500));
@@ -848,7 +854,7 @@ const Punks = {
           this.totalEventsItems = await db.punkEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.minKey, Dexie.minKey],[chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.maxKey, Dexie.maxKey]).count();
         }
       } else {
-        if (selectedTokenIds && selectedTokenIds.size > 0) {
+        if (selectedTokenIds) {
           await db.punkEvents.where("punkId").anyOf(selectedTokenIds).sortBy("blockNumber")
             .then(sortedCollection => {
               console.log(now() + " Punks - methods.loadEvents - sortedCollection.slice(row, row + itemsPerPage): " + JSON.stringify(sortedCollection.slice(row, row + itemsPerPage), null, 2).substring(0, 500));
