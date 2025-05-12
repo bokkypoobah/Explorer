@@ -24,8 +24,8 @@ const Punks = {
           </v-tabs>
         </v-toolbar>
         <v-toolbar flat color="transparent" density="compact">
-          <v-btn icon @click="settings.tokens.showFilter = !settings.tokens.showFilter; saveSettings();" color="primary" class="lowercase-btn" v-tooltip="'Attributes filter'">
-            <v-icon :icon="settings.tokens.showFilter ? 'mdi-filter' : 'mdi-filter-outline'"></v-icon>
+          <v-btn icon @click="settings.showFilter = !settings.showFilter; saveSettings();" color="primary" class="lowercase-btn" v-tooltip="'Attributes filter'">
+            <v-icon :icon="settings.showFilter ? 'mdi-filter' : 'mdi-filter-outline'"></v-icon>
           </v-btn>
           <v-text-field :model-value="settings.tokens.filter" @update:modelValue="filterUpdated($event);" variant="solo" flat density="compact" clearable prepend-inner-icon="mdi-magnify" hide-details single-line class="ml-2" style="max-width: 240px;" v-tooltip:bottom="'e.g., 123 234 345-347'"></v-text-field>
           <v-spacer></v-spacer>
@@ -116,7 +116,7 @@ const Punks = {
           </v-pagination>
         </v-toolbar>
         <v-row dense>
-          <v-col v-if="settings.tokens.showFilter" cols="2">
+          <v-col v-if="settings.showFilter" cols="2">
             <v-card>
               <v-expansion-panels flat>
                 <!-- <v-expansion-panel class="ma-0 pa-0">
@@ -163,7 +163,7 @@ const Punks = {
               </v-expansion-panels>
             </v-card>
           </v-col>
-          <v-col :cols="settings.tokens.showFilter ? 10 : 12" align="left">
+          <v-col :cols="settings.showFilter ? 10 : 12" align="left">
             <v-card>
               <v-card-text class="ma-0 pa-2">
                 <v-tabs-window v-model="settings.tab">
@@ -435,16 +435,15 @@ const Punks = {
       initialised: false,
       settings: {
         tab: null,
+        showFilter: false,
         tokens: {
           filter: null,
-          showFilter: false,
           view: "large",
           sortOption: "punkidasc",
           itemsPerPage: 10,
           currentPage: 1,
         },
         owners: {
-          showFilter: false,
           view: "large",
           sortOption: "ownercountdsc",
           itemsPerPage: 10,
@@ -455,7 +454,7 @@ const Punks = {
           currentPage: 1,
         },
         attributes: {}, // address -> attribute -> option -> selected?
-        version: 3,
+        version: 4,
       },
       totalEventsItems: null,
       eventsItems: [],
