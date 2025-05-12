@@ -721,13 +721,13 @@ const Punks = {
           }
         });
       }
-      // console.log(now() + " Token - computed.filteredTokens - results.filter(e => e[0] == 1234): " + JSON.stringify(results.filter(e => e[0] == 1234), null, 2));
-      console.log(now() + " Token - computed.filteredTokens - results: " + JSON.stringify(results, null, 2));
+      // console.log(now() + " Punks - computed.filteredTokens - results.filter(e => e[0] == 1234): " + JSON.stringify(results.filter(e => e[0] == 1234), null, 2));
+      console.log(now() + " Punks - computed.filteredTokens - results: " + JSON.stringify(results, null, 2));
       return results;
     },
     filteredTokensPaged() {
       const results = this.filteredTokens.slice((this.settings.tokens.currentPage - 1) * this.settings.tokens.itemsPerPage, this.settings.tokens.currentPage * this.settings.tokens.itemsPerPage);
-      // console.log(now() + " Token - computed.filteredTokensPaged - results: " + JSON.stringify(results, null, 2));
+      // console.log(now() + " Punks - computed.filteredTokensPaged - results: " + JSON.stringify(results, null, 2));
       return results;
     },
     totalOwners() {
@@ -747,7 +747,7 @@ const Punks = {
         }
         collator[item[2]].push(item[0]);
       }
-      // console.log(now() + " Token - computed.filteredOwnersList - collator: " + JSON.stringify(collator, null, 2));
+      // console.log(now() + " Punks - computed.filteredOwnersList - collator: " + JSON.stringify(collator, null, 2));
       const results = [];
       for (const [owner, punkIds] of Object.entries(collator)) {
         results.push({ owner, punkIds, count: punkIds.length });
@@ -769,7 +769,7 @@ const Punks = {
           }
         });
       }
-      // console.log(now() + " Token - computed.filteredOwnersList - results: " + JSON.stringify(results, null, 2));
+      // console.log(now() + " Punks - computed.filteredOwnersList - results: " + JSON.stringify(results, null, 2));
       return results;
     },
   },
@@ -916,6 +916,9 @@ const Punks = {
     setTimeout(function() {
       store.dispatch('punks/startup');
     }, 100);
+    setTimeout(function() {
+      t.refresh = parseInt(t.refresh) + 1;
+    }, 500);
 	},
   unmounted() {
     console.log(now() + " Punks - unmounted");
