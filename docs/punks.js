@@ -307,6 +307,7 @@ const Punks = {
                       :headers="eventsHeaders"
                       :items-length="totalEventsItems != null && totalEventsItems || numberOfEvents || 0"
                       :items="eventsItems"
+                      :loading="loading"
                       :search="refresh.toString() || 'yeah'"
                       @update:options="loadEvents"
                       :items-per-page-options="itemsPerPageOptions"
@@ -459,6 +460,7 @@ const Punks = {
       totalEventsItems: null,
       eventsItems: [],
       refresh: 0,
+      loading: null,
       _timerId: null,
       itemsPerPageOptions: [
         { value: 5, title: "5" },
@@ -821,6 +823,7 @@ const Punks = {
     },
     async loadEvents({ page, itemsPerPage, sortBy }) {
       const t0 = performance.now();
+      this.loading = true;
       const sort = !sortBy || sortBy.length == 0 || (sortBy[0].key == "blockNumber" && sortBy[0].order == "desc") ? "desc" : "asc";
       console.log(now() + " Punks - methods.loadEvents - page: " + page + ", itemsPerPage: " + itemsPerPage + ", sortBy: " + JSON.stringify(sortBy) + ", sort: " + sort);
       const dbInfo = store.getters["db"];
@@ -868,6 +871,7 @@ const Punks = {
 
       db.close();
       const t1 = performance.now();
+      this.loading = false;
       console.log(now() + " Punks - methods.loadEvents - elapsed: " + (t1 - t0) + " ms");
     },
 
