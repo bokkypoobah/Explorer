@@ -24,7 +24,7 @@ const store = new Vuex.Store({
       schemaDefinition: {
         blocks: '[chainId+number]',
         tokenEvents: '[chainId+address+blockNumber+logIndex]',
-        punkEvents: '[chainId+address+blockNumber+logIndex],id,type',
+        punkEvents: '[chainId+address+blockNumber+logIndex],punkId,type',
         cache: '&objectName',
       },
     },

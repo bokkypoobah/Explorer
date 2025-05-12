@@ -181,31 +181,31 @@ const punksModule = {
             const logData = punkInterface.parseLog(log);
             const type = PUNKEVENT_STRING_TO_INT[logData.eventFragment.name];
             if (type == PUNKEVENT_ASSIGN) {
-              const [ to_, id_ ] = logData.args;
-              data = { id: parseInt(id_), to: getAddressIndex(to_) };
+              const [ to_, punkId_ ] = logData.args;
+              data = { punkId: parseInt(punkId_), to: getAddressIndex(to_) };
             } else if (type == PUNKEVENT_TRANSFER) {
               // Ignoring Transfer events, save the transfer to for acceptBidForPunk where the to value is set to 0x0
               const [ from_, to_, value_ ] = logData.args;
               lastTransferTo_ = to_;
             } else if (type == PUNKEVENT_PUNKTRANSFER) {
-              const [ from_, to_, id_ ] = logData.args;
-              data = { id: parseInt(id_), from: getAddressIndex(from_), to: getAddressIndex(to_) };
+              const [ from_, to_, punkId_ ] = logData.args;
+              data = { punkId: parseInt(punkId_), from: getAddressIndex(from_), to: getAddressIndex(to_) };
             } else if (type == PUNKEVENT_PUNKOFFERED) {
-              const [ id_, minValue_, toAddress_ ] = logData.args;
-              data = { id: parseInt(id_), to: getAddressIndex(toAddress_), value: ethers.BigNumber.from(minValue_).toString() };
+              const [ punkId_, minValue_, toAddress_ ] = logData.args;
+              data = { punkId: parseInt(punkId_), to: getAddressIndex(toAddress_), value: ethers.BigNumber.from(minValue_).toString() };
             } else if (type == PUNKEVENT_PUNKBIDENTERED) {
-              const [ id_, value_, fromAddress_ ] = logData.args;
-              data = { id: parseInt(id_), from: getAddressIndex(fromAddress_), value: ethers.BigNumber.from(value_).toString() };
+              const [ punkId_, value_, fromAddress_ ] = logData.args;
+              data = { punkId: parseInt(punkId_), from: getAddressIndex(fromAddress_), value: ethers.BigNumber.from(value_).toString() };
             } else if (type == PUNKEVENT_PUNKBIDWITHDRAWN) {
-              const [ id_, value_, fromAddress_ ] = logData.args;
-              data = { id: parseInt(id_), from: getAddressIndex(fromAddress_), value: ethers.BigNumber.from(value_).toString() };
+              const [ punkId_, value_, fromAddress_ ] = logData.args;
+              data = { punkId: parseInt(punkId_), from: getAddressIndex(fromAddress_), value: ethers.BigNumber.from(value_).toString() };
             } else if (type == PUNKEVENT_PUNKBOUGHT) {
-              const [ id_, value_, fromAddress_, toAddress_ ] = logData.args;
+              const [ punkId_, value_, fromAddress_, toAddress_ ] = logData.args;
               // buyOrAcceptBid = 0 if buyPunk and 1 if acceptBidForPunk - there's a bug in the contract that sets toAddress_ to 0x0, so using last Transfer to_
-              data = { id: parseInt(id_), from: getAddressIndex(fromAddress_), to: getAddressIndex(toAddress_ == ADDRESS0 ? lastTransferTo_ : toAddress_), value: ethers.BigNumber.from(value_).toString(), buyOrAcceptBid: toAddress_ == ADDRESS0 ? 1 : 0 };
+              data = { punkId: parseInt(punkId_), from: getAddressIndex(fromAddress_), to: getAddressIndex(toAddress_ == ADDRESS0 ? lastTransferTo_ : toAddress_), value: ethers.BigNumber.from(value_).toString(), buyOrAcceptBid: toAddress_ == ADDRESS0 ? 1 : 0 };
             } else if (type == PUNKEVENT_PUNKNOLONGERFORSALE) {
-              const [ id_ ] = logData.args;
-              data = { id: parseInt(id_) };
+              const [ punkId_ ] = logData.args;
+              data = { punkId: parseInt(punkId_) };
             }
             if (data) {
               records.push({
@@ -310,33 +310,36 @@ const punksModule = {
       do {
         const data = await db.punkEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.minKey, Dexie.minKey],[chainId, CRYPTOPUNKSMARKET_V2_ADDRESS, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(BATCH_SIZE).toArray();
         for (const item of data) {
-          // const info = item.info;
           if (item.type == PUNKEVENT_ASSIGN) {
-            // console.log(now() + " punksModule - actions.collateEventData - ASSIGN blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
-            owners[item.id] = item.to;
+            // if (item.punkId == 3134) {
+            //   console.error(now() + " punksModule - actions.collateEventData - ASSIGN blockNumber: " + item.blockNumber + ", item: " + JSON.stringify(item));
+            // }
+            owners[item.punkId] = item.to;
           } else if (item.type == PUNKEVENT_TRANSFER) {
-            // console.log(now() + " punksModule - actions.collateEventData - TRANSFER blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
+            // console.log(now() + " punksModule - actions.collateEventData - TRANSFER blockNumber: " + item.blockNumber + ", item: " + JSON.stringify(item));
           } else if (item.type == PUNKEVENT_PUNKTRANSFER) {
-            // console.log(now() + " punksModule - actions.collateEventData - PUNKTRANSFER blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
-            owners[item.id] = item.to;
+            // if (item.punkId == 3134) {
+            //   console.error(now() + " punksModule - actions.collateEventData - PUNKTRANSFER blockNumber: " + item.blockNumber + ", item: " + JSON.stringify(item));
+            // }
+            owners[item.punkId] = item.to;
           } else if (item.type == PUNKEVENT_PUNKOFFERED) {
             // event PunkOffered(uint indexed punkIndex, uint minValue, address indexed toAddress);
-            // if (info[3] == 1234) {
-            //   console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKOFFERED blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
+            // if (item.punkId == 3134) {
+            //   console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKOFFERED blockNumber: " + item.blockNumber + ", item: " + JSON.stringify(item));
             // }
-            offers[item.id] = { to: item.to, value: item.value };
+            offers[item.punkId] = { to: item.to, value: item.value };
           } else if (item.type == PUNKEVENT_PUNKBIDENTERED) {
             // event PunkBidEntered(uint indexed punkIndex, uint value, address indexed fromAddress);
-            // if (info[3] == 1234) {
-            //   console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBIDENTERED blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
+            // if (item.punkId == 3134) {
+            //   console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBIDENTERED blockNumber: " + item.blockNumber + ", item: " + JSON.stringify(item));
             // }
-            bids[item.id] = { from: item.from, value: item.value };
+            bids[item.punkId] = { from: item.from, value: item.value };
           } else if (item.type == PUNKEVENT_PUNKBIDWITHDRAWN) {
             // event PunkBidWithdrawn(uint indexed punkIndex, uint value, address indexed fromAddress);
-            // if (info[3] == 1234) {
-            //   console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBIDWITHDRAWN blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
+            // if (item.punkId == 3134) {
+            //   console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBIDWITHDRAWN blockNumber: " + item.blockNumber + ", item: " + JSON.stringify(item));
             // }
-            delete bids[item.id];
+            delete bids[item.punkId];
           } else if (item.type == PUNKEVENT_PUNKBOUGHT) {
             // event PunkBought(uint indexed punkIndex, uint value, address indexed fromAddress, address indexed toAddress);
             // Last parameter - buyOrAcceptBid = 0 if buyPunk and 1 if acceptBidForPunk - there's a bug in the contract that sets toAddress to 0x0
@@ -370,17 +373,17 @@ const punksModule = {
               //         punkBids[punkIndex] = Bid(false, punkIndex, 0x0, 0);
               //     }
               // }
-              // if (info[3] == 1234) {
-              //   console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBOUGHT BUY blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
-              //   console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBOUGHT - bid: " + JSON.stringify(bids[info[3]]));
+              // if (item.punkId == 3134) {
+              //   console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBOUGHT BUY blockNumber: " + item.blockNumber + ", item: " + JSON.stringify(item));
+              //   // console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBOUGHT - bid: " + JSON.stringify(bids[item.punkId]));
               // }
               // // Check for the case where there is a bid from the new owner and refund it.
-              // if (bids[info[3]] && info[3] == bids[info[3]][1]) {
-              //   console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBOUGHT - DELETING bid: " + JSON.stringify(bids[info[3]]));
-              //   delete bids[info[3]];
+              // if (bids[item.punkId] && item.punkId == bids[item.punkId][1]) {
+              //   console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBOUGHT - DELETING bid: " + JSON.stringify(bids[item.punkId]));
+              //   delete bids[item.punkId];
               // }
-              last[item.id] = item.value;
-              delete offers[item.id];
+              last[item.punkId] = item.value;
+              delete offers[item.punkId];
             } else {
               // function acceptBidForPunk(uint punkIndex, uint minPrice) {
               //     if (punkIndex >= 10000) throw;
@@ -402,24 +405,24 @@ const punksModule = {
               //     pendingWithdrawals[seller] += amount;
               //     PunkBought(punkIndex, bid.value, seller, bid.bidder);
               // }
-              // if (info[3] == 1234) {
-              //   console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBOUGHT ACCEPT BID blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
-              //   console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBOUGHT - CURRENT bid: " + JSON.stringify(bids[info[3]]));
+              // if (item.punkId == 3134) {
+              //   console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBOUGHT ACCEPT BID blockNumber: " + item.blockNumber + ", item: " + JSON.stringify(item));
+              //   // console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBOUGHT - CURRENT bid: " + JSON.stringify(bids[item.punkId]));
               // }
-              last[item.id] = bids[item.id].value;
-              delete bids[item.id];
-              delete offers[item.id];
+              last[item.punkId] = bids[item.punkId].value;
+              delete bids[item.punkId];
+              delete offers[item.punkId];
             }
-            owners[item.id] = item.to;
-            // if (info[3] == 1234) {
-            //   console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBOUGHT - last[info[3]]: " + JSON.stringify(last[info[3]]));
+            owners[item.punkId] = item.to;
+            // if (item.punkId == 1234) {
+            //   console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKBOUGHT - last[item.punkId]: " + JSON.stringify(last[item.punkId]));
             // }
           } else if (item.type == PUNKEVENT_PUNKNOLONGERFORSALE) {
             // event PunkNoLongerForSale(uint indexed punkIndex);
-            // if (info[3] == 1234) {
+            // if (item.punkId == 1234) {
             //   console.error(now() + " punksModule - actions.collateEventData - TRACE PUNKNOLONGERFORSALE blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
             // }
-            delete offers[item.id];
+            delete offers[item.punkId];
           } else {
             // console.log(now() + " punksModule - actions.collateEventData - OTHER blockNumber: " + item.blockNumber + ", info: " + JSON.stringify(info));
           }
@@ -435,9 +438,9 @@ const punksModule = {
       // console.log(now() + " punksModule - actions.collateEventData - bids: " + JSON.stringify(bids, null, 2));
       // console.log(now() + " punksModule - actions.collateEventData - Object.keys(offers).length: " + Object.keys(offers).length);
       // console.log(now() + " punksModule - actions.collateEventData - offers: " + JSON.stringify(offers, null, 2));
-      console.log(now() + " punksModule - actions.collateEventData - Object.keys(last).length: " + Object.keys(last).length);
+      // console.log(now() + " punksModule - actions.collateEventData - Object.keys(last).length: " + Object.keys(last).length);
       // console.log(now() + " punksModule - actions.collateEventData - last[1234]: " + JSON.stringify(last[1234], null, 2));
-      console.log(now() + " punksModule - actions.collateEventData - last: " + JSON.stringify(last, null, 2));
+      // console.log(now() + " punksModule - actions.collateEventData - last: " + JSON.stringify(last, null, 2));
       context.commit('setEventInfo', { numberOfEvents: rows, owners, bids, offers, last });
       await dbSaveCacheData(db, CRYPTOPUNKSMARKET_V2_ADDRESS + "_" + chainId + "_punk_data", { numberOfEvents: rows, owners, bids, offers, last });
       db.close();
