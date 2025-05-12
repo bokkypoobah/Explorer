@@ -720,7 +720,7 @@ const Punks = {
         });
       }
       // console.log(now() + " Token - computed.filteredTokens - results.filter(e => e[0] == 1234): " + JSON.stringify(results.filter(e => e[0] == 1234), null, 2));
-      // console.log(now() + " Token - computed.filteredTokens - results: " + JSON.stringify(results, null, 2));
+      console.log(now() + " Token - computed.filteredTokens - results: " + JSON.stringify(results, null, 2));
       return results;
     },
     filteredTokensPaged() {
@@ -738,8 +738,6 @@ const Punks = {
       return Object.keys(collator).length;
     },
     filteredOwnersList() {
-      // TODO
-      return [];
       const collator = {};
       for (const item of this.filteredTokens) {
         if (!(item[2] in collator)) {
