@@ -106,6 +106,10 @@ After clicking on [Sync Token Metadata]
 
 <kbd><img src="images/SampleScreen33.png" width="800" /></kbd>
 
+<kbd><img src="images/SampleScreen34.png" width="800" /></kbd>
+
+<kbd><img src="images/SampleScreen35.png" width="800" /></kbd>
+
 <br />
 
 ---
