@@ -36,7 +36,7 @@ const configModule = {
       if (localStorage.explorerConfig) {
         const tempConfig = JSON.parse(localStorage.explorerConfig);
         if ('version' in tempConfig && tempConfig.version == context.state.config.version) {
-          console.log(now() + " configModule - actions.loadConfig - tempConfig: " + JSON.stringify(tempConfig).substring(0, 200));
+          // console.log(now() + " configModule - actions.loadConfig - tempConfig: " + JSON.stringify(tempConfig).substring(0, 200));
           context.commit('setConfig', tempConfig);
         }
       }
