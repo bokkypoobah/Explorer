@@ -1,7 +1,24 @@
 const portfolioModule = {
   namespaced: true,
   state: {
-    portfolios: {},
+    portfolios: {
+      "abc": {
+        "0x1234": {
+          active: true,
+        },
+        "0x2345": {
+          active: true,
+        },
+      },
+      "def": {
+        "0x3456": {
+          active: true,
+        },
+        "0x4567": {
+          active: true,
+        },
+      },
+    },
     // info: {},
 
     // addresses: [],
@@ -25,6 +42,7 @@ const portfolioModule = {
     },
   },
   getters: {
+    portfolios: state => state.portfolios,
     // address: state => state.info.address || null,
     // info: state => state.info,
     //

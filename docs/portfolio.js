@@ -4,7 +4,7 @@ const Portfolio = {
       <v-container fluid class="pa-1">
         <v-toolbar density="compact" class="mt-1">
           <h4 class="ml-2">Portfolio</h4>
-          <render-address v-if="address" :address="address"></render-address>
+          <!-- <render-address v-if="address" :address="address"></render-address> -->
           <!-- <p class="ml-5 text-caption text--disabled">
             {{ type && type.substring(0, 3) == "erc" && type.replace(/erc/, "ERC-") || "Not a token contract" }} {{ symbol }} {{ name && ("'" + name + "'") || "" }} {{ decimals }}
           </p> -->
@@ -57,7 +57,39 @@ const Portfolio = {
             TODO: Activity
           </v-tabs-window-item>
           <v-tabs-window-item value="config">
-            TODO: Setup portfolios of accounts
+            <v-card>
+              <v-card-text>
+                <v-card-title>Portfolios</v-card-title>
+                <v-data-table :headers="portfoliosHeaders" :items="portfoliosList" density="compact" style="position: relative;">
+                  <template v-slot:item.actions="{ item }">
+                    <v-btn @click="settings.portfolioDialog = 'edit'" prepend-icon="mdi-bank" variant="text" class="lowercase-btn">Edit</v-btn>
+                  </template>
+                  <template v-slot:body.append>
+                    <tr>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        <v-btn @click="settings.portfolioDialog = 'add';" prepend-icon="mdi-bank-plus" variant="text" class="lowercase-btn">Add</v-btn>
+                      </td>
+                    </tr>
+                  </template>
+                </v-data-table>
+                <v-dialog :model-value="settings.portfolioDialog != null" max-width="500px">
+                  <v-card>
+                    <v-card-title>{{ settings.portfolioDialog == "add" ? "Add Portfolio" : "Edit Portfolio" }}</v-card-title>
+                    <v-card-text>
+                      <!-- <v-text-field v-model="dialogData.title" label="Title"></v-text-field> -->
+                      <!-- Add other fields as necessary -->
+                    </v-card-text>
+                    <v-card-actions>
+                      <!-- <v-btn @click="saveRecord">Save</v-btn> -->
+                      <v-btn @click="settings.portfolioDialog = null;">Cancel</v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+
+              </v-card-text>
+            </v-card>
           </v-tabs-window-item>
         </v-tabs-window>
       </v-container>
@@ -68,71 +100,91 @@ const Portfolio = {
     return {
       initialised: false,
       settings: {
-        tab: null,
-        erc20Owners: {
+        tab: "config", // TODO: null,
+        owners: {
           sortBy: [{ key: "balances", order: "desc" }],
           itemsPerPage: 10,
           currentPage: 1,
           top: 20,
         },
+
+        portfolioDialog: "add", // TODO: null,
+
         version: 0,
       },
+
+      portfoliosHeaders: [
+        { title: 'Name', value: 'name', sortable: false },
+        { title: 'Accounts', value: 'accounts', sortable: false },
+        { text: 'Actions', value: 'actions', sortable: false }
+      ],
+
     };
   },
   computed: {
     chainId() {
       return store.getters['chainId'];
     },
-    address() {
-      return store.getters['token/address'];
+    portfolios() {
+      return store.getters['portfolio/portfolios'];
     },
-    version() {
-      return store.getters['token/info'].version || null;
+    portfoliosList() {
+      const results = [];
+      for (const [ name, accounts ] of Object.entries(this.portfolios)) {
+        results.push({ name, accounts });
+      }
+      return results;
     },
-    implementation() {
-      return store.getters['token/info'].implementation || null;
-    },
-    type() {
-      return store.getters['token/info'].type || null;
-    },
-    name() {
-      return store.getters['token/info'].name || null;
-    },
-    symbol() {
-      return store.getters['token/info'].symbol || null;
-    },
-    decimals() {
-      return store.getters['token/info'].decimals || null;
-    },
-    totalSupply() {
-      return store.getters['token/info'].totalSupply || null;
-    },
-    addresses() {
-      return store.getters['token/addresses'];
-    },
-    txHashes() {
-      return store.getters['token/txHashes'];
-    },
-    numberOfEvents() {
-      return store.getters['token/numberOfEvents'];
-    },
-    balances() {
-      return store.getters['token/balances'];
-    },
-    tokens() {
-      return store.getters['token/tokens'];
-    },
-    approvals() {
-      return store.getters['token/approvals'];
-    },
-    approvalForAlls() {
-      return store.getters['token/approvalForAlls'];
-    },
+    // address() {
+    //   return store.getters['token/address'];
+    // },
+    // version() {
+    //   return store.getters['token/info'].version || null;
+    // },
+    // implementation() {
+    //   return store.getters['token/info'].implementation || null;
+    // },
+    // type() {
+    //   return store.getters['token/info'].type || null;
+    // },
+    // name() {
+    //   return store.getters['token/info'].name || null;
+    // },
+    // symbol() {
+    //   return store.getters['token/info'].symbol || null;
+    // },
+    // decimals() {
+    //   return store.getters['token/info'].decimals || null;
+    // },
+    // totalSupply() {
+    //   return store.getters['token/info'].totalSupply || null;
+    // },
+    // addresses() {
+    //   return store.getters['token/addresses'];
+    // },
+    // txHashes() {
+    //   return store.getters['token/txHashes'];
+    // },
+    // numberOfEvents() {
+    //   return store.getters['token/numberOfEvents'];
+    // },
+    // balances() {
+    //   return store.getters['token/balances'];
+    // },
+    // tokens() {
+    //   return store.getters['token/tokens'];
+    // },
+    // approvals() {
+    //   return store.getters['token/approvals'];
+    // },
+    // approvalForAlls() {
+    //   return store.getters['token/approvalForAlls'];
+    // },
     metadata() {
       return store.getters['token/metadata'];
     },
     sync() {
-      return store.getters['token/sync'];
+      return store.getters['portfolio/sync'];
     },
     explorer() {
       return store.getters['explorer'];
@@ -140,76 +192,76 @@ const Portfolio = {
     reservoir() {
       return store.getters['reservoir'];
     },
-    getEventsHeaders() {
-      if (this.type == "erc20") {
-        return [
-          { title: 'When', value: 'when', sortable: false },
-          { title: 'Block #', value: 'blockNumber', sortable: true },
-          { title: 'Tx Hash', value: 'txHash', sortable: false },
-          { title: 'Event', value: 'event', sortable: false },
-          { title: 'From / Owner', value: 'address1', sortable: false },
-          { title: 'To / Spender', value: 'address2', sortable: false },
-          { title: 'Tokens', value: 'value1', align: 'end', sortable: false },
-        ];
-      } else if (this.type == "erc721") {
-        return [
-          { title: 'When', value: 'when', sortable: false },
-          { title: 'Block #', value: 'blockNumber', sortable: true },
-          { title: 'Tx Hash', value: 'txHash', sortable: false },
-          { title: 'Event', value: 'event', sortable: false },
-          { title: 'From / Owner / Account', value: 'address1', sortable: false },
-          { title: 'To / Approved / Operator', value: 'address2', sortable: false },
-          { title: 'Token Id / Token Id / Approved', value: 'value1', align: 'end', sortable: false },
-        ];
-      } else {
-        return [
-          { title: 'When', value: 'when', sortable: false },
-          { title: 'Block #', value: 'blockNumber', sortable: true },
-          { title: 'Tx Hash', value: 'txHash', sortable: false },
-          { title: 'Event', value: 'event', sortable: false },
-          { title: 'From / Owner', value: 'address1', sortable: false },
-          { title: 'To / Operator', value: 'address2', sortable: false },
-          { title: 'Token Id / Approved', value: 'value1', align: 'end', sortable: false },
-          { title: 'Tokens', value: 'value2', align: 'end', sortable: false },
-        ];
-      }
-    },
-    getApprovalsHeaders() {
-      if (this.type == "erc20") {
-        return [
-          { title: '#', value: 'rowNumber', align: 'end', sortable: false },
-          // { title: 'When', value: 'when', sortable: false },
-          { title: 'Block #', value: 'blockNumber', sortable: true },
-          { title: 'Tx Hash', value: 'txHash', sortable: false },
-          { title: 'Event', value: 'event', sortable: false },
-          { title: 'Owner', value: 'address1', sortable: false },
-          { title: 'Spender', value: 'address2', sortable: false },
-          { title: 'Tokens', value: 'value1', align: 'end', sortable: false },
-        ];
-      } else if (this.type == "erc721") {
-        return [
-          { title: '#', value: 'rowNumber', align: 'end', sortable: false },
-          // { title: 'When', value: 'when', sortable: false },
-          { title: 'Block #', value: 'blockNumber', sortable: true },
-          { title: 'Tx Hash', value: 'txHash', sortable: false },
-          { title: 'Event', value: 'event', sortable: false },
-          { title: 'Owner', value: 'address1', sortable: false },
-          { title: 'Token Id / Operator', value: 'address2', sortable: false },
-          { title: 'Approved', value: 'value1', sortable: false },
-        ];
-      } else {
-        return [
-          { title: '#', value: 'rowNumber', align: 'end', sortable: false },
-          // { title: 'When', value: 'when', sortable: false },
-          { title: 'Block #', value: 'blockNumber', sortable: true },
-          { title: 'Tx Hash', value: 'txHash', sortable: false },
-          { title: 'Event', value: 'event', sortable: false },
-          { title: 'Owner', value: 'address1', sortable: false },
-          { title: 'Operator', value: 'address2', sortable: false },
-          { title: 'Approved', value: 'value1', sortable: false },
-        ];
-      }
-    },
+    // getEventsHeaders() {
+    //   if (this.type == "erc20") {
+    //     return [
+    //       { title: 'When', value: 'when', sortable: false },
+    //       { title: 'Block #', value: 'blockNumber', sortable: true },
+    //       { title: 'Tx Hash', value: 'txHash', sortable: false },
+    //       { title: 'Event', value: 'event', sortable: false },
+    //       { title: 'From / Owner', value: 'address1', sortable: false },
+    //       { title: 'To / Spender', value: 'address2', sortable: false },
+    //       { title: 'Tokens', value: 'value1', align: 'end', sortable: false },
+    //     ];
+    //   } else if (this.type == "erc721") {
+    //     return [
+    //       { title: 'When', value: 'when', sortable: false },
+    //       { title: 'Block #', value: 'blockNumber', sortable: true },
+    //       { title: 'Tx Hash', value: 'txHash', sortable: false },
+    //       { title: 'Event', value: 'event', sortable: false },
+    //       { title: 'From / Owner / Account', value: 'address1', sortable: false },
+    //       { title: 'To / Approved / Operator', value: 'address2', sortable: false },
+    //       { title: 'Token Id / Token Id / Approved', value: 'value1', align: 'end', sortable: false },
+    //     ];
+    //   } else {
+    //     return [
+    //       { title: 'When', value: 'when', sortable: false },
+    //       { title: 'Block #', value: 'blockNumber', sortable: true },
+    //       { title: 'Tx Hash', value: 'txHash', sortable: false },
+    //       { title: 'Event', value: 'event', sortable: false },
+    //       { title: 'From / Owner', value: 'address1', sortable: false },
+    //       { title: 'To / Operator', value: 'address2', sortable: false },
+    //       { title: 'Token Id / Approved', value: 'value1', align: 'end', sortable: false },
+    //       { title: 'Tokens', value: 'value2', align: 'end', sortable: false },
+    //     ];
+    //   }
+    // },
+    // getApprovalsHeaders() {
+    //   if (this.type == "erc20") {
+    //     return [
+    //       { title: '#', value: 'rowNumber', align: 'end', sortable: false },
+    //       // { title: 'When', value: 'when', sortable: false },
+    //       { title: 'Block #', value: 'blockNumber', sortable: true },
+    //       { title: 'Tx Hash', value: 'txHash', sortable: false },
+    //       { title: 'Event', value: 'event', sortable: false },
+    //       { title: 'Owner', value: 'address1', sortable: false },
+    //       { title: 'Spender', value: 'address2', sortable: false },
+    //       { title: 'Tokens', value: 'value1', align: 'end', sortable: false },
+    //     ];
+    //   } else if (this.type == "erc721") {
+    //     return [
+    //       { title: '#', value: 'rowNumber', align: 'end', sortable: false },
+    //       // { title: 'When', value: 'when', sortable: false },
+    //       { title: 'Block #', value: 'blockNumber', sortable: true },
+    //       { title: 'Tx Hash', value: 'txHash', sortable: false },
+    //       { title: 'Event', value: 'event', sortable: false },
+    //       { title: 'Owner', value: 'address1', sortable: false },
+    //       { title: 'Token Id / Operator', value: 'address2', sortable: false },
+    //       { title: 'Approved', value: 'value1', sortable: false },
+    //     ];
+    //   } else {
+    //     return [
+    //       { title: '#', value: 'rowNumber', align: 'end', sortable: false },
+    //       // { title: 'When', value: 'when', sortable: false },
+    //       { title: 'Block #', value: 'blockNumber', sortable: true },
+    //       { title: 'Tx Hash', value: 'txHash', sortable: false },
+    //       { title: 'Event', value: 'event', sortable: false },
+    //       { title: 'Owner', value: 'address1', sortable: false },
+    //       { title: 'Operator', value: 'address2', sortable: false },
+    //       { title: 'Approved', value: 'value1', sortable: false },
+    //     ];
+    //   }
+    // },
     // erc20OwnersList() {
     //   const results = [];
     //   for (const [address, balance] of Object.entries(this.balances)) {
