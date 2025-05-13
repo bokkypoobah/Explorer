@@ -53,6 +53,7 @@
     <script src="addressesModule.js"></script>
     <script src="blocksModule.js"></script>
     <script src="nameModule.js"></script>
+    <script src="portfolioModule.js"></script>
     <script src="punksModule.js"></script>
     <script src="tokenModule.js"></script>
 
@@ -71,6 +72,7 @@
     <script src="addressTokens.js"></script>
     <script src="addressTransactions.js"></script>
     <script src="addressEvents.js"></script>
+    <script src="portfolio.js"></script>
     <script src="punks.js"></script>
     <script src="token.js"></script>
 
@@ -170,6 +172,9 @@
                 <v-list-item to="/token" prepend-icon="mdi-cash-multiple" density="compact">
                   <v-list-item-title>Token</v-list-item-title>
                 </v-list-item>
+                <v-list-item to="/name" prepend-icon="mdi-alphabetical" density="compact">
+                  <v-list-item-title>Name</v-list-item-title>
+                </v-list-item>
                 <v-list-item to="/punks" prepend-icon="mdi-account-cowboy-hat" density="compact">
                   <v-list-item-title>CryptoPunks</v-list-item-title>
                 </v-list-item>
@@ -177,7 +182,17 @@
             </v-menu>
           </v-btn>
 
-          <v-btn class="px-3 lowercase-btn" text>Names
+          <v-btn class="px-3 lowercase-btn" text>Portfolio
+            <v-menu activator="parent">
+              <v-list density="compact">
+                <v-list-item to="/portfolio" prepend-icon="mdi-bank" density="compact">
+                  <v-list-item-title>Portfolio</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </v-btn>
+
+          <!-- <v-btn class="px-3 lowercase-btn" text>Names
             <v-menu activator="parent">
               <v-list density="compact">
                 <v-list-item to="/name" prepend-icon="mdi-alphabetical" density="compact">
@@ -185,7 +200,7 @@
                 </v-list-item>
               </v-list>
             </v-menu>
-          </v-btn>
+          </v-btn> -->
 
           <v-btn class="px-3 lowercase-btn" text>Other
             <v-menu activator="parent">

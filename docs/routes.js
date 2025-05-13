@@ -120,6 +120,12 @@ const routes = [
     props: true,
   },
   {
+    path: '/portfolio/:inputPortfolio?',
+    name: "Portfolio",
+    component: Portfolio,
+    props: true,
+  },
+  {
     path: '/config',
     name: "Config",
     component: Config,

@@ -104,6 +104,7 @@ const store = new Vuex.Store({
     config: configModule,
     connection: connectionModule,
     name: nameModule,
+    portfolio: portfolioModule,
     punks: punksModule,
     token: tokenModule,
     transaction: transactionModule,
