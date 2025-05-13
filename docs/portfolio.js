@@ -76,18 +76,17 @@ const Portfolio = {
                 </v-data-table>
                 <v-dialog :model-value="settings.portfolioDialog != null" max-width="500px">
                   <v-card>
-                    <v-card-title>{{ settings.portfolioDialog == "add" ? "Add Portfolio" : "Edit Portfolio" }}</v-card-title>
+                    <v-card-item :prepend-icon="settings.portfolioDialog == 'add' ? 'mdi-bank-plus' : 'mdi-bank'" :title="settings.portfolioDialog == 'add' ? 'Portfolio - Add' : 'Portfolio - Edit'"></v-card-item>
                     <v-card-text>
                       <!-- <v-text-field v-model="dialogData.title" label="Title"></v-text-field> -->
-                      <!-- Add other fields as necessary -->
                     </v-card-text>
                     <v-card-actions>
-                      <!-- <v-btn @click="saveRecord">Save</v-btn> -->
-                      <v-btn @click="settings.portfolioDialog = null;">Cancel</v-btn>
+                      <v-btn v-if="settings.portfolioDialog == 'add'" @click="addOrSavePortfolio" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Add</v-btn>
+                      <v-btn v-if="settings.portfolioDialog == 'edit'" @click="addOrSavePortfolio" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Save</v-btn>
+                      <v-btn @click="settings.portfolioDialog = null;" prepend-icon="mdi-window-close" variant="text" class="lowercase-btn">Cancel</v-btn>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
-
               </v-card-text>
             </v-card>
           </v-tabs-window-item>
@@ -192,333 +191,18 @@ const Portfolio = {
     reservoir() {
       return store.getters['reservoir'];
     },
-    // getEventsHeaders() {
-    //   if (this.type == "erc20") {
-    //     return [
-    //       { title: 'When', value: 'when', sortable: false },
-    //       { title: 'Block #', value: 'blockNumber', sortable: true },
-    //       { title: 'Tx Hash', value: 'txHash', sortable: false },
-    //       { title: 'Event', value: 'event', sortable: false },
-    //       { title: 'From / Owner', value: 'address1', sortable: false },
-    //       { title: 'To / Spender', value: 'address2', sortable: false },
-    //       { title: 'Tokens', value: 'value1', align: 'end', sortable: false },
-    //     ];
-    //   } else if (this.type == "erc721") {
-    //     return [
-    //       { title: 'When', value: 'when', sortable: false },
-    //       { title: 'Block #', value: 'blockNumber', sortable: true },
-    //       { title: 'Tx Hash', value: 'txHash', sortable: false },
-    //       { title: 'Event', value: 'event', sortable: false },
-    //       { title: 'From / Owner / Account', value: 'address1', sortable: false },
-    //       { title: 'To / Approved / Operator', value: 'address2', sortable: false },
-    //       { title: 'Token Id / Token Id / Approved', value: 'value1', align: 'end', sortable: false },
-    //     ];
-    //   } else {
-    //     return [
-    //       { title: 'When', value: 'when', sortable: false },
-    //       { title: 'Block #', value: 'blockNumber', sortable: true },
-    //       { title: 'Tx Hash', value: 'txHash', sortable: false },
-    //       { title: 'Event', value: 'event', sortable: false },
-    //       { title: 'From / Owner', value: 'address1', sortable: false },
-    //       { title: 'To / Operator', value: 'address2', sortable: false },
-    //       { title: 'Token Id / Approved', value: 'value1', align: 'end', sortable: false },
-    //       { title: 'Tokens', value: 'value2', align: 'end', sortable: false },
-    //     ];
-    //   }
-    // },
-    // getApprovalsHeaders() {
-    //   if (this.type == "erc20") {
-    //     return [
-    //       { title: '#', value: 'rowNumber', align: 'end', sortable: false },
-    //       // { title: 'When', value: 'when', sortable: false },
-    //       { title: 'Block #', value: 'blockNumber', sortable: true },
-    //       { title: 'Tx Hash', value: 'txHash', sortable: false },
-    //       { title: 'Event', value: 'event', sortable: false },
-    //       { title: 'Owner', value: 'address1', sortable: false },
-    //       { title: 'Spender', value: 'address2', sortable: false },
-    //       { title: 'Tokens', value: 'value1', align: 'end', sortable: false },
-    //     ];
-    //   } else if (this.type == "erc721") {
-    //     return [
-    //       { title: '#', value: 'rowNumber', align: 'end', sortable: false },
-    //       // { title: 'When', value: 'when', sortable: false },
-    //       { title: 'Block #', value: 'blockNumber', sortable: true },
-    //       { title: 'Tx Hash', value: 'txHash', sortable: false },
-    //       { title: 'Event', value: 'event', sortable: false },
-    //       { title: 'Owner', value: 'address1', sortable: false },
-    //       { title: 'Token Id / Operator', value: 'address2', sortable: false },
-    //       { title: 'Approved', value: 'value1', sortable: false },
-    //     ];
-    //   } else {
-    //     return [
-    //       { title: '#', value: 'rowNumber', align: 'end', sortable: false },
-    //       // { title: 'When', value: 'when', sortable: false },
-    //       { title: 'Block #', value: 'blockNumber', sortable: true },
-    //       { title: 'Tx Hash', value: 'txHash', sortable: false },
-    //       { title: 'Event', value: 'event', sortable: false },
-    //       { title: 'Owner', value: 'address1', sortable: false },
-    //       { title: 'Operator', value: 'address2', sortable: false },
-    //       { title: 'Approved', value: 'value1', sortable: false },
-    //     ];
-    //   }
-    // },
-    // erc20OwnersList() {
-    //   const results = [];
-    //   for (const [address, balance] of Object.entries(this.balances)) {
-    //     const percent = ethers.BigNumber.from(balance).mul(1000000).div(this.totalSupply) / 10000.0;
-    //     results.push({ address, balance, percent });
-    //   }
-    //   results.sort((a, b) => {
-    //     return ethers.BigNumber.from(b.balance).sub(a.balance);
-    //   });
-    //   return results;
-    // },
-    // nftTotalSupply() {
-    //   let result = 0;
-    //   if (this.type == "erc721") {
-    //     result = Object.keys(this.tokens).length;
-    //   } else if (this.type == "erc1155") {
-    //     for (const [tokenId, ownerData] of Object.entries(this.tokens)) {
-    //       for (const [owner, count] of Object.entries(ownerData)) {
-    //         result += parseInt(count);
-    //       }
-    //     }
-    //   }
-    //   return result;
-    // },
-    // nftAttributes() {
-    //   const results = {};
-    //   if (this.type == "erc721" || this.type == "erc1155") {
-    //     for (const [tokenId, tokenData] of Object.entries(this.metadata.tokens || {})) {
-    //       for (const attribute of tokenData.attributes) {
-    //         if (!(attribute.key in results)) {
-    //           results[attribute.key] = {};
-    //         }
-    //         if (!(attribute.value in results[attribute.key])) {
-    //           results[attribute.key][attribute.value] = [];
-    //         }
-    //         results[attribute.key][attribute.value].push(parseInt(tokenId));
-    //       }
-    //     }
-    //   }
-    //   return results;
-    // },
-    // nftAttributesList() {
-    //   const results = [];
-    //   for (const [attribute, attributeInfo] of Object.entries(this.nftAttributes)) {
-    //     const array = [];
-    //     for (const [value, info] of Object.entries(attributeInfo)) {
-    //       array.push({ value, count: info.length });
-    //     }
-    //     array.sort((a, b) => {
-    //       return a.count - b.count;
-    //     });
-    //     results.push({ attribute, options: array });
-    //   }
-    //   results.sort((a, b) => {
-    //     return a.attribute.localeCompare(b.attribute);
-    //   });
-    //   return results;
-    // },
-    // nftFilteredTokens() {
-    //   const results = [];
-    //   if (this.type == "erc721" || this.type == "erc1155") {
-    //     if (this.settings.attributes[this.address]) {
-    //       let tokenIds = null;
-    //       for (const [attribute, attributeData] of Object.entries(this.settings.attributes[this.address])) {
-    //         let attributeTokenIds = null;
-    //         for (const [option, optionData] of Object.entries(attributeData)) {
-    //           if (!attributeTokenIds) {
-    //             attributeTokenIds = new Set(this.nftAttributes[attribute][option]);
-    //           } else {
-    //             attributeTokenIds = new Set([...attributeTokenIds, ...this.nftAttributes[attribute][option]]);
-    //           }
-    //         }
-    //         if (!tokenIds) {
-    //           tokenIds = attributeTokenIds;
-    //         } else {
-    //           const newTokenIds = new Set();
-    //           for (const tokenId of tokenIds) {
-    //             if ((attributeTokenIds.has(tokenId))) {
-    //               newTokenIds.add(tokenId);
-    //             }
-    //           }
-    //           tokenIds = newTokenIds;
-    //         }
-    //       }
-    //       for (const tokenId of tokenIds) {
-    //         if (this.type == "erc721") {
-    //           results.push({ tokenId, ...this.metadata.tokens[tokenId], owner: this.tokens[tokenId] || null });
-    //         } else {
-    //           results.push({ tokenId, ...this.metadata.tokens[tokenId], owners: this.tokens[tokenId] || null, owner: undefined });
-    //         }
-    //       }
-    //     } else {
-    //       for (const [tokenId, tokenData] of Object.entries(this.metadata.tokens || {})) {
-    //         if (this.type == "erc721") {
-    //           results.push({ tokenId, ...this.metadata.tokens[tokenId], owner: this.tokens[tokenId] || null });
-    //         } else {
-    //           results.push({ tokenId, ...this.metadata.tokens[tokenId], owners: this.tokens[tokenId] || null, owner: undefined });
-    //         }
-    //       }
-    //     }
-    //   }
-    //   if (this.settings.tokens.sortOption == "tokenidasc") {
-    //     results.sort((a, b) => {
-    //       return a.tokenId - b.tokenId;
-    //     });
-    //   } else if (this.settings.tokens.sortOption == "tokeniddsc") {
-    //     results.sort((a, b) => {
-    //       return b.tokenId - a.tokenId;
-    //     });
-    //   }
-    //   return results;
-    // },
-    // nftFilteredTokensPaged() {
-    //   const results = this.nftFilteredTokens.slice((this.settings.tokens.currentPage - 1) * this.settings.tokens.itemsPerPage, this.settings.tokens.currentPage * this.settings.tokens.itemsPerPage);
-    //   console.log(now() + " Portfolio - computed.nftFilteredTokensPaged - results: " + JSON.stringify(results, null, 2));
-    //   return results;
-    // },
-    // nftOwnersList() {
-    //   const results = [];
-    //   // console.log(now() + " Portfolio - computed.nftOwnersList - this.tokens: " + JSON.stringify(this.tokens, null, 2));
-    //   if (this.type == "erc721") {
-    //     const totalSupply = this.nftTotalSupply;
-    //     const owners = {};
-    //     for (const [tokenId, owner] of Object.entries(this.tokens)) {
-    //       if (!(owner in owners)) {
-    //         owners[owner] = [];
-    //       }
-    //       owners[owner].push(tokenId);
-    //     }
-    //     // console.log(now() + " Portfolio - computed.nftOwnersList - owners: " + JSON.stringify(owners, null, 2));
-    //     for (const [address, tokens] of Object.entries(owners)) {
-    //       const percent = tokens.length * 100.0 / totalSupply ;
-    //       results.push({ address, count: tokens.length, percent: parseFloat(percent.toFixed(4)), tokens });
-    //     }
-    //   } else if (this.type == "erc1155") {
-    //     const totalSupply = this.nftTotalSupply;
-    //     const owners = {};
-    //     for (const [tokenId, ownerData] of Object.entries(this.tokens)) {
-    //       for (const [owner, count] of Object.entries(ownerData)) {
-    //         if (!(owner in owners)) {
-    //           owners[owner] = [];
-    //         }
-    //         owners[owner].push({ tokenId, count });
-    //       }
-    //     }
-    //     // console.log(now() + " Portfolio - computed.nftOwnersList - owners: " + JSON.stringify(owners, null, 2));
-    //     for (const [address, tokenInfo] of Object.entries(owners)) {
-    //       let count = 0;
-    //       for (const item of tokenInfo) {
-    //         // console.log("  " + JSON.stringify(item));
-    //         count += parseInt(item.count);
-    //       }
-    //       // console.log(address + " => " + count + " " + JSON.stringify(tokenInfo));
-    //       const percent = count * 100.0 / totalSupply ;
-    //       results.push({ address, count, percent: percent.toFixed(4), tokens: tokenInfo });
-    //     }
-    //
-    //   }
-    //   results.sort((a, b) => {
-    //     return b.count - a.count;
-    //   });
-    //   // console.log(now() + " Portfolio - computed.nftOwnersList - results: " + JSON.stringify(results, null, 2));
-    //   return results;
-    // },
-    // approvalsList() {
-    //   const results = [];
-    //   // console.log(now() + " Portfolio - computed.approvalsList - this.approvals: " + JSON.stringify(this.approvals, null, 2));
-    //   // console.log(now() + " Portfolio - computed.approvalsList - this.approvalForAlls: " + JSON.stringify(this.approvalForAlls, null, 2));
-    //   if (this.type == "erc20") {
-    //     for (const [owner, ownerData] of Object.entries(this.approvals)) {
-    //       for (const [spender, data] of Object.entries(ownerData)) {
-    //         results.push({ event: "Approval", owner, spender, ...data });
-    //       }
-    //     }
-    //   } else if (this.type == "erc721") {
-    //     for (const [owner, ownerData] of Object.entries(this.approvals)) {
-    //       for (const [tokenId, data] of Object.entries(ownerData)) {
-    //         results.push({ event: "Approval", owner, tokenId, ...data });
-    //       }
-    //     }
-    //     for (const [owner, ownerData] of Object.entries(this.approvalForAlls)) {
-    //       for (const [operator, data] of Object.entries(ownerData)) {
-    //         results.push({ event: "ApprovalForAll", owner, operator, ...data });
-    //       }
-    //     }
-    //   } else if (this.type == "erc1155") {
-    //     for (const [owner, ownerData] of Object.entries(this.approvalForAlls)) {
-    //       for (const [operator, data] of Object.entries(ownerData)) {
-    //         results.push({ event: "ApprovalForAll", owner, operator, ...data });
-    //       }
-    //     }
-    //   }
-    //   results.sort((a, b) => {
-    //     return b.blockNumber - a.blockNumber;
-    //   });
-    //   // console.log(now() + " Portfolio - computed.approvalsList - results: " + JSON.stringify(results, null, 2));
-    //   return results;
-    // },
-    // erc20OwnersChartSeries() {
-    //   const series = [];
-    //   let other = 0;
-    //   for (const [index, row] of this.erc20OwnersList.entries()) {
-    //     const value = parseFloat(ethers.utils.formatUnits(row.balance, this.decimals));
-    //     if (index < this.settings.erc20Owners.top) {
-    //       series.push(value);
-    //     } else {
-    //       other += value;
-    //     }
-    //   }
-    //   if (other > 0) {
-    //     series.push(other);
-    //   }
-    //   // console.log(now() + " Portfolio - computed.erc20OwnersChartSeries - series: " + JSON.stringify(series));
-    //   return series;
-    // },
-    // erc20OwnersChartOptions() {
-    //   const labels = [];
-    //   let other = 0;
-    //   let otherPercent = 0;
-    //   for (const [index, row] of this.erc20OwnersList.entries()) {
-    //     const value = parseFloat(ethers.utils.formatUnits(row.balance, this.decimals));
-    //     if (index < this.settings.erc20Owners.top) {
-    //       labels.push(this.addresses[row.address].substring(0, 10) + " " + row.percent.toFixed(4) + "%");
-    //     } else {
-    //       other += value;
-    //       otherPercent += row.percent;
-    //     }
-    //   }
-    //   if (other > 0) {
-    //     labels.push("Other " + otherPercent.toFixed(4) + "%");
-    //   }
-    //   // console.log(now() + " Portfolio - computed.erc20OwnersChartOptions - labels: " + JSON.stringify(labels));
-    //   return {
-    //     chart: {
-    //       width: 540,
-    //       type: 'pie',
-    //     },
-    //     labels,
-    //     // responsive: [{
-    //     //   breakpoint: 480,
-    //     //   options: {
-    //     //     chart: {
-    //     //       width: 200
-    //     //     },
-    //     //     legend: {
-    //     //       position: 'bottom'
-    //     //     }
-    //     //   }
-    //     // }],
-    //   }
-    // },
   },
   methods: {
     syncToken() {
       console.log(now() + " Portfolio - methods.syncToken - address: " + this.address);
       store.dispatch('token/loadToken', { inputAddress: this.address, forceUpdate: true });
     },
+
+    async addOrSavePortfolio() {
+      console.log(now() + " Portfolio - methods.addOrSavePortfolio - settings.portfolioDialog: " + this.settings.portfolioDialog);
+      this.settings.portfolioDialog = null;
+    },
+
     // syncTokenEvents() {
     //   console.log(now() + " Portfolio - methods.syncTokenEvents - address: " + this.address);
     //   store.dispatch('token/syncTokenEvents', { inputAddress: this.address, forceUpdate: true });
