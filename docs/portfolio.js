@@ -62,28 +62,28 @@ const Portfolio = {
                 <v-card-title>Portfolios</v-card-title>
                 <v-data-table :headers="portfoliosHeaders" :items="portfoliosList" density="compact" style="position: relative;">
                   <template v-slot:item.actions="{ item }">
-                    <v-btn @click="settings.portfolioDialog = 'edit'" prepend-icon="mdi-bank" variant="text" class="lowercase-btn">Edit</v-btn>
+                    <v-btn @click="viewPortfolioEdit(item.name);" prepend-icon="mdi-pencil" variant="text" class="lowercase-btn">Edit</v-btn>
                   </template>
                   <template v-slot:body.append>
                     <tr>
                       <td></td>
                       <td></td>
                       <td>
-                        <v-btn @click="settings.portfolioDialog = 'add';" prepend-icon="mdi-bank-plus" variant="text" class="lowercase-btn">Add</v-btn>
+                        <v-btn @click="viewPortfolioAdd();" prepend-icon="mdi-pencil-plus" variant="text" class="lowercase-btn">Add</v-btn>
                       </td>
                     </tr>
                   </template>
                 </v-data-table>
-                <v-dialog :model-value="settings.portfolioDialog != null" max-width="500px">
+                <v-dialog :model-value="portfolioDialog != null" max-width="500px">
                   <v-card>
-                    <v-card-item :prepend-icon="settings.portfolioDialog == 'add' ? 'mdi-bank-plus' : 'mdi-bank'" :title="settings.portfolioDialog == 'add' ? 'Portfolio - Add' : 'Portfolio - Edit'"></v-card-item>
+                    <v-card-item :prepend-icon="portfolioDialog == 'add' ? 'mdi-pencil-plus' : 'mdi-pencil'" :title="portfolioDialog == 'add' ? 'Portfolio - Add' : 'Portfolio - Edit'"></v-card-item>
                     <v-card-text>
                       <!-- <v-text-field v-model="dialogData.title" label="Title"></v-text-field> -->
                     </v-card-text>
                     <v-card-actions>
-                      <v-btn v-if="settings.portfolioDialog == 'add'" @click="addOrSavePortfolio" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Add</v-btn>
-                      <v-btn v-if="settings.portfolioDialog == 'edit'" @click="addOrSavePortfolio" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Save</v-btn>
-                      <v-btn @click="settings.portfolioDialog = null;" prepend-icon="mdi-window-close" variant="text" class="lowercase-btn">Cancel</v-btn>
+                      <v-btn v-if="portfolioDialog == 'add'" @click="addOrSavePortfolio" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Add</v-btn>
+                      <v-btn v-if="portfolioDialog == 'edit'" @click="addOrSavePortfolio" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Save</v-btn>
+                      <v-btn @click="portfolioDialog = null;" prepend-icon="mdi-window-close" variant="text" class="lowercase-btn">Cancel</v-btn>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
@@ -107,10 +107,11 @@ const Portfolio = {
           top: 20,
         },
 
-        portfolioDialog: "add", // TODO: null,
-
         version: 0,
       },
+
+      portfolioDialog: "edit", // TODO: null,
+      selectedPortfolio: "abc", // TODO: null,
 
       portfoliosHeaders: [
         { title: 'Name', value: 'name', sortable: false },
@@ -198,9 +199,20 @@ const Portfolio = {
       store.dispatch('token/loadToken', { inputAddress: this.address, forceUpdate: true });
     },
 
+    viewPortfolioAdd() {
+      console.log(now() + " Portfolio - methods.viewPortfolioAdd");
+      this.selectedPortfolio = null;
+      this.portfolioDialog = "add";
+    },
+    viewPortfolioEdit(name) {
+      console.log(now() + " Portfolio - methods.viewPortfolioEdit - name: " + name);
+      this.selectedPortfolio = name;
+      this.portfolioDialog = "edit";
+    },
+
     async addOrSavePortfolio() {
-      console.log(now() + " Portfolio - methods.addOrSavePortfolio - settings.portfolioDialog: " + this.settings.portfolioDialog);
-      this.settings.portfolioDialog = null;
+      console.log(now() + " Portfolio - methods.addOrSavePortfolio - portfolioDialog: " + this.portfolioDialog);
+      this.portfolioDialog = null;
     },
 
     // syncTokenEvents() {
