@@ -62,28 +62,28 @@ const Portfolio = {
                 <v-card-title>Portfolios</v-card-title>
                 <v-data-table :headers="portfoliosHeaders" :items="portfoliosList" density="compact" style="position: relative;">
                   <template v-slot:item.actions="{ item }">
-                    <v-btn @click="viewPortfolioEdit(item.name);" prepend-icon="mdi-pencil" variant="text" class="lowercase-btn">Edit</v-btn>
+                    <v-btn @click="portfolioDialogView(item.name);" prepend-icon="mdi-pencil" variant="text" class="lowercase-btn">Edit</v-btn>
                   </template>
                   <template v-slot:body.append>
                     <tr>
                       <td></td>
                       <td></td>
                       <td>
-                        <v-btn @click="viewPortfolioAdd();" prepend-icon="mdi-pencil-plus" variant="text" class="lowercase-btn">Add</v-btn>
+                        <v-btn @click="portfolioDialogView(null);" prepend-icon="mdi-pencil-plus" variant="text" class="lowercase-btn">Add</v-btn>
                       </td>
                     </tr>
                   </template>
                 </v-data-table>
-                <v-dialog :model-value="portfolioDialog != null" max-width="500px">
+                <v-dialog :model-value="portfolioDialog.mode != null" persistent max-width="500px">
                   <v-card>
-                    <v-card-item :prepend-icon="portfolioDialog == 'add' ? 'mdi-pencil-plus' : 'mdi-pencil'" :title="portfolioDialog == 'add' ? 'Portfolio - Add' : 'Portfolio - Edit'"></v-card-item>
+                    <v-card-item :prepend-icon="portfolioDialog.mode == 'add' ? 'mdi-pencil-plus' : 'mdi-pencil'" :title="portfolioDialog.mode == 'add' ? 'Portfolio - Add' : 'Portfolio - Edit'"></v-card-item>
                     <v-card-text>
                       <!-- <v-text-field v-model="dialogData.title" label="Title"></v-text-field> -->
                     </v-card-text>
                     <v-card-actions>
-                      <v-btn v-if="portfolioDialog == 'add'" @click="addOrSavePortfolio" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Add</v-btn>
-                      <v-btn v-if="portfolioDialog == 'edit'" @click="addOrSavePortfolio" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Save</v-btn>
-                      <v-btn @click="portfolioDialog = null;" prepend-icon="mdi-window-close" variant="text" class="lowercase-btn">Cancel</v-btn>
+                      <v-btn v-if="portfolioDialog.mode == 'add'" @click="portfolioDialogAddOrSave" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Add</v-btn>
+                      <v-btn v-if="portfolioDialog.mode == 'edit'" @click="portfolioDialogAddOrSave" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Save</v-btn>
+                      <v-btn @click="portfolioDialog.mode = null;" prepend-icon="mdi-window-close" variant="text" class="lowercase-btn">Cancel</v-btn>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
@@ -110,8 +110,11 @@ const Portfolio = {
         version: 0,
       },
 
-      portfolioDialog: "edit", // TODO: null,
-      selectedPortfolio: "abc", // TODO: null,
+      portfolioDialog: {
+        mode: "edit", // TODO: null,
+        name: "abc", // TODO: null,
+        accounts: [],
+      },
 
       portfoliosHeaders: [
         { title: 'Name', value: 'name', sortable: false },
@@ -199,20 +202,20 @@ const Portfolio = {
       store.dispatch('token/loadToken', { inputAddress: this.address, forceUpdate: true });
     },
 
-    viewPortfolioAdd() {
-      console.log(now() + " Portfolio - methods.viewPortfolioAdd");
-      this.selectedPortfolio = null;
-      this.portfolioDialog = "add";
+    portfolioDialogView(name) {
+      console.log(now() + " Portfolio - methods.portfolioDialogView - name: " + name);
+      this.portfolioDialog.mode = name == null ? "add" : "edit";
+      this.portfolioDialog.name = name;
+      const accounts = [];
+      for (const [ account, accountData ] of Object.entries(this.portfolios[this.portfolioDialog.name] || {})) {
+        accounts.push({ account, ...accountData });
+      }
+      console.log(now() + " Portfolio - methods.portfolioDialogView - accounts: " + JSON.stringify(accounts));
+      this.portfolioDialog.accounts = accounts;
     },
-    viewPortfolioEdit(name) {
-      console.log(now() + " Portfolio - methods.viewPortfolioEdit - name: " + name);
-      this.selectedPortfolio = name;
-      this.portfolioDialog = "edit";
-    },
-
-    async addOrSavePortfolio() {
-      console.log(now() + " Portfolio - methods.addOrSavePortfolio - portfolioDialog: " + this.portfolioDialog);
-      this.portfolioDialog = null;
+    async portfolioDialogAddOrSave() {
+      console.log(now() + " Portfolio - methods.portfolioDialogAddOrSave - portfolioDialog.mode: " + this.portfolioDialog.mode);
+      this.portfolioDialog.mode = null;
     },
 
     // syncTokenEvents() {
