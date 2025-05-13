@@ -30,6 +30,7 @@ const Portfolio = {
             <v-tab prepend-icon="mdi-text-long" text="Summary" value="summary" class="lowercase-btn"></v-tab>
             <v-tab prepend-icon="mdi-cash-multiple" text="Fungibles" value="fungibles" class="lowercase-btn"></v-tab>
             <v-tab prepend-icon="mdi-cards-playing-heart-multiple-outline" text="Non-Fungibles" value="nonfungibles" class="lowercase-btn"></v-tab>
+            <v-tab prepend-icon="mdi-alphabetical" text="Names" value="names" class="lowercase-btn"></v-tab>
             <v-tab prepend-icon="mdi-check-outline" text="Approvals" value="approvals" class="lowercase-btn"></v-tab>
             <v-tab prepend-icon="mdi-math-log" text="Activity" value="activity" class="lowercase-btn"></v-tab>
             <v-tab prepend-icon="mdi-cog" text="Config" value="config" class="lowercase-btn"></v-tab>
@@ -38,12 +39,25 @@ const Portfolio = {
 
         <v-tabs-window v-model="settings.tab">
           <v-tabs-window-item value="summary">
+            TODO: Summary
           </v-tabs-window-item>
-          <v-tabs-window-item value="tokens">
+          <v-tabs-window-item value="fungibles">
+            TODO: ERC-20 Fungibles
           </v-tabs-window-item>
-          <v-tabs-window-item value="owners">
+          <v-tabs-window-item value="nonfungibles">
+            TODO: ERC-721 and ERC-1155 Non-Fungibles
+          </v-tabs-window-item>
+          <v-tabs-window-item value="names">
+            TODO: ENS Names, with expiry information
           </v-tabs-window-item>
           <v-tabs-window-item value="approvals">
+            TODO: ERC-20, ERC-721 and ERC-1155 Approvals
+          </v-tabs-window-item>
+          <v-tabs-window-item value="activity">
+            TODO: Activity
+          </v-tabs-window-item>
+          <v-tabs-window-item value="config">
+            TODO: Setup portfolios of accounts
           </v-tabs-window-item>
         </v-tabs-window>
       </v-container>
@@ -540,9 +554,10 @@ const Portfolio = {
     },
     saveSettings() {
       // console.log(now() + " Portfolio - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
-      if (this.initialised) {
-        localStorage.explorerTokenSettings = JSON.stringify(this.settings);
-      }
+      // TODO
+      // if (this.initialised) {
+      //   localStorage.explorerPortfolioSettings = JSON.stringify(this.settings);
+      // }
     },
     copyToClipboard(str) {
       navigator.clipboard.writeText(str);
@@ -554,8 +569,8 @@ const Portfolio = {
   mounted() {
     console.log(now() + " Portfolio - mounted - inputPortfolio: " + this.inputPortfolio);
 
-    // if ('explorerTokenSettings' in localStorage) {
-    //   const tempSettings = JSON.parse(localStorage.explorerTokenSettings);
+    // if ('explorerPortfolioSettings' in localStorage) {
+    //   const tempSettings = JSON.parse(localStorage.explorerPortfolioSettings);
     //   // console.log(now() + " Portfolio - mounted - tempSettings: " + JSON.stringify(tempSettings));
     //   if ('version' in tempSettings && tempSettings.version == this.settings.version) {
     //     this.settings = tempSettings;
@@ -564,10 +579,10 @@ const Portfolio = {
     // this.initialised = true;
     // console.log(now() + " Portfolio - mounted - this.settings: " + JSON.stringify(this.settings));
     //
-    // const t = this;
-    // setTimeout(function() {
-    //   store.dispatch('token/loadToken', { inputAddress: t.inputAddress, forceUpdate: false });
-    // }, 100);
+    const t = this;
+    setTimeout(function() {
+      store.dispatch('portfolio/loadPortfolio', { inputPortfolio: t.inputPortfolio, forceUpdate: false });
+    }, 100);
 	},
   unmounted() {
     console.log(now() + " Portfolio - unmounted");
