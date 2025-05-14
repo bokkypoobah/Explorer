@@ -61,11 +61,19 @@ const Portfolio = {
               <v-card-text>
                 <v-card-title>Portfolios</v-card-title>
                 <v-data-table :headers="portfoliosHeaders" :items="portfoliosList" density="compact" style="position: relative;">
+                  <template v-slot:item.name="{ item }">
+                    {{ item.name }}
+                  </template>
+                  <template v-slot:item.accounts="{ item }">
+                    <span v-for="(active, account) of item.accounts">
+                      <render-address v-if="active" :address="account" noXPadding></render-address>
+                    </span>
+                  </template>
                   <template v-slot:item.actions="{ item }">
                     <v-btn @click="portfolioDialogView(item.name);" prepend-icon="mdi-pencil" variant="text" class="lowercase-btn">Edit</v-btn>
                   </template>
                   <template v-slot:body.append>
-                    <tr style="background-color: #f5f5f5">
+                    <tr class="bg-grey-lighten-4">
                       <td></td>
                       <td></td>
                       <td>
@@ -76,8 +84,8 @@ const Portfolio = {
                 </v-data-table>
                 <v-dialog :model-value="portfolioDialog.mode != null" persistent max-width="800px">
                   <v-card>
-                    <v-card-item :prepend-icon="portfolioDialog.mode == 'add' ? 'mdi-pencil-plus' : 'mdi-pencil'" :title="portfolioDialog.mode == 'add' ? 'Portfolio - Add' : 'Portfolio - Edit'"></v-card-item>
-                    <v-card-text>
+                    <v-card-item :prepend-icon="portfolioDialog.mode == 'add' ? 'mdi-pencil-plus' : 'mdi-pencil'" :title="portfolioDialog.mode == 'add' ? 'Portfolio - Add' : 'Portfolio - Edit'" class="bg-grey-lighten-4"></v-card-item>
+                    <v-card-text class="ma-2 pa-2">
                       <v-text-field v-model="portfolioDialog.name" label="Name" density="compact" style="width: 360px;"></v-text-field>
                       <v-data-table :headers="accountsHeaders" :items="portfolioDialog.accounts" density="compact" style="position: relative;">
                         <template v-slot:item.account="{ item }">
@@ -90,7 +98,7 @@ const Portfolio = {
                           <v-btn @click="portfolioDialog.accounts.splice(index, 1);" prepend-icon="mdi-delete" variant="text" class="lowercase-btn">Delete</v-btn>
                         </template>
                         <template v-slot:body.append>
-                          <tr style="background-color: #f5f5f5">
+                          <tr class="bg-grey-lighten-4">
                             <td class="ma-0 pa-0">
                               <!-- <v-text-field v-model="portfolioDialog.account" :rules="addressRules" variant="solo" flat density="compact" hide-details single-line class="ma-0 mx-2 pa-0" placeholder="new account" ></v-text-field> -->
                               <v-text-field v-model="portfolioDialog.account" :rules="addressRules" variant="solo" flat density="compact" single-line class="ma-2 pa-0" placeholder="new account" ></v-text-field>
@@ -157,14 +165,14 @@ const Portfolio = {
       },
 
       portfoliosHeaders: [
-        { title: 'Name', value: 'name', sortable: true },
-        { title: 'Accounts', value: 'accounts', sortable: false },
-        { title: 'Actions', value: 'actions', sortable: false },
+        { title: 'Name', value: 'name', width: '20%', sortable: true },
+        { title: 'Accounts', value: 'accounts', width: '65%', sortable: false },
+        { title: '', value: 'actions', width: '15%', sortable: false },
       ],
       accountsHeaders: [
-        { title: 'Account', value: 'account', width: '60%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
-        { title: 'Active', value: 'active', width: '20%', sortable: false },
-        { title: 'Actions', value: 'actions', width: '20%', sortable: false },
+        { title: 'Account', value: 'account', width: '70%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
+        { title: 'Active', value: 'active', width: '15%', sortable: false },
+        { title: '', value: 'actions', width: '15%', sortable: false },
       ],
 
     };
@@ -181,6 +189,9 @@ const Portfolio = {
       for (const [ name, accounts ] of Object.entries(this.portfolios)) {
         results.push({ name, accounts });
       }
+      results.sort((a, b) => {
+        return a.name.localeCompare(b.name);
+      });
       return results;
     },
     // address() {
