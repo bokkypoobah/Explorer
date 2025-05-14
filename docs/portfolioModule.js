@@ -1,24 +1,7 @@
 const portfolioModule = {
   namespaced: true,
   state: {
-    portfolios: {
-      "abc": {
-        "0x1234": {
-          active: true,
-        },
-        "0x2345": {
-          active: true,
-        },
-      },
-      "def": {
-        "0x3456": {
-          active: true,
-        },
-        "0x4567": {
-          active: true,
-        },
-      },
-    },
+    portfolios: {},
     // info: {},
 
     // addresses: [],
@@ -107,6 +90,10 @@ const portfolioModule = {
     // },
   },
   mutations: {
+    setPortfolios(state, portfolios) {
+      console.log(now() + " portfolioModule - mutations.setPortfolios - portfolios: " + JSON.stringify(portfolios));
+      state.portfolios = portfolios;
+    },
     addPortfolio(state, { name, originalName, accounts }) {
       console.log(now() + " portfolioModule - mutations.addPortfolio - name: " + name + ", originalName: " + originalName + ", accounts: " + JSON.stringify(accounts));
       if (originalName != null && name != originalName) {
@@ -115,7 +102,7 @@ const portfolioModule = {
       const accountsMap = {};
       for (const account of accounts) {
         // console.log(JSON.stringify(account));
-        accountsMap[account.account] = account.active;
+        accountsMap[account.account] = { active: account.active };
       }
       state.portfolios[name] = accountsMap;
       console.log(now() + " portfolioModule - mutations.addPortfolio - state.portfolios[name]: " + JSON.stringify(state.portfolios[name]));
@@ -126,10 +113,6 @@ const portfolioModule = {
     },
 
 
-    // setInfo(state, info) {
-    //   // console.log(now() + " portfolioModule - mutations.setInfo - info: " + JSON.stringify(info));
-    //   state.info = info;
-    // },
     // setLookups(state, { addresses, addressesIndex, txHashes, txHashesIndex }) {
     //   // console.log(now() + " portfolioModule - mutations.setLookups - info: " + JSON.stringify(info));
     //   state.addresses = addresses;
@@ -169,15 +152,36 @@ const portfolioModule = {
   actions: {
     async loadPortfolio(context, { inputPortfolio, forceUpdate }) {
       console.log(now() + " portfolioModule - actions.loadPortfolio - inputPortfolio: " + inputPortfolio + ", forceUpdate: " + forceUpdate);
+      const chainId = store.getters["chainId"];
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const dbInfo = store.getters["db"];
+      const db = new Dexie(dbInfo.name);
+      db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
+      let portfolios = await dbGetCachedData(db, chainId + "_portfolios", {});
+      context.commit('setPortfolios', portfolios);
+      db.close();
     },
-    addPortfolio(context, { name, originalName, accounts }) {
+    async addPortfolio(context, { name, originalName, accounts }) {
       console.log(now() + " portfolioModule - actions.addPortfolio - name: " + name + ", originalName: " + originalName + ", accounts: " + JSON.stringify(accounts));
       context.commit('addPortfolio', { name, originalName, accounts });
+      context.dispatch("savePortfolios");
     },
-    deletePortfolio(context, name) {
+    async deletePortfolio(context, name) {
       console.log(now() + " portfolioModule - actions.deletePortfolio - name: " + name);
       context.commit('deletePortfolio', name);
+      context.dispatch("savePortfolios");
     },
+    async savePortfolios(context) {
+      console.log(now() + " portfolioModule - actions.savePortfolios");
+      const chainId = store.getters["chainId"];
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const dbInfo = store.getters["db"];
+      const db = new Dexie(dbInfo.name);
+      db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
+      await dbSaveCacheData(db, chainId + "_portfolios", JSON.parse(JSON.stringify(context.state.portfolios)));
+      db.close();
+    },
+
     // async loadToken(context, { inputAddress, forceUpdate }) {
     //   return;
     //   const validatedAddress = validateAddress(inputAddress);

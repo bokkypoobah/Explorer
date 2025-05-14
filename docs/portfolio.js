@@ -78,13 +78,8 @@ const Portfolio = {
                   <v-card>
                     <v-card-item :prepend-icon="portfolioDialog.mode == 'add' ? 'mdi-pencil-plus' : 'mdi-pencil'" :title="portfolioDialog.mode == 'add' ? 'Portfolio - Add' : 'Portfolio - Edit'"></v-card-item>
                     <v-card-text>
-                      <v-text-field v-model="portfolioDialog.name" label="Name" density="compact"></v-text-field>
-                      <!-- <v-data-table :headers="accountsHeaders" :items="portfolioDialog.accounts" density="compact" style="position: relative;"> -->
+                      <v-text-field v-model="portfolioDialog.name" label="Name" density="compact" style="width: 360px;"></v-text-field>
                       <v-data-table :headers="accountsHeaders" :items="portfolioDialog.accounts" density="compact" style="position: relative;">
-                        <!-- <template v-slot:footer.prepend>
-                          <v-btn @click="importChainlistFromEtherscan();" text>Import from Etherscan</v-btn>
-                          <v-spacer></v-spacer>
-                        </template> -->
                         <template v-slot:item.account="{ item }">
                           {{ item.account }}
                         </template>
@@ -97,7 +92,8 @@ const Portfolio = {
                         <template v-slot:body.append>
                           <tr style="background-color: #f5f5f5">
                             <td class="ma-0 pa-0">
-                              <v-text-field v-model="portfolioDialog.account" variant="solo" flat density="compact" hide-details single-line class="ma-0 mx-2 pa-0" placeholder="new account" ></v-text-field>
+                              <!-- <v-text-field v-model="portfolioDialog.account" :rules="addressRules" variant="solo" flat density="compact" hide-details single-line class="ma-0 mx-2 pa-0" placeholder="new account" ></v-text-field> -->
+                              <v-text-field v-model="portfolioDialog.account" :rules="addressRules" variant="solo" flat density="compact" single-line class="ma-2 pa-0" placeholder="new account" ></v-text-field>
                             </td>
                             <td>
                               <v-checkbox v-model="portfolioDialog.active" hide-details></v-checkbox>
@@ -139,6 +135,17 @@ const Portfolio = {
 
         version: 0,
       },
+      addressRules: [
+        (v) => (v || "").length > 0 || "Address is required",
+        (v) => {
+          try {
+            ethers.utils.getAddress(v);
+            return true;
+          } catch (e) {
+            return "Invalid Address";
+          }
+        },
+      ],
 
       portfolioDialog: {
         mode: null,
