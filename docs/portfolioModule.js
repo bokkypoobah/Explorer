@@ -107,6 +107,25 @@ const portfolioModule = {
     // },
   },
   mutations: {
+    addPortfolio(state, { name, originalName, accounts }) {
+      console.log(now() + " portfolioModule - mutations.addPortfolio - name: " + name + ", originalName: " + originalName + ", accounts: " + JSON.stringify(accounts));
+      if (originalName != null && name != originalName) {
+        delete state.portfolios[originalName];
+      }
+      const accountsMap = {};
+      for (const account of accounts) {
+        // console.log(JSON.stringify(account));
+        accountsMap[account.account] = account.active;
+      }
+      state.portfolios[name] = accountsMap;
+      console.log(now() + " portfolioModule - mutations.addPortfolio - state.portfolios[name]: " + JSON.stringify(state.portfolios[name]));
+    },
+    deletePortfolio(state, name) {
+      console.log(now() + " portfolioModule - mutations.deletePortfolio - name: " + name);
+      delete state.portfolios[name];
+    },
+
+
     // setInfo(state, info) {
     //   // console.log(now() + " portfolioModule - mutations.setInfo - info: " + JSON.stringify(info));
     //   state.info = info;
@@ -150,6 +169,14 @@ const portfolioModule = {
   actions: {
     async loadPortfolio(context, { inputPortfolio, forceUpdate }) {
       console.log(now() + " portfolioModule - actions.loadPortfolio - inputPortfolio: " + inputPortfolio + ", forceUpdate: " + forceUpdate);
+    },
+    addPortfolio(context, { name, originalName, accounts }) {
+      console.log(now() + " portfolioModule - actions.addPortfolio - name: " + name + ", originalName: " + originalName + ", accounts: " + JSON.stringify(accounts));
+      context.commit('addPortfolio', { name, originalName, accounts });
+    },
+    deletePortfolio(context, name) {
+      console.log(now() + " portfolioModule - actions.deletePortfolio - name: " + name);
+      context.commit('deletePortfolio', name);
     },
     // async loadToken(context, { inputAddress, forceUpdate }) {
     //   return;
