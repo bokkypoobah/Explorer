@@ -60,13 +60,12 @@ const Portfolio = {
             <v-card>
               <v-card-text>
                 <v-card-title>Portfolios</v-card-title>
-                {{ portfolios }}
                 <v-data-table :headers="portfoliosHeaders" :items="portfoliosList" density="compact" style="position: relative;">
                   <template v-slot:item.actions="{ item }">
                     <v-btn @click="portfolioDialogView(item.name);" prepend-icon="mdi-pencil" variant="text" class="lowercase-btn">Edit</v-btn>
                   </template>
                   <template v-slot:body.append>
-                    <tr>
+                    <tr style="background-color: #f5f5f5">
                       <td></td>
                       <td></td>
                       <td>
@@ -96,9 +95,9 @@ const Portfolio = {
                           <v-btn @click="portfolioDialog.accounts.splice(index, 1);" prepend-icon="mdi-delete" variant="text" class="lowercase-btn">Delete</v-btn>
                         </template>
                         <template v-slot:body.append>
-                          <tr class="$material-light">
+                          <tr style="background-color: #f5f5f5">
                             <td class="ma-0 pa-0">
-                              <v-text-field v-model="portfolioDialog.account" variant="solo" flat density="compact" hide-details single-line class="ma-0 pa-0" placeholder="new account" ></v-text-field>
+                              <v-text-field v-model="portfolioDialog.account" variant="solo" flat density="compact" hide-details single-line class="ma-0 mx-2 pa-0" placeholder="new account" ></v-text-field>
                             </td>
                             <td>
                               <v-checkbox v-model="portfolioDialog.active" hide-details></v-checkbox>
