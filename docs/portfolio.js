@@ -81,8 +81,9 @@ const Portfolio = {
                       <!-- <v-text-field v-model="dialogData.title" label="Title"></v-text-field> -->
                     </v-card-text>
                     <v-card-actions>
-                      <v-btn v-if="portfolioDialog.mode == 'add'" @click="portfolioDialogAddOrSave" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Add</v-btn>
-                      <v-btn v-if="portfolioDialog.mode == 'edit'" @click="portfolioDialogAddOrSave" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Save</v-btn>
+                      <v-btn v-if="portfolioDialog.mode == 'add'" @click="portfolioDialogAddOrSave();" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Add</v-btn>
+                      <v-btn v-if="portfolioDialog.mode == 'edit'" @click="portfolioDialogAddOrSave();" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Save</v-btn>
+                      <v-btn v-if="portfolioDialog.mode == 'edit'" @click="portfolioDialogDelete();" prepend-icon="mdi-delete" variant="text" class="lowercase-btn">Delete</v-btn>
                       <v-btn @click="portfolioDialog.mode = null;" prepend-icon="mdi-window-close" variant="text" class="lowercase-btn">Cancel</v-btn>
                     </v-card-actions>
                   </v-card>
@@ -117,7 +118,7 @@ const Portfolio = {
       },
 
       portfoliosHeaders: [
-        { title: 'Name', value: 'name', sortable: false },
+        { title: 'Name', value: 'name', sortable: true },
         { title: 'Accounts', value: 'accounts', sortable: false },
         { text: 'Actions', value: 'actions', sortable: false }
       ],
@@ -217,7 +218,10 @@ const Portfolio = {
       console.log(now() + " Portfolio - methods.portfolioDialogAddOrSave - portfolioDialog.mode: " + this.portfolioDialog.mode);
       this.portfolioDialog.mode = null;
     },
-
+    portfolioDialogDelete() {
+      console.log(now() + " Portfolio - methods.portfolioDialogDelete");
+      this.portfolioDialog.mode = null;
+    },
     // syncTokenEvents() {
     //   console.log(now() + " Portfolio - methods.syncTokenEvents - address: " + this.address);
     //   store.dispatch('token/syncTokenEvents', { inputAddress: this.address, forceUpdate: true });
