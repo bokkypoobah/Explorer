@@ -62,4 +62,11 @@ const CHAINS = {
     api: "https://api.etherscan.io/v2/api?chainid=137",
     reservoir: "https://api-polygon.reservoir.tools/",
   },
+  // Hardhat Node
+  "31337": {
+    name: "Hardhat Node",
+    explorer: null,
+    api: null,
+    reservoir: null,
+  },
 };
