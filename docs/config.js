@@ -1,32 +1,38 @@
 const Config = {
   template: `
     <div>
-      <v-card>
-        <v-card-text>
-          <v-form ref="formConfig">
-            <v-card>
-              <v-card-title class="bg-grey-lighten-4">API Keys</v-card-title>
-              <v-card-text class="ma-2">
-                <v-row>
-                  <v-col cols="4">
-                    <v-text-field
-                      :type="showAPIKey ? 'text' : 'password'"
-                      autocomplete
-                      v-model="etherscanAPIKey"
-                      label="Etherscan API Key:"
-                      placeholder="See https://etherscan.io/apis"
-                      hint="For API calls to retrieve contract ABI and source, and internal and normal transaction listings by account"
-                      :append-inner-icon="showAPIKey ? 'mdi-eye' : 'mdi-eye-off'"
-                      @click:append-inner="showAPIKey = !showAPIKey"
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
-              </v-card-text>
-            </v-card>
-
-            <v-card class="mt-2">
-              <v-card-title class="bg-grey-lighten-4">Portfolios</v-card-title>
-              <v-card-text class="ma-2">
+      <v-container fluid class="pa-1">
+        <v-toolbar density="compact" class="mt-1">
+          <h4 class="ml-2">Config</h4>
+          <v-spacer></v-spacer>
+          <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" right color="deep-purple-accent-4">
+            <v-tab prepend-icon="mdi-key-variant" text="API Key" value="apikey" class="lowercase-btn"></v-tab>
+            <v-tab prepend-icon="mdi-bank" text="Portfolios" value="portfolios" class="lowercase-btn"></v-tab>
+            <v-tab prepend-icon="mdi-link-variant" text="Chains" value="chains" class="lowercase-btn"></v-tab>
+          </v-tabs>
+        </v-toolbar>
+        <v-card>
+          <v-card-text class="ma-0 pa-2 pt-5">
+            <v-tabs-window v-model="settings.tab">
+              <v-tabs-window-item value="apikey">
+                <v-form ref="formConfig">
+                  <v-row>
+                    <v-col cols="4">
+                      <v-text-field
+                        :type="showAPIKey ? 'text' : 'password'"
+                        autocomplete
+                        v-model="etherscanAPIKey"
+                        label="Etherscan API Key:"
+                        placeholder="See https://etherscan.io/apis"
+                        hint="For API calls to retrieve contract ABI and source, and internal and normal transaction listings by account"
+                        :append-inner-icon="showAPIKey ? 'mdi-eye' : 'mdi-eye-off'"
+                        @click:append-inner="showAPIKey = !showAPIKey"
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                </v-form>
+              </v-tabs-window-item>
+              <v-tabs-window-item value="portfolios">
                 <v-data-table :headers="portfoliosHeaders" :items="portfoliosList" density="compact" style="position: relative;">
                   <template v-slot:item.name="{ item }">
                     {{ item.name }}
@@ -88,46 +94,28 @@ const Config = {
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
-              </v-card-text>
-            </v-card>
-
-            <v-card class="mt-2">
-              <v-card-title class="bg-grey-lighten-4">Chains</v-card-title>
-              <v-card-text class="ma-2">
+              </v-tabs-window-item>
+              <v-tabs-window-item value="chains">
                 <v-data-table :items="chains" density="compact" style="position: relative;">
                   <template v-slot:footer.prepend>
                     <!-- <v-btn @click="importChainlistFromEtherscan();" text>Import from Etherscan</v-btn> -->
                     <v-spacer></v-spacer>
                   </template>
                 </v-data-table>
-              </v-card-text>
-            </v-card>
-          </v-form>
-        </v-card-text>
-        <!-- <v-card-actions>
-          <v-btn>Action 1</v-btn>
-          <v-btn>Action 2</v-btn>
-        </v-card-actions> -->
-      </v-card>
-
-      <!-- <v-form ref="formConfig">
-        <v-subheader>Personal Information</v-subheader>
-        <v-layout>
-          <v-text-field v-model="etherscanAPIKey" label="Etherscan API Key:"></v-text-field>
-        </v-layout>
-        <v-layout>
-          <v-data-table :items="chains" density="compact" style="position: relative;">
-            <template v-slot:footer.prepend>
-              <v-btn @click="importChainlistFromEtherscan();" text>Import from Etherscan</v-btn>
-              <v-spacer></v-spacer>
-            </template>
-          </v-data-table>
-        </v-layout>
-      </v-form> -->
+              </v-tabs-window-item>
+            </v-tabs-window>
+          </v-card-text>
+        </v-card>
+      </v-container>
     </div>
   `,
   data: function () {
     return {
+      initialised: false,
+      settings: {
+        tab: "apikey",
+        version: 0,
+      },
       showAPIKey: false,
       portfolioDialog: {
         mode: null,
@@ -191,7 +179,6 @@ const Config = {
     },
   },
   methods: {
-
     portfolioDialogView(name) {
       console.log(now() + " Config - methods.portfolioDialogView - name: " + name);
       this.portfolioDialog.mode = name == null ? "add" : "edit";
@@ -233,12 +220,27 @@ const Config = {
     //     }
     //   }
     // },
+    saveSettings() {
+      // console.log(now() + " Config - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
+      if (this.initialised) {
+        localStorage.explorerConfigSettings = JSON.stringify(this.settings);
+      }
+    },
   },
   beforeCreate() {
     console.log(now() + " Config - beforeCreate");
 	},
   mounted() {
     console.log(now() + " Config - mounted");
+    if ('explorerConfigSettings' in localStorage) {
+      const tempSettings = JSON.parse(localStorage.explorerConfigSettings);
+      // console.log(now() + " Config - mounted - tempSettings: " + JSON.stringify(tempSettings));
+      if ('version' in tempSettings && tempSettings.version == this.settings.version) {
+        this.settings = tempSettings;
+      }
+    }
+    this.initialised = true;
+    // console.log(now() + " Config - mounted - this.settings: " + JSON.stringify(this.settings));
 	},
   unmounted() {
     console.log(now() + " Config - unmounted");

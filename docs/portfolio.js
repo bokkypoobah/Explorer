@@ -40,6 +40,8 @@ const Portfolio = {
         <v-tabs-window v-model="settings.tab">
           <v-tabs-window-item value="summary">
             NOTE: Set up your portfolio(s) in Other -> Config
+            <br />
+            portfolios: {{ portfolios }}
           </v-tabs-window-item>
           <v-tabs-window-item value="fungibles">
             TODO: ERC-20 Fungibles
