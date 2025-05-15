@@ -181,6 +181,11 @@ const portfolioModule = {
       await dbSaveCacheData(db, chainId + "_portfolios", JSON.parse(JSON.stringify(context.state.portfolios)));
       db.close();
     },
+    async syncPortfolio(context, { forceUpdate }) {
+      console.log(now() + " portfolioModule - actions.syncPortfolio - forceUpdate: " + forceUpdate);
+      // context.commit('syncPortfolio', { name, originalName, accounts });
+      // context.dispatch("savePortfolios");
+    },
 
     // async loadToken(context, { inputAddress, forceUpdate }) {
     //   return;

@@ -9,9 +9,9 @@ const Portfolio = {
             {{ type && type.substring(0, 3) == "erc" && type.replace(/erc/, "ERC-") || "Not a token contract" }} {{ symbol }} {{ name && ("'" + name + "'") || "" }} {{ decimals }}
           </p> -->
           <v-spacer></v-spacer>
-          <!-- <v-btn v-if="sync.info == null" @click="syncToken();" color="primary" icon v-tooltip="'Sync Portfolio Info'">
+          <v-btn v-if="sync.info == null" @click="syncPortfolio();" color="primary" icon v-tooltip="'Sync Portfolio'">
             <v-icon>mdi-refresh</v-icon>
-          </v-btn> -->
+          </v-btn>
           <!-- <v-btn v-if="sync.info == null" @click="syncTokenEvents();" color="primary" icon v-tooltip="'Sync Portfolio Events'">
             <v-icon>mdi-download</v-icon>
           </v-btn> -->
@@ -253,9 +253,9 @@ const Portfolio = {
     },
   },
   methods: {
-    syncToken() {
-      console.log(now() + " Portfolio - methods.syncToken - address: " + this.address);
-      store.dispatch('token/loadToken', { inputAddress: this.address, forceUpdate: true });
+    syncPortfolio() {
+      console.log(now() + " Portfolio - methods.syncPortfolio");
+      store.dispatch('portfolio/syncPortfolio', { forceUpdate: true });
     },
 
     portfolioDialogView(name) {
