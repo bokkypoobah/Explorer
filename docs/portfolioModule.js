@@ -196,13 +196,29 @@ const portfolioModule = {
     },
     async syncPortfolio(context, { forceUpdate }) {
       console.log(now() + " portfolioModule - actions.syncPortfolio - forceUpdate: " + forceUpdate);
-      const portfolios = store.getters['config/portfolios'];
-      console.log(now() + " portfolioModule - actions.syncPortfolio - portfolios: " + JSON.stringify(portfolios));
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const chainId = store.getters["chainId"];
+      const block = await provider.getBlock();
+      const blockNumber = block && block.number || null;
+      console.log(now() + " portfolioModule - actions.syncPortfolio - blockNumber: " + blockNumber);
       const dbInfo = store.getters["db"];
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
+
+      for (const [portfolio, portfolioData] of Object.entries(store.getters['config/portfolios'])) {
+        for (const [account, accountData] of Object.entries(portfolioData)) {
+          const validatedAddress = validateAddress(account);
+          if (accountData.active && validatedAddress) {
+            console.log(now() + " portfolioModule - actions.syncPortfolio - processing - validatedAddress: " + validatedAddress);
+            let addressData = await dbGetCachedData(db, chainId + "_" + validatedAddress + "_portfolio_address_data", {});
+            addressData.address = validatedAddress;
+            addressData.balance = ethers.BigNumber.from(await provider.getBalance(validatedAddress)).toString();
+            addressData.transactionCount = await provider.getTransactionCount(validatedAddress);
+            addressData.blockNumber = blockNumber;
+            await dbSaveCacheData(db, chainId + "_" + validatedAddress + "_portfolio_address_data", JSON.parse(JSON.stringify(addressData)));
+          }
+        }
+      }
 
       db.close();
       context.dispatch("collateData");
@@ -215,11 +231,34 @@ const portfolioModule = {
       const dbInfo = store.getters["db"];
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
-      const data = { hi: "there" };
+
+      const data = {};
+
+      for (const [portfolio, portfolioData] of Object.entries(store.getters['config/portfolios'])) {
+        for (const [account, accountData] of Object.entries(portfolioData)) {
+          const validatedAddress = validateAddress(account);
+          if (accountData.active && validatedAddress) {
+            console.log(now() + " portfolioModule - actions.collateData - processing - validatedAddress: " + validatedAddress);
+            let addressData = await dbGetCachedData(db, chainId + "_" + validatedAddress + "_portfolio_address_data", {});
+            console.log(now() + " portfolioModule - actions.collateData - processing - addressData: " + JSON.stringify(addressData));
+            if (!("balances" in data)) {
+              data.balances = {};
+            }
+            data.balances[validatedAddress] = {
+              balance: addressData.balance,
+              transactionCount: addressData.transactionCount,
+              blockNumber: addressData.blockNumber,
+            };
+          }
+        }
+      }
+
       context.commit('setData', data);
       // context.commit('setEventInfo', { numberOfEvents: rows, owners, bids, offers, last });
       await dbSaveCacheData(db, chainId + "_portfolio_data", data);
       db.close();
+      context.commit('setSyncInfo', null);
+      context.commit('setSyncHalt', false);
     },
 
     // async loadToken(context, { inputAddress, forceUpdate }) {

@@ -40,10 +40,10 @@ const Portfolio = {
         <v-tabs-window v-model="settings.tab">
           <v-tabs-window-item value="summary">
             NOTE: Set up your portfolio(s) in Other -> Config
-            <br />
-            portfolios: {{ portfolios }}
-            <br />
-            data: {{ data }}
+            <pre>
+              <br />
+data: {{ data }}
+            </pre>
           </v-tabs-window-item>
           <v-tabs-window-item value="fungibles">
             TODO: ERC-20 Fungibles
@@ -136,7 +136,7 @@ const Portfolio = {
     return {
       initialised: false,
       settings: {
-        tab: "config", // TODO: null,
+        tab: "summary",
         owners: {
           sortBy: [{ key: "balances", order: "desc" }],
           itemsPerPage: 10,
