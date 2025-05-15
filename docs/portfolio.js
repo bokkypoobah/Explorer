@@ -42,6 +42,8 @@ const Portfolio = {
             NOTE: Set up your portfolio(s) in Other -> Config
             <br />
             portfolios: {{ portfolios }}
+            <br />
+            data: {{ data }}
           </v-tabs-window-item>
           <v-tabs-window-item value="fungibles">
             TODO: ERC-20 Fungibles
@@ -181,6 +183,9 @@ const Portfolio = {
     },
     portfolios() {
       return store.getters['config/portfolios'];
+    },
+    data() {
+      return store.getters['portfolio/data'];
     },
     // portfoliosList() {
     //   const results = [];

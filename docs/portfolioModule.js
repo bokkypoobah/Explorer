@@ -1,6 +1,8 @@
 const portfolioModule = {
   namespaced: true,
   state: {
+    data: {},
+
     // TODO: Delete
     portfolios: {},
     // info: {},
@@ -26,6 +28,8 @@ const portfolioModule = {
     },
   },
   getters: {
+    data: state => state.data,
+
     // TODO: Delete
     portfolios: state => state.portfolios,
     // address: state => state.info.address || null,
@@ -92,6 +96,12 @@ const portfolioModule = {
     // },
   },
   mutations: {
+    setData(state, data) {
+      console.log(now() + " portfolioModule - mutations.setData - data: " + JSON.stringify(data));
+      state.data = data;
+    },
+
+    // TODO: Delete
     setPortfolios(state, portfolios) {
       console.log(now() + " portfolioModule - mutations.setPortfolios - portfolios: " + JSON.stringify(portfolios));
       state.portfolios = portfolios;
@@ -160,8 +170,8 @@ const portfolioModule = {
       const dbInfo = store.getters["db"];
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
-      let portfolios = await dbGetCachedData(db, chainId + "_portfolios", {});
-      context.commit('setPortfolios', portfolios);
+      let data = await dbGetCachedData(db, chainId + "_portfolio_data", {});
+      context.commit('setData', data);
       db.close();
     },
     async addPortfolio(context, { name, originalName, accounts }) {
@@ -186,8 +196,30 @@ const portfolioModule = {
     },
     async syncPortfolio(context, { forceUpdate }) {
       console.log(now() + " portfolioModule - actions.syncPortfolio - forceUpdate: " + forceUpdate);
-      // context.commit('syncPortfolio', { name, originalName, accounts });
-      // context.dispatch("savePortfolios");
+      const portfolios = store.getters['config/portfolios'];
+      console.log(now() + " portfolioModule - actions.syncPortfolio - portfolios: " + JSON.stringify(portfolios));
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const chainId = store.getters["chainId"];
+      const dbInfo = store.getters["db"];
+      const db = new Dexie(dbInfo.name);
+      db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
+
+      db.close();
+      context.dispatch("collateData");
+      context.commit('setSyncInfo', null);
+      context.commit('setSyncHalt', false);
+    },
+    async collateData(context) {
+      console.log(now() + " portfolioModule - actions.collateData");
+      const chainId = store.getters["chainId"];
+      const dbInfo = store.getters["db"];
+      const db = new Dexie(dbInfo.name);
+      db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
+      const data = { hi: "there" };
+      context.commit('setData', data);
+      // context.commit('setEventInfo', { numberOfEvents: rows, owners, bids, offers, last });
+      await dbSaveCacheData(db, chainId + "_portfolio_data", data);
+      db.close();
     },
 
     // async loadToken(context, { inputAddress, forceUpdate }) {
