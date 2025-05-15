@@ -90,7 +90,7 @@ const RenderAddress = {
       return store.getters['addresses/addresses'];
     },
     name() {
-      return this.addressBook[this.address] && this.addressBook[this.address].ensName || null;
+      return this.resolvedAddress && this.addressBook[this.resolvedAddress] && this.addressBook[this.resolvedAddress].ensName || null;
     },
     explorer() {
       return store.getters['explorer'];
