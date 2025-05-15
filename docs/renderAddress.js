@@ -86,9 +86,11 @@ const RenderAddress = {
       }
       return this.address;
     },
+    addressBook() {
+      return store.getters['addresses/addresses'];
+    },
     name() {
-      const addressInfo = store.getters["addresses/getAddressInfo"](this.address);
-      return addressInfo.ensName;
+      return this.addressBook[this.address] && this.addressBook[this.address].ensName || null;
     },
     explorer() {
       return store.getters['explorer'];
