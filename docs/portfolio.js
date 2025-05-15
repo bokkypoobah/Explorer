@@ -33,13 +33,13 @@ const Portfolio = {
             <v-tab prepend-icon="mdi-alphabetical" text="Names" value="names" class="lowercase-btn"></v-tab>
             <v-tab prepend-icon="mdi-check-outline" text="Approvals" value="approvals" class="lowercase-btn"></v-tab>
             <v-tab prepend-icon="mdi-math-log" text="Activity" value="activity" class="lowercase-btn"></v-tab>
-            <v-tab prepend-icon="mdi-cog" text="Config" value="config" class="lowercase-btn"></v-tab>
+            <!-- <v-tab prepend-icon="mdi-cog" text="Config" value="config" class="lowercase-btn"></v-tab> -->
           </v-tabs>
         </v-toolbar>
 
         <v-tabs-window v-model="settings.tab">
           <v-tabs-window-item value="summary">
-            TODO: Summary
+            NOTE: Set up your portfolio(s) in Other -> Config
           </v-tabs-window-item>
           <v-tabs-window-item value="fungibles">
             TODO: ERC-20 Fungibles
@@ -56,7 +56,7 @@ const Portfolio = {
           <v-tabs-window-item value="activity">
             TODO: Activity
           </v-tabs-window-item>
-          <v-tabs-window-item value="config">
+          <!-- <v-tabs-window-item value="config">
             <v-card>
               <v-card-text>
                 <v-card-title>Portfolios</v-card-title>
@@ -100,7 +100,6 @@ const Portfolio = {
                         <template v-slot:body.append>
                           <tr class="bg-grey-lighten-4">
                             <td class="ma-0 pa-0">
-                              <!-- <v-text-field v-model="portfolioDialog.account" :rules="addressRules" variant="solo" flat density="compact" hide-details single-line class="ma-0 mx-2 pa-0" placeholder="new account" ></v-text-field> -->
                               <v-text-field v-model="portfolioDialog.account" :rules="addressRules" variant="solo" flat density="compact" single-line class="ma-2 pa-0" placeholder="new account" ></v-text-field>
                             </td>
                             <td>
@@ -123,7 +122,7 @@ const Portfolio = {
                 </v-dialog>
               </v-card-text>
             </v-card>
-          </v-tabs-window-item>
+          </v-tabs-window-item> -->
         </v-tabs-window>
       </v-container>
     </div>
@@ -143,38 +142,35 @@ const Portfolio = {
 
         version: 0,
       },
-      addressRules: [
-        (v) => (v || "").length > 0 || "Address is required",
-        (v) => {
-          try {
-            ethers.utils.getAddress(v);
-            return true;
-          } catch (e) {
-            return "Invalid Address";
-          }
-        },
-      ],
-
-      portfolioDialog: {
-        mode: null,
-        name: null,
-        originalName: null,
-        accounts: [],
-        account: null,
-        active: true,
-      },
-
-      portfoliosHeaders: [
-        { title: 'Name', value: 'name', width: '20%', sortable: true },
-        { title: 'Accounts', value: 'accounts', width: '65%', sortable: false },
-        { title: '', value: 'actions', width: '15%', sortable: false },
-      ],
-      accountsHeaders: [
-        { title: 'Account', value: 'account', width: '70%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
-        { title: 'Active', value: 'active', width: '15%', sortable: false },
-        { title: '', value: 'actions', width: '15%', sortable: false },
-      ],
-
+      // addressRules: [
+      //   (v) => (v || "").length > 0 || "Address is required",
+      //   (v) => {
+      //     try {
+      //       ethers.utils.getAddress(v);
+      //       return true;
+      //     } catch (e) {
+      //       return "Invalid Address";
+      //     }
+      //   },
+      // ],
+      // portfolioDialog: {
+      //   mode: null,
+      //   name: null,
+      //   originalName: null,
+      //   accounts: [],
+      //   account: null,
+      //   active: true,
+      // },
+      // portfoliosHeaders: [
+      //   { title: 'Name', value: 'name', width: '20%', sortable: true },
+      //   { title: 'Accounts', value: 'accounts', width: '65%', sortable: false },
+      //   { title: '', value: 'actions', width: '15%', sortable: false },
+      // ],
+      // accountsHeaders: [
+      //   { title: 'Account', value: 'account', width: '70%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
+      //   { title: 'Active', value: 'active', width: '15%', sortable: false },
+      //   { title: '', value: 'actions', width: '15%', sortable: false },
+      // ],
     };
   },
   computed: {
@@ -182,18 +178,19 @@ const Portfolio = {
       return store.getters['chainId'];
     },
     portfolios() {
-      return store.getters['portfolio/portfolios'];
+      return store.getters['config/portfolios'];
     },
-    portfoliosList() {
-      const results = [];
-      for (const [ name, accounts ] of Object.entries(this.portfolios)) {
-        results.push({ name, accounts });
-      }
-      results.sort((a, b) => {
-        return a.name.localeCompare(b.name);
-      });
-      return results;
-    },
+    // portfoliosList() {
+    //   const results = [];
+    //   for (const [ name, accounts ] of Object.entries(this.portfolios)) {
+    //     results.push({ name, accounts });
+    //   }
+    //   results.sort((a, b) => {
+    //     return a.name.localeCompare(b.name);
+    //   });
+    //   return results;
+    // },
+
     // address() {
     //   return store.getters['token/address'];
     // },
@@ -258,28 +255,29 @@ const Portfolio = {
       store.dispatch('portfolio/syncPortfolio', { forceUpdate: true });
     },
 
-    portfolioDialogView(name) {
-      console.log(now() + " Portfolio - methods.portfolioDialogView - name: " + name);
-      this.portfolioDialog.mode = name == null ? "add" : "edit";
-      this.portfolioDialog.name = name;
-      this.portfolioDialog.originalName = name;
-      const accounts = [];
-      for (const [ account, accountData ] of Object.entries(this.portfolios[this.portfolioDialog.name] || {})) {
-        accounts.push({ account, ...accountData });
-      }
-      console.log(now() + " Portfolio - methods.portfolioDialogView - accounts: " + JSON.stringify(accounts));
-      this.portfolioDialog.accounts = accounts;
-    },
-    async portfolioDialogAddOrSave() {
-      console.log(now() + " Portfolio - methods.portfolioDialogAddOrSave - portfolioDialog.mode: " + this.portfolioDialog.mode);
-      store.dispatch('portfolio/addPortfolio', { name: this.portfolioDialog.name, originalName: this.portfolioDialog.originalName, accounts: this.portfolioDialog.accounts });
-      this.portfolioDialog.mode = null;
-    },
-    portfolioDialogDelete() {
-      console.log(now() + " Portfolio - methods.portfolioDialogDelete");
-      store.dispatch('portfolio/deletePortfolio', this.portfolioDialog.originalName);
-      this.portfolioDialog.mode = null;
-    },
+    // portfolioDialogView(name) {
+    //   console.log(now() + " Portfolio - methods.portfolioDialogView - name: " + name);
+    //   this.portfolioDialog.mode = name == null ? "add" : "edit";
+    //   this.portfolioDialog.name = name;
+    //   this.portfolioDialog.originalName = name;
+    //   const accounts = [];
+    //   for (const [ account, accountData ] of Object.entries(this.portfolios[this.portfolioDialog.name] || {})) {
+    //     accounts.push({ account, ...accountData });
+    //   }
+    //   console.log(now() + " Portfolio - methods.portfolioDialogView - accounts: " + JSON.stringify(accounts));
+    //   this.portfolioDialog.accounts = accounts;
+    // },
+    // async portfolioDialogAddOrSave() {
+    //   console.log(now() + " Portfolio - methods.portfolioDialogAddOrSave - portfolioDialog.mode: " + this.portfolioDialog.mode);
+    //   store.dispatch('config/addPortfolio', { name: this.portfolioDialog.name, originalName: this.portfolioDialog.originalName, accounts: this.portfolioDialog.accounts });
+    //   this.portfolioDialog.mode = null;
+    // },
+    // portfolioDialogDelete() {
+    //   console.log(now() + " Portfolio - methods.portfolioDialogDelete");
+    //   store.dispatch('config/deletePortfolio', this.portfolioDialog.originalName);
+    //   this.portfolioDialog.mode = null;
+    // },
+
     // syncTokenEvents() {
     //   console.log(now() + " Portfolio - methods.syncTokenEvents - address: " + this.address);
     //   store.dispatch('token/syncTokenEvents', { inputAddress: this.address, forceUpdate: true });
@@ -288,6 +286,7 @@ const Portfolio = {
     //   console.log(now() + " Portfolio - methods.syncTokenMetadata - address: " + this.address);
     //   store.dispatch('token/syncTokenMetadata', this.address);
     // },
+
     setSyncHalt() {
       console.log(now() + " Portfolio - methods.setSyncHalt");
       store.dispatch('token/setSyncHalt');

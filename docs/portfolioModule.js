@@ -1,6 +1,7 @@
 const portfolioModule = {
   namespaced: true,
   state: {
+    // TODO: Delete
     portfolios: {},
     // info: {},
 
@@ -25,6 +26,7 @@ const portfolioModule = {
     },
   },
   getters: {
+    // TODO: Delete
     portfolios: state => state.portfolios,
     // address: state => state.info.address || null,
     // info: state => state.info,
@@ -94,6 +96,7 @@ const portfolioModule = {
       console.log(now() + " portfolioModule - mutations.setPortfolios - portfolios: " + JSON.stringify(portfolios));
       state.portfolios = portfolios;
     },
+    // TODO: Delete
     addPortfolio(state, { name, originalName, accounts }) {
       console.log(now() + " portfolioModule - mutations.addPortfolio - name: " + name + ", originalName: " + originalName + ", accounts: " + JSON.stringify(accounts));
       if (originalName != null && name != originalName) {
@@ -101,12 +104,12 @@ const portfolioModule = {
       }
       const accountsMap = {};
       for (const account of accounts) {
-        // console.log(JSON.stringify(account));
         accountsMap[account.account] = { active: account.active };
       }
       state.portfolios[name] = accountsMap;
       console.log(now() + " portfolioModule - mutations.addPortfolio - state.portfolios[name]: " + JSON.stringify(state.portfolios[name]));
     },
+    // TODO: Delete
     deletePortfolio(state, name) {
       console.log(now() + " portfolioModule - mutations.deletePortfolio - name: " + name);
       delete state.portfolios[name];
