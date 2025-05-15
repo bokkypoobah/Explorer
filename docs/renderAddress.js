@@ -8,15 +8,21 @@ const RenderAddress = {
             {{ resolvedAddress.length == 42 ? (resolvedAddress.substring(0, 10)) : resolvedAddress }}
           </span>
           <span v-else-if="shortAddress">
-            {{ shortAddress && resolvedAddress.length == 42 ? (resolvedAddress.substring(0, 10) + "..." + resolvedAddress.slice(-8)) : resolvedAddress }}
+            {{ resolvedAddress.substring(0, 10) + "..." + resolvedAddress.slice(-8) }}
           </span>
           <span v-else>
-            {{ shortAddress && resolvedAddress.length == 42 ? (resolvedAddress.substring(0, 10) + "..." + resolvedAddress.slice(-8)) : resolvedAddress }}
+            <span v-if="name">
+              {{ name + " " + resolvedAddress.substring(0, 10) + "..." + resolvedAddress.slice(-8) }}
+            </span>
+            <span v-else>
+              {{ resolvedAddress }}
+            </span>
           </span>
         </v-btn>
       </template>
       <v-list>
         <v-list-subheader>Address {{ resolvedAddress }}</v-list-subheader>
+        <v-list-subheader v-if="name">Name {{ name }}</v-list-subheader>
         <v-list-item :href="'#/address/' + resolvedAddress">
           <template v-slot:prepend>
             <v-icon>mdi-arrow-right-bold-outline</v-icon>
@@ -79,6 +85,10 @@ const RenderAddress = {
         return this.addresses[this.address] || this.address;
       }
       return this.address;
+    },
+    name() {
+      const addressInfo = store.getters["addresses/getAddressInfo"](this.address);
+      return addressInfo.ensName;
     },
     explorer() {
       return store.getters['explorer'];
