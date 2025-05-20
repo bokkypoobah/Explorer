@@ -211,10 +211,7 @@ const portfolioModule = {
           if (accountData.active && validatedAddress) {
             console.log(now() + " portfolioModule - actions.syncPortfolio - processing - validatedAddress: " + validatedAddress);
             let addressData = await dbGetCachedData(db, chainId + "_" + validatedAddress + "_portfolio_address_data", {});
-            addressData.address = validatedAddress;
-            addressData.balance = ethers.BigNumber.from(await provider.getBalance(validatedAddress)).toString();
-            addressData.transactionCount = await provider.getTransactionCount(validatedAddress);
-            addressData.blockNumber = blockNumber;
+            await syncPortfolioAddress(validatedAddress, addressData, provider);
             await dbSaveCacheData(db, chainId + "_" + validatedAddress + "_portfolio_address_data", JSON.parse(JSON.stringify(addressData)));
           }
         }
@@ -248,6 +245,8 @@ const portfolioModule = {
               balance: addressData.balance,
               transactionCount: addressData.transactionCount,
               blockNumber: addressData.blockNumber,
+              timestamp: addressData.timestamp,
+              previous: addressData.previous,
             };
           }
         }
