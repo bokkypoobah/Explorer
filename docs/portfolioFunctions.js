@@ -1,8 +1,19 @@
 async function syncPortfolioAddress(validatedAddress, data, provider) {
   console.log(now() + " portfolioFunctions.js:syncPortfolioAddress - validatedAddress: " + validatedAddress + ", data.keys: " + Object.keys(data));
 
-  if (!('address' in data)) {
-    data.address = validatedAddress;
+  if (!('type' in data)) {
+    try {
+      const code = await provider.getCode(validatedAddress);
+      data.type = code == "0x" ? "eoa" : "contract";
+      console.log(now() + " portfolioFunctions.js:syncPortfolioAddress - type: " + data.type);
+    } catch (e) {
+      console.error(now() + " portfolioFunctions.js:syncPortfolioAddress - provider.getCode: " + e.message);
+    }
+    try {
+      data.ensName = await provider.lookupAddress(validatedAddress);
+    } catch (e) {
+      console.error(now() + " portfolioFunctions.js:syncPortfolioAddress - provider.lookupAddress: " + e.message);
+    }
   }
 
   data.previous = {

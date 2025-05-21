@@ -242,11 +242,12 @@ const portfolioModule = {
               data.balances = {};
             }
             data.balances[validatedAddress] = {
-              balance: addressData.balance,
-              transactionCount: addressData.transactionCount,
-              blockNumber: addressData.blockNumber,
-              timestamp: addressData.timestamp,
-              previous: addressData.previous,
+              ...addressData,
+              // balance: addressData.balance,
+              // transactionCount: addressData.transactionCount,
+              // blockNumber: addressData.blockNumber,
+              // timestamp: addressData.timestamp,
+              // previous: addressData.previous,
             };
           }
         }
