@@ -82,7 +82,7 @@ async function syncPortfolioAddressEvents(validatedAddress, data, provider, db, 
     // }
     try {
       const accountAs32Bytes = '0x000000000000000000000000' + validatedAddress.substring(2, 42).toLowerCase();
-      console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressEvents.getLogsFromRange - accountAs32Bytes: " + accountAs32Bytes);
+      // console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressEvents.getLogsFromRange - accountAs32Bytes: " + accountAs32Bytes);
       const topics = [ null, null, null, null ];
       topics[parseInt(section) + 1] = accountAs32Bytes;
       // Transfer (index_topic_1 address from, index_topic_2 address to, index_topic_3 uint256 id)
@@ -96,9 +96,7 @@ async function syncPortfolioAddressEvents(validatedAddress, data, provider, db, 
       // [ '0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb', null, accountAs32Bytes, null ],
       // [ '0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb', null, null, accountAs32Bytes ],
 
-      const parameters = { address: null, fromBlock, toBlock, topics };
-      console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressEvents.getLogsFromRange - parameters: " + JSON.stringify(parameters, null, 2));
-      const logs = await provider.getLogs(parameters);
+      const logs = await provider.getLogs({ address: null, fromBlock, toBlock, topics });
       // console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressEvents.getLogsFromRange - logs: " + JSON.stringify(logs, null, 2));
       await processLogs(section, fromBlock, toBlock, logs);
       // context.commit('setSyncCompleted', toBlock);
@@ -111,12 +109,12 @@ async function syncPortfolioAddressEvents(validatedAddress, data, provider, db, 
   }
 
   console.log(now() + " portfolioFunctions.js:syncPortfolioAddressEvents - validatedAddress: " + validatedAddress + ", data.keys: " + Object.keys(data));
-  const startBlock = 0;
+  const startBlock = data.retrievedEventsBlockNumber || 0;
   const endBlock = data.blockNumber;
   for (let section = 0; section < 3; section++) {
     await getLogsFromRange(section, startBlock, endBlock);
   }
-
+  data.retrievedEventsBlockNumber = data.blockNumber;
   // console.log(now() + " portfolioFunctions.js:syncPortfolioAddressEvents - logs: " + JSON.stringify(logs, null, 2));
 }
 
