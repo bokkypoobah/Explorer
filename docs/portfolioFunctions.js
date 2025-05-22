@@ -4,6 +4,7 @@ async function syncPortfolioAddress(validatedAddress, data, provider) {
   const DEV = true;
 
   if (DEV || !('type' in data)) {
+    // data.address = validatedAddress;
     try {
       const code = await provider.getCode(validatedAddress);
       data.type = code == "0x" ? "eoa" : "contract";
@@ -53,7 +54,26 @@ async function syncPortfolioAddress(validatedAddress, data, provider) {
   console.log(now() + " portfolioFunctions.js:syncPortfolioAddress - data: " + JSON.stringify(data, null, 2));
 }
 
-async function syncPortfolioAddressEvents(validatedAddress, data, provider) {
+async function syncPortfolioAddressEvents(validatedAddress, data, provider, db, chainId) {
+
+  async function processLogs(section, fromBlock, toBlock, logs) {
+    console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressEvents.processLogs - section: " + section + ", fromBlock: " + fromBlock + ", toBlock: " + toBlock + ", logs.length: " + logs.length);
+    const records = [];
+    for (const log of logs) {
+      if (!log.removed) {
+        records.push({ chainId, ...log });
+      }
+    }
+    console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressEvents.processLogs - records: " + JSON.stringify(records));
+    console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressEvents.processLogs - records.length: " + records.length);
+    if (records.length > 0) {
+      await db.addressEvents.bulkAdd(records).then(function(lastKey) {
+        console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressEvents.processLogs - bulkAdd lastKey: " + JSON.stringify(lastKey));
+        }).catch(Dexie.BulkError, function(e) {
+          console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressEvents.processLogs - bulkAdd e: " + JSON.stringify(e.failures, null, 2));
+        });
+    }
+  }
 
   async function getLogsFromRange(section, fromBlock, toBlock) {
     console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressEvents.getLogsFromRange - section: " + section + ", fromBlock: " + fromBlock + ", toBlock: " + toBlock);
@@ -79,8 +99,8 @@ async function syncPortfolioAddressEvents(validatedAddress, data, provider) {
       const parameters = { address: null, fromBlock, toBlock, topics };
       console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressEvents.getLogsFromRange - parameters: " + JSON.stringify(parameters, null, 2));
       const logs = await provider.getLogs(parameters);
-      console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressEvents.getLogsFromRange - logs: " + JSON.stringify(logs, null, 2));
-      // await processLogs(fromBlock, toBlock, logs);
+      // console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressEvents.getLogsFromRange - logs: " + JSON.stringify(logs, null, 2));
+      await processLogs(section, fromBlock, toBlock, logs);
       // context.commit('setSyncCompleted', toBlock);
     } catch (e) {
       console.error(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressEvents.getLogsFromRange - Error: " + e.message);

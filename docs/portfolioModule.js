@@ -212,7 +212,7 @@ const portfolioModule = {
             console.log(now() + " portfolioModule - actions.syncPortfolio - processing - validatedAddress: " + validatedAddress);
             let addressData = await dbGetCachedData(db, chainId + "_" + validatedAddress + "_portfolio_address_data", {});
             await syncPortfolioAddress(validatedAddress, addressData, provider);
-            await syncPortfolioAddressEvents(validatedAddress, addressData, provider);
+            await syncPortfolioAddressEvents(validatedAddress, addressData, provider, db, chainId);
             await dbSaveCacheData(db, chainId + "_" + validatedAddress + "_portfolio_address_data", JSON.parse(JSON.stringify(addressData)));
           }
         }
