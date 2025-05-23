@@ -148,93 +148,67 @@ function parseEvent(log) {
     _interface1155 = new ethers.utils.Interface(ERC1155ABI);
   }
   const result = {};
+  let info = null;
   // console.log(now() + " portfolioFunctions.js:parseEvent - log: " + JSON.stringify(log, null, 2));
   if (log.topics[0] == "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef") {
     // ERC-20 Transfer (index_topic_1 address from, index_topic_2 address to, uint256 tokens)
     // ERC-721 Transfer (index_topic_1 address from, index_topic_2 address to, index_topic_3 uint256 id)
-    // '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
     if (log.topics.length == 3) {
-      result.type = "Transfer";
-      result.contractType = "erc20";
-      result.from = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
-      result.to = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
-      result.tokens = ethers.BigNumber.from(log.data).toString();
+      const from = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
+      const to = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
+      const tokens = ethers.BigNumber.from(log.data).toString();
+      info = { type: "Transfer", contractType: "erc20", from, to, tokens };
     } else if (log.topics.length == 4) {
-      result.type = "Transfer";
-      result.contractType = "erc721";
-      result.from = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
-      result.to = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
-      result.tokenId = ethers.BigNumber.from(log.topics[3]).toString();
+      const from = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
+      const to = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
+      const tokenId = ethers.BigNumber.from(log.topics[3]).toString();
+      info = { type: "Transfer", contractType: "erc721", from, to, tokenId };
     }
   } else if (log.topics[0] == "0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62") {
     // ERC-1155 TransferSingle (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256 id, uint256 value)
-    // '0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62',
-    result.type = "TransferSingle";
-    result.contractType = "erc1155";
     const logData = _interface1155.parseLog(log);
     const [ operator, from, to, tokenId, value ] = logData.args;
-    result.operator = operator;
-    result.from = from;
-    result.to = to;
-    result.tokenId = ethers.BigNumber.from(tokenId).toString();
-    result.value = ethers.BigNumber.from(value).toString();
+    info = { type: "TransferSingle", contractType: "erc1155", operator, from, to, tokenId: ethers.BigNumber.from(tokenId).toString(), value: ethers.BigNumber.from(value).toString() };
   } else if (log.topics[0] == "0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb") {
     // ERC-1155 TransferBatch (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256[] ids, uint256[] values)
-    // '0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb',
-    result.type = "TransferBatch";
-    result.contractType = "erc1155";
     const logData = _interface1155.parseLog(log);
     const [ operator, from, to, tokenIds, values ] = logData.args;
-    result.operator = operator;
-    result.from = from;
-    result.to = to;
-    result.tokenIds = tokenIds.map(e => ethers.BigNumber.from(e).toString());
-    result.values = values.map(e => ethers.BigNumber.from(e).toString());
+    info = { type: "TransferSingle", contractType: "erc1155", operator, from, to, tokenIds: tokenIds.map(e => ethers.BigNumber.from(e).toString()), values: values.map(e => ethers.BigNumber.from(e).toString()) };
   } else if (log.topics[0] == "0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c") {
     // WETH Deposit (index_topic_1 address dst, uint256 wad)
-    // '0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c',
-    result.type = "Transfer";
-    result.contractType = "weth";
-    result.from = ADDRESS0;
-    result.to = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
-    result.tokens = ethers.BigNumber.from(log.data).toString();
+    const to = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
+    const tokens = ethers.BigNumber.from(log.data).toString();
+    info = { type: "Transfer", contractType: "weth", from: ADDRESS0, to, tokens };
   } else if (log.topics[0] == "0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65") {
     // WETH Withdrawal (index_topic_1 address src, uint256 wad)
-    // '0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65',
-    // console.log(now() + " portfolioFunctions.js:parseEvent - log: " + JSON.stringify(log, null, 2));
-    result.type = "Transfer";
-    result.contractType = "weth";
-    result.from = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
-    result.to = ADDRESS0;
-    result.tokens = ethers.BigNumber.from(log.data).toString();
+    const from = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
+    const tokens = ethers.BigNumber.from(log.data).toString();
+    info = { type: "Transfer", contractType: "weth", from, to: ADDRESS0, tokens };
   } else if (log.topics[0] == "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925") {
     // ERC-20 Approval (index_topic_1 address owner, index_topic_2 address spender, uint256 value)
     // ERC-721 Approval (index_topic_1 address owner, index_topic_2 address approved, index_topic_3 uint256 tokenId)
     if (log.topics.length == 3) {
-      result.type = "Approval";
-      result.contractType = "erc20";
-      result.owner = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
-      result.spender = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
-      result.tokens = ethers.BigNumber.from(log.data).toString();
+      const owner = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
+      const spender = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
+      const tokens = ethers.BigNumber.from(log.data).toString();
+      info = { type: "Approval", contractType: "erc20", owner, spender, tokens };
     } else if (log.topics.length == 4) {
-      result.type = "Approval";
-      result.contractType = "erc721";
-      result.owner = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
-      result.approved = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
-      result.tokenId = ethers.BigNumber.from(log.topics[3]).toString();
+      const owner = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
+      const approved = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
+      const tokenId = ethers.BigNumber.from(log.topics[3]).toString();
+      info = { type: "Approval", contractType: "erc721", owner, approved, tokenId };
     }
   } else if (log.topics[0] == "0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31") {
     // ERC-721 ApprovalForAll (index_topic_1 address owner, index_topic_2 address operator, bool approved)
     // ERC-1155 ApprovalForAll (index_topic_1 address account, index_topic_2 address operator, bool approved)
-    // console.log(now() + " portfolioFunctions.js:parseEvent - log: " + JSON.stringify(log, null, 2));
-    result.type = "ApprovalForAll";
-    result.contractType = "erc721Or1155";
-    result.owner = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
-    result.operator = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
-    result.approved = ethers.BigNumber.from(log.data).eq(1);
+    const owner = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
+    const operator = ethers.utils.getAddress('0x' + log.topics[2].substring(26));
+    const approved = ethers.BigNumber.from(log.data).eq(1);
+    info = { type: "ApprovalForAll", contractType: "erc721Or1155", owner, operator, approved };
   }
 
-  if (result.type) {
+  if (info) {
+    result.info = info;
     result.chainId = log.chainId;
     result.blockNumber = log.blockNumber;
     result.transactionIndex = log.transactionIndex;
@@ -242,7 +216,7 @@ function parseEvent(log) {
     result.transactionHash = log.transactionHash;
     result.logIndex = log.logIndex;
     result.contract = log.contract;
-    // console.log(now() + " portfolioFunctions.js:parseEvent - result: " + JSON.stringify(result, null, 2));
+    console.log(now() + " portfolioFunctions.js:parseEvent - result: " + JSON.stringify(result, null, 2));
   } else {
     result.chainId = log.chainId;
     result.blockNumber = log.blockNumber;
@@ -253,7 +227,7 @@ function parseEvent(log) {
     result.transactionHash = log.transactionHash;
     result.logIndex = log.logIndex;
     result.contract = log.contract;
-    console.error(now() + " portfolioFunctions.js:parseEvent - UNPARSED result: " + JSON.stringify(result, null, 2));
+    console.log(now() + " portfolioFunctions.js:parseEvent - UNPARSED result: " + JSON.stringify(result, null, 2));
   }
 
 
