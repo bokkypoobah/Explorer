@@ -231,12 +231,12 @@ const portfolioModule = {
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
 
       const data = {};
-
       for (const [portfolio, portfolioData] of Object.entries(store.getters['config/portfolios'])) {
         for (const [account, accountData] of Object.entries(portfolioData)) {
           const validatedAddress = validateAddress(account);
           if (accountData.active && validatedAddress) {
             console.log(now() + " portfolioModule - actions.collateData - processing - validatedAddress: " + validatedAddress);
+
             let addressData = await dbGetCachedData(db, chainId + "_" + validatedAddress + "_portfolio_address_data", {});
             console.log(now() + " portfolioModule - actions.collateData - processing - addressData: " + JSON.stringify(addressData));
             if (!("balances" in data)) {
@@ -244,12 +244,9 @@ const portfolioModule = {
             }
             data.balances[validatedAddress] = {
               ...addressData,
-              // balance: addressData.balance,
-              // transactionCount: addressData.transactionCount,
-              // blockNumber: addressData.blockNumber,
-              // timestamp: addressData.timestamp,
-              // previous: addressData.previous,
             };
+
+            await collatePortfolioAddress(validatedAddress, data, db, chainId);
           }
         }
       }
