@@ -173,7 +173,7 @@ function parseEvent(log) {
     // ERC-1155 TransferBatch (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256[] ids, uint256[] values)
     const logData = _interface1155.parseLog(log);
     const [ operator, from, to, tokenIds, values ] = logData.args;
-    info = { type: "TransferSingle", contractType: "erc1155", operator, from, to, tokenIds: tokenIds.map(e => ethers.BigNumber.from(e).toString()), values: values.map(e => ethers.BigNumber.from(e).toString()) };
+    info = { type: "TransferBatch", contractType: "erc1155", operator, from, to, tokenIds: tokenIds.map(e => ethers.BigNumber.from(e).toString()), values: values.map(e => ethers.BigNumber.from(e).toString()) };
   } else if (log.topics[0] == "0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c") {
     // WETH Deposit (index_topic_1 address dst, uint256 wad)
     const to = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
@@ -236,6 +236,7 @@ async function collatePortfolioAddress(validatedAddress, data, db, chainId) {
   console.log(now() + " portfolioFunctions.js:collatePortfolioAddress - validatedAddress: " + validatedAddress + ", data keys: " + Object.keys(data));
 
   const tokenBalances = {};
+  const tokens = {};
   const BATCH_SIZE = 10000; // TODO: 100000;
   let rows = 0;
   let done = false;
@@ -248,12 +249,70 @@ async function collatePortfolioAddress(validatedAddress, data, db, chainId) {
         const info = item.info;
         if (info) {
           if (info.type == "Transfer" && info.contractType == "erc20") {
-            console.log(now() + " portfolioFunctions.js:collatePortfolioAddress - info: " + JSON.stringify(info, null, 2));
             if (info.from == validatedAddress) {
               tokenBalances[item.contract] = ethers.BigNumber.from(tokenBalances[item.contract] || "0").sub(info.tokens).toString();
             }
             if (info.to == validatedAddress) {
               tokenBalances[item.contract] = ethers.BigNumber.from(tokenBalances[item.contract] || "0").add(info.tokens).toString();
+            }
+          } else if (info.type == "Transfer" && info.contractType == "erc721") {
+            if (info.from == validatedAddress) {
+              delete tokens[item.contract][info.tokenId];
+              if (Object.keys(tokens[item.contract]).length == 0) {
+                delete tokens[item.contract];
+              }
+            }
+            if (info.to == validatedAddress) {
+              if (!(item.contract in tokens)) {
+                tokens[item.contract] = {};
+              }
+              tokens[item.contract][info.tokenId] = true;
+            }
+          } else if (info.type == "TransferSingle" && info.contractType == "erc1155") {
+            // console.error(now() + " portfolioFunctions.js:collatePortfolioAddress - item: " + JSON.stringify(item, null, 2));
+            if (info.from == validatedAddress) {
+              if (!(item.contract in tokens)) {
+                tokens[item.contract] = {};
+              }
+              tokens[item.contract][info.tokenId] = ethers.BigNumber.from(tokens[item.contract][info.tokenId] || "0").sub(info.value).toString();
+              if (!tokens[item.contract][info.tokenId]) {
+                  delete tokens[item.contract][info.tokenId];
+              }
+              if (Object.keys(tokens[item.contract]).length == 0) {
+                delete tokens[item.contract];
+              }
+            }
+            if (info.to == validatedAddress) {
+              if (!(item.contract in tokens)) {
+                tokens[item.contract] = {};
+              }
+              tokens[item.contract][info.tokenId] = ethers.BigNumber.from(tokens[item.contract][info.tokenId] || "0").add(info.value).toString();
+            }
+          } else if (info.type == "TransferBatch" && info.contractType == "erc1155") {
+            // console.error(now() + " portfolioFunctions.js:collatePortfolioAddress - item: " + JSON.stringify(item, null, 2));
+            if (info.from == validatedAddress) {
+              if (!(item.contract in tokens)) {
+                tokens[item.contract] = {};
+              }
+              for (const [index, tokenId] of info.tokenIds.entries()) {
+                // console.error("Deleting " + tokenId + " x " + info.values[index]);
+                tokens[item.contract][tokenId] = ethers.BigNumber.from(tokens[item.contract][tokenId] || "0").sub(info.values[index]).toString();
+                if (!tokens[item.contract][info.tokenId]) {
+                    delete tokens[item.contract][info.tokenId];
+                }
+              }
+              if (Object.keys(tokens[item.contract]).length == 0) {
+                delete tokens[item.contract];
+              }
+            }
+            if (info.to == validatedAddress) {
+              if (!(item.contract in tokens)) {
+                tokens[item.contract] = {};
+              }
+              for (const [index, tokenId] of info.tokenIds.entries()) {
+                // console.log("Adding " + tokenId + " x " + info.values[index]);
+                tokens[item.contract][tokenId] = ethers.BigNumber.from(tokens[item.contract][tokenId] || "0").add(info.values[index]).toString();
+              }
             }
           }
         }
@@ -264,8 +323,8 @@ async function collatePortfolioAddress(validatedAddress, data, db, chainId) {
     done = items.length < BATCH_SIZE;
   } while (!done);
   console.log(now() + " portfolioFunctions.js:collatePortfolioAddress - rows: " + rows);
-  // set data
   data.tokenBalances = tokenBalances;
+  data.tokens = tokens;
 }
 
 async function collatePortfolioAddresses(validatedAddress, data, provider) {
