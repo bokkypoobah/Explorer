@@ -26,14 +26,14 @@ async function syncPortfolioAddress(validatedAddress, data, provider, chainId) {
   if (!("chains" in data)) {
     data.chains = {};
   }
-  if (!("chainId" in data.chains)) {
+  if (!(chainId in data.chains)) {
     data.chains[chainId] = {};
   }
   data.chains[chainId].previous = {
-    balance: data.chains[chainId] && data.chains[chainId].balance || null,
-    transactionCount: data.chains[chainId] && data.chains[chainId].transactionCount || null,
     blockNumber: data.chains[chainId] && data.chains[chainId].blockNumber || null,
     timestamp: data.chains[chainId] && data.chains[chainId].timestamp || null,
+    balance: data.chains[chainId] && data.chains[chainId].balance || null,
+    transactionCount: data.chains[chainId] && data.chains[chainId].transactionCount || null,
   };
 
   const block = await provider.getBlock("latest");
@@ -115,13 +115,16 @@ async function syncPortfolioAddressEvents(validatedAddress, data, provider, db, 
   }
 
   console.log(now() + " portfolioFunctions.js:syncPortfolioAddressEvents - validatedAddress: " + validatedAddress + ", data.keys: " + Object.keys(data));
-  const startBlock = data[chainId] && data[chainId].retrievedEventsBlockNumber || 0;
+  const startBlock = data.chains[chainId] && data.chains[chainId].retrievedEventsBlockNumber || 0;
   // const startBlock = 0;
-  const endBlock = data.blockNumber;
+  const endBlock = data.chains[chainId] && data.chains[chainId].blockNumber || 0;
   for (let section = 0; section < 3; section++) {
     await getLogsFromRange(section, startBlock, endBlock);
   }
-  data.retrievedEventsBlockNumber = data.blockNumber;
+  if (!(chainId in data.chains)) {
+    data.chains[chainId] = {};
+  }
+  data.chains[chainId].retrievedEventsBlockNumber = data.blockNumber;
   // console.log(now() + " portfolioFunctions.js:syncPortfolioAddressEvents - logs: " + JSON.stringify(logs, null, 2));
 }
 
