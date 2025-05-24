@@ -7,7 +7,7 @@ const Connection = {
       <v-btn :disabled="!coinbase" :href="explorer + 'address/' + coinbase" target="_blank" size="x-small" color="primary" variant="text" icon class="ma-0 pa-0" v-tooltip="coinbase">
         <v-img :class="connected ? 'mdi mdi-network' : 'mdi mdi-network-outline'"></v-img>
       </v-btn>
-      <v-btn v-if="info.chainId" :href="explorer" target="_blank" color="primary" variant="text" class="lowercase-btn text-caption ma-0 px-0">
+      <v-btn v-if="info.chainId" :href="explorer" target="_blank" color="primary" variant="text" class="lowercase-btn text-caption ma-0 px-0" v-tooltip="'Chain Id: ' + info.chainId">
         {{ networkName }}
       </v-btn>
       <v-btn v-if="info.blockNumber" @click="navigateToBlock(info.blockNumber)" color="primary" variant="text" class="lowercase-btn text-caption ma-0 px-2">

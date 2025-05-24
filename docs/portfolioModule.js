@@ -210,10 +210,11 @@ const portfolioModule = {
           const validatedAddress = validateAddress(account);
           if (accountData.active && validatedAddress) {
             console.log(now() + " portfolioModule - actions.syncPortfolio - processing - validatedAddress: " + validatedAddress);
-            let addressData = await dbGetCachedData(db, chainId + "_" + validatedAddress + "_portfolio_address_data", {});
-            await syncPortfolioAddress(validatedAddress, addressData, provider);
+            let addressData = await dbGetCachedData(db, validatedAddress + "_portfolio_address_data", {});
+            await syncPortfolioAddress(validatedAddress, addressData, provider, chainId);
             await syncPortfolioAddressEvents(validatedAddress, addressData, provider, db, chainId);
-            await dbSaveCacheData(db, chainId + "_" + validatedAddress + "_portfolio_address_data", JSON.parse(JSON.stringify(addressData)));
+            console.log(now() + " portfolioModule - actions.syncPortfolio - processing - addressData: " + JSON.stringify(addressData, null, 2));
+            await dbSaveCacheData(db, validatedAddress + "_portfolio_address_data", JSON.parse(JSON.stringify(addressData)));
           }
         }
       }
@@ -237,15 +238,14 @@ const portfolioModule = {
           if (accountData.active && validatedAddress) {
             console.log(now() + " portfolioModule - actions.collateData - processing - validatedAddress: " + validatedAddress);
 
-            let addressData = await dbGetCachedData(db, chainId + "_" + validatedAddress + "_portfolio_address_data", {});
+            let addressData = await dbGetCachedData(db, validatedAddress + "_portfolio_address_data", {});
             console.log(now() + " portfolioModule - actions.collateData - processing - addressData: " + JSON.stringify(addressData));
-            if (!("balances" in data)) {
-              data.balances = {};
+            if (!("info" in data)) {
+              data.info = {};
             }
-            data.balances[validatedAddress] = {
+            data.info[validatedAddress] = {
               ...addressData,
             };
-
             await collatePortfolioAddress(validatedAddress, data, db, chainId);
           }
         }
