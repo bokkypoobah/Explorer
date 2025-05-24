@@ -178,12 +178,12 @@ function parseEvent(log) {
     // WETH Deposit (index_topic_1 address dst, uint256 wad)
     const to = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
     const tokens = ethers.BigNumber.from(log.data).toString();
-    info = { type: "Transfer", contractType: "weth", from: ADDRESS0, to, tokens };
+    info = { type: "Transfer", contractType: "erc20", from: ADDRESS0, to, tokens };
   } else if (log.topics[0] == "0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65") {
     // WETH Withdrawal (index_topic_1 address src, uint256 wad)
     const from = ethers.utils.getAddress('0x' + log.topics[1].substring(26));
     const tokens = ethers.BigNumber.from(log.data).toString();
-    info = { type: "Transfer", contractType: "weth", from, to: ADDRESS0, tokens };
+    info = { type: "Transfer", contractType: "erc20", from, to: ADDRESS0, tokens };
   } else if (log.topics[0] == "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925") {
     // ERC-20 Approval (index_topic_1 address owner, index_topic_2 address spender, uint256 value)
     // ERC-721 Approval (index_topic_1 address owner, index_topic_2 address approved, index_topic_3 uint256 tokenId)
@@ -216,7 +216,7 @@ function parseEvent(log) {
     result.transactionHash = log.transactionHash;
     result.logIndex = log.logIndex;
     result.contract = log.contract;
-    console.log(now() + " portfolioFunctions.js:parseEvent - result: " + JSON.stringify(result, null, 2));
+    // console.log(now() + " portfolioFunctions.js:parseEvent - result: " + JSON.stringify(result, null, 2));
   } else {
     result.chainId = log.chainId;
     result.blockNumber = log.blockNumber;
@@ -227,51 +227,45 @@ function parseEvent(log) {
     result.transactionHash = log.transactionHash;
     result.logIndex = log.logIndex;
     result.contract = log.contract;
-    console.log(now() + " portfolioFunctions.js:parseEvent - UNPARSED result: " + JSON.stringify(result, null, 2));
+    // console.log(now() + " portfolioFunctions.js:parseEvent - UNPARSED result: " + JSON.stringify(result, null, 2));
   }
-
-
-  // 15:53:48 portfolioFunctions.js:parseEvent - log: {
-  //   "chainId": 1,
-  //   "blockNumber": 18227907,
-  //   "blockHash": "0x7e116681db2de0fa16fb7425fa848d38c8c40c49a5674b7186d32dcca1bc440a",
-  //   "transactionIndex": 63,
-  //   "removed": false,
-  //   "address": "0x287F9b46dceA520D829c874b0AF01f4fbfeF9243",
-  //   "data": "0x00000000000000000000000000000000000000000000000000000000000186a0",
-  //   "topics": [
-  //     "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
-  //     "0x000000000000000000000000953ff9ab1848d91878d1b2ca0891606509d8b81e",
-  //     "0x000000000000000000000000287f9b46dcea520d829c874b0af01f4fbfef9243"
-  //   ],
-  //   "transactionHash": "0xbcbf14f0125b3f95ce06be07bca6df591393f40fa21715e80f1cb3104c11e993",
-  //   "logIndex": 166,
-  //   "contract": "0x57b9d10157f66D8C00a815B5E289a152DeDBE7ed"
-  // }
-
   return result;
 }
 
 async function collatePortfolioAddress(validatedAddress, data, db, chainId) {
   console.log(now() + " portfolioFunctions.js:collatePortfolioAddress - validatedAddress: " + validatedAddress + ", data keys: " + Object.keys(data));
 
+  const tokenBalances = {};
   const BATCH_SIZE = 10000; // TODO: 100000;
   let rows = 0;
   let done = false;
   do {
-    const data = await db.addressEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, validatedAddress, Dexie.minKey, Dexie.minKey],[chainId, validatedAddress, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(BATCH_SIZE).toArray();
-    if (data.length > 0) {
-      // console.log(now() + " tokenModule - portfolioFunctions.js:collatePortfolioAddress - data: " + JSON.stringify(data, null, 2));
-      for (const log of data) {
+    const items = await db.addressEvents.where('[chainId+address+blockNumber+logIndex]').between([chainId, validatedAddress, Dexie.minKey, Dexie.minKey],[chainId, validatedAddress, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(BATCH_SIZE).toArray();
+    if (items.length > 0) {
+      // console.log(now() + " portfolioFunctions.js:collatePortfolioAddress - items: " + JSON.stringify(items, null, 2));
+      for (const log of items) {
         const item = parseEvent(log);
+        const info = item.info;
+        if (info) {
+          if (info.type == "Transfer" && info.contractType == "erc20") {
+            console.log(now() + " portfolioFunctions.js:collatePortfolioAddress - info: " + JSON.stringify(info, null, 2));
+            if (info.from == validatedAddress) {
+              tokenBalances[item.contract] = ethers.BigNumber.from(tokenBalances[item.contract] || "0").sub(info.tokens).toString();
+            }
+            if (info.to == validatedAddress) {
+              tokenBalances[item.contract] = ethers.BigNumber.from(tokenBalances[item.contract] || "0").add(info.tokens).toString();
+            }
+          }
+        }
       }
     }
-    rows = parseInt(rows) + data.length;
-    console.log(now() + " tokenModule - portfolioFunctions.js:collatePortfolioAddress - rows: " + rows);
-    done = data.length < BATCH_SIZE;
+    rows = parseInt(rows) + items.length;
+    console.log(now() + " portfolioFunctions.js:collatePortfolioAddress - rows: " + rows);
+    done = items.length < BATCH_SIZE;
   } while (!done);
-  console.log(now() + " tokenModule - portfolioFunctions.js:collatePortfolioAddress - rows: " + rows);
+  console.log(now() + " portfolioFunctions.js:collatePortfolioAddress - rows: " + rows);
   // set data
+  data.tokenBalances = tokenBalances;
 }
 
 async function collatePortfolioAddresses(validatedAddress, data, provider) {
