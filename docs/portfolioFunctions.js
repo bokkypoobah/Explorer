@@ -323,8 +323,14 @@ async function collatePortfolioAddress(validatedAddress, data, db, chainId) {
     done = items.length < BATCH_SIZE;
   } while (!done);
   console.log(now() + " portfolioFunctions.js:collatePortfolioAddress - rows: " + rows);
-  data.tokenBalances = tokenBalances;
-  data.tokens = tokens;
+  if (!("tokenBalances" in data)) {
+    data.tokenBalances = {};
+  }
+  data.tokenBalances[validatedAddress] = tokenBalances;
+  if (!("tokens" in data)) {
+    data.tokens = {};
+  }
+  data.tokens[validatedAddress] = tokens;
 }
 
 async function collatePortfolioAddresses(validatedAddress, data, provider) {
