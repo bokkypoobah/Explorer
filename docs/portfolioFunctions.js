@@ -89,6 +89,8 @@ async function syncPortfolioAddressEvents(validatedAddress, data, provider, db, 
     try {
       const accountAs32Bytes = '0x000000000000000000000000' + validatedAddress.substring(2, 42).toLowerCase();
       // console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressEvents.getLogsFromRange - accountAs32Bytes: " + accountAs32Bytes);
+      // const topic0s = [ '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef' ];
+      // const topics = [ topic0s, null, null, null ];
       const topics = [ null, null, null, null ];
       topics[parseInt(section) + 1] = accountAs32Bytes;
       // Transfer (index_topic_1 address from, index_topic_2 address to, index_topic_3 uint256 id)
