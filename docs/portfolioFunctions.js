@@ -255,7 +255,7 @@ async function collatePortfolioAddress(validatedAddress, data, db, chainId) {
         const item = parseEvent(log);
         const info = item.info;
         if (info) {
-          if (false && info.type == "Transfer" && info.contractType == "erc20") {
+          if (info.type == "Transfer" && info.contractType == "erc20") {
             if (!(log.chainId in data[validatedAddress])) {
               data[validatedAddress][log.chainId] = {};
             }
@@ -282,7 +282,7 @@ async function collatePortfolioAddress(validatedAddress, data, db, chainId) {
                 delete data[validatedAddress][log.chainId].tokens[item.contract][info.tokenId];
               }
               if (Object.keys(delete data[validatedAddress][log.chainId].tokens[item.contract]).length == 0) {
-                delete delete data[validatedAddress][log.chainId].tokens[item.contract];
+                delete data[validatedAddress][log.chainId].tokens[item.contract];
               }
             }
             if (info.to == validatedAddress) {
@@ -291,72 +291,80 @@ async function collatePortfolioAddress(validatedAddress, data, db, chainId) {
               }
               data[validatedAddress][log.chainId].tokens[item.contract][info.tokenId] = true;
             }
-          } else if (false && info.type == "TransferSingle" && info.contractType == "erc1155") {
+          } else if (info.type == "TransferSingle" && info.contractType == "erc1155") {
             // TODO: Fix "-1" values
-            if (info.tokenId == DEBUG_TOKENID) {
-              console.error(now() + " portfolioFunctions.js:collatePortfolioAddress - item: " + JSON.stringify(item, null, 2));
+            // if (info.tokenId == DEBUG_TOKENID) {
+            //   console.error(now() + " portfolioFunctions.js:collatePortfolioAddress - item: " + JSON.stringify(item, null, 2));
+            // }
+            if (!(log.chainId in data[validatedAddress])) {
+              data[validatedAddress][log.chainId] = {};
             }
-            if (!(log.chainId in tokens)) {
-              tokens[log.chainId] = {};
+            if (!("tokens" in data[validatedAddress][log.chainId])) {
+              data[validatedAddress][log.chainId].tokens = {};
             }
             if (info.from == validatedAddress) {
-              if (!(item.contract in tokens[log.chainId])) {
-                tokens[log.chainId][item.contract] = {};
-              }
-              tokens[log.chainId][item.contract][info.tokenId] = ethers.BigNumber.from(tokens[log.chainId][item.contract][info.tokenId] || "0").sub(info.value).toString();
-              // if (tokens[log.chainId][item.contract] && tokens[log.chainId][item.contract][info.tokenId]) {
-                if (tokens[log.chainId][item.contract][info.tokenId] == 0) {
-                    delete tokens[log.chainId][item.contract][info.tokenId];
+              if (data[validatedAddress][log.chainId].tokens[item.contract]) {
+                data[validatedAddress][log.chainId].tokens[item.contract][info.tokenId] = ethers.BigNumber.from(data[validatedAddress][log.chainId].tokens[item.contract][info.tokenId] || "0").sub(info.value).toString();
+                if (data[validatedAddress][log.chainId].tokens[item.contract][info.tokenId] < 0) {
+                  data[validatedAddress][log.chainId].tokens[item.contract][info.tokenId] = "0";
                 }
-              // }
-              if (tokens[log.chainId][item.contract]) {
-                if (Object.keys(tokens[log.chainId][item.contract]).length == 0) {
-                  delete tokens[log.chainId][item.contract];
+              }
+              if (data[validatedAddress][log.chainId].tokens[item.contract] && data[validatedAddress][log.chainId].tokens[item.contract][info.tokenId] == 0) {
+                delete data[validatedAddress][log.chainId].tokens[item.contract][info.tokenId];
+              }
+              if (data[validatedAddress][log.chainId].tokens[item.contract]) {
+                if (Object.keys(data[validatedAddress][log.chainId].tokens[item.contract]).length == 0) {
+                  delete data[validatedAddress][log.chainId].tokens[item.contract];
                 }
               }
             }
             if (info.to == validatedAddress) {
-              if (!(item.contract in tokens[log.chainId])) {
-                tokens[log.chainId][item.contract] = {};
+              if (!(item.contract in data[validatedAddress][log.chainId].tokens)) {
+                data[validatedAddress][log.chainId].tokens[item.contract] = {};
               }
-              tokens[log.chainId][item.contract][info.tokenId] = ethers.BigNumber.from(tokens[log.chainId][item.contract][info.tokenId] || "0").add(info.value).toString();
+              data[validatedAddress][log.chainId].tokens[item.contract][info.tokenId] = ethers.BigNumber.from(data[validatedAddress][log.chainId].tokens[item.contract][info.tokenId] || "0").add(info.value).toString();
             }
-          } else if (false && info.type == "TransferBatch" && info.contractType == "erc1155") {
-            // TODO: Fix "-1" values
-            if (!(log.chainId in tokens)) {
-              tokens[log.chainId] = {};
+          } else if (info.type == "TransferBatch" && info.contractType == "erc1155") {
+            // console.log(now() + " portfolioFunctions.js:collatePortfolioAddress - item: " + JSON.stringify(item, null, 2));
+            if (!(log.chainId in data[validatedAddress])) {
+              data[validatedAddress][log.chainId] = {};
+            }
+            if (!("tokens" in data[validatedAddress][log.chainId])) {
+              data[validatedAddress][log.chainId].tokens = {};
             }
             if (info.from == validatedAddress) {
-              // console.log(now() + " portfolioFunctions.js:collatePortfolioAddress - item: " + JSON.stringify(item, null, 2));
-              if (!(item.contract in tokens[log.chainId])) {
-                tokens[log.chainId][item.contract] = {};
-              }
+              // console.log(now() + " portfolioFunctions.js:collatePortfolioAddress - DELETING item: " + JSON.stringify(item, null, 2));
               for (const [index, tokenId] of info.tokenIds.entries()) {
-                if (tokenId == DEBUG_TOKENID) {
-                  console.error(now() + " portfolioFunctions.js:collatePortfolioAddress - DELETING item: " + JSON.stringify(item, null, 2));
-                }
+                // if (tokenId == DEBUG_TOKENID) {
+                //   console.error(now() + " portfolioFunctions.js:collatePortfolioAddress - DELETING item: " + JSON.stringify(item, null, 2));
+                // }
                 // console.log("Deleting " + tokenId + " x " + info.values[index]);
-                tokens[log.chainId][item.contract][tokenId] = ethers.BigNumber.from(tokens[log.chainId][item.contract][tokenId] || "0").sub(info.values[index]).toString();
-                if (tokens[log.chainId][item.contract][tokenId] == 0) {
-                    delete tokens[log.chainId][item.contract][tokenId];
+                if (data[validatedAddress][log.chainId].tokens[item.contract]) {
+                  data[validatedAddress][log.chainId].tokens[item.contract][tokenId] = ethers.BigNumber.from(data[validatedAddress][log.chainId].tokens[item.contract][tokenId] || "0").sub(info.values[index]).toString();
+                  if (data[validatedAddress][log.chainId].tokens[item.contract][tokenId] < 0) {
+                    data[validatedAddress][log.chainId].tokens[item.contract][tokenId] = "0";
+                  }
+                }
+                if (data[validatedAddress][log.chainId].tokens[item.contract] && data[validatedAddress][log.chainId].tokens[item.contract][tokenId] == 0) {
+                  delete data[validatedAddress][log.chainId].tokens[item.contract][tokenId];
                 }
               }
-              if (tokens[log.chainId][item.contract]) {
-                if (Object.keys(tokens[log.chainId][item.contract]).length == 0) {
-                  delete tokens[log.chainId][item.contract];
+              if (data[validatedAddress][log.chainId].tokens[item.contract]) {
+                if (Object.keys(data[validatedAddress][log.chainId].tokens[item.contract]).length == 0) {
+                  delete data[validatedAddress][log.chainId].tokens[item.contract];
                 }
               }
             }
             if (info.to == validatedAddress) {
-              if (!(item.contract in tokens[log.chainId])) {
-                tokens[log.chainId][item.contract] = {};
+              if (!(item.contract in data[validatedAddress][log.chainId].tokens)) {
+                data[validatedAddress][log.chainId].tokens[item.contract] = {};
               }
               for (const [index, tokenId] of info.tokenIds.entries()) {
-                if (tokenId == DEBUG_TOKENID) {
-                  console.error(now() + " portfolioFunctions.js:collatePortfolioAddress - ADDING item: " + JSON.stringify(item, null, 2));
-                }
+                // if (tokenId == DEBUG_TOKENID) {
+                //   console.error(now() + " portfolioFunctions.js:collatePortfolioAddress - ADDING item: " + JSON.stringify(item, null, 2));
+                // }
                 // console.log("Adding " + tokenId + " x " + info.values[index]);
-                tokens[log.chainId][item.contract][tokenId] = ethers.BigNumber.from(tokens[log.chainId][item.contract][tokenId] || "0").add(info.values[index]).toString();
+                data[validatedAddress][log.chainId].tokens[item.contract][tokenId] = ethers.BigNumber.from(data[validatedAddress][log.chainId].tokens[item.contract][tokenId] || "0").add(info.values[index]).toString();
               }
             }
           }
