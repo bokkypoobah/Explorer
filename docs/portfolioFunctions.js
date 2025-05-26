@@ -34,6 +34,7 @@ async function syncPortfolioAddress(validatedAddress, data, provider, chainId) {
     timestamp: data.chains[chainId] && data.chains[chainId].timestamp || null,
     balance: data.chains[chainId] && data.chains[chainId].balance || null,
     transactionCount: data.chains[chainId] && data.chains[chainId].transactionCount || null,
+    retrievedEventsBlockNumber: data.chains[chainId] && data.chains[chainId].retrievedEventsBlockNumber || null,
   };
 
   const block = await provider.getBlock("latest");
@@ -116,10 +117,20 @@ async function syncPortfolioAddressEvents(validatedAddress, data, provider, db, 
     }
   }
 
+  const REFRESH_LATEST_BLOCKS = 100;
   console.log(now() + " portfolioFunctions.js:syncPortfolioAddressEvents - validatedAddress: " + validatedAddress + ", data.keys: " + Object.keys(data));
-  const startBlock = data.chains[chainId] && data.chains[chainId].retrievedEventsBlockNumber || 0;
-  // const startBlock = 0;
+  const startBlock = data.chains[chainId] && data.chains[chainId].retrievedEventsBlockNumber && (data.chains[chainId].retrievedEventsBlockNumber - REFRESH_LATEST_BLOCKS) || 0;
   const endBlock = data.chains[chainId] && data.chains[chainId].blockNumber || 0;
+  console.log(now() + " portfolioFunctions.js:syncPortfolioAddressEvents - startBlock: " + startBlock + ", endBlock: " + endBlock);
+
+  if (startBlock > 0) {
+    const toDelete = await db.addressEvents.where('[address+chainId+blockNumber+logIndex]').between([validatedAddress, chainId, startBlock, Dexie.minKey],[validatedAddress, chainId, Dexie.maxKey, Dexie.maxKey]).toArray();
+    console.log(now() + " portfolioFunctions.js:syncPortfolioAddressEvents - toDelete: " + JSON.stringify(toDelete, null, 2));
+    const rowsDeleted = await db.addressEvents.where('[address+chainId+blockNumber+logIndex]').between([validatedAddress, chainId, startBlock, Dexie.minKey],[validatedAddress, chainId, Dexie.maxKey, Dexie.maxKey]).delete()
+    console.log(now() + " portfolioFunctions.js:syncPortfolioAddressEvents - rowsDeleted: " + rowsDeleted);
+  }
+
+
   for (let section = 0; section < 3; section++) {
     await getLogsFromRange(section, startBlock, endBlock);
   }
