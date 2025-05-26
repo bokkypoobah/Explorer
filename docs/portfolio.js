@@ -41,8 +41,9 @@ const Portfolio = {
           <v-tabs-window-item value="summary">
             NOTE: Set up your portfolio(s) in Other -> Config
             <pre>
-              <br />
-data: {{ data }}
+assetsList: {{ assetsList }}
+              <!-- <br />
+data: {{ data }} -->
             </pre>
           </v-tabs-window-item>
           <v-tabs-window-item value="fungibles">
@@ -186,6 +187,26 @@ data: {{ data }}
     },
     data() {
       return store.getters['portfolio/data'];
+    },
+    assetsList() {
+      const results = [];
+      console.log(now() + " Portfolio - computed.assetsList - data: " + JSON.stringify(this.data, null, 2));
+      for (const [address, addressData] of Object.entries(this.data)) {
+        for (const [chain, chainData] of Object.entries(addressData)) {
+          // console.error(address + "/" + chain + " => " + JSON.stringify(chainData));
+          results.push({ address, chain, contract: null, contractType: null, name: "ETH", balance: chainData.balance, decimals: 18, transactionCount: chainData.transactionCount });
+          for (const [token, balance] of Object.entries(chainData.tokenBalances || {})) {
+            // console.error(address + "/" + chain + "/" + token + " => " + balance);
+            results.push({ address, chain, contract: token, contractType: "erc20", name: "{ERC-20 name}", balance, decimals: 18 });
+          }
+          // console.error(address + "/" + chain + " => " + JSON.stringify(chainData.tokens));
+          for (const [token, tokenData] of Object.entries(chainData.tokens || {})) {
+            console.error(address + "/" + chain + "/" + token + " => " + JSON.stringify(tokenData, null, 2));
+            results.push({ address, chain, contract: token, contractType: "erc721/1155", name: "{ERC-721/1155 name}", tokenData });
+          }
+        }
+      }
+      return results;
     },
     // portfoliosList() {
     //   const results = [];
