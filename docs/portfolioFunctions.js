@@ -1,64 +1,48 @@
-async function syncPortfolioAddress(validatedAddress, data, provider, chainId) {
-  console.log(now() + " portfolioFunctions.js:syncPortfolioAddress - validatedAddress: " + validatedAddress + ", data.keys: " + Object.keys(data));
+async function syncPortfolioAddress(validatedAddress, addressData, provider, chainId) {
+  console.log(now() + " portfolioFunctions.js:syncPortfolioAddress - validatedAddress: " + validatedAddress + ", addressData.keys: " + Object.keys(addressData));
 
   const DEV = true;
-  // if (DEV) {
-  //   data = {};
-  // }
-  // if (DEV || !('type' in data)) {
-  //   // data.address = validatedAddress;
-  //   try {
-  //     const code = await provider.getCode(validatedAddress);
-  //     data.type = code == "0x" ? "eoa" : "contract";
-  //     // console.log(now() + " portfolioFunctions.js:syncPortfolioAddress - type: " + data.type);
-  //   } catch (e) {
-  //     console.error(now() + " portfolioFunctions.js:syncPortfolioAddress - provider.getCode: " + e.message);
-  //   }
-  // }
+  if (!(chainId in addressData)) {
+    addressData[chainId] = {};
+  }
   if (chainId == 1) {
     try {
-      data.ensName = await provider.lookupAddress(validatedAddress);
-      // console.log(now() + " portfolioFunctions.js:syncPortfolioAddress - ensName: " + data.ensName);
+      addressData[chainId].ensName = await provider.lookupAddress(validatedAddress);
+      // console.log(now() + " portfolioFunctions.js:syncPortfolioAddress - ensName: " + addressData[chainId].ensName);
     } catch (e) {
       console.error(now() + " portfolioFunctions.js:syncPortfolioAddress - provider.lookupAddress: " + e.message);
     }
   }
-  if (!("chains" in data)) {
-    data.chains = {};
-  }
-  if (!(chainId in data.chains)) {
-    data.chains[chainId] = {};
-  }
-  data.chains[chainId].previous = {
-    blockNumber: data.chains[chainId] && data.chains[chainId].blockNumber || null,
-    timestamp: data.chains[chainId] && data.chains[chainId].timestamp || null,
-    balance: data.chains[chainId] && data.chains[chainId].balance || null,
-    transactionCount: data.chains[chainId] && data.chains[chainId].transactionCount || null,
-    retrievedEventsBlockNumber: data.chains[chainId] && data.chains[chainId].retrievedEventsBlockNumber || null,
+  addressData[chainId].previous = {
+    blockNumber: addressData[chainId] && addressData[chainId].blockNumber || null,
+    timestamp: addressData[chainId] && addressData[chainId].timestamp || null,
+    balance: addressData[chainId] && addressData[chainId].balance || null,
+    transactionCount: addressData[chainId] && addressData[chainId].transactionCount || null,
+    retrievedEventsBlockNumber: addressData[chainId] && addressData[chainId].retrievedEventsBlockNumber || null,
   };
 
   const block = await provider.getBlock("latest");
-  data.chains[chainId].blockNumber = block.number;
-  data.chains[chainId].timestamp = block.timestamp;
+  addressData[chainId].blockNumber = block.number;
+  addressData[chainId].timestamp = block.timestamp;
   try {
-    data.chains[chainId].balance = ethers.BigNumber.from(await provider.getBalance(validatedAddress)).toString();
-    // console.log(now() + " portfolioFunctions.js:syncPortfolioAddress - balance: " + data.balance);
+    addressData[chainId].balance = ethers.BigNumber.from(await provider.getBalance(validatedAddress)).toString();
+    // console.log(now() + " portfolioFunctions.js:syncPortfolioAddress - balance: " + addressData.balance);
   } catch (e) {
     console.error(now() + " portfolioFunctions.js:syncPortfolioAddress - provider.getBalance: " + e.message);
   }
   try {
-    data.chains[chainId].transactionCount = await provider.getTransactionCount(validatedAddress);
-    // console.log(now() + " portfolioFunctions.js:syncPortfolioAddress - transactionCount: " + data.transactionCount);
+    addressData[chainId].transactionCount = await provider.getTransactionCount(validatedAddress);
+    // console.log(now() + " portfolioFunctions.js:syncPortfolioAddress - transactionCount: " + addressData.transactionCount);
   } catch (e) {
     console.error(now() + " portfolioFunctions.js:syncPortfolioAddress - provider.getTransactionCount: " + e.message);
   }
 
-  // if ((data.balance != data.previous.balance) || (data.transactionCount != data.previous.transactionCount)) {
+  // if ((addressData.balance != addressData.previous.balance) || (addressData.transactionCount != addressData.previous.transactionCount)) {
   //   // TODO: Scrape transactions and internal transactions from Etherscan API
   // }
   // TODO: Scrape ENS events
 
-  console.log(now() + " portfolioFunctions.js:syncPortfolioAddress - data: " + JSON.stringify(data, null, 2));
+  console.log(now() + " portfolioFunctions.js:syncPortfolioAddress - addressData: " + JSON.stringify(addressData, null, 2));
 }
 
 async function syncPortfolioAddressEvents(validatedAddress, data, provider, db, chainId) {
@@ -119,8 +103,8 @@ async function syncPortfolioAddressEvents(validatedAddress, data, provider, db, 
 
   const REFRESH_LATEST_BLOCKS = 100;
   console.log(now() + " portfolioFunctions.js:syncPortfolioAddressEvents - validatedAddress: " + validatedAddress + ", data.keys: " + Object.keys(data));
-  const startBlock = data.chains[chainId] && data.chains[chainId].retrievedEventsBlockNumber && (data.chains[chainId].retrievedEventsBlockNumber - REFRESH_LATEST_BLOCKS) || 0;
-  const endBlock = data.chains[chainId] && data.chains[chainId].blockNumber || 0;
+  const startBlock = data[chainId] && data[chainId].retrievedEventsBlockNumber && (data[chainId].retrievedEventsBlockNumber - REFRESH_LATEST_BLOCKS) || 0;
+  const endBlock = data[chainId] && data[chainId].blockNumber || 0;
   console.log(now() + " portfolioFunctions.js:syncPortfolioAddressEvents - startBlock: " + startBlock + ", endBlock: " + endBlock);
 
   if (startBlock > 0) {
@@ -130,14 +114,10 @@ async function syncPortfolioAddressEvents(validatedAddress, data, provider, db, 
     console.log(now() + " portfolioFunctions.js:syncPortfolioAddressEvents - rowsDeleted: " + rowsDeleted);
   }
 
-
   for (let section = 0; section < 3; section++) {
     await getLogsFromRange(section, startBlock, endBlock);
   }
-  if (!(chainId in data.chains)) {
-    data.chains[chainId] = {};
-  }
-  data.chains[chainId].retrievedEventsBlockNumber = data.chains[chainId].blockNumber;
+  data[chainId].retrievedEventsBlockNumber = data[chainId].blockNumber;
   // console.log(now() + " portfolioFunctions.js:syncPortfolioAddressEvents - logs: " + JSON.stringify(logs, null, 2));
 }
 
@@ -275,42 +255,43 @@ async function collatePortfolioAddress(validatedAddress, data, db, chainId) {
         const item = parseEvent(log);
         const info = item.info;
         if (info) {
-          if (info.type == "Transfer" && info.contractType == "erc20") {
-            // if (log.chainId != chainId) {
-            //   console.error(now() + " portfolioFunctions.js:collatePortfolioAddress - log: " + JSON.stringify(log, null, 2));
-            // }
-            if (!(log.chainId in tokenBalances)) {
-              tokenBalances[log.chainId] = {};
+          if (false && info.type == "Transfer" && info.contractType == "erc20") {
+            if (!(log.chainId in data[validatedAddress])) {
+              data[validatedAddress][log.chainId] = {};
+            }
+            if (!("tokenBalances" in data[validatedAddress][log.chainId])) {
+              data[validatedAddress][log.chainId].tokenBalances = {};
             }
             if (info.from == validatedAddress) {
-              tokenBalances[log.chainId][item.contract] = ethers.BigNumber.from(tokenBalances[log.chainId][item.contract] || "0").sub(info.tokens).toString();
+              data[validatedAddress][log.chainId].tokenBalances[item.contract] = ethers.BigNumber.from(data[validatedAddress][log.chainId].tokenBalances[item.contract] || "0").sub(info.tokens).toString();
             }
             if (info.to == validatedAddress) {
-              tokenBalances[log.chainId][item.contract] = ethers.BigNumber.from(tokenBalances[log.chainId][item.contract] || "0").add(info.tokens).toString();
+              data[validatedAddress][log.chainId].tokenBalances[item.contract] = ethers.BigNumber.from(data[validatedAddress][log.chainId].tokenBalances[item.contract] || "0").add(info.tokens).toString();
             }
           } else if (info.type == "Transfer" && info.contractType == "erc721") {
             // console.log(now() + " portfolioFunctions.js:collatePortfolioAddress - info: " + JSON.stringify(info, null, 2));
-            if (!(log.chainId in tokens)) {
-              tokens[log.chainId] = {};
+            if (!(log.chainId in data[validatedAddress])) {
+              data[validatedAddress][log.chainId] = {};
+            }
+            if (!("tokens" in data[validatedAddress][log.chainId])) {
+              data[validatedAddress][log.chainId].tokens = {};
             }
             if (info.from == validatedAddress) {
-              if (tokens[log.chainId][item.contract] && tokens[log.chainId][item.contract][info.tokenId]) {
-                // console.log(now() + " portfolioFunctions.js:collatePortfolioAddress - DELETING info: " + JSON.stringify(info, null, 2));
-                delete tokens[log.chainId][item.contract][info.tokenId];
+              if (data[validatedAddress][log.chainId].tokens[item.contract] && data[validatedAddress][log.chainId].tokens[item.contract][info.tokenId]) {
+                // console.error(now() + " portfolioFunctions.js:collatePortfolioAddress - DELETING info: " + JSON.stringify(info, null, 2));
+                delete data[validatedAddress][log.chainId].tokens[item.contract][info.tokenId];
               }
-              if (tokens[log.chainId][item.contract]) {
-                if (Object.keys(tokens[log.chainId][item.contract]).length == 0) {
-                  delete tokens[log.chainId][item.contract];
-                }
+              if (Object.keys(delete data[validatedAddress][log.chainId].tokens[item.contract]).length == 0) {
+                delete delete data[validatedAddress][log.chainId].tokens[item.contract];
               }
             }
             if (info.to == validatedAddress) {
-              if (!(item.contract in tokens[log.chainId])) {
-                tokens[log.chainId][item.contract] = {};
+              if (!(item.contract in data[validatedAddress][log.chainId].tokens)) {
+                data[validatedAddress][log.chainId].tokens[item.contract] = {};
               }
-              tokens[log.chainId][item.contract][info.tokenId] = true;
+              data[validatedAddress][log.chainId].tokens[item.contract][info.tokenId] = true;
             }
-          } else if (info.type == "TransferSingle" && info.contractType == "erc1155") {
+          } else if (false && info.type == "TransferSingle" && info.contractType == "erc1155") {
             // TODO: Fix "-1" values
             if (info.tokenId == DEBUG_TOKENID) {
               console.error(now() + " portfolioFunctions.js:collatePortfolioAddress - item: " + JSON.stringify(item, null, 2));
@@ -340,7 +321,7 @@ async function collatePortfolioAddress(validatedAddress, data, db, chainId) {
               }
               tokens[log.chainId][item.contract][info.tokenId] = ethers.BigNumber.from(tokens[log.chainId][item.contract][info.tokenId] || "0").add(info.value).toString();
             }
-          } else if (info.type == "TransferBatch" && info.contractType == "erc1155") {
+          } else if (false && info.type == "TransferBatch" && info.contractType == "erc1155") {
             // TODO: Fix "-1" values
             if (!(log.chainId in tokens)) {
               tokens[log.chainId] = {};
@@ -387,14 +368,15 @@ async function collatePortfolioAddress(validatedAddress, data, db, chainId) {
     done = logs.length < BATCH_SIZE;
   } while (!done);
   console.log(now() + " portfolioFunctions.js:collatePortfolioAddress - rows: " + rows);
-  if (!("tokenBalances" in data)) {
-    data.tokenBalances = {};
-  }
-  data.tokenBalances[validatedAddress] = tokenBalances;
-  if (!("tokens" in data)) {
-    data.tokens = {};
-  }
-  data.tokens[validatedAddress] = tokens;
+  // if (!("tokenBalances" in data)) {
+  //   data.tokenBalances = {};
+  // }
+  // data.tokenBalances[validatedAddress] = tokenBalances;
+  // data.tokenBalances = tokenBalances;
+  // if (!("tokens" in data)) {
+  //   data.tokens = {};
+  // }
+  // data.tokens[validatedAddress] = tokens;
 }
 
 async function collatePortfolioAddresses(validatedAddress, data, provider) {

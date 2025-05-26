@@ -240,10 +240,7 @@ const portfolioModule = {
 
             let addressData = await dbGetCachedData(db, validatedAddress + "_portfolio_address_data", {});
             console.log(now() + " portfolioModule - actions.collateData - processing - addressData: " + JSON.stringify(addressData));
-            if (!("info" in data)) {
-              data.info = {};
-            }
-            data.info[validatedAddress] = {
+            data[validatedAddress] = {
               ...addressData,
             };
             await collatePortfolioAddress(validatedAddress, data, db, chainId);
