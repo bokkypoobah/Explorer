@@ -37,98 +37,53 @@ const Portfolio = {
           </v-tabs>
         </v-toolbar>
 
-        <v-tabs-window v-model="settings.tab">
-          <v-tabs-window-item value="summary">
-            NOTE: Set up your portfolio(s) in Other -> Config
-            <pre>
-assetsList: {{ assetsList }}
-              <!-- <br />
-data: {{ data }} -->
-            </pre>
-          </v-tabs-window-item>
-          <v-tabs-window-item value="fungibles">
-            TODO: ERC-20 Fungibles
-          </v-tabs-window-item>
-          <v-tabs-window-item value="nonfungibles">
-            TODO: ERC-721 and ERC-1155 Non-Fungibles
-          </v-tabs-window-item>
-          <v-tabs-window-item value="names">
-            TODO: ENS Names, with expiry information
-          </v-tabs-window-item>
-          <v-tabs-window-item value="approvals">
-            TODO: ERC-20, ERC-721 and ERC-1155 Approvals
-          </v-tabs-window-item>
-          <v-tabs-window-item value="activity">
-            TODO: Activity
-          </v-tabs-window-item>
-          <!-- <v-tabs-window-item value="config">
+        <v-toolbar flat color="transparent" density="compact">
+          <v-btn icon @click="settings.showFilter = !settings.showFilter; saveSettings();" color="primary" class="lowercase-btn" v-tooltip="'Filters'">
+            <v-icon :icon="settings.showFilter ? 'mdi-filter' : 'mdi-filter-outline'"></v-icon>
+          </v-btn>
+        </v-toolbar>
+
+        <v-row dense>
+          <v-col v-if="settings.showFilter" cols="2">
             <v-card>
-              <v-card-text>
-                <v-card-title>Portfolios</v-card-title>
-                <v-data-table :headers="portfoliosHeaders" :items="portfoliosList" density="compact" style="position: relative;">
-                  <template v-slot:item.name="{ item }">
-                    {{ item.name }}
-                  </template>
-                  <template v-slot:item.accounts="{ item }">
-                    <span v-for="(active, account) of item.accounts">
-                      <render-address v-if="active" :address="account" noXPadding></render-address>
-                    </span>
-                  </template>
-                  <template v-slot:item.actions="{ item }">
-                    <v-btn @click="portfolioDialogView(item.name);" prepend-icon="mdi-pencil" variant="text" class="lowercase-btn">Edit</v-btn>
-                  </template>
-                  <template v-slot:body.append>
-                    <tr class="bg-grey-lighten-4">
-                      <td></td>
-                      <td></td>
-                      <td>
-                        <v-btn @click="portfolioDialogView(null);" prepend-icon="mdi-pencil-plus" variant="text" class="lowercase-btn">Add</v-btn>
-                      </td>
-                    </tr>
-                  </template>
-                </v-data-table>
-                <v-dialog :model-value="portfolioDialog.mode != null" persistent max-width="800px">
-                  <v-card>
-                    <v-card-item :prepend-icon="portfolioDialog.mode == 'add' ? 'mdi-pencil-plus' : 'mdi-pencil'" :title="portfolioDialog.mode == 'add' ? 'Portfolio - Add' : 'Portfolio - Edit'" class="bg-grey-lighten-4"></v-card-item>
-                    <v-card-text class="ma-2 pa-2">
-                      <v-text-field v-model="portfolioDialog.name" label="Name" density="compact" style="width: 360px;"></v-text-field>
-                      <v-data-table :headers="accountsHeaders" :items="portfolioDialog.accounts" density="compact" style="position: relative;">
-                        <template v-slot:item.account="{ item }">
-                          {{ item.account }}
-                        </template>
-                        <template v-slot:item.active="{ item }">
-                          <v-checkbox v-model="item.active" hide-details></v-checkbox>
-                        </template>
-                        <template v-slot:item.actions="{ item, index }">
-                          <v-btn @click="portfolioDialog.accounts.splice(index, 1);" prepend-icon="mdi-delete" variant="text" class="lowercase-btn">Delete</v-btn>
-                        </template>
-                        <template v-slot:body.append>
-                          <tr class="bg-grey-lighten-4">
-                            <td class="ma-0 pa-0">
-                              <v-text-field v-model="portfolioDialog.account" :rules="addressRules" variant="solo" flat density="compact" single-line class="ma-2 pa-0" placeholder="new account" ></v-text-field>
-                            </td>
-                            <td>
-                              <v-checkbox v-model="portfolioDialog.active" hide-details></v-checkbox>
-                            </td>
-                            <td>
-                              <v-btn @click="portfolioDialog.accounts.push({ account: portfolioDialog.account, active: portfolioDialog.active });" prepend-icon="mdi-pencil-plus" variant="text" class="lowercase-btn">Add</v-btn>
-                            </td>
-                          </tr>
-                        </template>
-                      </v-data-table>
-                    </v-card-text>
-                    <v-card-actions>
-                      <v-btn v-if="portfolioDialog.mode == 'add'" :disabled="!portfolioDialog.name || !!portfolios[portfolioDialog.name]" @click="portfolioDialogAddOrSave();" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Add</v-btn>
-                      <v-btn v-if="portfolioDialog.mode == 'edit'" @click="portfolioDialogAddOrSave();" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Save</v-btn>
-                      <v-btn v-if="portfolioDialog.mode == 'edit'" :disabled="portfolioDialog.name != portfolioDialog.originalName" @click="portfolioDialogDelete();" prepend-icon="mdi-delete" variant="text" class="lowercase-btn">Delete</v-btn>
-                      <v-btn @click="portfolioDialog.mode = null;" prepend-icon="mdi-window-close" variant="text" class="lowercase-btn">Cancel</v-btn>
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
-              </v-card-text>
+              <v-expansion-panels flat>
+              </v-expansion-panels>
             </v-card>
-          </v-tabs-window-item> -->
-        </v-tabs-window>
+          </v-col>
+          <v-col :cols="settings.showFilter ? 10 : 12" align="left">
+            <v-card>
+              <v-card-text class="ma-0 pa-2">
+                <v-tabs-window v-model="settings.tab">
+                  <v-tabs-window-item value="summary">
+                    NOTE: Set up your portfolio(s) in Other -> Config
+                    <pre>
+        assetsList: {{ assetsList }}
+                      <br />
+        data: {{ data }}
+                    </pre>
+                  </v-tabs-window-item>
+                  <v-tabs-window-item value="fungibles">
+                    TODO: ERC-20 Fungibles
+                  </v-tabs-window-item>
+                  <v-tabs-window-item value="nonfungibles">
+                    TODO: ERC-721 and ERC-1155 Non-Fungibles
+                  </v-tabs-window-item>
+                  <v-tabs-window-item value="names">
+                    TODO: ENS Names, with expiry information
+                  </v-tabs-window-item>
+                  <v-tabs-window-item value="approvals">
+                    TODO: ERC-20, ERC-721 and ERC-1155 Approvals
+                  </v-tabs-window-item>
+                  <v-tabs-window-item value="activity">
+                    TODO: Activity
+                  </v-tabs-window-item>
+                </v-tabs-window>
+              </v-card-text>
+              <v-toolbar flat color="transparent" density="compact">
+              </v-toolbar>
+            </v-card>
+          </v-col>
+        </v-row>
       </v-container>
     </div>
   `,
@@ -138,13 +93,12 @@ data: {{ data }} -->
       initialised: false,
       settings: {
         tab: "summary",
-        owners: {
-          sortBy: [{ key: "balances", order: "desc" }],
+        showFilter: false,
+        assets: {
+          sortOption: "typenameasc",
           itemsPerPage: 10,
           currentPage: 1,
-          top: 20,
         },
-
         version: 0,
       },
       // addressRules: [
@@ -393,11 +347,10 @@ data: {{ data }} -->
       return null;
     },
     saveSettings() {
-      // console.log(now() + " Portfolio - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
-      // TODO
-      // if (this.initialised) {
-      //   localStorage.explorerPortfolioSettings = JSON.stringify(this.settings);
-      // }
+      console.log(now() + " Portfolio - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
+      if (this.initialised) {
+        localStorage.explorerPortfolioSettings = JSON.stringify(this.settings);
+      }
     },
     copyToClipboard(str) {
       navigator.clipboard.writeText(str);
@@ -409,16 +362,16 @@ data: {{ data }} -->
   mounted() {
     console.log(now() + " Portfolio - mounted - inputPortfolio: " + this.inputPortfolio);
 
-    // if ('explorerPortfolioSettings' in localStorage) {
-    //   const tempSettings = JSON.parse(localStorage.explorerPortfolioSettings);
-    //   // console.log(now() + " Portfolio - mounted - tempSettings: " + JSON.stringify(tempSettings));
-    //   if ('version' in tempSettings && tempSettings.version == this.settings.version) {
-    //     this.settings = tempSettings;
-    //   }
-    // }
-    // this.initialised = true;
-    // console.log(now() + " Portfolio - mounted - this.settings: " + JSON.stringify(this.settings));
-    //
+    if ('explorerPortfolioSettings' in localStorage) {
+      const tempSettings = JSON.parse(localStorage.explorerPortfolioSettings);
+      // console.log(now() + " Portfolio - mounted - tempSettings: " + JSON.stringify(tempSettings));
+      if ('version' in tempSettings && tempSettings.version == this.settings.version) {
+        this.settings = tempSettings;
+      }
+    }
+    this.initialised = true;
+    console.log(now() + " Portfolio - mounted - this.settings: " + JSON.stringify(this.settings));
+
     const t = this;
     setTimeout(function() {
       store.dispatch('portfolio/loadPortfolio', { inputPortfolio: t.inputPortfolio, forceUpdate: false });
