@@ -57,9 +57,9 @@ const Portfolio = {
                   <v-tabs-window-item value="summary">
                     NOTE: Set up your portfolio(s) in Other -> Config
                     <pre>
-        assetsList: {{ assetsList }}
+assetsList: {{ assetsList }}
                       <br />
-        data: {{ data }}
+data: {{ data }}
                     </pre>
                   </v-tabs-window-item>
                   <v-tabs-window-item value="fungibles">
