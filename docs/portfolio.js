@@ -54,7 +54,7 @@ const Portfolio = {
           text="Set up your portfolio(s) of addresses in Other -> Config -> Portfolios"
           type="info"
           color="info"
-          class="ma-1"
+          class="mx-0 my-1"
         >
         </v-alert>
         <!-- icon="mdi-alert-circle-outline" -->
