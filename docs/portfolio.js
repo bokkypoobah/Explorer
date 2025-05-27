@@ -47,6 +47,18 @@ const Portfolio = {
           </v-tabs>
         </v-toolbar>
 
+        <v-alert
+          v-if="portfoliosOptions.length <= 1"
+          closable
+          title="Configuration"
+          text="Set up your portfolio(s) of addresses in Other -> Config -> Portfolios"
+          type="info"
+          color="info"
+          class="ma-1"
+        >
+        </v-alert>
+        <!-- icon="mdi-alert-circle-outline" -->
+
         <v-toolbar flat color="transparent" density="compact">
           <v-btn icon @click="settings.showFilter = !settings.showFilter; saveSettings();" color="primary" class="lowercase-btn" v-tooltip="'Filters'">
             <v-icon :icon="settings.showFilter ? 'mdi-filter' : 'mdi-filter-outline'"></v-icon>
@@ -79,7 +91,6 @@ const Portfolio = {
               <v-card-text class="ma-0 pa-2">
                 <v-tabs-window v-model="settings.tab">
                   <v-tabs-window-item value="summary">
-                    NOTE: Set up your portfolio(s) in Other -> Config
                     <pre>
 assetsList: {{ assetsList }}
                       <br />
@@ -168,7 +179,7 @@ data: {{ data }}
       const results = [];
       results.push({ value: null, title: "(All)" });
       for (const [portfolio, portfolioData] of Object.entries(store.getters['config/portfolios'])) {
-        console.error(portfolio + " => " + JSON.stringify(portfolioData));
+        // console.error(portfolio + " => " + JSON.stringify(portfolioData));
         results.push({ value: portfolio, title: portfolio });
       }
       return results;
