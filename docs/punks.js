@@ -120,7 +120,7 @@ const Punks = {
             <v-card>
               <v-expansion-panels flat>
                 <!-- <v-expansion-panel class="ma-0 pa-0">
-                  <v-expansion-panel-title class="ma-1 pa-1">
+                  <v-expansion-panel-title>
                     Price
                   </v-expansion-panel-title>
                   <v-expansion-panel-text class="ma-0 pa-0">
@@ -133,7 +133,7 @@ const Punks = {
                   </v-expansion-panel-text>
                 </v-expansion-panel> -->
                 <v-expansion-panel v-for="attribute in attributesList" class="ma-0 pa-0">
-                  <v-expansion-panel-title class="ma-1 pa-1">
+                  <v-expansion-panel-title>
                     {{ attribute.attribute }}
                   </v-expansion-panel-title>
                   <v-expansion-panel-text class="ma-0 pa-0">

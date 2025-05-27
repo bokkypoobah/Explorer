@@ -47,6 +47,20 @@ const Portfolio = {
           <v-col v-if="settings.showFilter" cols="2">
             <v-card>
               <v-expansion-panels flat>
+                <v-expansion-panel class="ma-0 pa-0">
+                  <v-expansion-panel-title>
+                    Asset Type
+                  </v-expansion-panel-title>
+                  <v-expansion-panel-text class="ma-0 pa-0">
+                    <v-list-item class="ma-0 pa-1">
+                      <v-checkbox-btn label="ETH" class="ma-0 pa-0"></v-checkbox-btn>
+                      <v-checkbox-btn label="ERC-20" class="ma-0 pa-0"></v-checkbox-btn>
+                      <v-checkbox-btn label="ERC-721/1155" class="ma-0 pa-0"></v-checkbox-btn>
+                      <!-- <v-checkbox-btn label="ERC-1155" class="ma-0 pa-0"></v-checkbox-btn> -->
+                      <v-checkbox-btn label="ENS (ERC-721/1155)" class="ma-0 pa-0"></v-checkbox-btn>
+                    </v-list-item>
+                  </v-expansion-panel-text>
+                </v-expansion-panel>
               </v-expansion-panels>
             </v-card>
           </v-col>
