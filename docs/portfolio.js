@@ -8,6 +8,16 @@ const Portfolio = {
           <!-- <p class="ml-5 text-caption text--disabled">
             {{ type && type.substring(0, 3) == "erc" && type.replace(/erc/, "ERC-") || "Not a token contract" }} {{ symbol }} {{ name && ("'" + name + "'") || "" }} {{ decimals }}
           </p> -->
+          <!-- <v-spacer></v-spacer> -->
+          <v-select
+            v-model="settings.selectedPortfolio"
+            :items="portfoliosOptions"
+            variant="plain"
+            density="compact"
+            class="mt-3 ml-5"
+            style="max-width: 200px;"
+            @update:modelValue="saveSettings();"
+          ></v-select>
           <v-spacer></v-spacer>
           <v-btn v-if="sync.info == null" @click="syncPortfolio();" color="primary" icon v-tooltip="'Sync Portfolio'">
             <v-icon>mdi-refresh</v-icon>
@@ -106,6 +116,7 @@ data: {{ data }}
     return {
       initialised: false,
       settings: {
+        selectedPortfolio: null,
         tab: "summary",
         showFilter: false,
         assets: {
@@ -113,7 +124,7 @@ data: {{ data }}
           itemsPerPage: 10,
           currentPage: 1,
         },
-        version: 0,
+        version: 1,
       },
       // addressRules: [
       //   (v) => (v || "").length > 0 || "Address is required",
@@ -153,6 +164,15 @@ data: {{ data }}
     portfolios() {
       return store.getters['config/portfolios'];
     },
+    portfoliosOptions() {
+      const results = [];
+      results.push({ value: null, title: "(All)" });
+      for (const [portfolio, portfolioData] of Object.entries(store.getters['config/portfolios'])) {
+        console.error(portfolio + " => " + JSON.stringify(portfolioData));
+        results.push({ value: portfolio, title: portfolio });
+      }
+      return results;
+    },
     data() {
       return store.getters['portfolio/data'];
     },
@@ -169,7 +189,7 @@ data: {{ data }}
           }
           // console.error(address + "/" + chain + " => " + JSON.stringify(chainData.tokens));
           for (const [token, tokenData] of Object.entries(chainData.tokens || {})) {
-            console.error(address + "/" + chain + "/" + token + " => " + JSON.stringify(tokenData, null, 2));
+            // console.log(address + "/" + chain + "/" + token + " => " + JSON.stringify(tokenData, null, 2));
             results.push({ address, chain, contract: token, contractType: "erc721/1155", name: "{ERC-721/1155 name}", tokenData });
           }
         }
