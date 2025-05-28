@@ -279,7 +279,7 @@ data: {{ data }}
   methods: {
     syncPortfolio() {
       console.log(now() + " Portfolio - methods.syncPortfolio");
-      store.dispatch('portfolio/syncPortfolio', { forceUpdate: true });
+      store.dispatch('portfolio/syncPortfolio', { selectedPortfolio: this.settings.selectedPortfolio, forceUpdate: true });
     },
 
     // portfolioDialogView(name) {

@@ -194,8 +194,8 @@ const portfolioModule = {
       await dbSaveCacheData(db, chainId + "_portfolios", JSON.parse(JSON.stringify(context.state.portfolios)));
       db.close();
     },
-    async syncPortfolio(context, { forceUpdate }) {
-      console.log(now() + " portfolioModule - actions.syncPortfolio - forceUpdate: " + forceUpdate);
+    async syncPortfolio(context, { selectedPortfolio, forceUpdate }) {
+      console.log(now() + " portfolioModule - actions.syncPortfolio - selectedPortfolio: " + selectedPortfolio + ", forceUpdate: " + forceUpdate);
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const chainId = store.getters["chainId"];
       const block = await provider.getBlock();
@@ -206,26 +206,28 @@ const portfolioModule = {
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
 
       for (const [portfolio, portfolioData] of Object.entries(store.getters['config/portfolios'])) {
-        for (const [account, accountData] of Object.entries(portfolioData)) {
-          const validatedAddress = validateAddress(account);
-          if (accountData.active && validatedAddress) {
-            console.log(now() + " portfolioModule - actions.syncPortfolio - processing - validatedAddress: " + validatedAddress);
-            let addressData = await dbGetCachedData(db, validatedAddress + "_portfolio_address_data", {});
-            await syncPortfolioAddress(validatedAddress, addressData, provider, chainId);
-            await syncPortfolioAddressEvents(validatedAddress, addressData, provider, db, chainId);
-            console.log(now() + " portfolioModule - actions.syncPortfolio - processing - addressData: " + JSON.stringify(addressData, null, 2));
-            await dbSaveCacheData(db, validatedAddress + "_portfolio_address_data", JSON.parse(JSON.stringify(addressData)));
+        if (!selectedPortfolio || selectedPortfolio == portfolio) {
+          for (const [account, accountData] of Object.entries(portfolioData)) {
+            const validatedAddress = validateAddress(account);
+            if (accountData.active && validatedAddress) {
+              console.log(now() + " portfolioModule - actions.syncPortfolio - processing - validatedAddress: " + validatedAddress);
+              let addressData = await dbGetCachedData(db, validatedAddress + "_portfolio_address_data", {});
+              await syncPortfolioAddress(validatedAddress, addressData, provider, chainId);
+              await syncPortfolioAddressEvents(validatedAddress, addressData, provider, db, chainId);
+              console.log(now() + " portfolioModule - actions.syncPortfolio - processing - addressData: " + JSON.stringify(addressData, null, 2));
+              await dbSaveCacheData(db, validatedAddress + "_portfolio_address_data", JSON.parse(JSON.stringify(addressData)));
+            }
           }
         }
       }
 
       db.close();
-      context.dispatch("collateData");
+      context.dispatch("collateData", selectedPortfolio);
       context.commit('setSyncInfo', null);
       context.commit('setSyncHalt', false);
     },
-    async collateData(context) {
-      console.log(now() + " portfolioModule - actions.collateData");
+    async collateData(context, selectedPortfolio) {
+      console.log(now() + " portfolioModule - actions.collateData - selectedPortfolio: " + selectedPortfolio);
       const chainId = store.getters["chainId"];
       const dbInfo = store.getters["db"];
       const db = new Dexie(dbInfo.name);
@@ -233,17 +235,19 @@ const portfolioModule = {
 
       const data = {};
       for (const [portfolio, portfolioData] of Object.entries(store.getters['config/portfolios'])) {
-        for (const [account, accountData] of Object.entries(portfolioData)) {
-          const validatedAddress = validateAddress(account);
-          if (accountData.active && validatedAddress) {
-            console.log(now() + " portfolioModule - actions.collateData - processing - validatedAddress: " + validatedAddress);
+        if (!selectedPortfolio || selectedPortfolio == portfolio) {
+          for (const [account, accountData] of Object.entries(portfolioData)) {
+            const validatedAddress = validateAddress(account);
+            if (accountData.active && validatedAddress) {
+              console.log(now() + " portfolioModule - actions.collateData - processing - validatedAddress: " + validatedAddress);
 
-            let addressData = await dbGetCachedData(db, validatedAddress + "_portfolio_address_data", {});
-            console.log(now() + " portfolioModule - actions.collateData - processing - addressData: " + JSON.stringify(addressData));
-            data[validatedAddress] = {
-              ...addressData,
-            };
-            await collatePortfolioAddress(validatedAddress, data, db, chainId);
+              let addressData = await dbGetCachedData(db, validatedAddress + "_portfolio_address_data", {});
+              console.log(now() + " portfolioModule - actions.collateData - processing - addressData: " + JSON.stringify(addressData));
+              data[validatedAddress] = {
+                ...addressData,
+              };
+              await collatePortfolioAddress(validatedAddress, data, db, chainId);
+            }
           }
         }
       }
