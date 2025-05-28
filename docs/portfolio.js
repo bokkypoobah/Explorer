@@ -211,15 +211,27 @@ data: {{ data }}
       for (const [address, addressData] of Object.entries(this.data)) {
         for (const [chain, chainData] of Object.entries(addressData)) {
           // console.error(address + "/" + chain + " => " + JSON.stringify(chainData));
-          results.push({ address, chain, contract: null, contractType: null, name: "ETH", balance: chainData.balance, decimals: 18, transactionCount: chainData.transactionCount });
-          for (const [token, balance] of Object.entries(chainData.tokenBalances || {})) {
-            // console.error(address + "/" + chain + "/" + token + " => " + balance);
-            results.push({ address, chain, contract: token, contractType: "erc20", name: "{ERC-20 name}", balance, decimals: 18 });
+          if (this.settings.assetTypeFilter.eth) {
+            results.push({ address, chain, contract: null, contractType: null, name: "ETH", balance: chainData.balance, decimals: 18, transactionCount: chainData.transactionCount });
+          }
+          if (this.settings.assetTypeFilter.fungibles) {
+            for (const [token, balance] of Object.entries(chainData.tokenBalances || {})) {
+              // console.error(address + "/" + chain + "/" + token + " => " + balance);
+              results.push({ address, chain, contract: token, contractType: "erc20", name: "{ERC-20 name}", balance, decimals: 18 });
+            }
           }
           // console.error(address + "/" + chain + " => " + JSON.stringify(chainData.tokens));
           for (const [token, tokenData] of Object.entries(chainData.tokens || {})) {
-            // console.log(address + "/" + chain + "/" + token + " => " + JSON.stringify(tokenData, null, 2));
-            results.push({ address, chain, contract: token, contractType: "erc721/1155", name: "{ERC-721/1155 name}", tokenData });
+            let include;
+            if (token == ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS || token == ENS_NAMEWRAPPER_ADDRESS) {
+              include = this.settings.assetTypeFilter.names;
+            } else {
+              include = this.settings.assetTypeFilter.nonFungibles;
+            }
+            if (include) {
+              // console.log(address + "/" + chain + "/" + token + " => " + JSON.stringify(tokenData, null, 2));
+              results.push({ address, chain, contract: token, contractType: "erc721/1155", name: "{ERC-721/1155 name}", tokenData });
+            }
           }
         }
       }
