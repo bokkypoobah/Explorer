@@ -68,19 +68,30 @@ const Portfolio = {
         <v-row dense>
           <v-col v-if="settings.showFilter" cols="2">
             <v-card>
-              <v-expansion-panels flat>
+              <v-expansion-panels v-model="settings.assetTypeFilter.visible" @update:modelValue="saveSettings();" multiple flat>
                 <v-expansion-panel class="ma-0 pa-0">
                   <v-expansion-panel-title>
                     Asset Type
                   </v-expansion-panel-title>
                   <v-expansion-panel-text class="ma-0 pa-0">
-                    <v-list-item class="ma-0 pa-1">
+                    <v-list-item append-icon="mdi-ethereum" density="compact" class="ma-0 pa-1">
+                      <v-checkbox-btn v-model="settings.assetTypeFilter.eth" @update:modelValue="saveSettings();" label="ETH" class="ma-0 pa-0"></v-checkbox-btn>
+                    </v-list-item>
+                    <v-list-item append-icon="mdi-cash-multiple" density="compact" class="ma-0 pa-1">
+                      <v-checkbox-btn v-model="settings.assetTypeFilter.fungibles" @update:modelValue="saveSettings();" label="Fungibles" class="ma-0 pa-0" v-tooltip="'ERC-20'"></v-checkbox-btn>
+                    </v-list-item>
+                    <v-list-item append-icon="mdi-cards-playing-heart-multiple-outline" density="compact" class="ma-0 pa-1">
+                      <v-checkbox-btn v-model="settings.assetTypeFilter.nonFungibles" @update:modelValue="saveSettings();" label="Non-Fungibles" class="ma-0 pa-0" v-tooltip="'ERC-721 & ERC-1155'"></v-checkbox-btn>
+                    </v-list-item>
+                    <v-list-item append-icon="mdi-alphabetical" density="compact" class="ma-0 pa-1">
+                      <v-checkbox-btn v-model="settings.assetTypeFilter.names" @update:modelValue="saveSettings();" label="Names" class="ma-0 pa-0" v-tooltip="'ERC-721 & ERC-1155 ENS Names'"></v-checkbox-btn>
+                    </v-list-item>
+                    <!-- <v-list-item class="ma-0 pa-1">
                       <v-checkbox-btn label="ETH" class="ma-0 pa-0"></v-checkbox-btn>
                       <v-checkbox-btn label="ERC-20" class="ma-0 pa-0"></v-checkbox-btn>
                       <v-checkbox-btn label="ERC-721/1155" class="ma-0 pa-0"></v-checkbox-btn>
-                      <!-- <v-checkbox-btn label="ERC-1155" class="ma-0 pa-0"></v-checkbox-btn> -->
                       <v-checkbox-btn label="ENS (ERC-721/1155)" class="ma-0 pa-0"></v-checkbox-btn>
-                    </v-list-item>
+                    </v-list-item> -->
                   </v-expansion-panel-text>
                 </v-expansion-panel>
               </v-expansion-panels>
@@ -130,12 +141,19 @@ data: {{ data }}
         selectedPortfolio: null,
         tab: "summary",
         showFilter: false,
+        assetTypeFilter: {
+          visible: false,
+          eth: true,
+          fungibles: true,
+          nonFungibles: true,
+          names: true,
+        },
         assets: {
           sortOption: "typenameasc",
           itemsPerPage: 10,
           currentPage: 1,
         },
-        version: 1,
+        version: 2,
       },
       // addressRules: [
       //   (v) => (v || "").length > 0 || "Address is required",
