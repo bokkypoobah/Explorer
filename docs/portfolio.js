@@ -67,7 +67,6 @@ const Portfolio = {
           <p v-if="settings.tab == 'assets'" class="mr-1 text-caption text--disabled">
             {{ commify0(assetsList.length) + '/' + commify0(allAssets.length) }}
           </p>
-          <v-spacer></v-spacer>
           <v-btn-toggle v-model="settings.assets.view" variant="plain" class="mr-3" @update:modelValue="saveSettings();" density="compact">
             <v-btn icon value="large">
               <v-icon color="primary">mdi-grid-large</v-icon>
@@ -79,6 +78,18 @@ const Portfolio = {
               <v-icon color="primary">mdi-format-list-bulleted-square</v-icon>
             </v-btn>
           </v-btn-toggle>
+          <v-pagination
+            v-if="settings.tab == 'assets'"
+            v-model="settings.assets.currentPage"
+            :length="Math.ceil(assetsList.length / settings.assets.itemsPerPage)"
+            total-visible="0"
+            density="comfortable"
+            show-first-last-page
+            class="mr-1"
+            @update:modelValue="saveSettings();"
+            color="primary"
+          >
+          </v-pagination>
         </v-toolbar>
 
         <v-row dense>
@@ -144,6 +155,29 @@ data: {{ data }}
                 </v-tabs-window>
               </v-card-text>
               <v-toolbar flat color="transparent" density="compact">
+                <v-spacer></v-spacer>
+                <v-select
+                  v-if="settings.tab == 'assets'"
+                  v-model="settings.assets.itemsPerPage"
+                  :items="itemsPerPageOptions"
+                  variant="plain"
+                  density="compact"
+                  class="mt-2 mr-2"
+                  style="max-width: 70px;"
+                  @update:modelValue="saveSettings();"
+                ></v-select>
+                <v-pagination
+                  v-if="settings.tab == 'assets'"
+                  v-model="settings.assets.currentPage"
+                  :length="Math.ceil(assetsList.length / settings.assets.itemsPerPage)"
+                  total-visible="0"
+                  density="comfortable"
+                  show-first-last-page
+                  class="mr-1"
+                  @update:modelValue="saveSettings();"
+                  color="primary"
+                >
+                </v-pagination>
               </v-toolbar>
             </v-card>
           </v-col>
@@ -175,6 +209,18 @@ data: {{ data }}
         },
         version: 3,
       },
+      itemsPerPageOptions: [
+        { value: 5, title: "5" },
+        { value: 10, title: "10" },
+        { value: 20, title: "20" },
+        { value: 30, title: "30" },
+        { value: 40, title: "40" },
+        { value: 50, title: "50" },
+        { value: 100, title: "100" },
+        { value: 250, title: "250" },
+        { value: 500, title: "500" },
+        { value: 1000, title: "1000" },
+      ],
       // addressRules: [
       //   (v) => (v || "").length > 0 || "Address is required",
       //   (v) => {
