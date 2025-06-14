@@ -65,7 +65,7 @@ const Portfolio = {
           </v-btn>
           <v-spacer></v-spacer>
           <p v-if="settings.tab == 'assets'" class="mr-1 text-caption text--disabled">
-            {{ commify0(assetsList.length) + '/' + commify0(allAssets.length) }}
+            {{ commify0(filteredSortedAssets.length) + '/' + commify0(assets.length) }}
           </p>
           <v-btn-toggle v-model="settings.assets.view" variant="plain" class="mr-3" @update:modelValue="saveSettings();" density="compact">
             <v-btn icon value="large">
@@ -81,7 +81,7 @@ const Portfolio = {
           <v-pagination
             v-if="settings.tab == 'assets'"
             v-model="settings.assets.currentPage"
-            :length="Math.ceil(assetsList.length / settings.assets.itemsPerPage)"
+            :length="Math.ceil(filteredSortedAssets.length / settings.assets.itemsPerPage)"
             total-visible="0"
             density="comfortable"
             show-first-last-page
@@ -133,11 +133,11 @@ const Portfolio = {
 
 
                     <pre>
-<!-- allAssets: {{ allAssets }}
+<!-- assets: {{ assets }}
                       <br /> -->
-filteredAssetsPaged: {{ filteredAssetsPaged }}
+pagedFilteredSortedAssets: {{ pagedFilteredSortedAssets }}
                       <br />
-assetsList: {{ assetsList }}
+filteredSortedAssets: {{ filteredSortedAssets }}
                       <br />
 data: {{ data }}
                     </pre>
@@ -174,7 +174,7 @@ data: {{ data }}
                 <v-pagination
                   v-if="settings.tab == 'assets'"
                   v-model="settings.assets.currentPage"
-                  :length="Math.ceil(assetsList.length / settings.assets.itemsPerPage)"
+                  :length="Math.ceil(filteredSortedAssets.length / settings.assets.itemsPerPage)"
                   total-visible="0"
                   density="comfortable"
                   show-first-last-page
@@ -276,9 +276,9 @@ data: {{ data }}
     data() {
       return store.getters['portfolio/data'];
     },
-    allAssets() {
+    assets() {
       const results = [];
-      console.log(now() + " Portfolio - computed.allAssets - data: " + JSON.stringify(this.data, null, 2));
+      console.log(now() + " Portfolio - computed.assets - data: " + JSON.stringify(this.data, null, 2));
       for (const [address, addressData] of Object.entries(this.data)) {
         for (const [chain, chainData] of Object.entries(addressData)) {
           // console.error(address + "/" + chain + " => " + JSON.stringify(chainData));
@@ -296,9 +296,9 @@ data: {{ data }}
       }
       return results;
     },
-    assetsList() {
+    filteredSortedAssets() {
       const results = [];
-      console.log(now() + " Portfolio - computed.assetsList - data: " + JSON.stringify(this.data, null, 2));
+      console.log(now() + " Portfolio - computed.filteredSortedAssets - data: " + JSON.stringify(this.data, null, 2));
       for (const [address, addressData] of Object.entries(this.data)) {
         for (const [chain, chainData] of Object.entries(addressData)) {
           // console.error(address + "/" + chain + " => " + JSON.stringify(chainData));
@@ -328,9 +328,9 @@ data: {{ data }}
       }
       return results;
     },
-    filteredAssetsPaged() {
-      const results = this.assetsList.slice((this.settings.assets.currentPage - 1) * this.settings.assets.itemsPerPage, this.settings.assets.currentPage * this.settings.assets.itemsPerPage);
-      // console.log(now() + " Punks - computed.filteredAssetsPaged - results: " + JSON.stringify(results, null, 2));
+    pagedFilteredSortedAssets() {
+      const results = this.filteredSortedAssets.slice((this.settings.assets.currentPage - 1) * this.settings.assets.itemsPerPage, this.settings.assets.currentPage * this.settings.assets.itemsPerPage);
+      // console.log(now() + " Portfolio - computed.pagedFilteredSortedAssets - results: " + JSON.stringify(results, null, 2));
       return results;
     },
     // portfoliosList() {
