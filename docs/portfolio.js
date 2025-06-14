@@ -37,10 +37,10 @@ const Portfolio = {
           <v-progress-circular v-if="sync.info != null" color="primary" :model-value="sync.total ? (parseInt(sync.completed * 100 / sync.total)) : 0" :size="30" :width="6" v-tooltip="sync.info + ': Block #' + commify0(sync.completed) + ' of ' + commify0(sync.total)"></v-progress-circular>
           <v-spacer></v-spacer>
           <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" right color="deep-purple-accent-4">
-            <v-tab prepend-icon="mdi-text-long" text="Summary" value="summary" class="lowercase-btn"></v-tab>
-            <v-tab prepend-icon="mdi-cash-multiple" text="Fungibles" value="fungibles" class="lowercase-btn"></v-tab>
-            <v-tab prepend-icon="mdi-cards-playing-heart-multiple-outline" text="Non-Fungibles" value="nonfungibles" class="lowercase-btn"></v-tab>
-            <v-tab prepend-icon="mdi-alphabetical" text="Names" value="names" class="lowercase-btn"></v-tab>
+            <v-tab prepend-icon="mdi-text-long" text="Assets" value="assets" class="lowercase-btn"></v-tab>
+            <!-- <v-tab prepend-icon="mdi-cash-multiple" text="Fungibles" value="fungibles" class="lowercase-btn"></v-tab> -->
+            <!-- <v-tab prepend-icon="mdi-cards-playing-heart-multiple-outline" text="Non-Fungibles" value="nonfungibles" class="lowercase-btn"></v-tab> -->
+            <!-- <v-tab prepend-icon="mdi-alphabetical" text="Names" value="names" class="lowercase-btn"></v-tab> -->
             <v-tab prepend-icon="mdi-check-outline" text="Approvals" value="approvals" class="lowercase-btn"></v-tab>
             <v-tab prepend-icon="mdi-math-log" text="Activity" value="activity" class="lowercase-btn"></v-tab>
             <!-- <v-tab prepend-icon="mdi-cog" text="Config" value="config" class="lowercase-btn"></v-tab> -->
@@ -63,6 +63,22 @@ const Portfolio = {
           <v-btn icon @click="settings.showFilter = !settings.showFilter; saveSettings();" color="primary" class="lowercase-btn" v-tooltip="'Filters'">
             <v-icon :icon="settings.showFilter ? 'mdi-filter' : 'mdi-filter-outline'"></v-icon>
           </v-btn>
+          <v-spacer></v-spacer>
+          <p v-if="settings.tab == 'assets'" class="mr-1 text-caption text--disabled">
+            {{ commify0(assetsList.length) + '/' + commify0(allAssets.length) }}
+          </p>
+          <v-spacer></v-spacer>
+          <v-btn-toggle v-model="settings.assets.view" variant="plain" class="mr-3" @update:modelValue="saveSettings();" density="compact">
+            <v-btn icon value="large">
+              <v-icon color="primary">mdi-grid-large</v-icon>
+            </v-btn>
+            <v-btn icon value="medium">
+              <v-icon color="primary">mdi-grid</v-icon>
+            </v-btn>
+            <v-btn icon value="list">
+              <v-icon color="primary">mdi-format-list-bulleted-square</v-icon>
+            </v-btn>
+          </v-btn-toggle>
         </v-toolbar>
 
         <v-row dense>
@@ -101,7 +117,7 @@ const Portfolio = {
             <v-card>
               <v-card-text class="ma-0 pa-2">
                 <v-tabs-window v-model="settings.tab">
-                  <v-tabs-window-item value="summary">
+                  <v-tabs-window-item value="assets">
                     <pre>
 <!-- allAssets: {{ allAssets }}
                       <br /> -->
@@ -110,15 +126,15 @@ assetsList: {{ assetsList }}
 data: {{ data }}
                     </pre>
                   </v-tabs-window-item>
-                  <v-tabs-window-item value="fungibles">
+                  <!-- <v-tabs-window-item value="fungibles">
                     TODO: ERC-20 Fungibles
-                  </v-tabs-window-item>
-                  <v-tabs-window-item value="nonfungibles">
+                  </v-tabs-window-item> -->
+                  <!-- <v-tabs-window-item value="nonfungibles">
                     TODO: ERC-721 and ERC-1155 Non-Fungibles
-                  </v-tabs-window-item>
-                  <v-tabs-window-item value="names">
+                  </v-tabs-window-item> -->
+                  <!-- <v-tabs-window-item value="names">
                     TODO: ENS Names, with expiry information
-                  </v-tabs-window-item>
+                  </v-tabs-window-item> -->
                   <v-tabs-window-item value="approvals">
                     TODO: ERC-20, ERC-721 and ERC-1155 Approvals
                   </v-tabs-window-item>
@@ -141,7 +157,7 @@ data: {{ data }}
       initialised: false,
       settings: {
         selectedPortfolio: null,
-        tab: "summary",
+        tab: "assets",
         showFilter: false,
         assetTypeFilter: {
           visible: false,
@@ -151,11 +167,13 @@ data: {{ data }}
           names: true,
         },
         assets: {
+          filter: null,
+          view: "large",
           sortOption: "typenameasc",
           itemsPerPage: 10,
           currentPage: 1,
         },
-        version: 2,
+        version: 3,
       },
       // addressRules: [
       //   (v) => (v || "").length > 0 || "Address is required",
