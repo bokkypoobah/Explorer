@@ -129,9 +129,14 @@ const Portfolio = {
               <v-card-text class="ma-0 pa-2">
                 <v-tabs-window v-model="settings.tab">
                   <v-tabs-window-item value="assets">
+
+
+
                     <pre>
 <!-- allAssets: {{ allAssets }}
                       <br /> -->
+filteredAssetsPaged: {{ filteredAssetsPaged }}
+                      <br />
 assetsList: {{ assetsList }}
                       <br />
 data: {{ data }}
@@ -321,6 +326,11 @@ data: {{ data }}
           }
         }
       }
+      return results;
+    },
+    filteredAssetsPaged() {
+      const results = this.assetsList.slice((this.settings.assets.currentPage - 1) * this.settings.assets.itemsPerPage, this.settings.assets.currentPage * this.settings.assets.itemsPerPage);
+      // console.log(now() + " Punks - computed.filteredAssetsPaged - results: " + JSON.stringify(results, null, 2));
       return results;
     },
     // portfoliosList() {
