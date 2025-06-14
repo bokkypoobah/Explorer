@@ -133,8 +133,8 @@ const Portfolio = {
 
 
                     <pre>
-<!-- assets: {{ assets }}
-                      <br /> -->
+assets: {{ assets }}
+                      <br />
 pagedFilteredSortedAssets: {{ pagedFilteredSortedAssets }}
                       <br />
 filteredSortedAssets: {{ filteredSortedAssets }}
@@ -282,15 +282,16 @@ data: {{ data }}
       for (const [address, addressData] of Object.entries(this.data)) {
         for (const [chain, chainData] of Object.entries(addressData)) {
           // console.error(address + "/" + chain + " => " + JSON.stringify(chainData));
-          results.push({ address, chain, contract: null, contractType: null, name: "ETH", balance: chainData.balance, decimals: 18, transactionCount: chainData.transactionCount });
+          results.push({ type: 0, address, chain, contract: null, contractType: null, name: "ETH", balance: chainData.balance, decimals: 18, transactionCount: chainData.transactionCount });
           for (const [token, balance] of Object.entries(chainData.tokenBalances || {})) {
             // console.error(address + "/" + chain + "/" + token + " => " + balance);
-            results.push({ address, chain, contract: token, contractType: "erc20", name: "{ERC-20 name}", balance, decimals: 18 });
+            results.push({ type: 1, address, chain, contract: token, contractType: "erc20", name: "{ERC-20 name}", balance, decimals: 18 });
           }
           // console.error(address + "/" + chain + " => " + JSON.stringify(chainData.tokens));
           for (const [token, tokenData] of Object.entries(chainData.tokens || {})) {
+            const type = (token == ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS || token == ENS_NAMEWRAPPER_ADDRESS) ? 3 : 2;
             // console.log(address + "/" + chain + "/" + token + " => " + JSON.stringify(tokenData, null, 2));
-            results.push({ address, chain, contract: token, contractType: "erc721/1155", name: "{ERC-721/1155 name}", tokenData });
+            results.push({ type, address, chain, contract: token, contractType: "erc721/1155", name: "{ERC-721/1155 name}", tokenData });
           }
         }
       }
