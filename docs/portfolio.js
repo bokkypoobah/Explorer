@@ -103,8 +103,8 @@ const Portfolio = {
                 <v-tabs-window v-model="settings.tab">
                   <v-tabs-window-item value="summary">
                     <pre>
-allAssets: {{ allAssets }}
-                      <br />
+<!-- allAssets: {{ allAssets }}
+                      <br /> -->
 assetsList: {{ assetsList }}
                       <br />
 data: {{ data }}

@@ -205,17 +205,19 @@ const portfolioModule = {
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
 
+      const completed = {};
       for (const [portfolio, portfolioData] of Object.entries(store.getters['config/portfolios'])) {
         if (!selectedPortfolio || selectedPortfolio == portfolio) {
           for (const [account, accountData] of Object.entries(portfolioData)) {
             const validatedAddress = validateAddress(account);
-            if (accountData.active && validatedAddress) {
+            if (accountData.active && validatedAddress && !completed[validatedAddress]) {
               console.log(now() + " portfolioModule - actions.syncPortfolio - processing - validatedAddress: " + validatedAddress);
               let addressData = await dbGetCachedData(db, validatedAddress + "_portfolio_address_data", {});
               await syncPortfolioAddress(validatedAddress, addressData, provider, chainId);
               await syncPortfolioAddressEvents(validatedAddress, addressData, provider, db, chainId);
               console.log(now() + " portfolioModule - actions.syncPortfolio - processing - addressData: " + JSON.stringify(addressData, null, 2));
               await dbSaveCacheData(db, validatedAddress + "_portfolio_address_data", JSON.parse(JSON.stringify(addressData)));
+              completed[validatedAddress] = true;
             }
           }
         }
@@ -234,11 +236,12 @@ const portfolioModule = {
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
 
       const data = {};
+      const completed = {};
       for (const [portfolio, portfolioData] of Object.entries(store.getters['config/portfolios'])) {
         if (!selectedPortfolio || selectedPortfolio == portfolio) {
           for (const [account, accountData] of Object.entries(portfolioData)) {
             const validatedAddress = validateAddress(account);
-            if (accountData.active && validatedAddress) {
+            if (accountData.active && validatedAddress && !completed[validatedAddress]) {
               console.log(now() + " portfolioModule - actions.collateData - processing - validatedAddress: " + validatedAddress);
 
               let addressData = await dbGetCachedData(db, validatedAddress + "_portfolio_address_data", {});
@@ -247,6 +250,7 @@ const portfolioModule = {
                 ...addressData,
               };
               await collatePortfolioAddress(validatedAddress, data, db, chainId);
+              completed[validatedAddress] = true;
             }
           }
         }
