@@ -133,8 +133,8 @@ const Portfolio = {
 
 
                     <pre>
-assets: {{ assets }}
-                      <br />
+<!-- assets: {{ assets }}
+                      <br /> -->
 pagedFilteredSortedAssets: {{ pagedFilteredSortedAssets }}
                       <br />
 filteredSortedAssets: {{ filteredSortedAssets }}
@@ -299,32 +299,13 @@ data: {{ data }}
     },
     filteredSortedAssets() {
       const results = [];
-      console.log(now() + " Portfolio - computed.filteredSortedAssets - data: " + JSON.stringify(this.data, null, 2));
-      for (const [address, addressData] of Object.entries(this.data)) {
-        for (const [chain, chainData] of Object.entries(addressData)) {
-          // console.error(address + "/" + chain + " => " + JSON.stringify(chainData));
-          if (this.settings.assetTypeFilter.eth) {
-            results.push({ address, chain, contract: null, contractType: null, name: "ETH", balance: chainData.balance, decimals: 18, transactionCount: chainData.transactionCount });
-          }
-          if (this.settings.assetTypeFilter.fungibles) {
-            for (const [token, balance] of Object.entries(chainData.tokenBalances || {})) {
-              // console.error(address + "/" + chain + "/" + token + " => " + balance);
-              results.push({ address, chain, contract: token, contractType: "erc20", name: "{ERC-20 name}", balance, decimals: 18 });
-            }
-          }
-          // console.error(address + "/" + chain + " => " + JSON.stringify(chainData.tokens));
-          for (const [token, tokenData] of Object.entries(chainData.tokens || {})) {
-            let include;
-            if (token == ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS || token == ENS_NAMEWRAPPER_ADDRESS) {
-              include = this.settings.assetTypeFilter.names;
-            } else {
-              include = this.settings.assetTypeFilter.nonFungibles;
-            }
-            if (include) {
-              // console.log(address + "/" + chain + "/" + token + " => " + JSON.stringify(tokenData, null, 2));
-              results.push({ address, chain, contract: token, contractType: "erc721/1155", name: "{ERC-721/1155 name}", tokenData });
-            }
-          }
+      // console.log(now() + " Portfolio - computed.filteredSortedAssets - assets: " + JSON.stringify(this.assets, null, 2));
+      for (const asset of this.assets) {
+        if ((asset.type == 0 && this.settings.assetTypeFilter.eth) ||
+          (asset.type == 1 && this.settings.assetTypeFilter.fungibles) ||
+          (asset.type == 2 && this.settings.assetTypeFilter.nonFungibles) ||
+          (asset.type == 3 && this.settings.assetTypeFilter.names)) {
+          results.push(asset);
         }
       }
       return results;
