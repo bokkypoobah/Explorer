@@ -64,6 +64,10 @@ const Portfolio = {
             <v-icon :icon="settings.showFilter ? 'mdi-filter' : 'mdi-filter-outline'"></v-icon>
           </v-btn>
           <v-spacer></v-spacer>
+          <v-spacer></v-spacer>
+          <v-spacer></v-spacer>
+          <v-checkbox-btn v-model="settings.assets.expandCollections" @update:modelValue="saveSettings();" label="Expand Collections" color="primary" v-tooltip="'Expand ERC-721/1155 Non-Fungible Items including ENS names'"></v-checkbox-btn>
+          <v-spacer></v-spacer>
           <p v-if="settings.tab == 'assets'" class="mr-1 text-caption text--disabled">
             {{ commify0(filteredSortedAssets.length) + '/' + commify0(assets.length) }}
           </p>
@@ -207,12 +211,13 @@ data: {{ data }}
         },
         assets: {
           filter: null,
+          expandCollections: false,
           view: "large",
           sortOption: "typenameasc",
           itemsPerPage: 10,
           currentPage: 1,
         },
-        version: 3,
+        version: 4,
       },
       itemsPerPageOptions: [
         { value: 5, title: "5" },
