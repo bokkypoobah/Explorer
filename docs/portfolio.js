@@ -296,7 +296,14 @@ data: {{ data }}
           for (const [token, tokenData] of Object.entries(chainData.tokens || {})) {
             const type = (token == ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS || token == ENS_NAMEWRAPPER_ADDRESS) ? 3 : 2;
             // console.log(address + "/" + chain + "/" + token + " => " + JSON.stringify(tokenData, null, 2));
-            results.push({ type, address, chain, contract: token, contractType: "erc721/1155", name: "{ERC-721/1155 name}", tokenData });
+            if (this.settings.assets.expandCollections) {
+              for (const [tokenId, count] of Object.entries(tokenData)) {
+                const tokens = count === true ? null : count;
+                results.push({ type, address, chain, contract: token, contractType: "erc721/1155", name: "{ERC-721/1155 name}", tokenId, tokens });
+              }
+            } else {
+              results.push({ type, address, chain, contract: token, contractType: "erc721/1155", name: "{ERC-721/1155 name}", tokenData });
+            }
           }
         }
       }
