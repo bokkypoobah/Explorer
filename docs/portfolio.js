@@ -72,10 +72,10 @@ const Portfolio = {
             {{ commify0(filteredSortedAssets.length) + '/' + commify0(assets.length) }}
           </p>
           <v-btn-toggle v-model="settings.assets.view" variant="plain" class="mr-3" @update:modelValue="saveSettings();" density="compact">
-            <v-btn icon value="large">
+            <v-btn icon disabled value="large">
               <v-icon color="primary">mdi-grid-large</v-icon>
             </v-btn>
-            <v-btn icon value="medium">
+            <v-btn icon disabled value="medium">
               <v-icon color="primary">mdi-grid</v-icon>
             </v-btn>
             <v-btn icon value="list">
@@ -134,17 +134,67 @@ const Portfolio = {
                 <v-tabs-window v-model="settings.tab">
                   <v-tabs-window-item value="assets">
 
+                    <!-- v-if="settings.tokens.view == 'list'" -->
+                    <!-- v-model:sort-by="settings.assets.sortBy" -->
+                    <v-data-table
+                      :items="filteredSortedAssets"
+                      :headers="assetsHeaders"
+                      v-model:items-per-page="settings.assets.itemsPerPage"
+                      v-model:page="settings.assets.currentPage"
+                      @update:options="saveSettings();"
+                      density="comfortable"
+                      hide-default-footer
+                    >
+                      <template v-slot:item.rowNumber="{ index }">
+                        {{ commify0((settings.assets.currentPage - 1) * settings.assets.itemsPerPage + index + 1) }}
+                      </template>
+                      <template v-slot:item.info="{ item }">
+                        {{ item }}
+                      </template>
+                      <!-- <template v-slot:item.punkId="{ item }">
+                        {{ commify0(item[0]) }}
+                      </template> -->
+                      <!-- <template v-slot:item.image="{ item }">
+                        <v-img :src="'data:image/png;base64,' + images[item[0]]" width="60" class="ma-2 pa-0" style="image-rendering: pixelated; background-color: #638596;">
+                        </v-img>
+                      </template> -->
+                      <!-- <template v-slot:item.owner="{ item }">
+                        <render-address :address="item[2]" :addresses="addresses" shortAddress noXPadding></render-address>
+                      </template> -->
+                      <!-- <template v-slot:item.attributes="{ item }">
+                        <v-chip v-for="attribute of item[1]" size="x-small" variant="tonal" color="secondary" class="ma-2">
+                          {{ attribute[0] + ": " + attribute[1] }}
+                        </v-chip>
+                      </template> -->
+                      <!-- <template v-slot:item.attributeCount="{ item }">
+                        {{ item[1].length }}
+                      </template> -->
+                      <!-- <template v-slot:item.bid="{ item }">
+                        <span v-if="item[3]">
+                          {{ formatETH(item[3][0]) }}
+                        </span>
+                      </template> -->
+                      <!-- <template v-slot:item.offer="{ item }">
+                        <span v-if="item[4]">
+                          {{ formatETH(item[4][0]) }}
+                        </span>
+                      </template> -->
+                      <!-- <template v-slot:item.last="{ item }">
+                        <span v-if="item[5]">
+                          {{ formatETH(item[5]) }}
+                        </span>
+                      </template> -->
+                    </v-data-table>
 
-
-                    <pre>
-<!-- assets: {{ assets }}
-                      <br /> -->
+                    <!-- <pre>
+assets: {{ assets }}
+                      <br />
 pagedFilteredSortedAssets: {{ pagedFilteredSortedAssets }}
                       <br />
 filteredSortedAssets: {{ filteredSortedAssets }}
                       <br />
 data: {{ data }}
-                    </pre>
+                    </pre> -->
                   </v-tabs-window-item>
                   <!-- <v-tabs-window-item value="fungibles">
                     TODO: ERC-20 Fungibles
@@ -230,6 +280,13 @@ data: {{ data }}
         { value: 250, title: "250" },
         { value: 500, title: "500" },
         { value: 1000, title: "1000" },
+      ],
+      assetsHeaders: [
+        { title: '#', value: 'rowNumber', width: '10%', align: 'end', sortable: false },
+        { title: 'Address', value: 'address', width: '20%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
+        { title: 'Info', value: 'info', width: '70%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
+        // { title: 'Active', value: 'active', width: '15%', sortable: false },
+        // { title: '', value: 'actions', width: '15%', sortable: false },
       ],
       // addressRules: [
       //   (v) => (v || "").length > 0 || "Address is required",
