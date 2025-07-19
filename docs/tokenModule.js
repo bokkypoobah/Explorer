@@ -199,6 +199,8 @@ const tokenModule = {
         const records = [];
         for (const log of logs) {
           if (!log.removed) {
+            // TODO: Wait for the new blockTimestamp in the event logs
+            // console.log(moment().format("HH:mm:ss") + " tokenModule - actions.syncTokenEvents.processLogs - log: " + JSON.stringify(log));
             let info = null;
             // ERC-20 Transfer (index_topic_1 address from, index_topic_2 address to, uint256 tokens)
             // ERC-721 Transfer (index_topic_1 address from, index_topic_2 address to, index_topic_3 uint256 id)
