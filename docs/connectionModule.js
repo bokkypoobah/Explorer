@@ -84,7 +84,7 @@ const Connection = {
     },
   },
   mounted() {
-    console.log(now() + " Connection - mounted");
+    console.error(now() + " Connection - mounted");
     store.dispatch('connection/restore');
   },
   destroyed() {
@@ -97,7 +97,22 @@ const connectionModule = {
   namespaced: true,
   state: {
     provider: null,
-    lastBlockNumber: 0,
+
+    data: {
+      connected: false,
+      error: false,
+      chainId: null,
+      coinbase: null,
+      blockNumber: null,
+      timestamp: null,
+      lastBaseFeePerGas: null,
+      maxFeePerGas: null,
+      maxPriorityFeePerGas: null,
+      gasPrice: null,
+      version: 0,
+    },
+
+    lastBlockNumber: 0, // TODO: Delete
   },
   getters: {
   },
@@ -105,6 +120,39 @@ const connectionModule = {
     setProvider(state, provider) {
       state.provider = provider;
     },
+
+    setWeb3Info(state, info) {
+      console.log(now() + " connectionModule - mutations.setWeb3Info: " + JSON.stringify(info));
+      state.data.connected = info.connected;
+      state.data.error = info.error;
+      state.data.chainId = info.chainId;
+      state.data.blockNumber = info.blockNumber;
+      state.data.timestamp = info.timestamp;
+      state.data.coinbase = info.coinbase;
+      console.log(now() + " connectionModule - mutations.setWeb3Info - state.data: " + JSON.stringify(state.data));
+    },
+    setWeb3Connected(state, connected) {
+      console.log(now() + " connectionModule - mutations.setWeb3Connected: " + connected);
+      state.data.connected = connected;
+      console.log(now() + " connectionModule - mutations.setWeb3Connected - state.data: " + JSON.stringify(state.data));
+    },
+    setWeb3Coinbase(state, coinbase) {
+      console.log(now() + " connectionModule - mutations.setWeb3Coinbase: " + coinbase);
+      state.data.coinbase = coinbase;
+      console.log(now() + " connectionModule - mutations.setWeb3Coinbase - state.data: " + JSON.stringify(state.data));
+    },
+    setWeb3BlockInfo(state, info) {
+      console.log(now() + " connectionModule - mutations.setWeb3BlockInfo: " + JSON.stringify(info));
+      state.data.blockNumber = info.blockNumber;
+      state.data.timestamp = info.timestamp;
+      state.data.lastBaseFeePerGas = info.lastBaseFeePerGas;
+      state.data.maxFeePerGas = info.maxFeePerGas;
+      state.data.maxPriorityFeePerGas = info.maxPriorityFeePerGas;
+      state.data.gasPrice = info.gasPrice;
+      console.log(now() + " connectionModule - mutations.setWeb3BlockInfo - state.data: " + JSON.stringify(state.data));
+    },
+
+    // TODO: Delete
     setLastBlockNumber(state, lastBlockNumber) {
       state.lastBlockNumber = lastBlockNumber;
     },
@@ -158,6 +206,11 @@ const connectionModule = {
           async function handleAccountsChanged(accounts) {
             const signer = provider.getSigner();
             const coinbase = await signer.getAddress();
+
+            context.commit('setWeb3Coinbase', coinbase);
+            context.dispatch("saveWeb3Info");
+
+            // TODO: Delete
             store.dispatch('setWeb3Coinbase', coinbase);
           }
           if (!window.ethereum._events.accountsChanged) {
@@ -201,6 +254,17 @@ const connectionModule = {
                 });
               db.close();
 
+              context.commit('setWeb3BlockInfo', {
+                blockNumber: block.number,
+                timestamp: block.timestamp,
+                lastBaseFeePerGas: ethers.BigNumber.from(feeData.lastBaseFeePerGas).toString(),
+                maxFeePerGas: ethers.BigNumber.from(feeData.maxFeePerGas).toString(),
+                maxPriorityFeePerGas: ethers.BigNumber.from(feeData.maxPriorityFeePerGas).toString(),
+                gasPrice: ethers.BigNumber.from(feeData.gasPrice).toString(),
+              });
+              context.dispatch("saveWeb3Info");
+
+              // TODO: Delete
               store.dispatch('setWeb3BlockInfo', {
                 blockNumber: block.number,
                 timestamp: block.timestamp,
@@ -225,6 +289,18 @@ const connectionModule = {
       } else {
         error = "This app requires a web3 enabled browser";
       }
+
+      context.commit('setWeb3Info', {
+        connected,
+        error,
+        chainId,
+        blockNumber,
+        timestamp,
+        coinbase,
+      });
+      context.dispatch("saveWeb3Info");
+
+      // TODO: Delete
       store.dispatch('setWeb3Info', {
         connected,
         error,
@@ -240,9 +316,24 @@ const connectionModule = {
       context.commit('setProvider', provider);
     },
     restore(context) {
-      if (store.getters['web3'].connected) {
+      console.error(now() + " connectionModule - actions.restore");
+
+      if ('web3Data' in localStorage) {
+        const tempSettings = JSON.parse(localStorage.web3Data);
+        console.error(now() + " connectionModule - actions.restore - tempSettings: " + JSON.stringify(tempSettings));
+        if ('version' in tempSettings && tempSettings.version == context.state.data.version) {
+          // this.settings = tempSettings;
+          context.commit('setWeb3Info', tempSettings);
+        }
+      }
+
+      if (context.state.data.connected) {
         context.dispatch('connect');
       }
+      // TODO: Delete
+      // if (store.getters['web3'].connected) {
+      //   context.dispatch('connect');
+      // }
     },
     disconnect(context) {
       if (store.getters['web3'].connected) {
@@ -250,8 +341,17 @@ const connectionModule = {
           context.state.provider.removeAllListeners();
           window.ethereum.removeAllListeners();
         }
+
+        context.commit('setWeb3Connected', false);
+        context.dispatch("saveWeb3Info");
+
+        // TODO: Delete
         store.dispatch('setWeb3Connected', false);
       }
+    },
+    saveWeb3Info(context) {
+      console.error(now() + " connectionModule - actions.saveWeb3Info - context.state.data: " + JSON.stringify(context.state.data));
+      localStorage.web3Data = JSON.stringify(context.state.data);
     },
   },
 };

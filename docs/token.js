@@ -208,7 +208,7 @@ const Token = {
                             <div v-if="type == 'erc721'">
                               <render-address :address="item.owner" :addresses="addresses" miniAddress noXPadding></render-address>
                             </div>
-                            <div class="mt-2">
+                            <div v-else class="mt-2">
                               {{ Object.keys(item.owners || {}).length + ' owners' }}
                             </div>
                             <v-spacer></v-spacer>
