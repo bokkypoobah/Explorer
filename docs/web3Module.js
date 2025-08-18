@@ -366,8 +366,8 @@ const web3Module = {
     restore(context) {
       console.error(now() + " web3Module - actions.restore");
 
-      if ('web3Data' in localStorage) {
-        const tempSettings = JSON.parse(localStorage.web3Data);
+      if ('explorerWeb3' in localStorage) {
+        const tempSettings = JSON.parse(localStorage.explorerWeb3);
         console.error(now() + " web3Module - actions.restore - tempSettings: " + JSON.stringify(tempSettings));
         if ('version' in tempSettings && tempSettings.version == context.state.data.version) {
           // this.settings = tempSettings;
@@ -399,7 +399,7 @@ const web3Module = {
     },
     saveWeb3Info(context) {
       console.error(now() + " web3Module - actions.saveWeb3Info - context.state.data: " + JSON.stringify(context.state.data));
-      localStorage.web3Data = JSON.stringify(context.state.data);
+      localStorage.explorerWeb3 = JSON.stringify(context.state.data);
     },
   },
 };

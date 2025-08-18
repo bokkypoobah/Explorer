@@ -55,7 +55,7 @@ async function getAddressInfo(inputAddress, provider) {
     }
   }
   // ENS name
-  if (results.address && store.getters['chainId'] == 1) {
+  if (results.address && store.getters['web3/chainId'] == 1) {
     try {
       results.ensName = await provider.lookupAddress(results.address);
     } catch (e) {

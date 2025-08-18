@@ -348,7 +348,7 @@ const tokenModule = {
 
       console.log(now() + " tokenModule - actions.syncTokenEvents - inputAddress: " + inputAddress + ", validatedAddress: " + validatedAddress + ", forceUpdate: " + forceUpdate);
       const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const chainId = store.getters["chainId"];
+      const chainId = store.getters["web3/chainId"];
       const dbInfo = store.getters["db"];
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
@@ -537,7 +537,7 @@ const tokenModule = {
       } while (continuation != null);
       console.log(now() + " tokenModule - actions.syncTokenMetadata - metadata: " + JSON.stringify(metadata, null, 2));
 
-      const chainId = store.getters["chainId"];
+      const chainId = store.getters["web3/chainId"];
       const dbInfo = store.getters["db"];
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);

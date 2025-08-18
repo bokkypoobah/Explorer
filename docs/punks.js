@@ -520,10 +520,10 @@ const Punks = {
   },
   computed: {
     chainId() {
-      return store.getters['chainId'];
+      return store.getters['web3/chainId'];
     },
     blockNumber() {
-      return store.getters['web3'].blockNumber;
+      return store.getters['web3/blockNumber'];
     },
     attributes() {
       return store.getters['punks/attributes'];

@@ -166,7 +166,7 @@ const AddressContract = {
     },
     async importSourceCodeFromEtherscan() {
       console.log(now() + " AddressContract - methods.importSourceCodeFromEtherscan");
-      const chainId = store.getters["chainId"];
+      const chainId = store.getters["web3/chainId"];
       const url = "https://api.etherscan.io/v2/api?chainid=" + chainId + "&module=contract&action=getsourcecode&address=" + (this.info.implementation ? this.info.implementation : this.info.address) + "&apikey=" + store.getters['config/config'].etherscanAPIKey;
       console.log(now() + " AddressContract - methods.importSourceCodeFromEtherscan - url: " + url);
       const data = await fetch(url).then(response => response.json());

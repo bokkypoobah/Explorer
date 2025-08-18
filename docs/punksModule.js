@@ -104,7 +104,7 @@ const punksModule = {
     },
     async syncPunks(context, forceUpdate) {
       console.log(now() + " punksModule - actions.syncPunks - forceUpdate: " + forceUpdate);
-      const chainId = store.getters["chainId"];
+      const chainId = store.getters["web3/chainId"];
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const contract = new ethers.Contract(CRYPTOPUNKS_HELPER_ADDRESS, CRYPTOPUNKS_HELPER_ABI, provider);
       const dbInfo = store.getters["db"];
@@ -295,7 +295,7 @@ const punksModule = {
     },
     async collateEventData(context) {
       console.log(now() + " punksModule - actions.collateEventData");
-      const chainId = store.getters["chainId"];
+      const chainId = store.getters["web3/chainId"];
       const dbInfo = store.getters["db"];
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);

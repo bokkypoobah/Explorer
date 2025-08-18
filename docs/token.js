@@ -701,7 +701,7 @@ nftOwnersList: {{ nftOwnersList }}
   },
   computed: {
     chainId() {
-      return store.getters['chainId'];
+      return store.getters['web3/chainId'];
     },
     address() {
       return store.getters['token/address'];
