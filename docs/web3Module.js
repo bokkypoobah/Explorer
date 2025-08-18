@@ -1,25 +1,25 @@
 // ----------------------------------------------------------------------------
 // Web3 connection, including coinbase and coinbase balance
 // ----------------------------------------------------------------------------
-const Connection = {
+const Web3 = {
   template: `
     <div>
       <v-btn :disabled="!coinbase" :href="explorer + 'address/' + coinbase" target="_blank" size="x-small" color="primary" variant="text" icon class="ma-0 pa-0" v-tooltip="coinbase">
         <v-img :class="connected ? 'mdi mdi-network' : 'mdi mdi-network-outline'"></v-img>
       </v-btn>
-      <v-btn v-if="info.chainId" :href="explorer" target="_blank" color="primary" variant="text" class="lowercase-btn text-caption ma-0 px-0" v-tooltip="'Chain Id: ' + info.chainId">
+      <v-btn v-if="chainId" :href="explorer" target="_blank" color="primary" variant="text" class="lowercase-btn text-caption ma-0 px-0" v-tooltip="'Chain Id: ' + chainId">
         {{ networkName }}
       </v-btn>
-      <v-btn v-if="info.blockNumber" @click="navigateToBlock(info.blockNumber)" color="primary" variant="text" class="lowercase-btn text-caption ma-0 px-2">
-        {{ commify0(info.blockNumber) }}
+      <v-btn v-if="blockNumber" @click="navigateToBlock(blockNumber)" color="primary" variant="text" class="lowercase-btn text-caption ma-0 px-2">
+        {{ commify0(blockNumber) }}
       </v-btn>
-      <v-tooltip v-if="info.timestamp" :text="formatTimestamp(info.timestamp)">
+      <v-tooltip v-if="timestamp" :text="formatTimestamp(timestamp)">
         <template v-slot:activator="{ props }">
-          <span v-bind="props" class="text-caption text--disabled">{{ formatTimeDiff(info.timestamp) }}</span>
+          <span v-bind="props" class="text-caption text--disabled">{{ formatTimeDiff(timestamp) }}</span>
         </template>
       </v-tooltip>
-      <v-btn :disabled="!info.gasPrice" href="https://etherscan.io/gastracker" target="_blank" size="small" color="primary" variant="text" text class="lowercase-btn ma-0 px-2" v-tooltip="'gasPrice ' + formatGas(info.gasPrice) + ', lastBaseFeePerGas ' + formatGas(info.lastBaseFeePerGas) + ', maxPriorityFeePerGas ' + formatGas(info.maxPriorityFeePerGas) + ', maxFeePerGas ' + formatGas(info.maxFeePerGas) + ' gwei'">
-        {{ formatGas(info.gasPrice) + 'g'}}
+      <v-btn :disabled="!gasPrice" href="https://etherscan.io/gastracker" target="_blank" size="small" color="primary" variant="text" text class="lowercase-btn ma-0 px-2" v-tooltip="'gasPrice ' + formatGas(gasPrice) + ', lastBaseFeePerGas ' + formatGas(lastBaseFeePerGas) + ', maxPriorityFeePerGas ' + formatGas(maxPriorityFeePerGas) + ', maxFeePerGas ' + formatGas(maxFeePerGas) + ' gwei'">
+        {{ formatGas(gasPrice) + 'g'}}
       </v-btn>
     </div>
   `,
@@ -29,28 +29,49 @@ const Connection = {
     }
   },
   computed: {
+    // data() {
+    //   return store.getters['web3/data'];
+    // },
     connected() {
-      return store.getters['web3'].connected;
+      return store.getters['web3/connected'];
+    },
+    chainId() {
+      return store.getters['web3/chainId'];
     },
     coinbase() {
-      return store.getters['web3'].coinbase;
+      return store.getters['web3/coinbase'];
     },
-    info() {
-      return store.getters['web3'];
+    blockNumber() {
+      return store.getters['web3/blockNumber'];
+    },
+    timestamp() {
+      return store.getters['web3/timestamp'];
+    },
+    lastBaseFeePerGas() {
+      return store.getters['web3/lastBaseFeePerGas'];
+    },
+    maxFeePerGas() {
+      return store.getters['web3/maxFeePerGas'];
+    },
+    maxPriorityFeePerGas() {
+      return store.getters['web3/maxPriorityFeePerGas'];
+    },
+    gasPrice() {
+      return store.getters['web3/gasPrice'];
     },
     supportedNetwork() {
-      return store.getters['supportedNetwork'];
+      return store.getters['web3/supportedNetwork'];
     },
     networkName() {
-      return store.getters['networkName'];
+      return store.getters['web3/networkName'];
     },
     explorer() {
-      return store.getters['explorer'];
+      return store.getters['web3/explorer'];
     },
   },
   methods: {
     navigateToBlock(blockNumber) {
-      console.log(now() + " Connection - methods.navigateToBlock - blockNumber: " + blockNumber);
+      console.log(now() + " Web3 - methods.navigateToBlock - blockNumber: " + blockNumber);
       this.$router.push({ name: 'Block', params: { inputBlockNumber: blockNumber } });
       store.dispatch('block/loadBlock', blockNumber);
     },
@@ -84,16 +105,16 @@ const Connection = {
     },
   },
   mounted() {
-    console.error(now() + " Connection - mounted");
-    store.dispatch('connection/restore');
+    console.error(now() + " Web3 - mounted");
+    store.dispatch('web3/restore');
   },
   destroyed() {
-    console.log(now() + " Connection - destroyed");
+    console.log(now() + " Web3 - destroyed");
   },
 };
 
 
-const connectionModule = {
+const web3Module = {
   namespaced: true,
   state: {
     provider: null,
@@ -115,6 +136,33 @@ const connectionModule = {
     lastBlockNumber: 0, // TODO: Delete
   },
   getters: {
+    data: state => state.data,
+    connected: state => state.data.connected,
+    error: state => state.data.error,
+    chainId: state => state.data.chainId,
+    coinbase: state => state.data.coinbase,
+    blockNumber: state => state.data.blockNumber,
+    timestamp: state => state.data.timestamp,
+    lastBaseFeePerGas: state => state.data.lastBaseFeePerGas,
+    maxFeePerGas: state => state.data.maxFeePerGas,
+    maxPriorityFeePerGas: state => state.data.maxPriorityFeePerGas,
+    gasPrice: state => state.data.gasPrice,
+    networkName(state) {
+      const chain = state.data.chainId && store.getters['config/chains'][state.data.chainId] || null;
+      return chain && chain.name || "Unknown chainId: " + state.data.chainId;
+    },
+    explorer(state) {
+      const chain = state.data.chainId && store.getters['config/chains'][state.data.chainId] || null;
+      return chain && chain.explorer || null;
+    },
+    api(state) {
+      const chain = state.data.chainId && store.getters['config/chains'][state.data.chainId] || null;
+      return chain && chain.api || null;
+    },
+    reservoir(state) {
+      const chain = state.data.chainId && store.getters['config/chains'][state.data.chainId] || null;
+      return chain && chain.reservoir || null;
+    },
   },
   mutations: {
     setProvider(state, provider) {
@@ -122,34 +170,34 @@ const connectionModule = {
     },
 
     setWeb3Info(state, info) {
-      console.log(now() + " connectionModule - mutations.setWeb3Info: " + JSON.stringify(info));
+      console.log(now() + " web3Module - mutations.setWeb3Info: " + JSON.stringify(info));
       state.data.connected = info.connected;
       state.data.error = info.error;
       state.data.chainId = info.chainId;
       state.data.blockNumber = info.blockNumber;
       state.data.timestamp = info.timestamp;
       state.data.coinbase = info.coinbase;
-      console.log(now() + " connectionModule - mutations.setWeb3Info - state.data: " + JSON.stringify(state.data));
+      console.log(now() + " web3Module - mutations.setWeb3Info - state.data: " + JSON.stringify(state.data));
     },
     setWeb3Connected(state, connected) {
-      console.log(now() + " connectionModule - mutations.setWeb3Connected: " + connected);
+      console.log(now() + " web3Module - mutations.setWeb3Connected: " + connected);
       state.data.connected = connected;
-      console.log(now() + " connectionModule - mutations.setWeb3Connected - state.data: " + JSON.stringify(state.data));
+      console.log(now() + " web3Module - mutations.setWeb3Connected - state.data: " + JSON.stringify(state.data));
     },
     setWeb3Coinbase(state, coinbase) {
-      console.log(now() + " connectionModule - mutations.setWeb3Coinbase: " + coinbase);
+      console.log(now() + " web3Module - mutations.setWeb3Coinbase: " + coinbase);
       state.data.coinbase = coinbase;
-      console.log(now() + " connectionModule - mutations.setWeb3Coinbase - state.data: " + JSON.stringify(state.data));
+      console.log(now() + " web3Module - mutations.setWeb3Coinbase - state.data: " + JSON.stringify(state.data));
     },
     setWeb3BlockInfo(state, info) {
-      console.log(now() + " connectionModule - mutations.setWeb3BlockInfo: " + JSON.stringify(info));
+      console.log(now() + " web3Module - mutations.setWeb3BlockInfo: " + JSON.stringify(info));
       state.data.blockNumber = info.blockNumber;
       state.data.timestamp = info.timestamp;
       state.data.lastBaseFeePerGas = info.lastBaseFeePerGas;
       state.data.maxFeePerGas = info.maxFeePerGas;
       state.data.maxPriorityFeePerGas = info.maxPriorityFeePerGas;
       state.data.gasPrice = info.gasPrice;
-      console.log(now() + " connectionModule - mutations.setWeb3BlockInfo - state.data: " + JSON.stringify(state.data));
+      console.log(now() + " web3Module - mutations.setWeb3BlockInfo - state.data: " + JSON.stringify(state.data));
     },
 
     // TODO: Delete
@@ -182,7 +230,7 @@ const connectionModule = {
           const block = await provider.getBlockWithTransactions("latest");
           const t1 = performance.now();
           blockNumber = block.number;
-          console.log(now() + " connectionModule - actions.connect - getBlockWithTransactions('latest') => blockNumber: " + blockNumber + " took " + (t1 - t0) + " ms");
+          console.log(now() + " web3Module - actions.connect - getBlockWithTransactions('latest') => blockNumber: " + blockNumber + " took " + (t1 - t0) + " ms");
           timestamp = block.timestamp;
           const signer = provider.getSigner();
           coinbase = await signer.getAddress();
@@ -224,7 +272,7 @@ const connectionModule = {
           // let period = parseInt(Math.random() * 2000) + 100;
           const period = 200;
           async function handleNewBlock(blockNumber) {
-            // console.log(now() + " connectionModule - actions.connect.handleNewBlock - blockNumber: " + blockNumber);
+            // console.log(now() + " web3Module - actions.connect.handleNewBlock - blockNumber: " + blockNumber);
             clearTimeout(timerId);
             timerId = setTimeout(async () => {
               await handleNewBlockDebounced(blockNumber);
@@ -239,10 +287,10 @@ const connectionModule = {
               context.commit('setLastBlockNumber', parseInt(block.number));
 
               const t1 = performance.now();
-              console.log(now() + " connectionModule - actions.connect.handleNewBlockDebounced - getBlockWithTransactions('latest') => blockNumber: " + blockNumber + " took " + (t1 - t0) + " ms");
+              console.log(now() + " web3Module - actions.connect.handleNewBlockDebounced - getBlockWithTransactions('latest') => blockNumber: " + blockNumber + " took " + (t1 - t0) + " ms");
               const feeData = await provider.getFeeData();
               const t2 = performance.now();
-              console.log(now() + " connectionModule - actions.connect.handleNewBlockDebounced - getFeeData() took " + (t2 - t1) + " ms");
+              console.log(now() + " web3Module - actions.connect.handleNewBlockDebounced - getFeeData() took " + (t2 - t1) + " ms");
 
               const dbInfo = store.getters["db"];
               const db = new Dexie(dbInfo.name);
@@ -250,7 +298,7 @@ const connectionModule = {
               const blockData = JSON.parse(JSON.stringify(block));
               await db.blocks.put({ chainId, ...blockData }).then (function() {
                 }).catch(function(e) {
-                  console.error(now() + " connectionModule - actions.connect.handleNewBlockDebounced - ERROR blocks.put: " + e.message);
+                  console.error(now() + " web3Module - actions.connect.handleNewBlockDebounced - ERROR blocks.put: " + e.message);
                 });
               db.close();
 
@@ -265,14 +313,14 @@ const connectionModule = {
               context.dispatch("saveWeb3Info");
 
               // TODO: Delete
-              store.dispatch('setWeb3BlockInfo', {
-                blockNumber: block.number,
-                timestamp: block.timestamp,
-                lastBaseFeePerGas: ethers.BigNumber.from(feeData.lastBaseFeePerGas).toString(),
-                maxFeePerGas: ethers.BigNumber.from(feeData.maxFeePerGas).toString(),
-                maxPriorityFeePerGas: ethers.BigNumber.from(feeData.maxPriorityFeePerGas).toString(),
-                gasPrice: ethers.BigNumber.from(feeData.gasPrice).toString(),
-              });
+              // store.dispatch('setWeb3BlockInfo', {
+              //   blockNumber: block.number,
+              //   timestamp: block.timestamp,
+              //   lastBaseFeePerGas: ethers.BigNumber.from(feeData.lastBaseFeePerGas).toString(),
+              //   maxFeePerGas: ethers.BigNumber.from(feeData.maxFeePerGas).toString(),
+              //   maxPriorityFeePerGas: ethers.BigNumber.from(feeData.maxPriorityFeePerGas).toString(),
+              //   gasPrice: ethers.BigNumber.from(feeData.gasPrice).toString(),
+              // });
               store.dispatch('blocks/addBlock', block);
             }
           }
@@ -280,7 +328,7 @@ const connectionModule = {
             provider.on("block", handleNewBlock);
             // TODO: Not working
             // function handleNewPendingTx(tx) {
-            //   console.log(now() + " connectionModule - actions.connect.handleNewPendingTx - tx: " + JSON.stringify(tx));
+            //   console.log(now() + " web3Module - actions.connect.handleNewPendingTx - tx: " + JSON.stringify(tx));
             // }
             // provider.on("pending", handleNewPendingTx);
           }
@@ -301,26 +349,26 @@ const connectionModule = {
       context.dispatch("saveWeb3Info");
 
       // TODO: Delete
-      store.dispatch('setWeb3Info', {
-        connected,
-        error,
-        chainId,
-        blockNumber,
-        timestamp,
-        coinbase,
-        lastBaseFeePerGas: ethers.BigNumber.from(feeData.lastBaseFeePerGas).toString(),
-        maxFeePerGas: ethers.BigNumber.from(feeData.maxFeePerGas).toString(),
-        maxPriorityFeePerGas: ethers.BigNumber.from(feeData.maxPriorityFeePerGas).toString(),
-        gasPrice: ethers.BigNumber.from(feeData.gasPrice).toString(),
-      });
+      // store.dispatch('setWeb3Info', {
+      //   connected,
+      //   error,
+      //   chainId,
+      //   blockNumber,
+      //   timestamp,
+      //   coinbase,
+      //   lastBaseFeePerGas: ethers.BigNumber.from(feeData.lastBaseFeePerGas).toString(),
+      //   maxFeePerGas: ethers.BigNumber.from(feeData.maxFeePerGas).toString(),
+      //   maxPriorityFeePerGas: ethers.BigNumber.from(feeData.maxPriorityFeePerGas).toString(),
+      //   gasPrice: ethers.BigNumber.from(feeData.gasPrice).toString(),
+      // });
       context.commit('setProvider', provider);
     },
     restore(context) {
-      console.error(now() + " connectionModule - actions.restore");
+      console.error(now() + " web3Module - actions.restore");
 
       if ('web3Data' in localStorage) {
         const tempSettings = JSON.parse(localStorage.web3Data);
-        console.error(now() + " connectionModule - actions.restore - tempSettings: " + JSON.stringify(tempSettings));
+        console.error(now() + " web3Module - actions.restore - tempSettings: " + JSON.stringify(tempSettings));
         if ('version' in tempSettings && tempSettings.version == context.state.data.version) {
           // this.settings = tempSettings;
           context.commit('setWeb3Info', tempSettings);
@@ -350,7 +398,7 @@ const connectionModule = {
       }
     },
     saveWeb3Info(context) {
-      console.error(now() + " connectionModule - actions.saveWeb3Info - context.state.data: " + JSON.stringify(context.state.data));
+      console.error(now() + " web3Module - actions.saveWeb3Info - context.state.data: " + JSON.stringify(context.state.data));
       localStorage.web3Data = JSON.stringify(context.state.data);
     },
   },

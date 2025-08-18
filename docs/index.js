@@ -123,7 +123,7 @@ const store = new Vuex.Store({
     block: blockModule,
     blocks: blocksModule,
     config: configModule,
-    connection: connectionModule,
+    web3: web3Module,
     name: nameModule,
     portfolio: portfolioModule,
     punks: punksModule,
@@ -207,10 +207,10 @@ const app = Vue.createApp({
   },
   methods: {
     connect(connected) {
-      store.dispatch('connection/connect');
+      store.dispatch('web3/connect');
     },
     disconnect(connected) {
-      store.dispatch('connection/disconnect');
+      store.dispatch('web3/disconnect');
     },
     async search() {
       console.log(now() + " index.js - methods.search - this.searchString: " + JSON.stringify(this.searchString));
@@ -348,7 +348,7 @@ const app = Vue.createApp({
 app.use(router);
 app.use(store);
 app.use(vuetify);
-app.component("connection", Connection);
+app.component("web3", Web3);
 app.component("renderAddress", RenderAddress);
 app.component("renderBlockNumber", RenderBlockNumber);
 app.component("renderTokenId", RenderTokenId);
