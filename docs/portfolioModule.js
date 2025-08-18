@@ -165,7 +165,7 @@ const portfolioModule = {
   actions: {
     async loadPortfolio(context, { inputPortfolio, forceUpdate }) {
       console.log(now() + " portfolioModule - actions.loadPortfolio - inputPortfolio: " + inputPortfolio + ", forceUpdate: " + forceUpdate);
-      const chainId = store.getters["chainId"];
+      const chainId = store.getters["web3/chainId"];
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const dbInfo = store.getters["db"];
       const db = new Dexie(dbInfo.name);
@@ -197,7 +197,7 @@ const portfolioModule = {
     async syncPortfolio(context, { selectedPortfolio, forceUpdate }) {
       console.log(now() + " portfolioModule - actions.syncPortfolio - selectedPortfolio: " + selectedPortfolio + ", forceUpdate: " + forceUpdate);
       const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const chainId = store.getters["chainId"];
+      const chainId = store.getters["web3/chainId"];
       const block = await provider.getBlock();
       const blockNumber = block && block.number || null;
       console.log(now() + " portfolioModule - actions.syncPortfolio - blockNumber: " + blockNumber);
@@ -279,7 +279,7 @@ const portfolioModule = {
     //   //   error = "Not connected";
     //   // }
     //   const provider = new ethers.providers.Web3Provider(window.ethereum);
-    //   const chainId = store.getters["chainId"];
+    //   const chainId = store.getters["web3/chainId"];
     //   const dbInfo = store.getters["db"];
     //   const db = new Dexie(dbInfo.name);
     //   db.version(dbInfo.version).stores(dbInfo.schemaDefinition);

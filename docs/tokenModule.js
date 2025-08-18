@@ -142,7 +142,7 @@ const tokenModule = {
       //   error = "Not connected";
       // }
       const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const chainId = store.getters["chainId"];
+      const chainId = store.getters["web3/chainId"];
       const dbInfo = store.getters["db"];
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
@@ -392,7 +392,7 @@ const tokenModule = {
       }
       console.log(moment().format("HH:mm:ss") + " tokenModule - actions.collateEventData - address: " + address);
 
-      const chainId = store.getters["chainId"];
+      const chainId = store.getters["web3/chainId"];
       const dbInfo = store.getters["db"];
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);

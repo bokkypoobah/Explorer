@@ -164,10 +164,10 @@ const Block = {
       return store.getters['block/block'];
     },
     latestBlockNumber() {
-      return store.getters['web3'].blockNumber;
+      return store.getters['web3/blockNumber'];
     },
     explorer() {
-      return store.getters['explorer'];
+      return store.getters['web3/explorer'];
     },
     timestampString() {
       return this.block && this.formatTimestamp(this.block.timestamp) || null;
@@ -302,7 +302,7 @@ const blockModule = {
       console.log(now() + " blockModule - actions.loadBlock - blockNumber: " + blockNumber);
       let [error, block] = [null, null];
       if (blockNumber != null) {
-        if (!store.getters['web3'].connected || !window.ethereum) {
+        if (!store.getters['web3/connected'] || !window.ethereum) {
           error = "Not connected";
         }
         if (!error && !(/^\d+$/.test(blockNumber))) {

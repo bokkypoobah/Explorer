@@ -153,7 +153,7 @@ const AddressContract = {
     },
     async importABIFromEtherscan() {
       console.log(now() + " AddressContract - methods.importABIFromEtherscan");
-      const chainId = store.getters["chainId"];
+      const chainId = store.getters["web3/chainId"];
       const url = "https://api.etherscan.io/v2/api?chainid=" + chainId + "&module=contract&action=getabi&address=" + (this.info.implementation ? this.info.implementation : this.info.address) + "&apikey=" + store.getters['config/config'].etherscanAPIKey;
       console.log(now() + " AddressContract - methods.importABIFromEtherscan - url: " + url);
       const data = await fetch(url).then(response => response.json());
@@ -181,7 +181,7 @@ const AddressContract = {
     },
     async importSourceCodeFromSourcify() {
       console.log(now() + " AddressContract - methods.importSourceCodeFromSourcify");
-      const chainId = store.getters["chainId"];
+      const chainId = store.getters["web3/chainId"];
       // const url = "https://sourcify.dev/server/v2/contract/" + chainId + "/" + (this.info.implementation ? this.info.implementation : this.info.address) + "?fields=all";
       const url = "https://sourcify.dev/server/v2/contract/" + chainId + "/" + (this.info.implementation ? this.info.implementation : this.info.address) + "?omit=creationBytecode,runtimeBytecode,abi,metadata,sources";
       console.log(now() + " AddressContract - methods.importSourceCodeFromSourcify - url: " + url);

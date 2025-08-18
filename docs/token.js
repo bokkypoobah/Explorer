@@ -1109,7 +1109,7 @@ nftOwnersList: {{ nftOwnersList }}
       const address = store.getters["token/address"];
       console.log(now() + " Token - methods.loadEvents - address: " + address);
       if (address) {
-        const chainId = store.getters["chainId"];
+        const chainId = store.getters["web3/chainId"];
         const row = (page - 1) * itemsPerPage;
         let data;
         if (sort == "asc") {

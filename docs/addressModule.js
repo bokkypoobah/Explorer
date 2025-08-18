@@ -65,7 +65,7 @@ const addressModule = {
       //   error = "Not connected";
       // }
       const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const chainId = store.getters["chainId"];
+      const chainId = store.getters["web3/chainId"];
       const dbInfo = store.getters["db"];
       // console.log(now() + " addressModule - actions.loadAddress - dbInfo: " + JSON.stringify(dbInfo));
       const db = new Dexie(dbInfo.name);

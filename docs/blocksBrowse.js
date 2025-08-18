@@ -143,7 +143,7 @@ const BlocksBrowse = {
   },
   computed: {
     blockNumber() {
-      return store.getters['web3'].blockNumber;
+      return store.getters['web3/blockNumber'];
     },
     // address() {
     //   return store.getters['address/address'];
@@ -246,9 +246,9 @@ const BlocksBrowse = {
       const dbInfo = store.getters["db"];
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
-      const chainId = store.getters["chainId"];
+      const chainId = store.getters["web3/chainId"];
 
-      const blockNumber = parseInt(store.getters['web3'].blockNumber);
+      const blockNumber = parseInt(store.getters['web3/blockNumber']);
       this.loading = true;
       this.sortBy = !sortBy || sortBy.length == 0 || (sortBy[0].key == "number" && sortBy[0].order == "desc") ? "desc" : "asc";
       let startBlock, endBlock;

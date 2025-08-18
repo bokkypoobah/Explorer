@@ -384,7 +384,7 @@ const web3Module = {
       // }
     },
     disconnect(context) {
-      if (store.getters['web3'].connected) {
+      if (store.getters['web3/connected']) {
         if (context.state.provider) {
           context.state.provider.removeAllListeners();
           window.ethereum.removeAllListeners();
@@ -394,7 +394,7 @@ const web3Module = {
         context.dispatch("saveWeb3Info");
 
         // TODO: Delete
-        store.dispatch('setWeb3Connected', false);
+        // store.dispatch('setWeb3Connected', false);
       }
     },
     saveWeb3Info(context) {

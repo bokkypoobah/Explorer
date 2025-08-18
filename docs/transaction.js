@@ -280,7 +280,7 @@ const transactionModule = {
       console.log(now() + " transactionModule - actions.loadTransaction - txHash: " + txHash);
       let [error, tx, txReceipt, timestamp] = [null, null, null, null];
       if (txHash) {
-        if (!store.getters['web3'].connected || !window.ethereum) {
+        if (!store.getters['web3/connected'] || !window.ethereum) {
           error = "Not connected";
         }
         if (!error && !(/^0x([A-Fa-f0-9]{64})$/.test(txHash))) {

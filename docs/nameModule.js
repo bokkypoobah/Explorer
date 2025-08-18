@@ -46,7 +46,7 @@ const nameModule = {
     async loadName(context, { inputName, forceUpdate }) {
       console.log(now() + " nameModule - actions.loadName - inputName: " + inputName + ", forceUpdate: " + forceUpdate);
       const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const chainId = store.getters["chainId"];
+      const chainId = store.getters["web3/chainId"];
       const dbInfo = store.getters["db"];
       let info = {};
       if (ethers.utils.isValidName(inputName)) {
@@ -71,7 +71,7 @@ const nameModule = {
     //   //   error = "Not connected";
     //   // }
     //   const provider = new ethers.providers.Web3Provider(window.ethereum);
-    //   const chainId = store.getters["chainId"];
+    //   const chainId = store.getters["web3/chainId"];
     //   const dbInfo = store.getters["db"];
     //   // console.log(now() + " nameModule - actions.loadAddress - dbInfo: " + JSON.stringify(dbInfo));
     //   const db = new Dexie(dbInfo.name);

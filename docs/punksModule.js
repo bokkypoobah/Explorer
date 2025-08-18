@@ -78,7 +78,7 @@ const punksModule = {
   actions: {
     async startup(context) {
       console.log(now() + " punksModule - actions.startup");
-      const chainId = store.getters["chainId"];
+      const chainId = store.getters["web3/chainId"];
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const dbInfo = store.getters["db"];
       const db = new Dexie(dbInfo.name);
@@ -260,7 +260,7 @@ const punksModule = {
 
       console.log(now() + " punksModule - actions.syncPunksEvents - forceUpdate: " + forceUpdate);
       const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const chainId = store.getters["chainId"];
+      const chainId = store.getters["web3/chainId"];
       const dbInfo = store.getters["db"];
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);

@@ -828,7 +828,7 @@ const Punks = {
       const dbInfo = store.getters["db"];
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
-      const chainId = store.getters["chainId"];
+      const chainId = store.getters["web3/chainId"];
       const row = (page - 1) * itemsPerPage;
 
       let selectedTokenIds = null;

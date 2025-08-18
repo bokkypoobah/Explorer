@@ -5,20 +5,20 @@ const router = VueRouter.createRouter({
 
 const store = new Vuex.Store({
   state: {
-    // TODO: Delete
-    web3: {
-      connected: false,
-      error: false,
-      chainId: null,
-      coinbase: null,
-      blockNumber: null,
-      timestamp: null,
-      lastBaseFeePerGas: null,
-      maxFeePerGas: null,
-      maxPriorityFeePerGas: null,
-      gasPrice: null,
-      version: 1,
-    },
+    // // TODO: Delete
+    // web3: {
+    //   connected: false,
+    //   error: false,
+    //   chainId: null,
+    //   coinbase: null,
+    //   blockNumber: null,
+    //   timestamp: null,
+    //   lastBaseFeePerGas: null,
+    //   maxFeePerGas: null,
+    //   maxPriorityFeePerGas: null,
+    //   gasPrice: null,
+    //   version: 1,
+    // },
     db: {
       name: "explorer088j",
       version: 1,
@@ -32,90 +32,90 @@ const store = new Vuex.Store({
     },
   },
   getters: {
-    // TODO: Delete
-    web3: state => state.web3,
+    // // TODO: Delete
+    // web3: state => state.web3,
     db: state => state.db,
-    // TODO: Delete
-    chainId: state => state.web3.chainId,
-    // TODO: Migrate & Delete
-    supportedNetwork(state) {
-      const chain = state.web3.chainId && store.getters['config/chains'][state.web3.chainId] || null;
-      return !!chain;
-    },
-    // TODO: Migrate & Delete
-    networkName(state) {
-      const chain = state.web3.chainId && store.getters['config/chains'][state.web3.chainId] || null;
-      return chain && chain.name || "Unknown chainId: " + state.web3.chainId;
-    },
-    // TODO: Migrate & Delete
-    explorer(state) {
-      const chain = state.web3.chainId && store.getters['config/chains'][state.web3.chainId] || null;
-      return chain && chain.explorer || null;
-    },
-    // TODO: Migrate & Delete
-    api(state) {
-      const chain = state.web3.chainId && store.getters['config/chains'][state.web3.chainId] || null;
-      return chain && chain.api || null;
-    },
-    // TODO: Migrate & Delete
-    reservoir(state) {
-      const chain = state.web3.chainId && store.getters['config/chains'][state.web3.chainId] || null;
-      return chain && chain.reservoir || null;
-    },
+    // // TODO: Delete
+    // chainId: state => state.web3.chainId,
+    // // TODO: Migrate & Delete
+    // supportedNetwork(state) {
+    //   const chain = state.web3.chainId && store.getters['config/chains'][state.web3.chainId] || null;
+    //   return !!chain;
+    // },
+    // // TODO: Migrate & Delete
+    // networkName(state) {
+    //   const chain = state.web3.chainId && store.getters['config/chains'][state.web3.chainId] || null;
+    //   return chain && chain.name || "Unknown chainId: " + state.web3.chainId;
+    // },
+    // // TODO: Migrate & Delete
+    // explorer(state) {
+    //   const chain = state.web3.chainId && store.getters['config/chains'][state.web3.chainId] || null;
+    //   return chain && chain.explorer || null;
+    // },
+    // // TODO: Migrate & Delete
+    // api(state) {
+    //   const chain = state.web3.chainId && store.getters['config/chains'][state.web3.chainId] || null;
+    //   return chain && chain.api || null;
+    // },
+    // // TODO: Migrate & Delete
+    // reservoir(state) {
+    //   const chain = state.web3.chainId && store.getters['config/chains'][state.web3.chainId] || null;
+    //   return chain && chain.reservoir || null;
+    // },
   },
   mutations: {
-    // TODO: Delete
-    setWeb3Info(state, info) {
-      console.log(now() + " index.js:store - mutations.setWeb3Info: " + JSON.stringify(info));
-      state.web3.connected = info.connected;
-      state.web3.error = info.error;
-      state.web3.chainId = info.chainId;
-      state.web3.blockNumber = info.blockNumber;
-      state.web3.timestamp = info.timestamp;
-      state.web3.coinbase = info.coinbase;
-      state.web3.lastBaseFeePerGas = info.lastBaseFeePerGas;
-      state.web3.maxFeePerGas = info.maxFeePerGas;
-      state.web3.maxPriorityFeePerGas = info.maxPriorityFeePerGas;
-      state.web3.gasPrice = info.gasPrice;
-    },
-    // TODO: Delete
-    setWeb3Connected(state, connected) {
-      console.log(now() + " index.js:store - mutations.setWeb3Connected: " + JSON.stringify(connected));
-      state.web3.connected = connected;
-    },
-    // TODO: Delete
-    setWeb3Coinbase(state, coinbase) {
-      console.log(now() + " index.js:store - mutations.setWeb3Coinbase: " + JSON.stringify(coinbase));
-      state.web3.coinbase = coinbase;
-    },
-    // TODO: Delete
-    setWeb3BlockInfo(state, blockInfo) {
-      console.log(now() + " index.js:store - mutations.setWeb3BlockInfo: " + JSON.stringify(blockInfo));
-      state.web3.blockNumber = blockInfo.blockNumber;
-      state.web3.timestamp = blockInfo.timestamp;
-      state.web3.lastBaseFeePerGas = blockInfo.lastBaseFeePerGas;
-      state.web3.maxFeePerGas = blockInfo.maxFeePerGas;
-      state.web3.maxPriorityFeePerGas = blockInfo.maxPriorityFeePerGas;
-      state.web3.gasPrice = blockInfo.gasPrice;
-    },
+    // // TODO: Delete
+    // setWeb3Info(state, info) {
+    //   console.log(now() + " index.js:store - mutations.setWeb3Info: " + JSON.stringify(info));
+    //   state.web3.connected = info.connected;
+    //   state.web3.error = info.error;
+    //   state.web3.chainId = info.chainId;
+    //   state.web3.blockNumber = info.blockNumber;
+    //   state.web3.timestamp = info.timestamp;
+    //   state.web3.coinbase = info.coinbase;
+    //   state.web3.lastBaseFeePerGas = info.lastBaseFeePerGas;
+    //   state.web3.maxFeePerGas = info.maxFeePerGas;
+    //   state.web3.maxPriorityFeePerGas = info.maxPriorityFeePerGas;
+    //   state.web3.gasPrice = info.gasPrice;
+    // },
+    // // TODO: Delete
+    // setWeb3Connected(state, connected) {
+    //   console.log(now() + " index.js:store - mutations.setWeb3Connected: " + JSON.stringify(connected));
+    //   state.web3.connected = connected;
+    // },
+    // // TODO: Delete
+    // setWeb3Coinbase(state, coinbase) {
+    //   console.log(now() + " index.js:store - mutations.setWeb3Coinbase: " + JSON.stringify(coinbase));
+    //   state.web3.coinbase = coinbase;
+    // },
+    // // TODO: Delete
+    // setWeb3BlockInfo(state, blockInfo) {
+    //   console.log(now() + " index.js:store - mutations.setWeb3BlockInfo: " + JSON.stringify(blockInfo));
+    //   state.web3.blockNumber = blockInfo.blockNumber;
+    //   state.web3.timestamp = blockInfo.timestamp;
+    //   state.web3.lastBaseFeePerGas = blockInfo.lastBaseFeePerGas;
+    //   state.web3.maxFeePerGas = blockInfo.maxFeePerGas;
+    //   state.web3.maxPriorityFeePerGas = blockInfo.maxPriorityFeePerGas;
+    //   state.web3.gasPrice = blockInfo.gasPrice;
+    // },
   },
   actions: {
-    // TODO: Delete
-    setWeb3Info(context, info) {
-      context.commit('setWeb3Info', info);
-    },
-    // TODO: Delete
-    setWeb3Connected(context, connected) {
-      context.commit('setWeb3Connected', connected);
-    },
-    // TODO: Delete
-    setWeb3Coinbase(context, coinbase) {
-      context.commit('setWeb3Coinbase', coinbase);
-    },
-    // TODO: Delete
-    setWeb3BlockInfo(context, blockInfo) {
-      context.commit('setWeb3BlockInfo', blockInfo);
-    },
+    // // TODO: Delete
+    // setWeb3Info(context, info) {
+    //   context.commit('setWeb3Info', info);
+    // },
+    // // TODO: Delete
+    // setWeb3Connected(context, connected) {
+    //   context.commit('setWeb3Connected', connected);
+    // },
+    // // TODO: Delete
+    // setWeb3Coinbase(context, coinbase) {
+    //   context.commit('setWeb3Coinbase', coinbase);
+    // },
+    // // TODO: Delete
+    // setWeb3BlockInfo(context, blockInfo) {
+    //   context.commit('setWeb3BlockInfo', blockInfo);
+    // },
   },
   modules: {
     address: addressModule,
@@ -131,19 +131,19 @@ const store = new Vuex.Store({
     transaction: transactionModule,
   },
   plugins: [
-    function persistSettings(store) {
-      store.subscribe((mutation, state) => {
-        if (mutation.type.substring(0, 7) == "setWeb3") {
-          localStorage.explorerWeb3 = JSON.stringify(state.web3);
-        }
-      });
-      if (localStorage.explorerWeb3) {
-        const tempWeb3Info = JSON.parse(localStorage.explorerWeb3);
-        if ('version' in tempWeb3Info && tempWeb3Info.version == store.getters["web3"].version) {
-          store.dispatch('setWeb3Info', tempWeb3Info);
-        }
-      }
-    },
+    // function persistSettings(store) {
+    //   store.subscribe((mutation, state) => {
+    //     if (mutation.type.substring(0, 7) == "setWeb3") {
+    //       localStorage.explorerWeb3 = JSON.stringify(state.web3);
+    //     }
+    //   });
+    //   if (localStorage.explorerWeb3) {
+    //     const tempWeb3Info = JSON.parse(localStorage.explorerWeb3);
+    //     if ('version' in tempWeb3Info && tempWeb3Info.version == store.getters["web3"].version) {
+    //       store.dispatch('setWeb3Info', tempWeb3Info);
+    //     }
+    //   }
+    // },
   ],
 });
 
@@ -174,16 +174,16 @@ const app = Vue.createApp({
   },
   computed: {
     connected() {
-      return store.getters['web3'].connected;
+      return store.getters['web3/connected'];
     },
     chainId() {
-      return store.getters['web3'].chainId;
+      return store.getters['web3/chainId'];
     },
     coinbase() {
-      return store.getters['web3'].coinbase;
+      return store.getters['web3/coinbase'];
     },
     explorer() {
-      return store.getters['explorer'];
+      return store.getters['web3/explorer'];
     },
     router() {
       return this.$router && this.$router.currentRoute; // && ("(" + JSON.stringify(this.$router.currentRoute) + ")") || null;
