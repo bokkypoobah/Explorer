@@ -170,34 +170,30 @@ const web3Module = {
     },
 
     setWeb3Info(state, info) {
-      console.log(now() + " web3Module - mutations.setWeb3Info: " + JSON.stringify(info));
+      // console.log(now() + " web3Module - mutations.setWeb3Info: " + JSON.stringify(info));
       state.data.connected = info.connected;
       state.data.error = info.error;
       state.data.chainId = info.chainId;
       state.data.blockNumber = info.blockNumber;
       state.data.timestamp = info.timestamp;
       state.data.coinbase = info.coinbase;
-      console.log(now() + " web3Module - mutations.setWeb3Info - state.data: " + JSON.stringify(state.data));
     },
     setWeb3Connected(state, connected) {
-      console.log(now() + " web3Module - mutations.setWeb3Connected: " + connected);
+      // console.log(now() + " web3Module - mutations.setWeb3Connected: " + connected);
       state.data.connected = connected;
-      console.log(now() + " web3Module - mutations.setWeb3Connected - state.data: " + JSON.stringify(state.data));
     },
     setWeb3Coinbase(state, coinbase) {
-      console.log(now() + " web3Module - mutations.setWeb3Coinbase: " + coinbase);
+      // console.log(now() + " web3Module - mutations.setWeb3Coinbase: " + coinbase);
       state.data.coinbase = coinbase;
-      console.log(now() + " web3Module - mutations.setWeb3Coinbase - state.data: " + JSON.stringify(state.data));
     },
     setWeb3BlockInfo(state, info) {
-      console.log(now() + " web3Module - mutations.setWeb3BlockInfo: " + JSON.stringify(info));
+      // console.log(now() + " web3Module - mutations.setWeb3BlockInfo: " + JSON.stringify(info));
       state.data.blockNumber = info.blockNumber;
       state.data.timestamp = info.timestamp;
       state.data.lastBaseFeePerGas = info.lastBaseFeePerGas;
       state.data.maxFeePerGas = info.maxFeePerGas;
       state.data.maxPriorityFeePerGas = info.maxPriorityFeePerGas;
       state.data.gasPrice = info.gasPrice;
-      console.log(now() + " web3Module - mutations.setWeb3BlockInfo - state.data: " + JSON.stringify(state.data));
     },
 
     // TODO: Delete
@@ -257,9 +253,6 @@ const web3Module = {
 
             context.commit('setWeb3Coinbase', coinbase);
             context.dispatch("saveWeb3Info");
-
-            // TODO: Delete
-            store.dispatch('setWeb3Coinbase', coinbase);
           }
           if (!window.ethereum._events.accountsChanged) {
             window.ethereum.on('accountsChanged', handleAccountsChanged);
@@ -312,15 +305,6 @@ const web3Module = {
               });
               context.dispatch("saveWeb3Info");
 
-              // TODO: Delete
-              // store.dispatch('setWeb3BlockInfo', {
-              //   blockNumber: block.number,
-              //   timestamp: block.timestamp,
-              //   lastBaseFeePerGas: ethers.BigNumber.from(feeData.lastBaseFeePerGas).toString(),
-              //   maxFeePerGas: ethers.BigNumber.from(feeData.maxFeePerGas).toString(),
-              //   maxPriorityFeePerGas: ethers.BigNumber.from(feeData.maxPriorityFeePerGas).toString(),
-              //   gasPrice: ethers.BigNumber.from(feeData.gasPrice).toString(),
-              // });
               store.dispatch('blocks/addBlock', block);
             }
           }
@@ -348,19 +332,6 @@ const web3Module = {
       });
       context.dispatch("saveWeb3Info");
 
-      // TODO: Delete
-      // store.dispatch('setWeb3Info', {
-      //   connected,
-      //   error,
-      //   chainId,
-      //   blockNumber,
-      //   timestamp,
-      //   coinbase,
-      //   lastBaseFeePerGas: ethers.BigNumber.from(feeData.lastBaseFeePerGas).toString(),
-      //   maxFeePerGas: ethers.BigNumber.from(feeData.maxFeePerGas).toString(),
-      //   maxPriorityFeePerGas: ethers.BigNumber.from(feeData.maxPriorityFeePerGas).toString(),
-      //   gasPrice: ethers.BigNumber.from(feeData.gasPrice).toString(),
-      // });
       context.commit('setProvider', provider);
     },
     restore(context) {
@@ -378,10 +349,6 @@ const web3Module = {
       if (context.state.data.connected) {
         context.dispatch('connect');
       }
-      // TODO: Delete
-      // if (store.getters['web3'].connected) {
-      //   context.dispatch('connect');
-      // }
     },
     disconnect(context) {
       if (store.getters['web3/connected']) {
@@ -392,13 +359,10 @@ const web3Module = {
 
         context.commit('setWeb3Connected', false);
         context.dispatch("saveWeb3Info");
-
-        // TODO: Delete
-        // store.dispatch('setWeb3Connected', false);
       }
     },
     saveWeb3Info(context) {
-      console.error(now() + " web3Module - actions.saveWeb3Info - context.state.data: " + JSON.stringify(context.state.data));
+      // console.log(now() + " web3Module - actions.saveWeb3Info - context.state.data: " + JSON.stringify(context.state.data));
       localStorage.explorerWeb3 = JSON.stringify(context.state.data);
     },
   },
