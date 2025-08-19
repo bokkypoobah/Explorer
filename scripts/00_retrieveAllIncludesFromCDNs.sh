@@ -26,20 +26,20 @@ SOURCE=https://cdn.jsdelivr.net/npm/vue-router@4.5.0/dist/vue-router.global.min.
 DEST=../docs/js/vuex_4.5.0.min.js
 wget $SOURCE -O $DEST
 
-# Get vuetify[.min].css 3.7.18
-SOURCE=https://cdn.jsdelivr.net/npm/vuetify@3.7.18/dist/vuetify.css
-DEST=../docs/css/vuetify_3.7.18.css
+# Get vuetify[.min].css 3.9.5
+SOURCE=https://cdn.jsdelivr.net/npm/vuetify@3.9.5/dist/vuetify.css
+DEST=../docs/css/vuetify_3.9.5.css
 wget $SOURCE -O $DEST
-SOURCE=https://cdn.jsdelivr.net/npm/vuetify@3.7.18/dist/vuetify.min.css
-DEST=../docs/css/vuetify_3.7.18.min.css
+SOURCE=https://cdn.jsdelivr.net/npm/vuetify@3.9.5/dist/vuetify.min.css
+DEST=../docs/css/vuetify_3.9.5.min.css
 wget $SOURCE -O $DEST
 
-# Get vuetify[.min].js 3.7.18
-SOURCE=https://cdn.jsdelivr.net/npm/vuetify@3.7.18/dist/vuetify.js
-DEST=../docs/js/vuetify_3.7.18.js
+# Get vuetify[.min].js 3.9.5
+SOURCE=https://cdn.jsdelivr.net/npm/vuetify@3.9.5/dist/vuetify.js
+DEST=../docs/js/vuetify_3.9.5.js
 wget $SOURCE -O $DEST
-SOURCE=https://cdn.jsdelivr.net/npm/vuetify@3.7.18/dist/vuetify.min.js
-DEST=../docs/js/vuetify_3.7.18.min.js
+SOURCE=https://cdn.jsdelivr.net/npm/vuetify@3.9.5/dist/vuetify.min.js
+DEST=../docs/js/vuetify_3.9.5.min.js
 wget $SOURCE -O $DEST
 
 # Get dexie[.min].js 3.0.3
