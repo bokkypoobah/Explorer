@@ -115,7 +115,7 @@ const Portfolio = {
                       <v-checkbox-btn v-model="settings.assetTypeFilter.nonFungibles" @update:modelValue="saveSettings();" label="Non-Fungibles" class="ma-0 pa-0" v-tooltip="'ERC-721 & ERC-1155 excluding ENS Names'"></v-checkbox-btn>
                     </v-list-item>
                     <v-list-item append-icon="mdi-alphabetical" density="compact" class="ma-0 pa-1">
-                      <v-checkbox-btn v-model="settings.assetTypeFilter.names" @update:modelValue="saveSettings();" label="Names" class="ma-0 pa-0" v-tooltip="'ERC-721 & ERC-1155 ENS Names'"></v-checkbox-btn>
+                      <v-checkbox-btn v-model="settings.assetTypeFilter.names" @update:modelValue="saveSettings();" label="ENS Names" class="ma-0 pa-0" v-tooltip="'ERC-721 & ERC-1155 ENS Names'"></v-checkbox-btn>
                     </v-list-item>
                     <!-- <v-list-item class="ma-0 pa-1">
                       <v-checkbox-btn label="ETH" class="ma-0 pa-0"></v-checkbox-btn>
