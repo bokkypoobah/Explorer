@@ -30,12 +30,12 @@ const store = new Vuex.Store({
     block: blockModule,
     blocks: blocksModule,
     config: configModule,
-    web3: web3Module,
     name: nameModule,
     portfolio: portfolioModule,
     punks: punksModule,
     token: tokenModule,
     transaction: transactionModule,
+    web3: web3Module,
   },
   plugins: [
   ],
