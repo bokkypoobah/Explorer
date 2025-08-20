@@ -105,7 +105,7 @@ const Web3 = {
     },
   },
   mounted() {
-    console.error(now() + " Web3 - mounted");
+    // console.error(now() + " Web3 - mounted");
     store.dispatch('web3/restore');
   },
   destroyed() {
@@ -335,17 +335,15 @@ const web3Module = {
       context.commit('setProvider', provider);
     },
     restore(context) {
-      console.error(now() + " web3Module - actions.restore");
-
+      // console.error(now() + " web3Module - actions.restore");
       if ('explorerWeb3' in localStorage) {
         const tempSettings = JSON.parse(localStorage.explorerWeb3);
-        console.error(now() + " web3Module - actions.restore - tempSettings: " + JSON.stringify(tempSettings));
+        // console.error(now() + " web3Module - actions.restore - tempSettings: " + JSON.stringify(tempSettings));
         if ('version' in tempSettings && tempSettings.version == context.state.data.version) {
           // this.settings = tempSettings;
           context.commit('setWeb3Info', tempSettings);
         }
       }
-
       if (context.state.data.connected) {
         context.dispatch('connect');
       }
@@ -356,7 +354,6 @@ const web3Module = {
           context.state.provider.removeAllListeners();
           window.ethereum.removeAllListeners();
         }
-
         context.commit('setWeb3Connected', false);
         context.dispatch("saveWeb3Info");
       }
