@@ -75,6 +75,7 @@
     <script src="addressEvents.js"></script>
     <script src="portfolio.js"></script>
     <script src="punks.js"></script>
+    <script src="search.js"></script>
     <script src="token.js"></script>
 
     <script src="blocks.js"></script>
@@ -101,6 +102,12 @@
           <v-avatar image="images/fknchad_FkqVTzBaUAAiE8x_nobg.png" class="ms-2"></v-avatar>
           <v-toolbar-title class="ms-0">Explorer</v-toolbar-title>
           <v-spacer></v-spacer>
+
+          <v-btn @click="showSearch();" color="primary" icon v-tooltip="'Show search dialog'">
+            <v-icon>mdi-magnify</v-icon>
+          </v-btn>
+          <v-spacer></v-spacer>
+
           <!-- <v-text-field v-model="searchString" @input="searchDebounced();" hide-details label="🔍" density="compact" variant="underlined" style="width: 330px;" placeholder="block #, tx hash or address">
           </v-text-field> -->
           <v-combobox v-model="searchString" @update:model-value="search();" :items="samples" item-title="title" item-value="value" hide-details single-line label="🔍" density="compact" variant="underlined" style="width: 330px;" placeholder="block #, tx hash, address or name[.eth]">
@@ -242,6 +249,7 @@
         </v-dialog>
 
         <v-main>
+          <search></search>
           <router-view v-slot="{ Component }">
             <component :is="Component" />
           </router-view>

@@ -33,6 +33,7 @@ const store = new Vuex.Store({
     name: nameModule,
     portfolio: portfolioModule,
     punks: punksModule,
+    search: searchModule,
     token: tokenModule,
     transaction: transactionModule,
     web3: web3Module,
@@ -104,6 +105,9 @@ const app = Vue.createApp({
     },
     disconnect(connected) {
       store.dispatch('web3/disconnect');
+    },
+    showSearch(connected) {
+      store.dispatch('search/setShow', true);
     },
     async search() {
       console.log(now() + " index.js - methods.search - this.searchString: " + JSON.stringify(this.searchString));
@@ -246,5 +250,6 @@ app.component("renderAddress", RenderAddress);
 app.component("renderBlockNumber", RenderBlockNumber);
 app.component("renderTokenId", RenderTokenId);
 app.component("renderTxHash", RenderTxHash);
+app.component("search", Search);
 app.component("apexchart", VueApexCharts);
 app.mount('#app');
