@@ -243,6 +243,7 @@ const app = Vue.createApp({
   mounted() {
     console.log(now() + " index.js - app.mounted");
     store.dispatch('config/loadConfig');
+    store.dispatch('addressBook/loadAddressBook');
     store.dispatch('addresses/loadAddresses');
     store.dispatch('blocks/startup');
   },

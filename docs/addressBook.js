@@ -67,20 +67,44 @@ const AddressBook = {
 const addressBookModule = {
   namespaced: true,
   state: {
-    show: false,
+    addressBook: {
+      show: false,
+      addresses: {},
+      version: 0,
+    },
   },
   getters: {
-    show: state => state.show,
+    show: state => state.addressBook.show,
   },
   mutations: {
+    setAddressBook(state, addressBook) {
+      // console.log(now() + " addressBookModule - mutations.setAddressBook - addressBook: " + JSON.stringify(addressBook).substring(0, 200));
+      state.addressBook = addressBook;
+    },
     setShow(state, show) {
-      console.log(now() + " addressBookModule - mutations.setShow - show: " + show);
-      state.show = show;
+      // console.log(now() + " addressBookModule - mutations.setShow - show: " + show);
+      state.addressBook.show = show;
     },
   },
   actions: {
+    async loadAddressBook(context) {
+      console.log(now() + " addressBookModule - actions.loadAddressBook");
+      if (localStorage.explorerAddressBook) {
+        const tempAddressBook = JSON.parse(localStorage.explorerAddressBook);
+        if ('version' in tempAddressBook && tempAddressBook.version == context.state.addressBook.version) {
+          // console.log(now() + " addressBookModule - actions.loadAddressBook - tempAddressBook: " + JSON.stringify(tempAddressBook).substring(0, 200));
+          context.commit('setAddressBook', tempAddressBook);
+        }
+      }
+      store.subscribe((mutation, state) => {
+        if (mutation.type.substring(0, 15) == "addressBook/set") {
+          console.log(now() + " addressBookModule - actions.loadAddressBook - subscribe - mutation.type: " + mutation.type);
+          localStorage.explorerAddressBook = JSON.stringify(context.state.addressBook);
+        }
+      });
+    },
     setShow(context, show) {
-      console.log(now() + " addressBookModule - actions.setShow - show: " + show);
+      // console.log(now() + " addressBookModule - actions.setShow - show: " + show);
       context.commit('setShow', show);
     },
   },
