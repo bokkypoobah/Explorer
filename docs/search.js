@@ -2,7 +2,7 @@ const Search = {
   template: `
     <div>
       <v-dialog :model-value="show" persistent theme="system" max-width="800px">
-        <v-card title="Search">
+        <v-card title="Search" min-height="50vh">
           <!-- <v-card-text class="ma-2 pa-2"> -->
           <v-card-text>
             Blah

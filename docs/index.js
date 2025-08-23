@@ -116,6 +116,9 @@ const app = Vue.createApp({
     disconnect(connected) {
       store.dispatch('web3/disconnect');
     },
+    showAddressBook(connected) {
+      store.dispatch('addressBook/setShow', true);
+    },
     showSearch(connected) {
       store.dispatch('search/setShow', true);
     },
