@@ -18,6 +18,9 @@ const Portfolio = {
             style="max-width: 200px;"
             @update:modelValue="saveSettings();"
           ></v-select>
+          <v-btn @click="showAddressBook();" color="primary" icon size="default" v-tooltip="'Show address book dialog. cmd+b'">
+            <v-icon>mdi-book-open-variant-outline</v-icon>
+          </v-btn>
           <v-spacer></v-spacer>
           <v-btn v-if="sync.info == null" @click="syncPortfolio();" color="primary" icon v-tooltip="'Sync Portfolio'">
             <v-icon>mdi-refresh</v-icon>
@@ -457,6 +460,10 @@ data: {{ data }}
     syncPortfolio() {
       console.log(now() + " Portfolio - methods.syncPortfolio");
       store.dispatch('portfolio/syncPortfolio', { selectedPortfolio: this.settings.selectedPortfolio, forceUpdate: true });
+    },
+    showAddressBook() {
+      console.log(now() + " Portfolio - methods.showAddressBook");
+      store.dispatch('addressBook/setShow', true);
     },
 
     // portfolioDialogView(name) {

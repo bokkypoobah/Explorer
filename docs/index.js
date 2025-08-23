@@ -26,6 +26,7 @@ const store = new Vuex.Store({
   },
   modules: {
     address: addressModule,
+    addressBook: addressBookModule,
     addresses: addressesModule,
     block: blockModule,
     blocks: blocksModule,
@@ -50,6 +51,10 @@ const vuetify = Vuetify.createVuetify({
 Vuetify.useHotkey('cmd+k', () => {
   console.log(now() + " index.js - Vuetify.useHotkey cmd+k => search");
   store.dispatch('search/setShow', true);
+});
+Vuetify.useHotkey('cmd+b', () => {
+  console.log(now() + " index.js - Vuetify.useHotkey cmd+b => addressBook");
+  store.dispatch('addressBook/setShow', true);
 });
 
 const app = Vue.createApp({
@@ -255,6 +260,7 @@ app.component("renderAddress", RenderAddress);
 app.component("renderBlockNumber", RenderBlockNumber);
 app.component("renderTokenId", RenderTokenId);
 app.component("renderTxHash", RenderTxHash);
+app.component("addressBook", AddressBook);
 app.component("search", Search);
 app.component("apexchart", VueApexCharts);
 app.mount('#app');

@@ -67,6 +67,7 @@
     <script src="block.js"></script>
     <script src="transaction.js"></script>
     <script src="address.js"></script>
+    <script src="addressBook.js"></script>
     <script src="addressAddress.js"></script>
     <script src="addressContract.js"></script>
     <script src="addressFunctions.js"></script>
@@ -250,6 +251,7 @@
         </v-dialog>
 
         <v-main>
+          <address-book></address-book>
           <search></search>
           <router-view v-slot="{ Component }">
             <component :is="Component" />
