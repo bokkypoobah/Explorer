@@ -9,8 +9,8 @@ const Search = {
           </v-card-text>
           <v-card-actions>
             <!-- <v-btn @click="hide();" prepend-icon="mdi-window-close" variant="text" class="lowercase-btn">Cancel</v-btn> -->
-            <v-btn @click="hide();" prepend-icon="mdi-check" variant="outlined" rounded size="small" class="lowercase-btn">OK</v-btn>
-            <v-btn @click="hide();" prepend-icon="mdi-window-close" variant="outlined" rounded size="small" class="lowercase-btn">Cancel</v-btn>
+            <v-btn @click="hide();" prepend-icon="mdi-check" size="small" class="lowercase-btn">OK</v-btn>
+            <v-btn @click="hide();" prepend-icon="mdi-window-close" size="small" class="lowercase-btn">Cancel</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>

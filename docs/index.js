@@ -47,6 +47,11 @@ const vuetify = Vuetify.createVuetify({
   // directives,
 });
 
+Vuetify.useHotkey('cmd+k', () => {
+  console.log(now() + " index.js - Vuetify.useHotkey cmd+k => search");
+  store.dispatch('search/setShow', true);
+});
+
 const app = Vue.createApp({
   // icons: {
   //   iconfont: 'mdiSvg', // 'mdi' || 'mdiSvg' || 'md' || 'fa' || 'fa4' || 'faSvg'
