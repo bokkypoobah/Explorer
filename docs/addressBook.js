@@ -17,6 +17,7 @@ const AddressBook = {
           <!-- <v-card-text class="ma-2 pa-2"> -->
           <v-card-text>
             <v-data-table
+              v-if="tab == 'addresses'"
               :items="addressesList"
               :headers="addressesHeaders"
               v-model:sort-by="addressSortBy"
@@ -37,13 +38,38 @@ const AddressBook = {
                 {{ item.tags.join(", ") }}
               </template>
             </v-data-table>
+            <v-data-table
+              v-if="tab == 'tags'"
+              :items="tagsList"
+              :headers="tagsHeaders"
+              v-model:sort-by="tagSortBy"
+              v-model:items-per-page="tagItemsPerPage"
+              v-model:page="tagCurrentPage"
+              density="comfortable"
+              hide-default-footer
+            >
+              <template v-slot:item.rowNumber="{ index }">
+                {{ commify0((tagCurrentPage - 1) * tagItemsPerPage + index + 1) }}
+              </template>
+              <template v-slot:item.tag="{ item }">
+                {{ item.tag }}
+              </template>
+              <template v-slot:item.addresses="{ item }">
+                {{ item.addresses }}
+              </template>
+              <!-- <template v-slot:item.name="{ item }">
+                {{ item.name }}
+                <br />
+                {{ item.tags.join(", ") }}
+              </template> -->
+            </v-data-table>
 
             <!-- <div v-if="tab == 'addresses'">
               {{ addressesList }}
             </div> -->
-            <div v-if="tab == 'tags'">
-              {{ tags }}
-            </div>
+            <!-- <div v-if="tab == 'tags'">
+              {{ tagsList }}
+            </div> -->
 
             <v-toolbar flat color="transparent" density="compact">
               <v-spacer></v-spacer>
@@ -117,8 +143,13 @@ const AddressBook = {
         { value: 1000, title: "1000" },
       ],
       addressesHeaders: [
-        { title: 'Address', value: 'address', width: '65%', sortable: false },
+        { title: 'Address', value: 'address', width: '65%', sortable: true },
         { title: 'Name / Tags', value: 'name', width: '20%', sortable: true },
+        { title: '', value: 'actions', width: '15%', sortable: false },
+      ],
+      tagsHeaders: [
+        { title: 'Tag', value: 'tag', width: '20%', sortable: true },
+        { title: 'Addresses / Names', value: 'addresses', width: '65%', sortable: true },
         { title: '', value: 'actions', width: '15%', sortable: false },
       ],
     };
@@ -201,19 +232,22 @@ const AddressBook = {
     },
     tagsList() {
       const collator = {};
-      const results = [];
-      for (const [address, addressData] of Object.entries(this.addresses)) {
-        console.error(address + " => " + JSON.stringify(addressData));
-        results.push({ value: address, title: address, tags: addressData.tags });
-        for (let tag of addressData.tags) {
-          console.error("  " + tag);
-          if (!(tag in collator)) {
-            collator[tag] = [];
-          }
-          collator[tag].push(address);
+      for (const [tag, tagData] of Object.entries(store.getters['addressBook/tags'])) {
+        if (!(tag in collator)) {
+          collator[tag] = [];
+        }
+        for (const data of tagData) {
+          collator[tag].push({ address: data.address, name: data.name });
         }
       }
-      return collator;
+      const results = [];
+      for (const [tag, addresses] of Object.entries(collator)) {
+        addresses.sort((a, b) => {
+          return ('' + a.address).localeCompare(b.address);
+        });
+        results.push( { tag, addresses });
+      }
+      return results;
     },
   },
   methods: {
@@ -258,7 +292,7 @@ const addressBookModule = {
         currentPage: 1,
       },
       tag: {
-        sortBy: [{ key: "name", order: "asc" }],
+        sortBy: [{ key: "tag", order: "asc" }],
         itemsPerPage: 10,
         currentPage: 1,
       },
@@ -324,7 +358,7 @@ const addressBookModule = {
           tags: [ "test15", "test" ],
         },
       },
-      version: 3,
+      version: 4,
     },
   },
   getters: {
