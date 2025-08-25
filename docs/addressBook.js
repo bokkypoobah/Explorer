@@ -2,23 +2,26 @@ const AddressBook = {
   template: `
     <div>
       <v-dialog :model-value="show" persistent theme="system" max-width="800px">
-        <v-card min-height="50vh">
+        <v-card min-height="75vh">
           <!-- <v-card-title class="ma-0 pa-1">
             <h4 class="ml-2">Address Book</h4>
             <v-spacer></v-spacer>
           </v-card-title> -->
           <v-toolbar density="compact">
-            <h4 class="ml-2">Address Book</h4>
+            <h4 class="ml-3">Address Book</h4>
+            <v-spacer></v-spacer>
+            <v-btn @click="hide();" prepend-icon="mdi-pencil-plus" class="lowercase-btn ml-2">New</v-btn>
             <v-spacer></v-spacer>
             <v-tabs v-model="tab" right color="deep-purple-accent-4">
               <v-tab prepend-icon="mdi-numeric" text="Addresses" value="addresses" class="lowercase-btn"></v-tab>
               <v-tab prepend-icon="mdi-tag" text="Tags" value="tags" class="lowercase-btn"></v-tab>
             </v-tabs>
-            <v-btn @click="hide();" prepend-icon="mdi-window-close" class="lowercase-btn">Cancel</v-btn>
+            <v-divider vertical class="ml-2">
+            </v-divider>
+            <v-btn @click="hide();" prepend-icon="mdi-window-close" class="lowercase-btn ml-2">Cancel</v-btn>
           </v-toolbar>
           <!-- <v-card-text class="ma-2 pa-2"> -->
           <v-card-text>
-            <!-- hide-default-footer -->
             <v-data-table
               v-if="tab == 'addresses'"
               :items="addressesList"
@@ -27,6 +30,7 @@ const AddressBook = {
               v-model:items-per-page="addressItemsPerPage"
               v-model:page="addressCurrentPage"
               density="comfortable"
+              hide-default-footer
             >
               <template v-slot:item.rowNumber="{ index }">
                 {{ commify0((addressCurrentPage - 1) * addressItemsPerPage + index + 1) }}
@@ -39,8 +43,23 @@ const AddressBook = {
                 <br />
                 {{ item.tags.join(", ") }}
               </template>
+              <template v-slot:item.actions="{ item }">
+                <!-- Delete -->
+                <!-- <v-btn @click="portfolioDialog.accounts.splice(index, 1);" prepend-icon="mdi-delete" variant="text" class="lowercase-btn">Delete</v-btn> -->
+                <v-btn @click="showAddressDialog(item.address);" prepend-icon="mdi-pencil" variant="text" class="lowercase-btn">Edit</v-btn>
+              </template>
+
+              <template v-slot:body.append>
+                <tr class="bg-grey-lighten-4">
+                  <td></td>
+                  <td></td>
+                  <td>
+                    <v-btn @click="showAddressDialog(null);" prepend-icon="mdi-pencil-plus" variant="text" class="lowercase-btn">Add</v-btn>
+                  </td>
+                </tr>
+              </template>
+
             </v-data-table>
-            <!-- hide-default-footer -->
             <v-data-table
               v-if="tab == 'tags'"
               :items="tagsList"
@@ -49,6 +68,7 @@ const AddressBook = {
               v-model:items-per-page="tagItemsPerPage"
               v-model:page="tagCurrentPage"
               density="comfortable"
+              hide-default-footer
             >
               <template v-slot:item.rowNumber="{ index }">
                 {{ commify0((tagCurrentPage - 1) * tagItemsPerPage + index + 1) }}
@@ -65,17 +85,11 @@ const AddressBook = {
                 {{ item.tags.join(", ") }}
               </template> -->
             </v-data-table>
-
-            <!-- <div v-if="tab == 'addresses'">
-              {{ addressesList }}
-            </div> -->
-            <!-- <div v-if="tab == 'tags'">
-              {{ tagsList }}
-            </div> -->
-
-            <v-toolbar v-if="false" flat color="transparent" density="compact">
+          </v-card-text>
+          <v-card-actions>
+            <v-toolbar flat color="transparent" density="compact">
               <v-spacer></v-spacer>
-              <!-- <v-select
+              <v-select
                 v-if="tab == 'addresses'"
                 v-model="addressItemsPerPage"
                 :items="itemsPerPageOptions"
@@ -83,8 +97,8 @@ const AddressBook = {
                 density="compact"
                 class="mt-2 mr-2"
                 style="max-width: 80px;"
-              ></v-select> -->
-              <!-- <v-select
+              ></v-select>
+              <v-select
                 v-if="tab == 'tags'"
                 v-model="tagItemsPerPage"
                 :items="itemsPerPageOptions"
@@ -92,7 +106,7 @@ const AddressBook = {
                 density="compact"
                 class="mt-2 mr-2"
                 style="max-width: 80px;"
-              ></v-select> -->
+              ></v-select>
               <v-pagination
                 v-if="tab == 'addresses'"
                 v-model="addressCurrentPage"
@@ -116,11 +130,9 @@ const AddressBook = {
               >
               </v-pagination>
             </v-toolbar>
-          </v-card-text>
-          <!-- <v-card-actions>
-            <v-btn @click="hide();" prepend-icon="mdi-check" class="lowercase-btn">OK</v-btn>
-            <v-btn @click="hide();" prepend-icon="mdi-window-close" class="lowercase-btn">Cancel</v-btn>
-          </v-card-actions> -->
+            <!-- <v-btn @click="hide();" prepend-icon="mdi-check" class="lowercase-btn">OK</v-btn>
+            <v-btn @click="hide();" prepend-icon="mdi-window-close" class="lowercase-btn">Cancel</v-btn> -->
+          </v-card-actions>
         </v-card>
       </v-dialog>
     </div>
@@ -131,18 +143,20 @@ const AddressBook = {
       settings: {
         version: 0,
       },
-      // itemsPerPageOptions: [
-      //   { value: 5, title: "5" },
-      //   { value: 10, title: "10" },
-      //   { value: 20, title: "20" },
-      //   { value: 30, title: "30" },
-      //   { value: 40, title: "40" },
-      //   { value: 50, title: "50" },
-      //   { value: 100, title: "100" },
-      //   { value: 250, title: "250" },
-      //   { value: 500, title: "500" },
-      //   { value: 1000, title: "1000" },
-      // ],
+      addressDialog: {
+        mode: null,
+        address: null,
+        name: null,
+        tags: [],
+      },
+      itemsPerPageOptions: [
+        { value: 5, title: "5" },
+        { value: 10, title: "10" },
+        { value: 25, title: "25" },
+        { value: 50, title: "50" },
+        { value: 100, title: "100" },
+        { value: 1000, title: "1000" },
+      ],
       addressesHeaders: [
         { title: 'Address', value: 'address', width: '65%', sortable: true },
         { title: 'Name / Tags', value: 'name', width: '20%', sortable: true },
@@ -255,6 +269,14 @@ const AddressBook = {
     hide() {
       console.log(now() + " AddressBook - methods.hide");
       store.dispatch('addressBook/setShow', false);
+    },
+    showAddressDialog(address) {
+      console.log(now() + " AddressBook - methods.showAddressDialog - address: " + address);
+      this.addressDialog.mode = address == null ? "add" : "edit";
+      this.addressDialog.address = address;
+      this.addressDialog.name = "TODO";
+      this.addressDialog.tags = "TODO";
+      console.log(now() + " AddressBook - methods.showAddressDialog - addressDialog: " + JSON.stringify(this.addressDialog));
     },
   },
   beforeCreate() {
