@@ -16,10 +16,31 @@ const AddressBook = {
           </v-toolbar>
           <!-- <v-card-text class="ma-2 pa-2"> -->
           <v-card-text>
-            <div v-if="tab == 'addresses'">
+            <v-data-table
+              :items="addressesList"
+              :headers="addressesHeaders"
+              v-model:sort-by="addressSortBy"
+              v-model:items-per-page="addressItemsPerPage"
+              v-model:page="addressCurrentPage"
+              density="comfortable"
+              hide-default-footer
+            >
+              <template v-slot:item.rowNumber="{ index }">
+                {{ commify0((addressCurrentPage - 1) * addressItemsPerPage + index + 1) }}
+              </template>
+              <template v-slot:item.address="{ item }">
+                {{ item.address }}
+              </template>
+              <template v-slot:item.name="{ item }">
+                {{ item.name }}
+                <br />
+                {{ item.tags.join(", ") }}
+              </template>
+            </v-data-table>
+
+            <!-- <div v-if="tab == 'addresses'">
               {{ addressesList }}
-            </div>
-            <!-- {{ tagsList }} -->
+            </div> -->
             <div v-if="tab == 'tags'">
               {{ tags }}
             </div>
@@ -33,7 +54,7 @@ const AddressBook = {
                 variant="plain"
                 density="compact"
                 class="mt-2 mr-2"
-                style="max-width: 100px;"
+                style="max-width: 80px;"
               ></v-select>
               <v-select
                 v-if="tab == 'tags'"
@@ -42,7 +63,7 @@ const AddressBook = {
                 variant="plain"
                 density="compact"
                 class="mt-2 mr-2"
-                style="max-width: 100px;"
+                style="max-width: 80px;"
               ></v-select>
               <v-pagination
                 v-if="tab == 'addresses'"
@@ -95,9 +116,9 @@ const AddressBook = {
         { value: 500, title: "500" },
         { value: 1000, title: "1000" },
       ],
-      portfoliosHeaders: [
-        { title: 'Name', value: 'name', width: '20%', sortable: true },
-        { title: 'Accounts', value: 'accounts', width: '65%', sortable: false },
+      addressesHeaders: [
+        { title: 'Address', value: 'address', width: '65%', sortable: false },
+        { title: 'Name / Tags', value: 'name', width: '20%', sortable: true },
         { title: '', value: 'actions', width: '15%', sortable: false },
       ],
     };
@@ -172,9 +193,10 @@ const AddressBook = {
     addressesList() {
       const results = [];
       for (const [address, addressData] of Object.entries(this.addresses)) {
-        // console.error(address + " => " + JSON.stringify(addressData));
-        results.push({ value: address, title: address, name: addressData.name, tags: addressData.tags });
+        console.error(address + " => " + JSON.stringify(addressData));
+        results.push({ address, name: addressData.name, tags: addressData.tags });
       }
+      console.error("addressesList: " + JSON.stringify(results));
       return results;
     },
     tagsList() {
