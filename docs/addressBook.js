@@ -3,16 +3,18 @@ const AddressBook = {
     <div>
       <v-dialog :model-value="show" persistent theme="system" max-width="800px">
         <v-card min-height="50vh">
-          <v-card-title class="ma-0 pa-1">
+          <!-- <v-card-title class="ma-0 pa-1">
             <h4 class="ml-2">Address Book</h4>
-          </v-card-title>
+            <v-spacer></v-spacer>
+          </v-card-title> -->
           <v-toolbar density="compact">
-            <h4 class="ml-2">Blah</h4>
+            <h4 class="ml-2">Address Book</h4>
             <v-spacer></v-spacer>
             <v-tabs v-model="tab" right color="deep-purple-accent-4">
               <v-tab prepend-icon="mdi-numeric" text="Addresses" value="addresses" class="lowercase-btn"></v-tab>
               <v-tab prepend-icon="mdi-tag" text="Tags" value="tags" class="lowercase-btn"></v-tab>
             </v-tabs>
+            <v-btn @click="hide();" prepend-icon="mdi-window-close" class="lowercase-btn">Cancel</v-btn>
           </v-toolbar>
           <!-- <v-card-text class="ma-2 pa-2"> -->
           <v-card-text>
@@ -115,11 +117,10 @@ const AddressBook = {
               </v-pagination>
             </v-toolbar>
           </v-card-text>
-          <v-card-actions>
-            <!-- <v-btn @click="hide();" prepend-icon="mdi-window-close" variant="text" class="lowercase-btn">Cancel</v-btn> -->
+          <!-- <v-card-actions>
             <v-btn @click="hide();" prepend-icon="mdi-check" class="lowercase-btn">OK</v-btn>
             <v-btn @click="hide();" prepend-icon="mdi-window-close" class="lowercase-btn">Cancel</v-btn>
-          </v-card-actions>
+          </v-card-actions> -->
         </v-card>
       </v-dialog>
     </div>
