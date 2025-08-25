@@ -16,9 +16,13 @@ const AddressBook = {
           </v-toolbar>
           <!-- <v-card-text class="ma-2 pa-2"> -->
           <v-card-text>
-            <!-- {{ addressesList }} -->
+            <div v-if="tab == 'addresses'">
+              {{ addressesList }}
+            </div>
             <!-- {{ tagsList }} -->
-            {{ tags }}
+            <div v-if="tab == 'tags'">
+              {{ tags }}
+            </div>
           </v-card-text>
           <v-card-actions>
             <!-- <v-btn @click="hide();" prepend-icon="mdi-window-close" variant="text" class="lowercase-btn">Cancel</v-btn> -->
@@ -64,7 +68,7 @@ const AddressBook = {
       const results = [];
       for (const [address, addressData] of Object.entries(this.addresses)) {
         // console.error(address + " => " + JSON.stringify(addressData));
-        results.push({ value: address, title: address, tags: addressData.tags });
+        results.push({ value: address, title: address, name: addressData.name, tags: addressData.tags });
       }
       return results;
     },
@@ -96,14 +100,14 @@ const AddressBook = {
 	},
   mounted() {
     console.log(now() + " AddressBook - mounted");
-    if ('explorerAddressBookSettings' in localStorage) {
-      const tempSettings = JSON.parse(localStorage.explorerAddressBookSettings);
-      // console.log(now() + " AddressBook - mounted - tempSettings: " + JSON.stringify(tempSettings));
-      if ('version' in tempSettings && tempSettings.version == this.settings.version) {
-        this.settings = tempSettings;
-      }
-    }
-    this.initialised = true;
+    // if ('explorerAddressBookSettings' in localStorage) {
+    //   const tempSettings = JSON.parse(localStorage.explorerAddressBookSettings);
+    //   // console.log(now() + " AddressBook - mounted - tempSettings: " + JSON.stringify(tempSettings));
+    //   if ('version' in tempSettings && tempSettings.version == this.settings.version) {
+    //     this.settings = tempSettings;
+    //   }
+    // }
+    // this.initialised = true;
     // console.log(now() + " AddressBook - mounted - this.settings: " + JSON.stringify(this.settings));
 	},
   unmounted() {
@@ -118,9 +122,19 @@ const AddressBook = {
 const addressBookModule = {
   namespaced: true,
   state: {
-    addressBook: {
+    settings: {
       show: false,
       tab: "addresses",
+      addresses: {
+        sortBy: [{ key: "address", order: "asc" }],
+        itemsPerPage: 10,
+        currentPage: 1,
+      },
+      tags: {
+        sortBy: [{ key: "name", order: "asc" }],
+        itemsPerPage: 10,
+        currentPage: 1,
+      },
       addresses: {
         "0x0000...0003": {
           name: "address3",
@@ -187,17 +201,17 @@ const addressBookModule = {
     },
   },
   getters: {
-    show: state => state.addressBook.show,
-    tab: state => state.addressBook.tab,
-    addresses: state => state.addressBook.addresses,
+    show: state => state.settings.show,
+    tab: state => state.settings.tab,
+    addresses: state => state.settings.addresses,
     tags(state) {
       const results = {};
-      for (const [address, addressData] of Object.entries(state.addressBook.addresses)) {
+      for (const [address, addressData] of Object.entries(state.settings.addresses)) {
         for (let tag of addressData.tags) {
           if (!(tag in results)) {
             results[tag] = [];
           }
-          results[tag].push(address);
+          results[tag].push({ address, name: addressData.name });
         }
       }
       console.error(now() + " addressBookModule - getters.tags - results: " + JSON.stringify(results));
@@ -205,33 +219,33 @@ const addressBookModule = {
     },
   },
   mutations: {
-    setAddressBook(state, addressBook) {
-      // console.log(now() + " addressBookModule - mutations.setAddressBook - addressBook: " + JSON.stringify(addressBook).substring(0, 200));
-      state.addressBook = addressBook;
+    setAddressBook(state, settings) {
+      // console.log(now() + " addressBookModule - mutations.setAddressBook - settings: " + JSON.stringify(settings).substring(0, 200));
+      state.settings = settings;
     },
     setShow(state, show) {
       // console.log(now() + " addressBookModule - mutations.setShow - show: " + show);
-      state.addressBook.show = show;
+      state.settings.show = show;
     },
     setTab(state, tab) {
       // console.log(now() + " addressBookModule - mutations.setTab - tab: " + tab);
-      state.addressBook.tab = tab;
+      state.settings.tab = tab;
     },
   },
   actions: {
     async loadAddressBook(context) {
       console.log(now() + " addressBookModule - actions.loadAddressBook");
-      if (localStorage.explorerAddressBook) {
-        const tempAddressBook = JSON.parse(localStorage.explorerAddressBook);
-        if ('version' in tempAddressBook && tempAddressBook.version == context.state.addressBook.version) {
+      if (localStorage.explorerAddressBookSettings) {
+        const tempAddressBook = JSON.parse(localStorage.explorerAddressBookSettings);
+        if ('version' in tempAddressBook && tempAddressBook.version == context.state.settings.version) {
           // console.log(now() + " addressBookModule - actions.loadAddressBook - tempAddressBook: " + JSON.stringify(tempAddressBook).substring(0, 200));
           context.commit('setAddressBook', tempAddressBook);
         }
       }
       store.subscribe((mutation, state) => {
         if (mutation.type.substring(0, 15) == "addressBook/set") {
-          console.log(now() + " addressBookModule - actions.loadAddressBook - subscribe - mutation.type: " + mutation.type);
-          localStorage.explorerAddressBook = JSON.stringify(context.state.addressBook);
+          console.log(now() + " addressBookModule - actions.loadAddressBook - subscribe - mutation.type: " + mutation.type + " => " + mutation.payload);
+          localStorage.explorerAddressBookSettings = JSON.stringify(context.state.settings);
         }
       });
     },
