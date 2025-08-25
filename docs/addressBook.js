@@ -15,13 +15,14 @@ const AddressBook = {
             <v-btn @click="hide();" prepend-icon="mdi-window-close" class="lowercase-btn ml-1">Cancel</v-btn>
           </v-toolbar>
           <v-card-text>
-            <v-dialog :model-value="addressDialog.mode != null" persistent max-width="700px">
+            <v-dialog :model-value="addressDialog.mode != null" persistent max-width="500px">
               <v-card min-height="40vh">
                 <v-toolbar density="compact">
                   <v-card-item :prepend-icon="addressDialog.mode == 'add' ? 'mdi-pencil-plus' : 'mdi-pencil'" :title="addressDialog.mode == 'add' ? 'Address - Add' : 'Address - Edit'"></v-card-item>
                 </v-toolbar>
                 <v-card-text class="ma-2 pa-2">
-                  Blah
+                  <v-text-field v-model="addressDialog.address" :readonly="addressDialog.mode == 'edit'" label="Address" :rules="addressRules" density="compact" placeholder="new account"></v-text-field>
+                  <v-text-field v-model="addressDialog.name" label="Name" density="compact"></v-text-field>
                   <!-- <v-text-field v-model="portfolioDialog.name" label="Name" density="compact" style="width: 360px;"></v-text-field> -->
                   <!-- <v-data-table :headers="accountsHeaders" :items="portfolioDialog.accounts" density="compact" style="position: relative;">
                     <template v-slot:item.account="{ item }">
@@ -197,6 +198,17 @@ const AddressBook = {
         { title: 'Tag', value: 'tag', width: '20%', sortable: true },
         { title: 'Addresses / Names', value: 'addresses', width: '65%', sortable: true, sortRaw: function sortRaw(a, b) { return a.addresses.length - b.addresses.length; } },
         { title: '', value: 'actions', width: '15%', sortable: false },
+      ],
+      addressRules: [
+        (v) => (v || "").length > 0 || "Address is required",
+        (v) => {
+          try {
+            ethers.utils.getAddress(v);
+            return true;
+          } catch (e) {
+            return "Invalid Address";
+          }
+        },
       ],
     };
   },
