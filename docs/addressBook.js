@@ -16,6 +16,7 @@ const AddressBook = {
           </v-toolbar>
           <!-- <v-card-text class="ma-2 pa-2"> -->
           <v-card-text>
+            <!-- hide-default-footer -->
             <v-data-table
               v-if="tab == 'addresses'"
               :items="addressesList"
@@ -24,7 +25,6 @@ const AddressBook = {
               v-model:items-per-page="addressItemsPerPage"
               v-model:page="addressCurrentPage"
               density="comfortable"
-              hide-default-footer
             >
               <template v-slot:item.rowNumber="{ index }">
                 {{ commify0((addressCurrentPage - 1) * addressItemsPerPage + index + 1) }}
@@ -38,6 +38,7 @@ const AddressBook = {
                 {{ item.tags.join(", ") }}
               </template>
             </v-data-table>
+            <!-- hide-default-footer -->
             <v-data-table
               v-if="tab == 'tags'"
               :items="tagsList"
@@ -46,7 +47,6 @@ const AddressBook = {
               v-model:items-per-page="tagItemsPerPage"
               v-model:page="tagCurrentPage"
               density="comfortable"
-              hide-default-footer
             >
               <template v-slot:item.rowNumber="{ index }">
                 {{ commify0((tagCurrentPage - 1) * tagItemsPerPage + index + 1) }}
@@ -71,9 +71,9 @@ const AddressBook = {
               {{ tagsList }}
             </div> -->
 
-            <v-toolbar flat color="transparent" density="compact">
+            <v-toolbar v-if="false" flat color="transparent" density="compact">
               <v-spacer></v-spacer>
-              <v-select
+              <!-- <v-select
                 v-if="tab == 'addresses'"
                 v-model="addressItemsPerPage"
                 :items="itemsPerPageOptions"
@@ -81,8 +81,8 @@ const AddressBook = {
                 density="compact"
                 class="mt-2 mr-2"
                 style="max-width: 80px;"
-              ></v-select>
-              <v-select
+              ></v-select> -->
+              <!-- <v-select
                 v-if="tab == 'tags'"
                 v-model="tagItemsPerPage"
                 :items="itemsPerPageOptions"
@@ -90,7 +90,7 @@ const AddressBook = {
                 density="compact"
                 class="mt-2 mr-2"
                 style="max-width: 80px;"
-              ></v-select>
+              ></v-select> -->
               <v-pagination
                 v-if="tab == 'addresses'"
                 v-model="addressCurrentPage"
@@ -130,18 +130,18 @@ const AddressBook = {
       settings: {
         version: 0,
       },
-      itemsPerPageOptions: [
-        { value: 5, title: "5" },
-        { value: 10, title: "10" },
-        { value: 20, title: "20" },
-        { value: 30, title: "30" },
-        { value: 40, title: "40" },
-        { value: 50, title: "50" },
-        { value: 100, title: "100" },
-        { value: 250, title: "250" },
-        { value: 500, title: "500" },
-        { value: 1000, title: "1000" },
-      ],
+      // itemsPerPageOptions: [
+      //   { value: 5, title: "5" },
+      //   { value: 10, title: "10" },
+      //   { value: 20, title: "20" },
+      //   { value: 30, title: "30" },
+      //   { value: 40, title: "40" },
+      //   { value: 50, title: "50" },
+      //   { value: 100, title: "100" },
+      //   { value: 250, title: "250" },
+      //   { value: 500, title: "500" },
+      //   { value: 1000, title: "1000" },
+      // ],
       addressesHeaders: [
         { title: 'Address', value: 'address', width: '65%', sortable: true },
         { title: 'Name / Tags', value: 'name', width: '20%', sortable: true },
@@ -149,7 +149,7 @@ const AddressBook = {
       ],
       tagsHeaders: [
         { title: 'Tag', value: 'tag', width: '20%', sortable: true },
-        { title: 'Addresses / Names', value: 'addresses', width: '65%', sortable: true },
+        { title: 'Addresses / Names', value: 'addresses', width: '65%', sortable: true, sortRaw: function sortRaw(a, b) { return a.addresses.length - b.addresses.length; } },
         { title: '', value: 'actions', width: '15%', sortable: false },
       ],
     };
@@ -431,7 +431,7 @@ const addressBookModule = {
       }
       store.subscribe((mutation, state) => {
         if (mutation.type.substring(0, 15) == "addressBook/set") {
-          console.log(now() + " addressBookModule - actions.loadAddressBook - subscribe - mutation.type: " + mutation.type + " => " + mutation.payload);
+          console.log(now() + " addressBookModule - actions.loadAddressBook - subscribe - mutation.type: " + mutation.type + " => " + JSON.stringify(mutation.payload));
           localStorage.explorerAddressBookSettings = JSON.stringify(context.state.settings);
         }
       });
@@ -445,7 +445,7 @@ const addressBookModule = {
       context.commit('setTab', tab);
     },
     setAddressSortBy(context, sortBy) {
-      console.error(now() + " addressBookModule - actions.setAddressSortBy - sortBy: " + sortBy);
+      console.error(now() + " addressBookModule - actions.setAddressSortBy - sortBy: " + JSON.stringify(sortBy));
       context.commit('setAddressSortBy', sortBy);
     },
     setAddressItemsPerPage(context, itemsPerPage) {
@@ -457,7 +457,7 @@ const addressBookModule = {
       context.commit('setAddressCurrentPage', currentPage);
     },
     setTagSortBy(context, sortBy) {
-      console.error(now() + " addressBookModule - actions.setTagSortBy - sortBy: " + sortBy);
+      console.error(now() + " addressBookModule - actions.setTagSortBy - sortBy: " + JSON.stringify(sortBy));
       context.commit('setTagSortBy', sortBy);
     },
     setTagItemsPerPage(context, itemsPerPage) {
