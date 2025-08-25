@@ -58,6 +58,54 @@ const AddressBook = {
         store.dispatch('addressBook/setTab', tab);
       },
     },
+    addressSortBy: {
+      get: function () {
+        return store.getters['addressBook/address'].sortBy;
+      },
+      set: function (sortBy) {
+        store.dispatch('addressBook/setAddressSortBy', sortBy);
+      },
+    },
+    addressItemsPerPage: {
+      get: function () {
+        return store.getters['addressBook/address'].itemsPerPage;
+      },
+      set: function (itemsPerPage) {
+        store.dispatch('addressBook/setAddressItemsPerPage', itemsPerPage);
+      },
+    },
+    addressCurrentPage: {
+      get: function () {
+        return store.getters['addressBook/address'].currentPage;
+      },
+      set: function (currentPage) {
+        store.dispatch('addressBook/setAddressCurrentPage', currentPage);
+      },
+    },
+    tagSortBy: {
+      get: function () {
+        return store.getters['addressBook/tag'].sortBy;
+      },
+      set: function (sortBy) {
+        store.dispatch('addressBook/setTagSortBy', sortBy);
+      },
+    },
+    tagItemsPerPage: {
+      get: function () {
+        return store.getters['addressBook/tag'].itemsPerPage;
+      },
+      set: function (itemsPerPage) {
+        store.dispatch('addressBook/setTagItemsPerPage', itemsPerPage);
+      },
+    },
+    tagCurrentPage: {
+      get: function () {
+        return store.getters['addressBook/tag'].currentPage;
+      },
+      set: function (currentPage) {
+        store.dispatch('addressBook/setTagCurrentPage', currentPage);
+      },
+    },
     addresses() {
       return store.getters['addressBook/addresses'];
     },
@@ -125,12 +173,12 @@ const addressBookModule = {
     settings: {
       show: false,
       tab: "addresses",
-      addresses: {
+      address: {
         sortBy: [{ key: "address", order: "asc" }],
         itemsPerPage: 10,
         currentPage: 1,
       },
-      tags: {
+      tag: {
         sortBy: [{ key: "name", order: "asc" }],
         itemsPerPage: 10,
         currentPage: 1,
@@ -197,12 +245,14 @@ const addressBookModule = {
           tags: [ "test15", "test" ],
         },
       },
-      version: 2,
+      version: 3,
     },
   },
   getters: {
     show: state => state.settings.show,
     tab: state => state.settings.tab,
+    address: state => state.settings.address,
+    tag: state => state.settings.tag,
     addresses: state => state.settings.addresses,
     tags(state) {
       const results = {};
@@ -231,6 +281,30 @@ const addressBookModule = {
       // console.log(now() + " addressBookModule - mutations.setTab - tab: " + tab);
       state.settings.tab = tab;
     },
+    setAddressSortBy(state, sortBy) {
+      console.error(now() + " addressBookModule - mutations.setAddressSortBy - sortBy: " + JSON.stringify(sortBy));
+      state.address.sortBy = sortBy;
+    },
+    setAddressItemsPerPage(state, itemsPerPage) {
+      console.error(now() + " addressBookModule - mutations.setAddressItemsPerPage - itemsPerPage: " + itemsPerPage);
+      state.address.itemsPerPage = itemsPerPage;
+    },
+    setAddressCurrentPage(state, currentPage) {
+      console.error(now() + " addressBookModule - mutations.setAddressCurrentPage - currentPage: " + currentPage);
+      state.address.currentPage = currentPage;
+    },
+    setTagSortBy(state, sortBy) {
+      console.error(now() + " addressBookModule - mutations.setTagSortBy - sortBy: " + JSON.stringify(sortBy));
+      state.tag.sortBy = sortBy;
+    },
+    setTagItemsPerPage(state, itemsPerPage) {
+      console.error(now() + " addressBookModule - mutations.setTagItemsPerPage - itemsPerPage: " + itemsPerPage);
+      state.tag.itemsPerPage = itemsPerPage;
+    },
+    setTagCurrentPage(state, currentPage) {
+      console.error(now() + " addressBookModule - mutations.setTagCurrentPage - currentPage: " + currentPage);
+      state.tag.currentPage = currentPage;
+    },
   },
   actions: {
     async loadAddressBook(context) {
@@ -256,6 +330,30 @@ const addressBookModule = {
     setTab(context, tab) {
       // console.log(now() + " addressBookModule - actions.setTab - tab: " + tab);
       context.commit('setTab', tab);
+    },
+    setAddressSortBy(context, sortBy) {
+      console.error(now() + " addressBookModule - actions.setAddressSortBy - sortBy: " + sortBy);
+      context.commit('setAddressSortBy', sortBy);
+    },
+    setAddressItemsPerPage(context, itemsPerPage) {
+      console.error(now() + " addressBookModule - actions.setAddressItemsPerPage - itemsPerPage: " + itemsPerPage);
+      context.commit('setAddressItemsPerPage', itemsPerPage);
+    },
+    setAddressCurrentPage(context, currentPage) {
+      console.error(now() + " addressBookModule - actions.setAddressCurrentPage - currentPage: " + currentPage);
+      context.commit('setAddressCurrentPage', currentPage);
+    },
+    setTagSortBy(context, sortBy) {
+      console.error(now() + " addressBookModule - actions.setTagSortBy - sortBy: " + sortBy);
+      context.commit('setTagSortBy', sortBy);
+    },
+    setTagItemsPerPage(context, itemsPerPage) {
+      console.error(now() + " addressBookModule - actions.setTagItemsPerPage - itemsPerPage: " + itemsPerPage);
+      context.commit('setTagItemsPerPage', itemsPerPage);
+    },
+    setTagCurrentPage(context, currentPage) {
+      console.error(now() + " addressBookModule - actions.setTagCurrentPage - currentPage: " + currentPage);
+      context.commit('setTagCurrentPage', currentPage);
     },
   },
 };
