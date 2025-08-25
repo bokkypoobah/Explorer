@@ -1,16 +1,10 @@
 const AddressBook = {
   template: `
     <div>
-      <v-dialog :model-value="show" persistent theme="system" max-width="800px">
+      <v-dialog :model-value="show" persistent theme="system" max-width="900px">
         <v-card min-height="75vh">
-          <!-- <v-card-title class="ma-0 pa-1">
-            <h4 class="ml-2">Address Book</h4>
-            <v-spacer></v-spacer>
-          </v-card-title> -->
           <v-toolbar density="compact">
-            <h4 class="ml-3">Address Book</h4>
-            <v-spacer></v-spacer>
-            <v-btn @click="hide();" prepend-icon="mdi-pencil-plus" class="lowercase-btn ml-2">New</v-btn>
+            <v-card-item prepend-icon="mdi-book-open-variant-outline" title="Address Book"></v-card-item>
             <v-spacer></v-spacer>
             <v-tabs v-model="tab" right color="deep-purple-accent-4">
               <v-tab prepend-icon="mdi-numeric" text="Addresses" value="addresses" class="lowercase-btn"></v-tab>
@@ -20,8 +14,52 @@ const AddressBook = {
             </v-divider>
             <v-btn @click="hide();" prepend-icon="mdi-window-close" class="lowercase-btn ml-2">Cancel</v-btn>
           </v-toolbar>
-          <!-- <v-card-text class="ma-2 pa-2"> -->
           <v-card-text>
+
+            <!-- <v-dialog :model-value="addressDialog.mode != null" persistent max-width="700px"> -->
+            <v-dialog :model-value="addressDialog.mode != null" max-width="700px">
+              <v-card min-height="40vh">
+                <v-toolbar density="compact">
+                  <v-card-item :prepend-icon="addressDialog.mode == 'add' ? 'mdi-pencil-plus' : 'mdi-pencil'" :title="addressDialog.mode == 'add' ? 'Address - Add' : 'Address - Edit'"></v-card-item>
+                </v-toolbar>
+                <!-- <v-card-item :prepend-icon="portfolioDialog.mode == 'add' ? 'mdi-pencil-plus' : 'mdi-pencil'" :title="portfolioDialog.mode == 'add' ? 'Portfolio - Add' : 'Portfolio - Edit'" class="bg-grey-lighten-4"></v-card-item> -->
+                <v-card-text class="ma-2 pa-2">
+                  Blah
+                  <!-- <v-text-field v-model="portfolioDialog.name" label="Name" density="compact" style="width: 360px;"></v-text-field> -->
+                  <!-- <v-data-table :headers="accountsHeaders" :items="portfolioDialog.accounts" density="compact" style="position: relative;">
+                    <template v-slot:item.account="{ item }">
+                      {{ item.account }}
+                    </template>
+                    <template v-slot:item.active="{ item }">
+                      <v-checkbox v-model="item.active" hide-details></v-checkbox>
+                    </template>
+                    <template v-slot:item.actions="{ item, index }">
+                      <v-btn @click="portfolioDialog.accounts.splice(index, 1);" prepend-icon="mdi-delete" variant="text" class="lowercase-btn">Delete</v-btn>
+                    </template>
+                    <template v-slot:body.append>
+                      <tr class="bg-grey-lighten-4">
+                        <td class="ma-0 pa-0">
+                          <v-text-field v-model="portfolioDialog.account" :rules="addressRules" variant="solo" flat density="compact" single-line class="ma-2 pa-0" placeholder="new account" ></v-text-field>
+                        </td>
+                        <td>
+                          <v-checkbox v-model="portfolioDialog.active" hide-details></v-checkbox>
+                        </td>
+                        <td>
+                          <v-btn @click="portfolioDialog.accounts.push({ account: portfolioDialog.account, active: portfolioDialog.active });" prepend-icon="mdi-pencil-plus" variant="text" class="lowercase-btn">Add</v-btn>
+                        </td>
+                      </tr>
+                    </template>
+                  </v-data-table> -->
+                </v-card-text>
+                <v-card-actions>
+                  <!-- <v-btn v-if="portfolioDialog.mode == 'add'" :disabled="!portfolioDialog.name || !!portfolios[portfolioDialog.name]" @click="portfolioDialogAddOrSave();" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Add</v-btn>
+                  <v-btn v-if="portfolioDialog.mode == 'edit'" @click="portfolioDialogAddOrSave();" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Save</v-btn>
+                  <v-btn v-if="portfolioDialog.mode == 'edit'" :disabled="portfolioDialog.name != portfolioDialog.originalName" @click="portfolioDialogDelete();" prepend-icon="mdi-delete" variant="text" class="lowercase-btn">Delete</v-btn> -->
+                  <v-btn @click="addressDialog.mode = null;" prepend-icon="mdi-window-close" variant="text" class="lowercase-btn">Cancel</v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+
             <v-data-table
               v-if="tab == 'addresses'"
               :items="addressesList"
@@ -44,11 +82,8 @@ const AddressBook = {
                 {{ item.tags.join(", ") }}
               </template>
               <template v-slot:item.actions="{ item }">
-                <!-- Delete -->
-                <!-- <v-btn @click="portfolioDialog.accounts.splice(index, 1);" prepend-icon="mdi-delete" variant="text" class="lowercase-btn">Delete</v-btn> -->
                 <v-btn @click="showAddressDialog(item.address);" prepend-icon="mdi-pencil" variant="text" class="lowercase-btn">Edit</v-btn>
               </template>
-
               <template v-slot:body.append>
                 <tr class="bg-grey-lighten-4">
                   <td></td>
@@ -58,7 +93,6 @@ const AddressBook = {
                   </td>
                 </tr>
               </template>
-
             </v-data-table>
             <v-data-table
               v-if="tab == 'tags'"
