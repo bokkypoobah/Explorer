@@ -10,19 +10,16 @@ const AddressBook = {
               <v-tab prepend-icon="mdi-numeric" text="Addresses" value="addresses" class="lowercase-btn"></v-tab>
               <v-tab prepend-icon="mdi-tag" text="Tags" value="tags" class="lowercase-btn"></v-tab>
             </v-tabs>
-            <v-divider vertical class="ml-2">
+            <v-divider vertical class="ml-1">
             </v-divider>
-            <v-btn @click="hide();" prepend-icon="mdi-window-close" class="lowercase-btn ml-2">Cancel</v-btn>
+            <v-btn @click="hide();" prepend-icon="mdi-window-close" class="lowercase-btn ml-1">Cancel</v-btn>
           </v-toolbar>
           <v-card-text>
-
-            <!-- <v-dialog :model-value="addressDialog.mode != null" persistent max-width="700px"> -->
-            <v-dialog :model-value="addressDialog.mode != null" max-width="700px">
+            <v-dialog :model-value="addressDialog.mode != null" persistent max-width="700px">
               <v-card min-height="40vh">
                 <v-toolbar density="compact">
                   <v-card-item :prepend-icon="addressDialog.mode == 'add' ? 'mdi-pencil-plus' : 'mdi-pencil'" :title="addressDialog.mode == 'add' ? 'Address - Add' : 'Address - Edit'"></v-card-item>
                 </v-toolbar>
-                <!-- <v-card-item :prepend-icon="portfolioDialog.mode == 'add' ? 'mdi-pencil-plus' : 'mdi-pencil'" :title="portfolioDialog.mode == 'add' ? 'Portfolio - Add' : 'Portfolio - Edit'" class="bg-grey-lighten-4"></v-card-item> -->
                 <v-card-text class="ma-2 pa-2">
                   Blah
                   <!-- <v-text-field v-model="portfolioDialog.name" label="Name" density="compact" style="width: 360px;"></v-text-field> -->
