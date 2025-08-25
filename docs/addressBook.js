@@ -23,6 +23,50 @@ const AddressBook = {
             <div v-if="tab == 'tags'">
               {{ tags }}
             </div>
+
+            <v-toolbar flat color="transparent" density="compact">
+              <v-spacer></v-spacer>
+              <v-select
+                v-if="tab == 'addresses'"
+                v-model="addressItemsPerPage"
+                :items="itemsPerPageOptions"
+                variant="plain"
+                density="compact"
+                class="mt-2 mr-2"
+                style="max-width: 100px;"
+              ></v-select>
+              <v-select
+                v-if="tab == 'tags'"
+                v-model="tagItemsPerPage"
+                :items="itemsPerPageOptions"
+                variant="plain"
+                density="compact"
+                class="mt-2 mr-2"
+                style="max-width: 100px;"
+              ></v-select>
+              <v-pagination
+                v-if="tab == 'addresses'"
+                v-model="addressCurrentPage"
+                :length="Math.ceil(addressesList.length / addressItemsPerPage)"
+                total-visible="0"
+                density="comfortable"
+                show-first-last-page
+                class="mr-1"
+                color="primary"
+              >
+              </v-pagination>
+              <v-pagination
+                v-if="tab == 'tags'"
+                v-model="tagCurrentPage"
+                :length="Math.ceil(Object.keys(tags).length / tagItemsPerPage)"
+                total-visible="0"
+                density="comfortable"
+                show-first-last-page
+                class="mr-1"
+                color="primary"
+              >
+              </v-pagination>
+            </v-toolbar>
           </v-card-text>
           <v-card-actions>
             <!-- <v-btn @click="hide();" prepend-icon="mdi-window-close" variant="text" class="lowercase-btn">Cancel</v-btn> -->
@@ -39,6 +83,18 @@ const AddressBook = {
       settings: {
         version: 0,
       },
+      itemsPerPageOptions: [
+        { value: 5, title: "5" },
+        { value: 10, title: "10" },
+        { value: 20, title: "20" },
+        { value: 30, title: "30" },
+        { value: 40, title: "40" },
+        { value: 50, title: "50" },
+        { value: 100, title: "100" },
+        { value: 250, title: "250" },
+        { value: 500, title: "500" },
+        { value: 1000, title: "1000" },
+      ],
       portfoliosHeaders: [
         { title: 'Name', value: 'name', width: '20%', sortable: true },
         { title: 'Accounts', value: 'accounts', width: '65%', sortable: false },
@@ -110,6 +166,7 @@ const AddressBook = {
       return store.getters['addressBook/addresses'];
     },
     tags() {
+      console.error("tags()");
       return store.getters['addressBook/tags'];
     },
     addressesList() {
@@ -283,27 +340,27 @@ const addressBookModule = {
     },
     setAddressSortBy(state, sortBy) {
       console.error(now() + " addressBookModule - mutations.setAddressSortBy - sortBy: " + JSON.stringify(sortBy));
-      state.address.sortBy = sortBy;
+      state.settings.address.sortBy = sortBy;
     },
     setAddressItemsPerPage(state, itemsPerPage) {
       console.error(now() + " addressBookModule - mutations.setAddressItemsPerPage - itemsPerPage: " + itemsPerPage);
-      state.address.itemsPerPage = itemsPerPage;
+      state.settings.address.itemsPerPage = itemsPerPage;
     },
     setAddressCurrentPage(state, currentPage) {
       console.error(now() + " addressBookModule - mutations.setAddressCurrentPage - currentPage: " + currentPage);
-      state.address.currentPage = currentPage;
+      state.settings.address.currentPage = currentPage;
     },
     setTagSortBy(state, sortBy) {
       console.error(now() + " addressBookModule - mutations.setTagSortBy - sortBy: " + JSON.stringify(sortBy));
-      state.tag.sortBy = sortBy;
+      state.settings.tag.sortBy = sortBy;
     },
     setTagItemsPerPage(state, itemsPerPage) {
       console.error(now() + " addressBookModule - mutations.setTagItemsPerPage - itemsPerPage: " + itemsPerPage);
-      state.tag.itemsPerPage = itemsPerPage;
+      state.settings.tag.itemsPerPage = itemsPerPage;
     },
     setTagCurrentPage(state, currentPage) {
       console.error(now() + " addressBookModule - mutations.setTagCurrentPage - currentPage: " + currentPage);
-      state.tag.currentPage = currentPage;
+      state.settings.tag.currentPage = currentPage;
     },
   },
   actions: {
