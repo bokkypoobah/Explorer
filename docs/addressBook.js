@@ -24,35 +24,9 @@ const AddressBook = {
                   <v-text-field v-model="addressDialog.address" :readonly="addressDialog.mode == 'edit'" label="Address" :rules="addressRules" clearable density="default" placeholder="0x0123...6789"></v-text-field>
                   <v-text-field v-model="addressDialog.name" label="Name" clearable density="default"></v-text-field>
                   <v-combobox v-model="addressDialog.tags" :items="tagsOptions" label="Tags" multiple chips clearable density="default" placeholder="e.g., one, two"></v-combobox>
-
-                  <!-- <v-text-field v-model="portfolioDialog.name" label="Name" density="compact" style="width: 360px;"></v-text-field> -->
-                  <!-- <v-data-table :headers="accountsHeaders" :items="portfolioDialog.accounts" density="compact" style="position: relative;">
-                    <template v-slot:item.account="{ item }">
-                      {{ item.account }}
-                    </template>
-                    <template v-slot:item.active="{ item }">
-                      <v-checkbox v-model="item.active" hide-details></v-checkbox>
-                    </template>
-                    <template v-slot:item.actions="{ item, index }">
-                      <v-btn @click="portfolioDialog.accounts.splice(index, 1);" prepend-icon="mdi-delete" variant="text" class="lowercase-btn">Delete</v-btn>
-                    </template>
-                    <template v-slot:body.append>
-                      <tr class="bg-grey-lighten-4">
-                        <td class="ma-0 pa-0">
-                          <v-text-field v-model="portfolioDialog.account" :rules="addressRules" variant="solo" flat density="compact" single-line class="ma-2 pa-0" placeholder="new account" ></v-text-field>
-                        </td>
-                        <td>
-                          <v-checkbox v-model="portfolioDialog.active" hide-details></v-checkbox>
-                        </td>
-                        <td>
-                          <v-btn @click="portfolioDialog.accounts.push({ account: portfolioDialog.account, active: portfolioDialog.active });" prepend-icon="mdi-pencil-plus" variant="text" class="lowercase-btn">Add</v-btn>
-                        </td>
-                      </tr>
-                    </template>
-                  </v-data-table> -->
                 </v-card-text>
                 <v-card-actions>
-                  <v-btn v-if="addressDialog.mode == 'add'" :disabled="!addressDialog.address || !!addresses[addressDialog.address]" @click="addressDialogAddOrSave();" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Add</v-btn>
+                  <v-btn v-if="addressDialog.mode == 'add'" :disabled="!addressDialog.address || !validAddress(addressDialog.address) || !!addresses[addressDialog.address]" @click="addressDialogAddOrSave();" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Add</v-btn>
                   <v-btn v-if="addressDialog.mode == 'edit'" @click="addressDialogAddOrSave();" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Save</v-btn>
                   <v-btn v-if="addressDialog.mode == 'edit'" @click="addressDialogDelete();" prepend-icon="mdi-delete" variant="text" class="lowercase-btn">Delete</v-btn>
                   <v-btn @click="addressDialog.mode = null;" prepend-icon="mdi-window-close" variant="text" class="lowercase-btn">Cancel</v-btn>
@@ -278,16 +252,13 @@ const AddressBook = {
       return store.getters['addressBook/addresses'];
     },
     tags() {
-      console.error("tags()");
       return store.getters['addressBook/tags'];
     },
     addressesList() {
       const results = [];
       for (const [address, addressData] of Object.entries(this.addresses)) {
-        console.error(address + " => " + JSON.stringify(addressData));
         results.push({ address, name: addressData.name, tags: addressData.tags });
       }
-      console.error("addressesList: " + JSON.stringify(results));
       return results;
     },
     tagsList() {
@@ -314,7 +285,6 @@ const AddressBook = {
       results.sort((a, b) => {
         return ('' + a).localeCompare(b);
       });
-      console.error("tagsOptions: " + JSON.stringify(results));
       return results;
     },
   },
@@ -331,6 +301,14 @@ const AddressBook = {
       this.addressDialog.name = address == null ? "" : this.addresses[address].name;
       this.addressDialog.tags = address == null ? [] : this.addresses[address].tags;
       console.log(now() + " AddressBook - methods.showAddressDialog - addressDialog: " + JSON.stringify(this.addressDialog));
+    },
+    validAddress(a) {
+      try {
+        ethers.utils.getAddress(a);
+        return true;
+      } catch (e) {
+      }
+      return false;
     },
     addressDialogAddOrSave() {
       console.log(now() + " AddressBook - methods.addressDialogAddOrSave - addressDialog: " + JSON.stringify(this.addressDialog));
@@ -403,7 +381,6 @@ const addressBookModule = {
           results[tag].push({ address, name: addressData.name });
         }
       }
-      console.error(now() + " addressBookModule - getters.tags - results: " + JSON.stringify(results));
       return results;
     },
   },
@@ -421,35 +398,35 @@ const addressBookModule = {
       state.settings.tab = tab;
     },
     setAddressSortBy(state, sortBy) {
-      console.error(now() + " addressBookModule - mutations.setAddressSortBy - sortBy: " + JSON.stringify(sortBy));
+      // console.log(now() + " addressBookModule - mutations.setAddressSortBy - sortBy: " + JSON.stringify(sortBy));
       state.settings.address.sortBy = sortBy;
     },
     setAddressItemsPerPage(state, itemsPerPage) {
-      console.error(now() + " addressBookModule - mutations.setAddressItemsPerPage - itemsPerPage: " + itemsPerPage);
+      // console.log(now() + " addressBookModule - mutations.setAddressItemsPerPage - itemsPerPage: " + itemsPerPage);
       state.settings.address.itemsPerPage = itemsPerPage;
     },
     setAddressCurrentPage(state, currentPage) {
-      console.error(now() + " addressBookModule - mutations.setAddressCurrentPage - currentPage: " + currentPage);
+      // console.log(now() + " addressBookModule - mutations.setAddressCurrentPage - currentPage: " + currentPage);
       state.settings.address.currentPage = currentPage;
     },
     setTagSortBy(state, sortBy) {
-      console.error(now() + " addressBookModule - mutations.setTagSortBy - sortBy: " + JSON.stringify(sortBy));
+      // console.log(now() + " addressBookModule - mutations.setTagSortBy - sortBy: " + JSON.stringify(sortBy));
       state.settings.tag.sortBy = sortBy;
     },
     setTagItemsPerPage(state, itemsPerPage) {
-      console.error(now() + " addressBookModule - mutations.setTagItemsPerPage - itemsPerPage: " + itemsPerPage);
+      // console.log(now() + " addressBookModule - mutations.setTagItemsPerPage - itemsPerPage: " + itemsPerPage);
       state.settings.tag.itemsPerPage = itemsPerPage;
     },
     setTagCurrentPage(state, currentPage) {
-      console.error(now() + " addressBookModule - mutations.setTagCurrentPage - currentPage: " + currentPage);
+      // console.log(now() + " addressBookModule - mutations.setTagCurrentPage - currentPage: " + currentPage);
       state.settings.tag.currentPage = currentPage;
     },
     addOrSaveAddress(state, info) {
-      console.error(now() + " addressBookModule - mutations.addOrSaveAddress - info: " + JSON.stringify(info));
+      // console.log(now() + " addressBookModule - mutations.addOrSaveAddress - info: " + JSON.stringify(info));
       state.settings.addresses[info.address] = { name: info.name, tags: info.tags };
     },
     deleteAddress(state, address) {
-      console.error(now() + " addressBookModule - mutations.deleteAddress - address: " + address);
+      // console.log(now() + " addressBookModule - mutations.deleteAddress - address: " + address);
       delete state.settings.addresses[address];
     },
   },
@@ -479,35 +456,35 @@ const addressBookModule = {
       context.commit('setTab', tab);
     },
     setAddressSortBy(context, sortBy) {
-      console.error(now() + " addressBookModule - actions.setAddressSortBy - sortBy: " + JSON.stringify(sortBy));
+      // console.log(now() + " addressBookModule - actions.setAddressSortBy - sortBy: " + JSON.stringify(sortBy));
       context.commit('setAddressSortBy', sortBy);
     },
     setAddressItemsPerPage(context, itemsPerPage) {
-      console.error(now() + " addressBookModule - actions.setAddressItemsPerPage - itemsPerPage: " + itemsPerPage);
+      // console.log(now() + " addressBookModule - actions.setAddressItemsPerPage - itemsPerPage: " + itemsPerPage);
       context.commit('setAddressItemsPerPage', itemsPerPage);
     },
     setAddressCurrentPage(context, currentPage) {
-      console.error(now() + " addressBookModule - actions.setAddressCurrentPage - currentPage: " + currentPage);
+      // console.log(now() + " addressBookModule - actions.setAddressCurrentPage - currentPage: " + currentPage);
       context.commit('setAddressCurrentPage', currentPage);
     },
     setTagSortBy(context, sortBy) {
-      console.error(now() + " addressBookModule - actions.setTagSortBy - sortBy: " + JSON.stringify(sortBy));
+      // console.log(now() + " addressBookModule - actions.setTagSortBy - sortBy: " + JSON.stringify(sortBy));
       context.commit('setTagSortBy', sortBy);
     },
     setTagItemsPerPage(context, itemsPerPage) {
-      console.error(now() + " addressBookModule - actions.setTagItemsPerPage - itemsPerPage: " + itemsPerPage);
+      // console.log(now() + " addressBookModule - actions.setTagItemsPerPage - itemsPerPage: " + itemsPerPage);
       context.commit('setTagItemsPerPage', itemsPerPage);
     },
     setTagCurrentPage(context, currentPage) {
-      console.error(now() + " addressBookModule - actions.setTagCurrentPage - currentPage: " + currentPage);
+      // console.log(now() + " addressBookModule - actions.setTagCurrentPage - currentPage: " + currentPage);
       context.commit('setTagCurrentPage', currentPage);
     },
     addOrSaveAddress(context, info) {
-      console.error(now() + " addressBookModule - actions.addOrSaveAddress - info: " + JSON.stringify(info));
+      // console.log(now() + " addressBookModule - actions.addOrSaveAddress - info: " + JSON.stringify(info));
       context.commit('addOrSaveAddress', info);
     },
     deleteAddress(context, address) {
-      console.error(now() + " addressBookModule - actions.deleteAddress - address: " + address);
+      // console.log(now() + " addressBookModule - actions.deleteAddress - address: " + address);
       context.commit('deleteAddress', address);
     },
   },
