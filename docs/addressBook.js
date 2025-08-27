@@ -52,7 +52,7 @@ const AddressBook = {
                 <v-card-actions>
                   <!-- <v-btn v-if="portfolioDialog.mode == 'add'" :disabled="!portfolioDialog.name || !!portfolios[portfolioDialog.name]" @click="portfolioDialogAddOrSave();" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Add</v-btn> -->
                   <!-- <v-btn v-if="portfolioDialog.mode == 'edit'" @click="portfolioDialogAddOrSave();" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Save</v-btn> -->
-                  <!-- <v-btn v-if="portfolioDialog.mode == 'edit'" :disabled="portfolioDialog.name != portfolioDialog.originalName" @click="portfolioDialogDelete();" prepend-icon="mdi-delete" variant="text" class="lowercase-btn">Delete</v-btn> -->
+                  <v-btn v-if="addressDialog.mode == 'edit'" @click="addressDialogDelete();" prepend-icon="mdi-delete" variant="text" class="lowercase-btn">Delete</v-btn>
                   <v-btn @click="addressDialog.mode = null;" prepend-icon="mdi-window-close" variant="text" class="lowercase-btn">Cancel</v-btn>
                 </v-card-actions>
               </v-card>
@@ -322,6 +322,16 @@ const AddressBook = {
       this.addressDialog.tags = address == null ? "" : this.addresses[address].tags;
       console.log(now() + " AddressBook - methods.showAddressDialog - addressDialog: " + JSON.stringify(this.addressDialog));
     },
+    addressDialogAddOrSave() {
+      console.log(now() + " AddressBook - methods.addressDialogAddOrSave - addressDialog: " + JSON.stringify(this.addressDialog));
+      // store.dispatch('config/addPortfolio', { name: this.addressDialog.name, originalName: this.addressDialog.originalName, accounts: this.addressDialog.accounts });
+      this.addressDialog.mode = null;
+    },
+    addressDialogDelete() {
+      console.log(now() + " AddressBook - methods.addressDialogDelete");
+      store.dispatch('addressBook/deleteAddress', this.addressDialog.address);
+      this.addressDialog.mode = null;
+    },
   },
   beforeCreate() {
     console.log(now() + " AddressBook - beforeCreate");
@@ -485,6 +495,10 @@ const addressBookModule = {
       console.error(now() + " addressBookModule - mutations.setTagCurrentPage - currentPage: " + currentPage);
       state.settings.tag.currentPage = currentPage;
     },
+    deleteAddress(state, address) {
+      console.error(now() + " addressBookModule - mutations.deleteAddress - address: " + address);
+      delete state.settings.addresses[address];
+    },
   },
   actions: {
     async loadAddressBook(context) {
@@ -497,7 +511,7 @@ const addressBookModule = {
         }
       }
       store.subscribe((mutation, state) => {
-        if (mutation.type.substring(0, 15) == "addressBook/set") {
+        if (mutation.type.substring(0, 15) == "addressBook/set" || mutation.type.substring(0, 18) == "addressBook/delete") {
           console.log(now() + " addressBookModule - actions.loadAddressBook - subscribe - mutation.type: " + mutation.type + " => " + JSON.stringify(mutation.payload));
           localStorage.explorerAddressBookSettings = JSON.stringify(context.state.settings);
         }
@@ -534,6 +548,10 @@ const addressBookModule = {
     setTagCurrentPage(context, currentPage) {
       console.error(now() + " addressBookModule - actions.setTagCurrentPage - currentPage: " + currentPage);
       context.commit('setTagCurrentPage', currentPage);
+    },
+    deleteAddress(context, address) {
+      console.error(now() + " addressBookModule - actions.deleteAddress - address: " + address);
+      context.commit('deleteAddress', address);
     },
   },
 };
