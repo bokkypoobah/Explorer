@@ -50,9 +50,9 @@ const AddressBook = {
                   </v-data-table> -->
                 </v-card-text>
                 <v-card-actions>
-                  <!-- <v-btn v-if="portfolioDialog.mode == 'add'" :disabled="!portfolioDialog.name || !!portfolios[portfolioDialog.name]" @click="portfolioDialogAddOrSave();" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Add</v-btn>
-                  <v-btn v-if="portfolioDialog.mode == 'edit'" @click="portfolioDialogAddOrSave();" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Save</v-btn>
-                  <v-btn v-if="portfolioDialog.mode == 'edit'" :disabled="portfolioDialog.name != portfolioDialog.originalName" @click="portfolioDialogDelete();" prepend-icon="mdi-delete" variant="text" class="lowercase-btn">Delete</v-btn> -->
+                  <!-- <v-btn v-if="portfolioDialog.mode == 'add'" :disabled="!portfolioDialog.name || !!portfolios[portfolioDialog.name]" @click="portfolioDialogAddOrSave();" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Add</v-btn> -->
+                  <!-- <v-btn v-if="portfolioDialog.mode == 'edit'" @click="portfolioDialogAddOrSave();" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Save</v-btn> -->
+                  <!-- <v-btn v-if="portfolioDialog.mode == 'edit'" :disabled="portfolioDialog.name != portfolioDialog.originalName" @click="portfolioDialogDelete();" prepend-icon="mdi-delete" variant="text" class="lowercase-btn">Delete</v-btn> -->
                   <v-btn @click="addressDialog.mode = null;" prepend-icon="mdi-window-close" variant="text" class="lowercase-btn">Cancel</v-btn>
                 </v-card-actions>
               </v-card>
@@ -315,10 +315,11 @@ const AddressBook = {
     },
     showAddressDialog(address) {
       console.log(now() + " AddressBook - methods.showAddressDialog - address: " + address);
+      console.log(now() + " AddressBook - methods.showAddressDialog - addresses: " + JSON.stringify(this.addresses, null, 2));
       this.addressDialog.mode = address == null ? "add" : "edit";
       this.addressDialog.address = address;
-      this.addressDialog.name = "TODO";
-      this.addressDialog.tags = "TODO";
+      this.addressDialog.name = address == null ? "" : this.addresses[address].name;
+      this.addressDialog.tags = address == null ? "" : this.addresses[address].tags;
       console.log(now() + " AddressBook - methods.showAddressDialog - addressDialog: " + JSON.stringify(this.addressDialog));
     },
   },
