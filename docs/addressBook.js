@@ -12,7 +12,7 @@ const AddressBook = {
             </v-tabs>
             <v-divider vertical class="ml-1">
             </v-divider>
-            <v-btn @click="hide();" prepend-icon="mdi-window-close" class="lowercase-btn ml-1">Cancel</v-btn>
+            <v-btn @click="hide();" class="lowercase-btn ml-1"><v-icon>mdi-window-close</v-icon></v-btn>
           </v-toolbar>
           <v-card-text>
             <v-dialog :model-value="addressDialog.mode != null" persistent max-width="500px">
@@ -21,8 +21,10 @@ const AddressBook = {
                   <v-card-item :prepend-icon="addressDialog.mode == 'add' ? 'mdi-pencil-plus' : 'mdi-pencil'" :title="addressDialog.mode == 'add' ? 'Address - Add' : 'Address - Edit'"></v-card-item>
                 </v-toolbar>
                 <v-card-text class="ma-2 pa-2">
-                  <v-text-field v-model="addressDialog.address" :readonly="addressDialog.mode == 'edit'" label="Address" :rules="addressRules" density="compact" placeholder="new account"></v-text-field>
-                  <v-text-field v-model="addressDialog.name" label="Name" density="compact"></v-text-field>
+                  <v-text-field v-model="addressDialog.address" :readonly="addressDialog.mode == 'edit'" label="Address" :rules="addressRules" clearable density="default" placeholder="0x0123...6789"></v-text-field>
+                  <v-text-field v-model="addressDialog.name" label="Name" clearable density="default"></v-text-field>
+                  <v-combobox v-model="addressDialog.tags" :items="tagsOptions" label="Tags" multiple chips clearable density="default" placeholder="e.g., one, two"></v-combobox>
+
                   <!-- <v-text-field v-model="portfolioDialog.name" label="Name" density="compact" style="width: 360px;"></v-text-field> -->
                   <!-- <v-data-table :headers="accountsHeaders" :items="portfolioDialog.accounts" density="compact" style="position: relative;">
                     <template v-slot:item.account="{ item }">
@@ -50,8 +52,8 @@ const AddressBook = {
                   </v-data-table> -->
                 </v-card-text>
                 <v-card-actions>
-                  <!-- <v-btn v-if="portfolioDialog.mode == 'add'" :disabled="!portfolioDialog.name || !!portfolios[portfolioDialog.name]" @click="portfolioDialogAddOrSave();" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Add</v-btn> -->
-                  <!-- <v-btn v-if="portfolioDialog.mode == 'edit'" @click="portfolioDialogAddOrSave();" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Save</v-btn> -->
+                  <v-btn v-if="addressDialog.mode == 'add'" :disabled="!addressDialog.address || !!addresses[addressDialog.address]" @click="addressDialogAddOrSave();" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Add</v-btn>
+                  <v-btn v-if="addressDialog.mode == 'edit'" @click="addressDialogAddOrSave();" prepend-icon="mdi-check" variant="text" class="lowercase-btn">Save</v-btn>
                   <v-btn v-if="addressDialog.mode == 'edit'" @click="addressDialogDelete();" prepend-icon="mdi-delete" variant="text" class="lowercase-btn">Delete</v-btn>
                   <v-btn @click="addressDialog.mode = null;" prepend-icon="mdi-window-close" variant="text" class="lowercase-btn">Cancel</v-btn>
                 </v-card-actions>
@@ -307,6 +309,14 @@ const AddressBook = {
       }
       return results;
     },
+    tagsOptions() {
+      const results = Object.keys(store.getters['addressBook/tags']);
+      results.sort((a, b) => {
+        return ('' + a).localeCompare(b);
+      });
+      console.error("tagsOptions: " + JSON.stringify(results));
+      return results;
+    },
   },
   methods: {
     hide() {
@@ -319,12 +329,12 @@ const AddressBook = {
       this.addressDialog.mode = address == null ? "add" : "edit";
       this.addressDialog.address = address;
       this.addressDialog.name = address == null ? "" : this.addresses[address].name;
-      this.addressDialog.tags = address == null ? "" : this.addresses[address].tags;
+      this.addressDialog.tags = address == null ? [] : this.addresses[address].tags;
       console.log(now() + " AddressBook - methods.showAddressDialog - addressDialog: " + JSON.stringify(this.addressDialog));
     },
     addressDialogAddOrSave() {
       console.log(now() + " AddressBook - methods.addressDialogAddOrSave - addressDialog: " + JSON.stringify(this.addressDialog));
-      // store.dispatch('config/addPortfolio', { name: this.addressDialog.name, originalName: this.addressDialog.originalName, accounts: this.addressDialog.accounts });
+      store.dispatch('addressBook/addOrSaveAddress', this.addressDialog);
       this.addressDialog.mode = null;
     },
     addressDialogDelete() {
@@ -373,69 +383,8 @@ const addressBookModule = {
         itemsPerPage: 10,
         currentPage: 1,
       },
-      addresses: {
-        "0x0000...0003": {
-          name: "address3",
-          tags: [ "test3", "test" ],
-        },
-        "0x0000...0001": {
-          name: "address1",
-          tags: [ "test1", "test" ],
-        },
-        "0x0000...0002": {
-          name: "address2",
-          tags: [ "test2", "test" ],
-        },
-        "0x0000...0004": {
-          name: "address4",
-          tags: [ "test4", "test" ],
-        },
-        "0x0000...0005": {
-          name: "address5",
-          tags: [ "test5", "test" ],
-        },
-        "0x0000...0006": {
-          name: "address6",
-          tags: [ "test6", "test" ],
-        },
-        "0x0000...0007": {
-          name: "address7",
-          tags: [ "test7", "test" ],
-        },
-        "0x0000...0008": {
-          name: "address8",
-          tags: [ "test8", "test" ],
-        },
-        "0x0000...0009": {
-          name: "address9",
-          tags: [ "test9", "test" ],
-        },
-        "0x0000...0010": {
-          name: "address10",
-          tags: [ "test10", "test" ],
-        },
-        "0x0000...0011": {
-          name: "address11",
-          tags: [ "test11", "test" ],
-        },
-        "0x0000...0012": {
-          name: "address12",
-          tags: [ "test12", "test" ],
-        },
-        "0x0000...0013": {
-          name: "address13",
-          tags: [ "test13", "test" ],
-        },
-        "0x0000...0014": {
-          name: "address14",
-          tags: [ "test14", "test" ],
-        },
-        "0x0000...0015": {
-          name: "address15",
-          tags: [ "test15", "test" ],
-        },
-      },
-      version: 4,
+      addresses: {},
+      version: 5,
     },
   },
   getters: {
@@ -495,6 +444,10 @@ const addressBookModule = {
       console.error(now() + " addressBookModule - mutations.setTagCurrentPage - currentPage: " + currentPage);
       state.settings.tag.currentPage = currentPage;
     },
+    addOrSaveAddress(state, info) {
+      console.error(now() + " addressBookModule - mutations.addOrSaveAddress - info: " + JSON.stringify(info));
+      state.settings.addresses[info.address] = { name: info.name, tags: info.tags };
+    },
     deleteAddress(state, address) {
       console.error(now() + " addressBookModule - mutations.deleteAddress - address: " + address);
       delete state.settings.addresses[address];
@@ -548,6 +501,10 @@ const addressBookModule = {
     setTagCurrentPage(context, currentPage) {
       console.error(now() + " addressBookModule - actions.setTagCurrentPage - currentPage: " + currentPage);
       context.commit('setTagCurrentPage', currentPage);
+    },
+    addOrSaveAddress(context, info) {
+      console.error(now() + " addressBookModule - actions.addOrSaveAddress - info: " + JSON.stringify(info));
+      context.commit('addOrSaveAddress', info);
     },
     deleteAddress(context, address) {
       console.error(now() + " addressBookModule - actions.deleteAddress - address: " + address);
