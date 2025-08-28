@@ -1,6 +1,8 @@
 const portfolioModule = {
   namespaced: true,
   state: {
+    inputTagOrAddress: null,
+    addresses: {},
     data: {},
 
     // TODO: Delete
@@ -96,6 +98,11 @@ const portfolioModule = {
     // },
   },
   mutations: {
+    setInputData(state, { inputTagOrAddress, addresses }) {
+      console.log(now() + " portfolioModule - mutations.setInputData - inputTagOrAddress: " + inputTagOrAddress + ", addresses: " + JSON.stringify(addresses));
+      state.inputTagOrAddress = inputTagOrAddress;
+      state.addresses = addresses;
+    },
     setData(state, data) {
       console.log(now() + " portfolioModule - mutations.setData - data: " + JSON.stringify(data));
       state.data = data;
@@ -165,27 +172,20 @@ const portfolioModule = {
   actions: {
     async loadPortfolio(context, { inputTagOrAddress, forceUpdate }) {
       console.log(now() + " portfolioModule - actions.loadPortfolio - inputTagOrAddress: " + inputTagOrAddress + ", forceUpdate: " + forceUpdate);
-
-      const addresses = store.getters['addressBook/addresses'];
-      console.log(now() + " portfolioModule - actions.loadPortfolio - addresses: " + JSON.stringify(addresses));
-
+      const addressBook = store.getters['addressBook/addresses'];
       const tags = store.getters['addressBook/tags'];
-      console.log(now() + " portfolioModule - actions.loadPortfolio - tags: " + JSON.stringify(tags));
-
-      const selectedAddresses = [];
-      if (inputTagOrAddress in addresses) {
-        console.error(now() + " DEBUG 1 - in addressBook");
-        selectedAddresses.push(inputTagOrAddress);
+      const addresses = {};
+      if (inputTagOrAddress in addressBook) {
+        addresses[inputTagOrAddress] = addressBook[inputTagOrAddress];
       } else if (inputTagOrAddress in tags) {
-        console.error(now() + " DEBUG 2 - tags");
-        for (let a of tags[inputTagOrAddress]) {
-          selectedAddresses.push(a.address);
+        for (let tag of tags[inputTagOrAddress]) {
+          addresses[tag.address] = addressBook[tag.address];
         }
       } else if (validateAddress(inputTagOrAddress) != null) {
-        console.error(now() + " DEBUG 3 - other addresses");
-        selectedAddresses.push(inputTagOrAddress);
+        addresses[inputTagOrAddress] = "Not in address book";
       }
-      console.log(now() + " portfolioModule - actions.loadPortfolio - selectedAddresses: " + JSON.stringify(selectedAddresses));
+      // console.log(now() + " portfolioModule - actions.loadPortfolio - addresses: " + JSON.stringify(addresses));
+      context.commit('setInputData', { inputTagOrAddress, addresses });
 
       // const chainId = store.getters["web3/chainId"];
       // const provider = new ethers.providers.Web3Provider(window.ethereum);

@@ -517,8 +517,10 @@ data: {{ data }}
       }, 500);
     },
     async loadPortfolioDebounced() {
-      console.error(now() + " Portfolio - methods.loadPortfolioDebounced - settings: " + JSON.stringify(this.settings));
-      store.dispatch('portfolio/loadPortfolio', { inputTagOrAddress: this.settings.selectedTagOrAddress.value || this.settings.selectedTagOrAddress, forceUpdate: true });
+      console.log(now() + " Portfolio - methods.loadPortfolioDebounced - settings: " + JSON.stringify(this.settings));
+      this.$router.push({ name: 'Portfolio', params: { inputTagOrAddress: (this.settings.selectedTagOrAddress && this.settings.selectedTagOrAddress.value) || this.settings.selectedTagOrAddress } });
+      store.dispatch('portfolio/loadPortfolio', { inputTagOrAddress: (this.settings.selectedTagOrAddress && this.settings.selectedTagOrAddress.value) || this.settings.selectedTagOrAddress, forceUpdate: true });
+      this.saveSettings();
     },
     syncPortfolio() {
       console.log(now() + " Portfolio - methods.syncPortfolio");
@@ -639,7 +641,7 @@ data: {{ data }}
       return null;
     },
     saveSettings() {
-      console.log(now() + " Portfolio - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
+      // console.log(now() + " Portfolio - methods.saveSettings - settings: " + JSON.stringify(this.settings, null, 2));
       if (this.initialised) {
         localStorage.explorerPortfolioSettings = JSON.stringify(this.settings);
       }
