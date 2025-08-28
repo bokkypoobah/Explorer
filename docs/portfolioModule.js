@@ -165,14 +165,36 @@ const portfolioModule = {
   actions: {
     async loadPortfolio(context, { inputTagOrAddress, forceUpdate }) {
       console.log(now() + " portfolioModule - actions.loadPortfolio - inputTagOrAddress: " + inputTagOrAddress + ", forceUpdate: " + forceUpdate);
-      const chainId = store.getters["web3/chainId"];
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const dbInfo = store.getters["db"];
-      const db = new Dexie(dbInfo.name);
-      db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
-      let data = await dbGetCachedData(db, chainId + "_portfolio_data", {});
-      context.commit('setData', data);
-      db.close();
+
+      const addresses = store.getters['addressBook/addresses'];
+      console.log(now() + " portfolioModule - actions.loadPortfolio - addresses: " + JSON.stringify(addresses));
+
+      const tags = store.getters['addressBook/tags'];
+      console.log(now() + " portfolioModule - actions.loadPortfolio - tags: " + JSON.stringify(tags));
+
+      const selectedAddresses = [];
+      if (inputTagOrAddress in addresses) {
+        console.error(now() + " DEBUG 1 - in addressBook");
+        selectedAddresses.push(inputTagOrAddress);
+      } else if (inputTagOrAddress in tags) {
+        console.error(now() + " DEBUG 2 - tags");
+        for (let a of tags[inputTagOrAddress]) {
+          selectedAddresses.push(a.address);
+        }
+      } else if (validateAddress(inputTagOrAddress) != null) {
+        console.error(now() + " DEBUG 3 - other addresses");
+        selectedAddresses.push(inputTagOrAddress);
+      }
+      console.log(now() + " portfolioModule - actions.loadPortfolio - selectedAddresses: " + JSON.stringify(selectedAddresses));
+
+      // const chainId = store.getters["web3/chainId"];
+      // const provider = new ethers.providers.Web3Provider(window.ethereum);
+      // const dbInfo = store.getters["db"];
+      // const db = new Dexie(dbInfo.name);
+      // db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
+      // let data = await dbGetCachedData(db, chainId + "_portfolio_data", {});
+      // context.commit('setData', data);
+      // db.close();
     },
     async addPortfolio(context, { name, originalName, accounts }) {
       console.log(now() + " portfolioModule - actions.addPortfolio - name: " + name + ", originalName: " + originalName + ", accounts: " + JSON.stringify(accounts));
