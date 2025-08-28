@@ -10,7 +10,16 @@ const Portfolio = {
           </p> -->
           <!-- <v-spacer></v-spacer> -->
 
-          Here
+          <!-- <v-combobox v-model="settings.selectedTagOrAddress" @update:model-value="search();" :items="samples" item-title="title" item-value="value" hide-details single-line density="compact" variant="underlined" style="width: 330px;" placeholder="block #, tx hash, address or name[.eth]"> -->
+
+          <v-combobox v-model="settings.selectedTagOrAddress" :items="tagOrAddressOptions" item-title="title" item-value="value" hide-details single-line density="compact" variant="underlined" style="width: 330px;" placeholder="single tag or single address">
+            <template v-slot:prepend-item>
+              <v-tabs v-model="settings.selectTagOrAddress" align-tabs="end" size="default" color="deep-purple-accent-4" class="m-0 p-0">
+                <v-tab value="addresses" class="lowercase-btn">Addresses</v-tab>
+                <v-tab value="tags" class="lowercase-btn">Tags</v-tab>
+              </v-tabs>
+            </template>
+          </v-combobox>
 
           <v-btn @click="showAddressBook();" color="primary" icon size="default" v-tooltip="'Show address book dialog. cmd+b'">
             <v-icon>mdi-book-open-variant-outline</v-icon>
@@ -256,6 +265,8 @@ data: {{ data }}
     return {
       initialised: false,
       settings: {
+        selectTagOrAddress: "addresses",
+        selectedTagOrAddress: null,
         selectedPortfolio: null,
         tab: "assets",
         showFilter: false,
@@ -274,7 +285,7 @@ data: {{ data }}
           itemsPerPage: 10,
           currentPage: 1,
         },
-        version: 4,
+        version: 5,
       },
       itemsPerPageOptions: [
         { value: 5, title: "5" },
@@ -329,6 +340,13 @@ data: {{ data }}
   computed: {
     chainId() {
       return store.getters['chainId'];
+    },
+    tagOrAddressOptions() {
+      if (this.settings.selectTagOrAddress == "addresses") {
+        return ['0xone', '0xtwo', '0xthree', '0xfour'];
+      } else {
+        return ['one', 'two', 'three', 'four'];
+      }
     },
     portfolios() {
       return store.getters['config/portfolios'];
