@@ -3,7 +3,7 @@ const Transaction = {
     <div>
       <v-container fluid class="pa-1">
         <v-toolbar density="compact" class="mt-1">
-          <h4 class="ml-2">Transaction</h4>
+          <v-card-item prepend-icon="mdi-text-long" title="Transaction"></v-card-item>
           <render-tx-hash v-if="tx && tx.hash" :txHash="tx.hash" shortTxHash suppressView></render-tx-hash>
           <p v-if="tx && tx.blockNumber" class="ml-5 text-caption text--disabled">
             {{ commify0(tx.blockNumber) }} @ {{ timestampString }}, {{ timestamp && formatTimeDiff(timestamp) }}
