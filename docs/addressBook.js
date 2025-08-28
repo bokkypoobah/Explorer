@@ -263,7 +263,7 @@ const AddressBook = {
     },
     tagsList() {
       const collator = {};
-      for (const [tag, tagData] of Object.entries(store.getters['addressBook/tags'])) {
+      for (const [tag, tagData] of Object.entries(this.tags)) {
         if (!(tag in collator)) {
           collator[tag] = [];
         }
@@ -281,7 +281,7 @@ const AddressBook = {
       return results;
     },
     tagsOptions() {
-      const results = Object.keys(store.getters['addressBook/tags']);
+      const results = Object.keys(this.tags);
       results.sort((a, b) => {
         return ('' + a).localeCompare(b);
       });

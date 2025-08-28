@@ -12,12 +12,17 @@ const Portfolio = {
 
           <!-- <v-combobox v-model="settings.selectedTagOrAddress" @update:model-value="search();" :items="samples" item-title="title" item-value="value" hide-details single-line density="compact" variant="underlined" style="width: 330px;" placeholder="block #, tx hash, address or name[.eth]"> -->
 
-          <v-combobox v-model="settings.selectedTagOrAddress" :items="tagOrAddressOptions" item-title="title" item-value="value" hide-details single-line density="compact" variant="underlined" style="width: 330px;" placeholder="single tag or single address">
+          <v-combobox v-model="settings.selectedTagOrAddress" :items="tagOrAddressOptions" item-title="title" item-subtitle="subtitle" item-value="value" hide-details single-line density="compact" variant="underlined" style="width: 330px;" placeholder="single tag or single address">
             <template v-slot:prepend-item>
               <v-tabs v-model="settings.selectTagOrAddress" align-tabs="end" size="default" color="deep-purple-accent-4" class="m-0 p-0">
-                <v-tab value="addresses" class="lowercase-btn">Addresses</v-tab>
-                <v-tab value="tags" class="lowercase-btn">Tags</v-tab>
+                <v-tab prepend-icon="mdi-numeric" value="addresses" class="lowercase-btn">Addresses</v-tab>
+                <v-tab prepend-icon="mdi-tag" value="tags" class="lowercase-btn">Tags</v-tab>
               </v-tabs>
+            </template>
+            <template v-slot:item="{ item, props }">
+              <v-list-item v-bind="props">
+                <v-list-item-subtitle>{{ item.raw.subtitle }}</v-list-item-subtitle>
+              </v-list-item>
             </template>
           </v-combobox>
 
@@ -341,12 +346,36 @@ data: {{ data }}
     chainId() {
       return store.getters['chainId'];
     },
+    addresses() {
+      return store.getters['addressBook/addresses'];
+    },
+    tags() {
+      return store.getters['addressBook/tags'];
+    },
     tagOrAddressOptions() {
+      const results = [];
       if (this.settings.selectTagOrAddress == "addresses") {
-        return ['0xone', '0xtwo', '0xthree', '0xfour'];
+        for (const [address, addressData] of Object.entries(this.addresses)) {
+          const subtitle = addressData.name + " [ " + addressData.tags.join(", ") + " ]";
+          results.push({ title: address, value: address, subtitle, tags: addressData.tags });
+        }
+        results.sort((a, b) => {
+          return ('' + a.value).localeCompare(b.value);
+        });
       } else {
-        return ['one', 'two', 'three', 'four'];
+        for (const [tag, addresses] of Object.entries(this.tags)) {
+          const sortedAddresses = addresses;
+          sortedAddresses.sort((a, b) => {
+            return ('' + a.address).localeCompare(b.address);
+          });
+          const subtitle = sortedAddresses.map(e => e.address.substring(0, 6) + "..." + e.address.slice(-4)).join(", ");
+          results.push({ title: tag, value: tag, subtitle });
+        }
+        results.sort((a, b) => {
+          return ('' + a.value).localeCompare(b.value);
+        });
       }
+      return results;
     },
     portfolios() {
       return store.getters['config/portfolios'];
