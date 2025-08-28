@@ -3,7 +3,7 @@ const Name = {
     <div>
       <v-container fluid class="pa-1">
         <v-toolbar density="compact" class="mt-1">
-          <h4 class="ml-2">ENS Name</h4>
+          <v-card-item prepend-icon="mdi-alphabetical" title="ENS Name"></v-card-item>
           <v-menu location="bottom">
             <template v-slot:activator="{ props }">
               <v-btn v-if="name" color="primary" dark v-bind="props" variant="text" class="ma-0 lowercase-btn">

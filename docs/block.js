@@ -3,7 +3,7 @@ const Block = {
     <div>
       <v-container fluid class="pa-1">
         <v-toolbar density="compact" class="mt-1">
-          <h4 class="ml-2">Block</h4>
+          <v-card-item prepend-icon="mdi-cube-outline" title="Block"></v-card-item>
           <v-btn v-if="block" :disabled="block.number == 0" @click="navigateToBlock(0);" icon="mdi-page-first" density="compact" color="primary" dark class="ma-0 ml-5">
           </v-btn>
           <v-btn v-if="block" :disabled="block.number == 0" @click="navigateToBlock(block.number - 1);" icon="mdi-chevron-left" density="compact" color="primary" dark class="ma-0">

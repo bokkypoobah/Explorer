@@ -3,7 +3,7 @@ const Config = {
     <div>
       <v-container fluid class="pa-1">
         <v-toolbar density="compact" class="mt-1">
-          <h4 class="ml-2">Config</h4>
+          <v-card-item prepend-icon="mdi-cog" title="Config"></v-card-item>
           <v-spacer></v-spacer>
           <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" right color="deep-purple-accent-4">
             <v-tab prepend-icon="mdi-key-variant" text="API Key" value="apikey" class="lowercase-btn"></v-tab>

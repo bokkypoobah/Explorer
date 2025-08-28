@@ -3,12 +3,19 @@ const Portfolio = {
     <div>
       <v-container fluid class="pa-1">
         <v-toolbar density="compact" class="mt-1">
-          <h4 class="ml-2">Portfolio</h4>
+          <v-card-item prepend-icon="mdi-bank" title="Portfolio"></v-card-item>
           <!-- <render-address v-if="address" :address="address"></render-address> -->
           <!-- <p class="ml-5 text-caption text--disabled">
             {{ type && type.substring(0, 3) == "erc" && type.replace(/erc/, "ERC-") || "Not a token contract" }} {{ symbol }} {{ name && ("'" + name + "'") || "" }} {{ decimals }}
           </p> -->
           <!-- <v-spacer></v-spacer> -->
+
+          Here
+
+          <v-btn @click="showAddressBook();" color="primary" icon size="default" v-tooltip="'Show address book dialog. cmd+b'">
+            <v-icon>mdi-book-open-variant-outline</v-icon>
+          </v-btn>
+          <v-spacer></v-spacer>
           <v-select
             v-model="settings.selectedPortfolio"
             :items="portfoliosOptions"
@@ -18,9 +25,6 @@ const Portfolio = {
             style="max-width: 200px;"
             @update:modelValue="saveSettings();"
           ></v-select>
-          <v-btn @click="showAddressBook();" color="primary" icon size="default" v-tooltip="'Show address book dialog. cmd+b'">
-            <v-icon>mdi-book-open-variant-outline</v-icon>
-          </v-btn>
           <v-spacer></v-spacer>
           <v-btn v-if="sync.info == null" @click="syncPortfolio();" color="primary" icon v-tooltip="'Sync Portfolio'">
             <v-icon>mdi-refresh</v-icon>

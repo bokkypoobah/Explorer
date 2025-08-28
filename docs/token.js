@@ -3,7 +3,7 @@ const Token = {
     <div>
       <v-container fluid class="pa-1">
         <v-toolbar density="compact" class="mt-1">
-          <h4 class="ml-2">Token</h4>
+          <v-card-item prepend-icon="mdi-cash-multiple" title="Token"></v-card-item>
           <render-address v-if="address" :address="address"></render-address>
           <p class="ml-5 text-caption text--disabled">
             {{ type && type.substring(0, 3) == "erc" && type.replace(/erc/, "ERC-") || "Not a token contract" }} {{ symbol }} {{ name && ("'" + name + "'") || "" }} {{ decimals }}

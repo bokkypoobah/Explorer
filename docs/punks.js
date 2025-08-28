@@ -3,7 +3,7 @@ const Punks = {
     <div>
       <v-container fluid class="pa-1">
         <v-toolbar density="compact" class="mt-1">
-          <h4 class="ml-2">Punks</h4>
+          <v-card-item prepend-icon="mdi-account-cowboy-hat" title="Punks"></v-card-item>
           <v-spacer></v-spacer>
           <v-btn :disabled="chainId != 1" @click="syncPunks();" color="primary" icon>
             <v-icon>mdi-refresh</v-icon>

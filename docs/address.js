@@ -8,6 +8,7 @@ const Address = {
       </v-card>
       <v-container fluid class="pa-1">
         <v-toolbar v-if="inputAddress && address" density="compact" class="mt-1">
+          <v-card-item prepend-icon="mdi-numeric" title="Address"></v-card-item>
           <v-menu location="bottom">
             <template v-slot:activator="{ props }">
               <v-btn color="primary" dark v-bind="props" variant="text" class="lowercase-btn">
