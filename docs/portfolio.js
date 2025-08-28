@@ -247,7 +247,7 @@ data: {{ data }}
       </v-container>
     </div>
   `,
-  props: ['inputPortfolio'],
+  props: ['inputTagOrAddress'],
   data: function () {
     return {
       initialised: false,
@@ -589,7 +589,7 @@ data: {{ data }}
     console.log(now() + " Portfolio - beforeCreate");
 	},
   mounted() {
-    console.log(now() + " Portfolio - mounted - inputPortfolio: " + this.inputPortfolio);
+    console.log(now() + " Portfolio - mounted - inputTagOrAddress: " + this.inputTagOrAddress);
 
     if ('explorerPortfolioSettings' in localStorage) {
       const tempSettings = JSON.parse(localStorage.explorerPortfolioSettings);
@@ -603,7 +603,7 @@ data: {{ data }}
 
     const t = this;
     setTimeout(function() {
-      store.dispatch('portfolio/loadPortfolio', { inputPortfolio: t.inputPortfolio, forceUpdate: false });
+      store.dispatch('portfolio/loadPortfolio', { inputTagOrAddress: t.inputTagOrAddress, forceUpdate: false });
     }, 100);
 	},
   unmounted() {

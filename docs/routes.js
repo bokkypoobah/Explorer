@@ -120,7 +120,7 @@ const routes = [
     props: true,
   },
   {
-    path: '/portfolio/:inputPortfolio?',
+    path: '/portfolio/:inputTagOrAddress?',
     name: "Portfolio",
     component: Portfolio,
     props: true,

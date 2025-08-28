@@ -163,8 +163,8 @@ const portfolioModule = {
     },
   },
   actions: {
-    async loadPortfolio(context, { inputPortfolio, forceUpdate }) {
-      console.log(now() + " portfolioModule - actions.loadPortfolio - inputPortfolio: " + inputPortfolio + ", forceUpdate: " + forceUpdate);
+    async loadPortfolio(context, { inputTagOrAddress, forceUpdate }) {
+      console.log(now() + " portfolioModule - actions.loadPortfolio - inputTagOrAddress: " + inputTagOrAddress + ", forceUpdate: " + forceUpdate);
       const chainId = store.getters["web3/chainId"];
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const dbInfo = store.getters["db"];

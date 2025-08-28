@@ -312,7 +312,7 @@ const AddressBook = {
     },
     addressDialogAddOrSave() {
       console.log(now() + " AddressBook - methods.addressDialogAddOrSave - addressDialog: " + JSON.stringify(this.addressDialog));
-      store.dispatch('addressBook/addOrSaveAddress', this.addressDialog);
+      store.dispatch('addressBook/setAddress', this.addressDialog);
       this.addressDialog.mode = null;
     },
     addressDialogDelete() {
@@ -421,8 +421,8 @@ const addressBookModule = {
       // console.log(now() + " addressBookModule - mutations.setTagCurrentPage - currentPage: " + currentPage);
       state.settings.tag.currentPage = currentPage;
     },
-    addOrSaveAddress(state, info) {
-      // console.log(now() + " addressBookModule - mutations.addOrSaveAddress - info: " + JSON.stringify(info));
+    setAddress(state, info) {
+      // console.log(now() + " addressBookModule - mutations.setAddress - info: " + JSON.stringify(info));
       state.settings.addresses[info.address] = { name: info.name, tags: info.tags };
     },
     deleteAddress(state, address) {
@@ -479,9 +479,9 @@ const addressBookModule = {
       // console.log(now() + " addressBookModule - actions.setTagCurrentPage - currentPage: " + currentPage);
       context.commit('setTagCurrentPage', currentPage);
     },
-    addOrSaveAddress(context, info) {
-      // console.log(now() + " addressBookModule - actions.addOrSaveAddress - info: " + JSON.stringify(info));
-      context.commit('addOrSaveAddress', info);
+    setAddress(context, info) {
+      // console.log(now() + " addressBookModule - actions.setAddress - info: " + JSON.stringify(info));
+      context.commit('setAddress', info);
     },
     deleteAddress(context, address) {
       // console.log(now() + " addressBookModule - actions.deleteAddress - address: " + address);
