@@ -247,7 +247,7 @@
             <template v-slot:actions>
               <v-spacer></v-spacer>
               <v-btn class="ms-auto lowercase-btn" prepend-icon="mdi-numeric" text="Address" color="primary" @click="searchAddress.displayDialog = false; navigateToAddress(searchString.value);"></v-btn>
-              <v-btn class="ms-auto lowercase-btn" prepend-icon="mdi-cash-multiple" text="Token Contract" color="primary" @click="searchAddress.displayDialog = false; navigateToToken(searchString.value);"></v-btn>
+              <v-btn class="ms-auto lowercase-btn" prepend-icon="mdi-cash-multiple" text="Token Contract" color="primary" @click="searchAddress.displayDialog = false; navigateToToken((searchString && searchString.value) || searchString);"></v-btn>
               <v-btn class="ms-auto lowercase-btn" prepend-icon="mdi-window-close" text="Cancel" color="warning" @click="searchAddress.displayDialog = false;"></v-btn>
             </template>
           </v-card>

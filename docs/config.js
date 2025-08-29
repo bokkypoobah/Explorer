@@ -7,7 +7,7 @@ const Config = {
           <v-spacer></v-spacer>
           <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" right color="deep-purple-accent-4">
             <v-tab prepend-icon="mdi-key-variant" text="API Key" value="apikey" class="lowercase-btn"></v-tab>
-            <v-tab prepend-icon="mdi-bank" text="Portfolios" value="portfolios" class="lowercase-btn"></v-tab>
+            <!-- TODO: Delete <v-tab prepend-icon="mdi-bank" text="Portfolios" value="portfolios" class="lowercase-btn"></v-tab> -->
             <v-tab prepend-icon="mdi-link-variant" text="Chains" value="chains" class="lowercase-btn"></v-tab>
           </v-tabs>
         </v-toolbar>
@@ -32,6 +32,7 @@ const Config = {
                   </v-row>
                 </v-form>
               </v-tabs-window-item>
+              <!-- TODO: Delete -->
               <v-tabs-window-item value="portfolios">
                 <v-data-table :headers="portfoliosHeaders" :items="portfoliosList" density="compact" style="position: relative;">
                   <template v-slot:item.name="{ item }">
