@@ -12,7 +12,7 @@ const Portfolio = {
 
           <!-- <v-combobox v-model="settings.selectedTagOrAddress" @update:model-value="search();" :items="samples" item-title="title" item-value="value" hide-details single-line density="compact" variant="underlined" style="width: 330px;" placeholder="block #, tx hash, address or name[.eth]"> -->
 
-          <v-combobox v-model="settings.selectedTagOrAddress" @update:model-value="loadPortfolio();" :items="tagOrAddressOptions" item-title="title" item-subtitle="subtitle" item-value="value" hide-details single-line density="compact" variant="underlined" style="width: 330px;" placeholder="single tag or single address">
+          <v-combobox v-model="settings.selectedTagOrAddress" @update:model-value="loadPortfolio();" :items="tagOrAddressOptions" item-title="title" item-subtitle="subtitle" item-value="value" hide-details single-line density="compact" variant="underlined" style="width: 330px;" placeholder="address or tag">
             <template v-slot:prepend-item>
               <v-tabs v-model="settings.selectTagOrAddress" align-tabs="end" size="default" color="deep-purple-accent-4" class="m-0 p-0">
                 <v-tab prepend-icon="mdi-numeric" value="addresses" class="lowercase-btn">Addresses</v-tab>

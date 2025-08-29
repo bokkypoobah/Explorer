@@ -187,6 +187,8 @@ const portfolioModule = {
       // console.log(now() + " portfolioModule - actions.loadPortfolio - addresses: " + JSON.stringify(addresses));
       context.commit('setInputData', { inputTagOrAddress, addresses });
 
+      // TODO: Retrieve precomputed data for each address and collate
+
       // const chainId = store.getters["web3/chainId"];
       // const provider = new ethers.providers.Web3Provider(window.ethereum);
       // const dbInfo = store.getters["db"];
@@ -196,26 +198,26 @@ const portfolioModule = {
       // context.commit('setData', data);
       // db.close();
     },
-    async addPortfolio(context, { name, originalName, accounts }) {
-      console.log(now() + " portfolioModule - actions.addPortfolio - name: " + name + ", originalName: " + originalName + ", accounts: " + JSON.stringify(accounts));
-      context.commit('addPortfolio', { name, originalName, accounts });
-      context.dispatch("savePortfolios");
-    },
-    async deletePortfolio(context, name) {
-      console.log(now() + " portfolioModule - actions.deletePortfolio - name: " + name);
-      context.commit('deletePortfolio', name);
-      context.dispatch("savePortfolios");
-    },
-    async savePortfolios(context) {
-      console.log(now() + " portfolioModule - actions.savePortfolios");
-      const chainId = store.getters["web3/chainId"];
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const dbInfo = store.getters["db"];
-      const db = new Dexie(dbInfo.name);
-      db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
-      await dbSaveCacheData(db, chainId + "_portfolios", JSON.parse(JSON.stringify(context.state.portfolios)));
-      db.close();
-    },
+    // async addPortfolio(context, { name, originalName, accounts }) {
+    //   console.log(now() + " portfolioModule - actions.addPortfolio - name: " + name + ", originalName: " + originalName + ", accounts: " + JSON.stringify(accounts));
+    //   context.commit('addPortfolio', { name, originalName, accounts });
+    //   context.dispatch("savePortfolios");
+    // },
+    // async deletePortfolio(context, name) {
+    //   console.log(now() + " portfolioModule - actions.deletePortfolio - name: " + name);
+    //   context.commit('deletePortfolio', name);
+    //   context.dispatch("savePortfolios");
+    // },
+    // async savePortfolios(context) {
+    //   console.log(now() + " portfolioModule - actions.savePortfolios");
+    //   const chainId = store.getters["web3/chainId"];
+    //   const provider = new ethers.providers.Web3Provider(window.ethereum);
+    //   const dbInfo = store.getters["db"];
+    //   const db = new Dexie(dbInfo.name);
+    //   db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
+    //   await dbSaveCacheData(db, chainId + "_portfolios", JSON.parse(JSON.stringify(context.state.portfolios)));
+    //   db.close();
+    // },
     async syncPortfolio(context, { selectedPortfolio, forceUpdate }) {
       console.log(now() + " portfolioModule - actions.syncPortfolio - selectedPortfolio: " + selectedPortfolio + ", forceUpdate: " + forceUpdate);
       const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -226,6 +228,8 @@ const portfolioModule = {
       const dbInfo = store.getters["db"];
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
+
+      return;
 
       const completed = {};
       for (const [portfolio, portfolioData] of Object.entries(store.getters['config/portfolios'])) {
