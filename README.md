@@ -110,11 +110,43 @@ After clicking on [Sync Token Metadata]
 
 <kbd><img src="images/SampleScreen35.png" width="800" /></kbd>
 
+#### Portfolio
+
+Click on the [Address Book] button
+
 <kbd><img src="images/SampleScreen36.png" width="800" /></kbd>
+
+Click on Add
 
 <kbd><img src="images/SampleScreen37.png" width="800" /></kbd>
 
+Paste your address. Use the tags to group your addresses
+
 <kbd><img src="images/SampleScreen38.png" width="800" /></kbd>
+
+Paste your other addresses
+
+<kbd><img src="images/SampleScreen39.png" width="800" /></kbd>
+
+You can now select from your list of addresses or the tags from your address book. Or just paste an address not in your address book.
+
+<kbd><img src="images/SampleScreen40.png" width="800" /></kbd>
+
+Selecting by tags
+
+<kbd><img src="images/SampleScreen41.png" width="800" /></kbd>
+
+Click on the [Sync Portfolio] button
+
+<kbd><img src="images/SampleScreen42.png" width="800" /></kbd>
+
+Some data for the 3 addresses selected by a tag
+
+<kbd><img src="images/SampleScreen43.png" width="800" /></kbd>
+
+Expanding the ERC-721 and ERC-1155 NFT collections into the individual tokens
+
+<kbd><img src="images/SampleScreen44.png" width="800" /></kbd>
 
 <br />
 
