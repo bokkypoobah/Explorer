@@ -30,6 +30,8 @@ const portfolioModule = {
     },
   },
   getters: {
+    inputTagOrAddress: state => state.inputTagOrAddress,
+    addresses: state => state.addresses,
     data: state => state.data,
 
     // TODO: Delete
@@ -182,7 +184,7 @@ const portfolioModule = {
           addresses[tag.address] = addressBook[tag.address];
         }
       } else if (validateAddress(inputTagOrAddress) != null) {
-        addresses[inputTagOrAddress] = "Not in address book";
+        addresses[inputTagOrAddress] = "Manual input";
       }
       // console.log(now() + " portfolioModule - actions.loadPortfolio - addresses: " + JSON.stringify(addresses));
       context.commit('setInputData', { inputTagOrAddress, addresses });
@@ -228,6 +230,20 @@ const portfolioModule = {
       const dbInfo = store.getters["db"];
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
+
+      const addresses = context.state.addresses;
+      console.log(now() + " portfolioModule - actions.syncPortfolio - addresses: " + JSON.stringify(addresses));
+      // for (let address of Object.keys(context.state.addresses)) {
+      //   console.log(now() + " portfolioModule - actions.syncPortfolio - address: " + address);
+      // }
+      for (const [address, addressData] of Object.entries(context.state.addresses)) {
+        console.log(now() + " portfolioModule - actions.syncPortfolio - address: " + address + " => " + JSON.stringify(addressData));
+        const validatedAddress = validateAddress(address);
+        if (validatedAddress) {
+
+        }
+      }
+
 
       return;
 

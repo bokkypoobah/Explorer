@@ -117,6 +117,13 @@ const Portfolio = {
           </v-pagination>
         </v-toolbar>
 
+        <v-card-text>
+          portfolioInputTagOrAddress: {{ portfolioInputTagOrAddress }}<br />
+          portfolioAddresses: {{ portfolioAddresses }}
+        </v-card-text>
+
+
+
         <v-row dense>
           <v-col v-if="settings.showFilter" cols="2">
             <v-card>
@@ -377,6 +384,12 @@ data: {{ data }}
         });
       }
       return results;
+    },
+    portfolioInputTagOrAddress() {
+      return store.getters['portfolio/inputTagOrAddress'];
+    },
+    portfolioAddresses() {
+      return store.getters['portfolio/addresses'];
     },
     portfolios() {
       return store.getters['config/portfolios'];
