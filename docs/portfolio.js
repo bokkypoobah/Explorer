@@ -117,12 +117,10 @@ const Portfolio = {
           </v-pagination>
         </v-toolbar>
 
-        <v-card-text>
+        <!-- <v-card-text>
           portfolioInputTagOrAddress: {{ portfolioInputTagOrAddress }}<br />
           portfolioAddresses: {{ portfolioAddresses }}
-        </v-card-text>
-
-
+        </v-card-text> -->
 
         <v-row dense>
           <v-col v-if="settings.showFilter" cols="2">
