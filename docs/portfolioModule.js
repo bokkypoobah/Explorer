@@ -233,7 +233,12 @@ const portfolioModule = {
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
 
+      context.commit('setSyncTotal', Object.keys(context.state.addresses).length);
+      let completed = 0;
+
       for (const [address, addressInfo] of Object.entries(context.state.addresses)) {
+        context.commit('setSyncInfo', "Syncing " + address);
+        context.commit('setSyncCompleted', completed++);
         console.log(now() + " portfolioModule - actions.syncPortfolio - address: " + address + " => " + JSON.stringify(addressInfo));
         let addressData = await dbGetCachedData(db, address + "_portfolio_address_data", {});
         await syncPortfolioAddress(address, addressData, provider, chainId);
@@ -242,7 +247,7 @@ const portfolioModule = {
         console.log(now() + " portfolioModule - actions.syncPortfolio - processing - addressData: " + JSON.stringify(addressData, null, 2));
         await dbSaveCacheData(db, address + "_portfolio_address_data", JSON.parse(JSON.stringify(addressData)));
       }
-
+      context.commit('setSyncCompleted', completed++);
       // return;
       //
       // const completed = {};
