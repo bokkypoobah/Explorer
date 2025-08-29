@@ -69,10 +69,10 @@ const Portfolio = {
         </v-toolbar>
 
         <v-alert
-          v-if="portfoliosOptions.length <= 1"
+          v-if="Object.keys(addresses).length <= 1"
           closable
-          title="Configuration"
-          text="Set up your portfolio(s) of addresses in Other -> Config -> Portfolios"
+          title="Info"
+          text="Click on the address book icon to set up your addresses, or paste in your address."
           type="info"
           color="info"
           class="mx-0 my-1"
