@@ -423,7 +423,7 @@ const addressBookModule = {
     },
     setAddress(state, info) {
       // console.log(now() + " addressBookModule - mutations.setAddress - info: " + JSON.stringify(info));
-      state.settings.addresses[info.address] = { name: info.name, tags: info.tags };
+      state.settings.addresses[validateAddress(info.address)] = { name: info.name, tags: info.tags };
     },
     deleteAddress(state, address) {
       // console.log(now() + " addressBookModule - mutations.deleteAddress - address: " + address);

@@ -177,14 +177,17 @@ const portfolioModule = {
       const addressBook = store.getters['addressBook/addresses'];
       const tags = store.getters['addressBook/tags'];
       const addresses = {};
-      if (inputTagOrAddress in addressBook) {
-        addresses[inputTagOrAddress] = addressBook[inputTagOrAddress];
-      } else if (inputTagOrAddress in tags) {
+      if (inputTagOrAddress in tags) {
         for (let tag of tags[inputTagOrAddress]) {
           addresses[tag.address] = addressBook[tag.address];
         }
       } else if (validateAddress(inputTagOrAddress) != null) {
-        addresses[inputTagOrAddress] = "Manual input";
+        const validatedInputAddress = validateAddress(inputTagOrAddress);
+        if (validatedInputAddress in addressBook) {
+          addresses[validatedInputAddress] = addressBook[validatedInputAddress];
+        } else {
+          addresses[validatedInputAddress] = "Manual input";
+        }
       }
       // console.log(now() + " portfolioModule - actions.loadPortfolio - addresses: " + JSON.stringify(addresses));
       context.commit('setInputData', { inputTagOrAddress, addresses });
