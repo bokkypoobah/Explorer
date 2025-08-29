@@ -198,6 +198,7 @@ const portfolioModule = {
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
       let data = await dbGetCachedData(db, chainId + "_portfolio_data", {});
+      console.log(now() + " portfolioModule - actions.loadPortfolio - _portfolio_data: " + JSON.stringify(data, null, 2));
       context.commit('setData', data);
       db.close();
     },
