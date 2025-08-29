@@ -26,7 +26,7 @@ const Portfolio = {
             </template>
           </v-combobox>
 
-          <v-btn @click="showAddressBook();" color="primary" icon size="default" v-tooltip="'Show address book dialog. cmd+b'">
+          <v-btn @click="showAddressBook();" color="primary" icon size="default" v-tooltip="'Show address book - cmd+b'">
             <v-icon>mdi-book-open-variant-outline</v-icon>
           </v-btn>
           <v-spacer></v-spacer>
