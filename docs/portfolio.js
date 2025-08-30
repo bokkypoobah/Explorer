@@ -50,7 +50,7 @@ const Portfolio = {
         </v-toolbar>
 
         <v-alert
-          v-if="Object.keys(addresses).length <= 1"
+          v-if="Object.keys(addressBook).length < 1"
           closable
           title="Info"
           text="Click on the address book icon to set up your addresses, or paste in your address."
@@ -98,16 +98,20 @@ const Portfolio = {
           </v-pagination>
         </v-toolbar>
 
-        <!-- <v-card-text>
-          sync: {{ sync }}<br />
-          portfolioInputTagOrAddress: {{ portfolioInputTagOrAddress }}<br />
-          portfolioAddresses: {{ portfolioAddresses }}
-        </v-card-text> -->
-
         <v-row dense>
           <v-col v-if="settings.showFilter" cols="2">
             <v-card>
               <v-expansion-panels v-model="settings.assetTypeFilter.visible" @update:modelValue="saveSettings();" multiple flat>
+                <v-expansion-panel class="ma-0 pa-0">
+                  <v-expansion-panel-title>
+                    Addresses
+                  </v-expansion-panel-title>
+                  <v-expansion-panel-text class="ma-0 pa-0">
+                    <v-list-item v-for="(addressData, address) of portfolioAddresses" density="compact" class="ma-0 pa-1">
+                      <v-checkbox-btn :model-value="settings.addressFilter[address]" @update:modelValue="updateAddressFilter(address, $event);" :label="address.substring(0, 8) + '...' + address.slice(-6)" class="ma-0 pa-0" v-tooltip="address"></v-checkbox-btn>
+                    </v-list-item>
+                  </v-expansion-panel-text>
+                </v-expansion-panel>
                 <v-expansion-panel class="ma-0 pa-0">
                   <v-expansion-panel-title>
                     Asset Type
@@ -125,12 +129,6 @@ const Portfolio = {
                     <v-list-item append-icon="mdi-alphabetical" density="compact" class="ma-0 pa-1">
                       <v-checkbox-btn v-model="settings.assetTypeFilter.names" @update:modelValue="saveSettings();" label="ENS Names" class="ma-0 pa-0" v-tooltip="'ERC-721 & ERC-1155 ENS Names'"></v-checkbox-btn>
                     </v-list-item>
-                    <!-- <v-list-item class="ma-0 pa-1">
-                      <v-checkbox-btn label="ETH" class="ma-0 pa-0"></v-checkbox-btn>
-                      <v-checkbox-btn label="ERC-20" class="ma-0 pa-0"></v-checkbox-btn>
-                      <v-checkbox-btn label="ERC-721/1155" class="ma-0 pa-0"></v-checkbox-btn>
-                      <v-checkbox-btn label="ENS (ERC-721/1155)" class="ma-0 pa-0"></v-checkbox-btn>
-                    </v-list-item> -->
                   </v-expansion-panel-text>
                 </v-expansion-panel>
               </v-expansion-panels>
@@ -262,6 +260,7 @@ data: {{ data }}
         selectedPortfolio: null,
         tab: "assets",
         showFilter: false,
+        addressFilter: {},
         assetTypeFilter: {
           visible: false,
           eth: true,
@@ -277,7 +276,7 @@ data: {{ data }}
           itemsPerPage: 10,
           currentPage: 1,
         },
-        version: 5,
+        version: 6,
       },
       _timerId: null,
       itemsPerPageOptions: [
@@ -303,7 +302,7 @@ data: {{ data }}
     chainId() {
       return store.getters['chainId'];
     },
-    addresses() {
+    addressBook() {
       return store.getters['addressBook/addresses'];
     },
     tags() {
@@ -312,7 +311,7 @@ data: {{ data }}
     tagOrAddressOptions() {
       const results = [];
       if (this.settings.selectTagOrAddress == "addresses") {
-        for (const [address, addressData] of Object.entries(this.addresses)) {
+        for (const [address, addressData] of Object.entries(this.addressBook)) {
           const subtitle = addressData.name + " [ " + addressData.tags.join(", ") + " ]";
           results.push({ title: address, value: address, subtitle, tags: addressData.tags });
         }
@@ -374,14 +373,34 @@ data: {{ data }}
     filteredSortedAssets() {
       const results = [];
       // console.log(now() + " Portfolio - computed.filteredSortedAssets - assets: " + JSON.stringify(this.assets, null, 2));
+      const activeAddressFilter = {};
+      for (const [address, addressInfo] of Object.entries(this.portfolioAddresses)) {
+        if (this.settings.addressFilter[address]) {
+          activeAddressFilter[address] = true;
+        }
+      }
+      const filterByAddress = Object.keys(activeAddressFilter).length > 0;
+
       for (const asset of this.assets) {
+        // console.error(now() + " Portfolio - computed.filteredSortedAssets - asset: " + JSON.stringify(asset, null, 2));
+        let include = false;
         if ((asset.type == 0 && this.settings.assetTypeFilter.eth) ||
           (asset.type == 1 && this.settings.assetTypeFilter.fungibles) ||
           (asset.type == 2 && this.settings.assetTypeFilter.nonFungibles) ||
           (asset.type == 3 && this.settings.assetTypeFilter.names)) {
+            include = true;
+        }
+        if (include && filterByAddress) {
+          if (!(asset.address in activeAddressFilter)) {
+            include = false;
+          }
+        }
+        if (include) {
           results.push(asset);
         }
       }
+
+      // TODO: Sort
       return results;
     },
     pagedFilteredSortedAssets() {
@@ -438,6 +457,18 @@ data: {{ data }}
     setSyncHalt() {
       console.log(now() + " Portfolio - methods.setSyncHalt");
       store.dispatch('token/setSyncHalt');
+    },
+
+    updateAddressFilter(address, value) {
+      console.log(now() + " Portfolio - methods.updateAddressFilter - address: " + address + ", value: " + value);
+      if (value) {
+        this.settings.addressFilter[address] = true;
+      } else {
+        if (this.settings.addressFilter[address]) {
+          delete this.settings.addressFilter[address];
+        }
+      }
+      this.saveSettings();
     },
 
     // async loadEvents({ page, itemsPerPage, sortBy }) {
