@@ -5,10 +5,6 @@ const portfolioModule = {
     addresses: {},
     data: {},
 
-    // TODO: Delete
-    portfolios: {},
-    // info: {},
-
     // addresses: [],
     // addressesIndex: {},
     // txHashes: [],
@@ -34,11 +30,6 @@ const portfolioModule = {
     addresses: state => state.addresses,
     data: state => state.data,
 
-    // TODO: Delete
-    portfolios: state => state.portfolios,
-    // address: state => state.info.address || null,
-    // info: state => state.info,
-    //
     // addresses: state => state.addresses,
     // addressesIndex: state => state.addressesIndex,
     // txHashes: state => state.txHashes,
@@ -110,31 +101,6 @@ const portfolioModule = {
       state.data = data;
     },
 
-    // TODO: Delete
-    setPortfolios(state, portfolios) {
-      console.log(now() + " portfolioModule - mutations.setPortfolios - portfolios: " + JSON.stringify(portfolios));
-      state.portfolios = portfolios;
-    },
-    // TODO: Delete
-    addPortfolio(state, { name, originalName, accounts }) {
-      console.log(now() + " portfolioModule - mutations.addPortfolio - name: " + name + ", originalName: " + originalName + ", accounts: " + JSON.stringify(accounts));
-      if (originalName != null && name != originalName) {
-        delete state.portfolios[originalName];
-      }
-      const accountsMap = {};
-      for (const account of accounts) {
-        accountsMap[account.account] = { active: account.active };
-      }
-      state.portfolios[name] = accountsMap;
-      console.log(now() + " portfolioModule - mutations.addPortfolio - state.portfolios[name]: " + JSON.stringify(state.portfolios[name]));
-    },
-    // TODO: Delete
-    deletePortfolio(state, name) {
-      console.log(now() + " portfolioModule - mutations.deletePortfolio - name: " + name);
-      delete state.portfolios[name];
-    },
-
-
     // setLookups(state, { addresses, addressesIndex, txHashes, txHashesIndex }) {
     //   // console.log(now() + " portfolioModule - mutations.setLookups - info: " + JSON.stringify(info));
     //   state.addresses = addresses;
@@ -202,26 +168,6 @@ const portfolioModule = {
       context.commit('setData', data);
       db.close();
     },
-    // async addPortfolio(context, { name, originalName, accounts }) {
-    //   console.log(now() + " portfolioModule - actions.addPortfolio - name: " + name + ", originalName: " + originalName + ", accounts: " + JSON.stringify(accounts));
-    //   context.commit('addPortfolio', { name, originalName, accounts });
-    //   context.dispatch("savePortfolios");
-    // },
-    // async deletePortfolio(context, name) {
-    //   console.log(now() + " portfolioModule - actions.deletePortfolio - name: " + name);
-    //   context.commit('deletePortfolio', name);
-    //   context.dispatch("savePortfolios");
-    // },
-    // async savePortfolios(context) {
-    //   console.log(now() + " portfolioModule - actions.savePortfolios");
-    //   const chainId = store.getters["web3/chainId"];
-    //   const provider = new ethers.providers.Web3Provider(window.ethereum);
-    //   const dbInfo = store.getters["db"];
-    //   const db = new Dexie(dbInfo.name);
-    //   db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
-    //   await dbSaveCacheData(db, chainId + "_portfolios", JSON.parse(JSON.stringify(context.state.portfolios)));
-    //   db.close();
-    // },
     async syncPortfolio(context, { selectedPortfolio, forceUpdate }) {
       console.log(now() + " portfolioModule - actions.syncPortfolio - selectedPortfolio: " + selectedPortfolio + ", forceUpdate: " + forceUpdate);
       const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -248,25 +194,6 @@ const portfolioModule = {
         await dbSaveCacheData(db, address + "_portfolio_address_data", JSON.parse(JSON.stringify(addressData)));
       }
       context.commit('setSyncCompleted', completed++);
-      // return;
-      //
-      // const completed = {};
-      // for (const [portfolio, portfolioData] of Object.entries(store.getters['config/portfolios'])) {
-      //   if (!selectedPortfolio || selectedPortfolio == portfolio) {
-      //     for (const [account, accountData] of Object.entries(portfolioData)) {
-      //       const validatedAddress = validateAddress(account);
-      //       if (accountData.active && validatedAddress && !completed[validatedAddress]) {
-      //         console.log(now() + " portfolioModule - actions.syncPortfolio - processing - validatedAddress: " + validatedAddress);
-      //         let addressData = await dbGetCachedData(db, validatedAddress + "_portfolio_address_data", {});
-      //         await syncPortfolioAddress(validatedAddress, addressData, provider, chainId);
-      //         await syncPortfolioAddressEvents(validatedAddress, addressData, provider, db, chainId);
-      //         console.log(now() + " portfolioModule - actions.syncPortfolio - processing - addressData: " + JSON.stringify(addressData, null, 2));
-      //         await dbSaveCacheData(db, validatedAddress + "_portfolio_address_data", JSON.parse(JSON.stringify(addressData)));
-      //         completed[validatedAddress] = true;
-      //       }
-      //     }
-      //   }
-      // }
 
       db.close();
       context.dispatch("collateData", selectedPortfolio);
@@ -281,7 +208,6 @@ const portfolioModule = {
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
 
       const data = {};
-
       for (const [address, addressInfo] of Object.entries(context.state.addresses)) {
         console.log(now() + " portfolioModule - actions.collateData - address: " + address + " => " + JSON.stringify(addressInfo));
         let addressData = await dbGetCachedData(db, address + "_portfolio_address_data", {});
@@ -291,26 +217,6 @@ const portfolioModule = {
         };
         await collatePortfolioAddress(address, data, db, chainId);
       }
-
-      // const completed = {};
-      // for (const [portfolio, portfolioData] of Object.entries(store.getters['config/portfolios'])) {
-      //   if (!selectedPortfolio || selectedPortfolio == portfolio) {
-      //     for (const [account, accountData] of Object.entries(portfolioData)) {
-      //       const validatedAddress = validateAddress(account);
-      //       if (accountData.active && validatedAddress && !completed[validatedAddress]) {
-      //         console.log(now() + " portfolioModule - actions.collateData - processing - validatedAddress: " + validatedAddress);
-      //
-      //         let addressData = await dbGetCachedData(db, validatedAddress + "_portfolio_address_data", {});
-      //         console.log(now() + " portfolioModule - actions.collateData - processing - addressData: " + JSON.stringify(addressData));
-      //         data[validatedAddress] = {
-      //           ...addressData,
-      //         };
-      //         await collatePortfolioAddress(validatedAddress, data, db, chainId);
-      //         completed[validatedAddress] = true;
-      //       }
-      //     }
-      //   }
-      // }
 
       context.commit('setData', data);
       await dbSaveCacheData(db, chainId + "_portfolio_data", data);

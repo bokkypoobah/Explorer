@@ -29,29 +29,10 @@ const Portfolio = {
           <v-btn @click="showAddressBook();" color="primary" icon size="default" v-tooltip="'Show address book - cmd+b'">
             <v-icon>mdi-book-open-variant-outline</v-icon>
           </v-btn>
-          <!-- <v-spacer></v-spacer> -->
-          <!-- <v-select
-            v-model="settings.selectedPortfolio"
-            :items="portfoliosOptions"
-            variant="plain"
-            density="compact"
-            class="mt-3 ml-5"
-            style="max-width: 200px;"
-            @update:modelValue="saveSettings();"
-          ></v-select> -->
           <v-spacer></v-spacer>
           <v-btn v-if="sync.info == null" @click="syncPortfolio();" color="primary" icon v-tooltip="'Sync Portfolio'">
             <v-icon>mdi-refresh</v-icon>
           </v-btn>
-          <!-- <v-btn v-if="sync.info == null" @click="syncTokenEvents();" color="primary" icon v-tooltip="'Sync Portfolio Events'">
-            <v-icon>mdi-download</v-icon>
-          </v-btn> -->
-          <!-- <v-btn v-if="sync.info == null" @click="syncTokenEvents();" color="primary" icon v-tooltip="'Retrieve Timestamps'">
-            <v-icon>mdi-clock-outline</v-icon>
-          </v-btn> -->
-          <!-- <v-btn v-if="sync.info == null" :disabled="!reservoir" @click="syncTokenMetadata();" color="primary" icon v-tooltip="'Sync Portfolio Metadata'">
-            <v-icon>mdi-image-outline</v-icon>
-          </v-btn> -->
           <v-btn v-if="sync.info != null" @click="setSyncHalt();" color="primary" icon v-tooltip="'Halt syncing'">
             <v-icon>mdi-stop</v-icon>
           </v-btn>
@@ -315,38 +296,7 @@ data: {{ data }}
         { title: '#', value: 'rowNumber', width: '10%', align: 'end', sortable: false },
         { title: 'Address', value: 'address', width: '20%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
         { title: 'Info', value: 'info', width: '70%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
-        // { title: 'Active', value: 'active', width: '15%', sortable: false },
-        // { title: '', value: 'actions', width: '15%', sortable: false },
       ],
-      // addressRules: [
-      //   (v) => (v || "").length > 0 || "Address is required",
-      //   (v) => {
-      //     try {
-      //       ethers.utils.getAddress(v);
-      //       return true;
-      //     } catch (e) {
-      //       return "Invalid Address";
-      //     }
-      //   },
-      // ],
-      // portfolioDialog: {
-      //   mode: null,
-      //   name: null,
-      //   originalName: null,
-      //   accounts: [],
-      //   account: null,
-      //   active: true,
-      // },
-      // portfoliosHeaders: [
-      //   { title: 'Name', value: 'name', width: '20%', sortable: true },
-      //   { title: 'Accounts', value: 'accounts', width: '65%', sortable: false },
-      //   { title: '', value: 'actions', width: '15%', sortable: false },
-      // ],
-      // accountsHeaders: [
-      //   { title: 'Account', value: 'account', width: '70%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
-      //   { title: 'Active', value: 'active', width: '15%', sortable: false },
-      //   { title: '', value: 'actions', width: '15%', sortable: false },
-      // ],
     };
   },
   computed: {
@@ -390,18 +340,6 @@ data: {{ data }}
     portfolioAddresses() {
       return store.getters['portfolio/addresses'];
     },
-    // portfolios() {
-    //   return store.getters['config/portfolios'];
-    // },
-    // portfoliosOptions() {
-    //   const results = [];
-    //   results.push({ value: null, title: "(All)" });
-    //   for (const [portfolio, portfolioData] of Object.entries(store.getters['config/portfolios'])) {
-    //     // console.error(portfolio + " => " + JSON.stringify(portfolioData));
-    //     results.push({ value: portfolio, title: portfolio });
-    //   }
-    //   return results;
-    // },
     data() {
       return store.getters['portfolio/data'];
     },
@@ -451,62 +389,7 @@ data: {{ data }}
       // console.log(now() + " Portfolio - computed.pagedFilteredSortedAssets - results: " + JSON.stringify(results, null, 2));
       return results;
     },
-    // portfoliosList() {
-    //   const results = [];
-    //   for (const [ name, accounts ] of Object.entries(this.portfolios)) {
-    //     results.push({ name, accounts });
-    //   }
-    //   results.sort((a, b) => {
-    //     return a.name.localeCompare(b.name);
-    //   });
-    //   return results;
-    // },
 
-    // address() {
-    //   return store.getters['token/address'];
-    // },
-    // version() {
-    //   return store.getters['token/info'].version || null;
-    // },
-    // implementation() {
-    //   return store.getters['token/info'].implementation || null;
-    // },
-    // type() {
-    //   return store.getters['token/info'].type || null;
-    // },
-    // name() {
-    //   return store.getters['token/info'].name || null;
-    // },
-    // symbol() {
-    //   return store.getters['token/info'].symbol || null;
-    // },
-    // decimals() {
-    //   return store.getters['token/info'].decimals || null;
-    // },
-    // totalSupply() {
-    //   return store.getters['token/info'].totalSupply || null;
-    // },
-    // addresses() {
-    //   return store.getters['token/addresses'];
-    // },
-    // txHashes() {
-    //   return store.getters['token/txHashes'];
-    // },
-    // numberOfEvents() {
-    //   return store.getters['token/numberOfEvents'];
-    // },
-    // balances() {
-    //   return store.getters['token/balances'];
-    // },
-    // tokens() {
-    //   return store.getters['token/tokens'];
-    // },
-    // approvals() {
-    //   return store.getters['token/approvals'];
-    // },
-    // approvalForAlls() {
-    //   return store.getters['token/approvalForAlls'];
-    // },
     metadata() {
       return store.getters['token/metadata'];
     },
@@ -542,29 +425,6 @@ data: {{ data }}
       console.log(now() + " Portfolio - methods.showAddressBook");
       store.dispatch('addressBook/setShow', true);
     },
-
-    // portfolioDialogView(name) {
-    //   console.log(now() + " Portfolio - methods.portfolioDialogView - name: " + name);
-    //   this.portfolioDialog.mode = name == null ? "add" : "edit";
-    //   this.portfolioDialog.name = name;
-    //   this.portfolioDialog.originalName = name;
-    //   const accounts = [];
-    //   for (const [ account, accountData ] of Object.entries(this.portfolios[this.portfolioDialog.name] || {})) {
-    //     accounts.push({ account, ...accountData });
-    //   }
-    //   console.log(now() + " Portfolio - methods.portfolioDialogView - accounts: " + JSON.stringify(accounts));
-    //   this.portfolioDialog.accounts = accounts;
-    // },
-    // async portfolioDialogAddOrSave() {
-    //   console.log(now() + " Portfolio - methods.portfolioDialogAddOrSave - portfolioDialog.mode: " + this.portfolioDialog.mode);
-    //   store.dispatch('config/addPortfolio', { name: this.portfolioDialog.name, originalName: this.portfolioDialog.originalName, accounts: this.portfolioDialog.accounts });
-    //   this.portfolioDialog.mode = null;
-    // },
-    // portfolioDialogDelete() {
-    //   console.log(now() + " Portfolio - methods.portfolioDialogDelete");
-    //   store.dispatch('config/deletePortfolio', this.portfolioDialog.originalName);
-    //   this.portfolioDialog.mode = null;
-    // },
 
     // syncTokenEvents() {
     //   console.log(now() + " Portfolio - methods.syncTokenEvents - address: " + this.address);
