@@ -12,7 +12,7 @@ const Portfolio = {
 
           <!-- <v-combobox v-model="settings.selectedTagOrAddress" @update:model-value="search();" :items="samples" item-title="title" item-value="value" hide-details single-line density="compact" variant="underlined" style="width: 330px;" placeholder="block #, tx hash, address or name[.eth]"> -->
 
-          <v-combobox v-model="settings.selectedTagOrAddress" @update:model-value="loadPortfolio();" :items="tagOrAddressOptions" item-title="title" item-subtitle="subtitle" item-value="value" hide-details single-line density="compact" variant="underlined" style="width: 330px;" placeholder="address or tag">
+          <v-combobox v-model="settings.selectedTagOrAddress" @update:model-value="loadPortfolio();" :items="tagOrAddressOptions" item-title="title" item-subtitle="subtitle" item-value="value" hide-details single-line density="compact" variant="underlined" style="max-width: 420px;" placeholder="address or tag">
             <template v-slot:prepend-item>
               <v-tabs v-model="settings.selectTagOrAddress" align-tabs="end" size="default" color="deep-purple-accent-4" class="m-0 p-0">
                 <v-tab prepend-icon="mdi-numeric" value="addresses" class="lowercase-btn">Addresses</v-tab>
@@ -29,8 +29,8 @@ const Portfolio = {
           <v-btn @click="showAddressBook();" color="primary" icon size="default" v-tooltip="'Show address book - cmd+b'">
             <v-icon>mdi-book-open-variant-outline</v-icon>
           </v-btn>
-          <v-spacer></v-spacer>
-          <v-select
+          <!-- <v-spacer></v-spacer> -->
+          <!-- <v-select
             v-model="settings.selectedPortfolio"
             :items="portfoliosOptions"
             variant="plain"
@@ -38,7 +38,7 @@ const Portfolio = {
             class="mt-3 ml-5"
             style="max-width: 200px;"
             @update:modelValue="saveSettings();"
-          ></v-select>
+          ></v-select> -->
           <v-spacer></v-spacer>
           <v-btn v-if="sync.info == null" @click="syncPortfolio();" color="primary" icon v-tooltip="'Sync Portfolio'">
             <v-icon>mdi-refresh</v-icon>
@@ -390,18 +390,18 @@ data: {{ data }}
     portfolioAddresses() {
       return store.getters['portfolio/addresses'];
     },
-    portfolios() {
-      return store.getters['config/portfolios'];
-    },
-    portfoliosOptions() {
-      const results = [];
-      results.push({ value: null, title: "(All)" });
-      for (const [portfolio, portfolioData] of Object.entries(store.getters['config/portfolios'])) {
-        // console.error(portfolio + " => " + JSON.stringify(portfolioData));
-        results.push({ value: portfolio, title: portfolio });
-      }
-      return results;
-    },
+    // portfolios() {
+    //   return store.getters['config/portfolios'];
+    // },
+    // portfoliosOptions() {
+    //   const results = [];
+    //   results.push({ value: null, title: "(All)" });
+    //   for (const [portfolio, portfolioData] of Object.entries(store.getters['config/portfolios'])) {
+    //     // console.error(portfolio + " => " + JSON.stringify(portfolioData));
+    //     results.push({ value: portfolio, title: portfolio });
+    //   }
+    //   return results;
+    // },
     data() {
       return store.getters['portfolio/data'];
     },
