@@ -457,7 +457,7 @@ data: {{ data }}
 
     setSyncHalt() {
       console.log(now() + " Portfolio - methods.setSyncHalt");
-      store.dispatch('token/setSyncHalt');
+      store.dispatch('portfolio/setSyncHalt');
     },
 
     updateAddressFilter(address, value) {

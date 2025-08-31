@@ -229,6 +229,7 @@ const portfolioModule = {
         metadata[chainId] = {};
       }
 
+      const toProcess = {};
       let rows = 0;
       for (const [address, addressInfo] of Object.entries(context.state.addresses)) {
         console.error(now() + " portfolioModule - actions.syncMetadata - address: " + address);
@@ -240,11 +241,12 @@ const portfolioModule = {
           for (const log of logs) {
             if (log.topics[0] in tokenTopics) {
               console.error(now() + " portfolioModule - actions.syncMetadata - log: " + JSON.stringify(log, null, 2));
-              if (!(log.contract in metadata[chainId])) {
+              if (!(log.contract in metadata[chainId]) && !(log.contract in toProcess)) {
                 console.error(now() + " portfolioModule - actions.syncMetadata - new contract: " + log.contract);
-                const info = await getAddressInfo(log.contract, provider);
-                console.error(now() + " portfolioModule - actions.syncMetadata - info: " + JSON.stringify(info, null, 2));
-                metadata[chainId][log.contract] = { type: info.type, ensName: info.ensName, balance: info.balance, name: info.name, symbol: info.symbol, decimals: info.decimals, totalSupply: info.totalSupply };
+                toProcess[log.contract] = true;
+                // const info = await getAddressInfo(log.contract, provider);
+                // console.error(now() + " portfolioModule - actions.syncMetadata - info: " + JSON.stringify(info, null, 2));
+                // metadata[chainId][log.contract] = { type: info.type, ensName: info.ensName, balance: info.balance, name: info.name, symbol: info.symbol, decimals: info.decimals, totalSupply: info.totalSupply };
               }
             }
           }
@@ -253,11 +255,26 @@ const portfolioModule = {
           done = logs.length < BATCH_SIZE;
         } while (!done);
       }
+      console.error(now() + " portfolioModule - actions.syncMetadata - toProcess: " + JSON.stringify(toProcess, null, 2));
+
+      context.commit('setSyncTotal', Object.keys(toProcess).length);
+      let completed = 0;
+      for (let address of Object.keys(toProcess)) {
+        if (context.state.sync.halt) {
+          break;
+        }
+        console.error(now() + " portfolioModule - actions.syncMetadata - processing - address: " + address);
+        const info = await getAddressInfo(address, provider);
+        console.error(now() + " portfolioModule - actions.syncMetadata - processing - info: " + JSON.stringify(info, null, 2));
+        metadata[chainId][address] = { type: info.type, ensName: info.ensName, balance: info.balance, name: info.name, symbol: info.symbol, decimals: info.decimals, totalSupply: info.totalSupply };
+        context.commit('setSyncInfo', "Syncing metadata for " + address.substring(0, 6) + "..." + address.slice(-4) + " => " + info.name);
+        context.commit('setSyncCompleted', ++completed);
+      }
       console.error(now() + " portfolioModule - actions.syncMetadata - metadata: " + JSON.stringify(metadata, null, 2));
+
       await dbSaveCacheData(db, "portfolio_metadata", metadata);
       db.close();
       context.commit('setSyncInfo', null);
-      context.commit('setSyncHalt', false);
     },
 
     async collateData(context) {
