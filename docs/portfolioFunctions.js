@@ -139,8 +139,8 @@ async function syncPortfolioAddressEvents(address, data, provider, db, chainId) 
 // ERC-721 ApprovalForAll (index_topic_1 address owner, index_topic_2 address operator, bool approved)
 // ERC-1155 ApprovalForAll (index_topic_1 address account, index_topic_2 address operator, bool approved)
 // '0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31',
-async function syncPortfolioAddressMetadata(address, addressData, metadata, provider, db, chainId) {
-  console.log(now() + " portfolioFunctions.js:syncPortfolioAddressMetadata - address: " + address + ", addressData: " + JSON.stringify(addressData, null, 2));
+async function syncPortfolioMetadata(addresses, metadata, provider, db, chainId) {
+  console.log(now() + " portfolioFunctions.js:syncPortfolioAddressMetadata - addresses: " + JSON.stringify(addresses, null, 2));
   console.log(now() + " portfolioFunctions.js:syncPortfolioAddressMetadata - metadata: " + JSON.stringify(metadata, null, 2));
   const tokenTopics = {
     "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": "ERC-20/721 Transfer",
@@ -155,25 +155,29 @@ async function syncPortfolioAddressMetadata(address, addressData, metadata, prov
     metadata[chainId] = {};
   }
   const BATCH_SIZE = 10000;
+
   let rows = 0;
-  let done = false;
-  do {
-    const logs = await db.addressEvents.where('[address+chainId+blockNumber+logIndex]').between([address, Dexie.minKey, Dexie.minKey, Dexie.minKey],[address, Dexie.maxKey, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(BATCH_SIZE).toArray();
-    for (const log of logs) {
-      if (log.topics[0] in tokenTopics) {
-        console.log(now() + " portfolioFunctions.js:syncPortfolioAddressMetadata - tokenTopic: " + tokenTopics[log.topics[0]] + ", log: " + JSON.stringify(log, null, 2));
-        if (!(log.contract in metadata[chainId])) {
-          console.log(now() + " portfolioFunctions.js:syncPortfolioAddressMetadata - new contract: " + log.contract);
-          const info = await getAddressInfo(log.contract, provider);
-          console.error(now() + " portfolioFunctions.js:syncPortfolioAddressMetadata - info: " + JSON.stringify(info, null, 2));
-          metadata[chainId][log.contract] = { type: info.type, ensName: info.ensName, balance: info.balance, name: info.name, symbol: info.symbol, decimals: info.decimals, totalSupply: info.totalSupply };
+  for (const [address, addressInfo] of Object.entries(addresses)) {
+    console.error(now() + " portfolioFunctions.js:syncPortfolioAddressMetadata - address: " + JSON.stringify(address, null, 2));
+    let done = false;
+    do {
+      const logs = await db.addressEvents.where('[address+chainId+blockNumber+logIndex]').between([address, Dexie.minKey, Dexie.minKey, Dexie.minKey],[address, Dexie.maxKey, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(BATCH_SIZE).toArray();
+      for (const log of logs) {
+        if (log.topics[0] in tokenTopics) {
+          console.log(now() + " portfolioFunctions.js:syncPortfolioAddressMetadata - tokenTopic: " + tokenTopics[log.topics[0]] + ", log: " + JSON.stringify(log, null, 2));
+          if (!(log.contract in metadata[chainId])) {
+            console.log(now() + " portfolioFunctions.js:syncPortfolioAddressMetadata - new contract: " + log.contract);
+            const info = await getAddressInfo(log.contract, provider);
+            console.error(now() + " portfolioFunctions.js:syncPortfolioAddressMetadata - info: " + JSON.stringify(info, null, 2));
+            metadata[chainId][log.contract] = { type: info.type, ensName: info.ensName, balance: info.balance, name: info.name, symbol: info.symbol, decimals: info.decimals, totalSupply: info.totalSupply };
+          }
         }
       }
-    }
-    rows = parseInt(rows) + logs.length;
-    console.log(now() + " portfolioFunctions.js:syncPortfolioAddressMetadata - rows: " + rows);
-    done = logs.length < BATCH_SIZE;
-  } while (!done);
+      rows = parseInt(rows) + logs.length;
+      console.log(now() + " portfolioFunctions.js:syncPortfolioAddressMetadata - rows: " + rows);
+      done = logs.length < BATCH_SIZE;
+    } while (!done);
+  }
   console.log(now() + " portfolioFunctions.js:syncPortfolioAddressMetadata - rows: " + rows);
   console.log(now() + " portfolioFunctions.js:syncPortfolioAddressMetadata - metadata: " + JSON.stringify(metadata, null, 2));
 }

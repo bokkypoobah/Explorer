@@ -39,6 +39,7 @@ const Portfolio = {
           <v-progress-circular v-if="sync.info != null" color="primary" :model-value="sync.total ? (parseInt(sync.completed * 100 / sync.total)) : 0" :size="30" :width="6" v-tooltip="sync.info + ': Part ' + commify0(sync.completed) + ' of ' + commify0(sync.total)"></v-progress-circular>
           <v-spacer></v-spacer>
           <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" right color="deep-purple-accent-4">
+            <v-tab prepend-icon="mdi-sigma" text="Summary" value="summary" class="lowercase-btn"></v-tab>
             <v-tab prepend-icon="mdi-text-long" text="Assets" value="assets" class="lowercase-btn"></v-tab>
             <!-- <v-tab prepend-icon="mdi-cash-multiple" text="Fungibles" value="fungibles" class="lowercase-btn"></v-tab> -->
             <!-- <v-tab prepend-icon="mdi-cards-playing-heart-multiple-outline" text="Non-Fungibles" value="nonfungibles" class="lowercase-btn"></v-tab> -->
@@ -258,7 +259,7 @@ data: {{ data }}
         selectTagOrAddress: "addresses",
         selectedTagOrAddress: null,
         selectedPortfolio: null, // TODO: Delete
-        tab: "assets",
+        tab: "summary",
         showFilter: false,
         addressFilter: {},
         assetTypeFilter: {
