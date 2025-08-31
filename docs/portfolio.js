@@ -138,7 +138,6 @@ const Portfolio = {
           <v-col :cols="settings.showFilter ? 10 : 12" align="left">
             <v-card>
               <v-card-text class="ma-0 pa-2">
-                {{ metadata }}
                 <v-tabs-window v-model="settings.tab">
                   <v-tabs-window-item value="assets">
 
@@ -412,10 +411,6 @@ data: {{ data }}
       const results = this.filteredSortedAssets.slice((this.settings.assets.currentPage - 1) * this.settings.assets.itemsPerPage, this.settings.assets.currentPage * this.settings.assets.itemsPerPage);
       // console.log(now() + " Portfolio - computed.pagedFilteredSortedAssets - results: " + JSON.stringify(results, null, 2));
       return results;
-    },
-
-    metadata() {
-      return store.getters['token/metadata'];
     },
     sync() {
       return store.getters['portfolio/sync'];
