@@ -97,7 +97,7 @@ const portfolioModule = {
       state.addresses = addresses;
     },
     setData(state, data) {
-      console.log(now() + " portfolioModule - mutations.setData - data: " + JSON.stringify(data));
+      // console.log(now() + " portfolioModule - mutations.setData - data: " + JSON.stringify(data));
       state.data = data;
     },
 
@@ -180,6 +180,7 @@ const portfolioModule = {
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
 
+      let metadata = await dbGetCachedData(db, "portfolio_metadata", {});
       context.commit('setSyncTotal', Object.keys(context.state.addresses).length);
       let completed = 0;
       // console.log(now() + " portfolioModule - actions.syncPortfolio - context.state.addresses: " + JSON.stringify(context.state.addresses));
@@ -192,6 +193,8 @@ const portfolioModule = {
         console.log(now() + " portfolioModule - actions.syncPortfolio - processing address - addressData: " + JSON.stringify(addressData, null, 2));
         await syncPortfolioAddressEvents(address, addressData, provider, db, chainId);
         console.log(now() + " portfolioModule - actions.syncPortfolio - processing events - addressData: " + JSON.stringify(addressData, null, 2));
+        await syncPortfolioAddressMetadata(address, addressData, metadata, provider, db, chainId);
+        console.log(now() + " portfolioModule - actions.syncPortfolio - processing metadata - metadata: " + JSON.stringify(metadata, null, 2));
         await dbSaveCacheData(db, address + "_portfolio_address_data", JSON.parse(JSON.stringify(addressData)));
       }
       context.commit('setSyncCompleted', completed++);
@@ -201,6 +204,7 @@ const portfolioModule = {
       context.commit('setSyncInfo', null);
       context.commit('setSyncHalt', false);
     },
+
     async collateData(context) {
       console.log(now() + " portfolioModule - actions.collateData");
       const chainId = store.getters["web3/chainId"];

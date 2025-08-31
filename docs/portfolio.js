@@ -344,7 +344,7 @@ data: {{ data }}
     },
     assets() {
       const results = [];
-      console.log(now() + " Portfolio - computed.assets - data: " + JSON.stringify(this.data, null, 2));
+      // console.log(now() + " Portfolio - computed.assets - data: " + JSON.stringify(this.data, null, 2));
       for (const [address, addressData] of Object.entries(this.data)) {
         for (const [chain, chainData] of Object.entries(addressData)) {
           // console.error(address + "/" + chain + " => " + JSON.stringify(chainData));

@@ -121,6 +121,57 @@ async function syncPortfolioAddressEvents(address, data, provider, db, chainId) 
   // console.log(now() + " portfolioFunctions.js:syncPortfolioAddressEvents - logs: " + JSON.stringify(logs, null, 2));
 }
 
+
+// ERC-20 Transfer (index_topic_1 address from, index_topic_2 address to, uint256 tokens)
+// ERC-721 Transfer (index_topic_1 address from, index_topic_2 address to, index_topic_3 uint256 id)
+// '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
+// ERC-1155 TransferSingle (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256 id, uint256 value)
+// '0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62',
+// ERC-1155 TransferBatch (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256[] ids, uint256[] values)
+// '0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb',
+// WETH Deposit (index_topic_1 address dst, uint256 wad)
+// '0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c',
+// WETH Withdrawal (index_topic_1 address src, uint256 wad)
+// '0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65',
+// ERC-20 Approval (index_topic_1 address owner, index_topic_2 address spender, uint256 value)
+// ERC-721 Approval (index_topic_1 address owner, index_topic_2 address approved, index_topic_3 uint256 tokenId)
+// '0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925',
+// ERC-721 ApprovalForAll (index_topic_1 address owner, index_topic_2 address operator, bool approved)
+// ERC-1155 ApprovalForAll (index_topic_1 address account, index_topic_2 address operator, bool approved)
+// '0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31',
+async function syncPortfolioAddressMetadata(address, addressData, metadata, provider, db, chainId) {
+  console.log(now() + " portfolioFunctions.js:syncPortfolioAddressMetadata - address: " + address + ", addressData: " + JSON.stringify(addressData, null, 2));
+  console.log(now() + " portfolioFunctions.js:syncPortfolioAddressMetadata - metadata: " + JSON.stringify(metadata, null, 2));
+  const tokenTopics = {
+    "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": "ERC-20/721 Transfer",
+    "0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62": "ERC-1155 TransferSingle",
+    "0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb": "ERC-1155 TransferBatch",
+    "0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c": "WETH Deposit",
+    "0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65": "WETH Withdrawal",
+    "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": "ERC-20/721 Approval",
+    "0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31": "ERC-1155 ApprovalForAll",
+  };
+  if (!(chainId in metadata)) {
+    metadata[chainId] = {};
+  }
+  const BATCH_SIZE = 10000;
+  let rows = 0;
+  let done = false;
+  do {
+    const logs = await db.addressEvents.where('[address+chainId+blockNumber+logIndex]').between([address, Dexie.minKey, Dexie.minKey, Dexie.minKey],[address, Dexie.maxKey, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(BATCH_SIZE).toArray();
+    for (const log of logs) {
+      if (log.topics[0] in tokenTopics) {
+        console.error(now() + " portfolioFunctions.js:syncPortfolioAddressMetadata - tokenTopic: " + tokenTopics[log.topics[0]] + ", log: " + JSON.stringify(log, null, 2));
+      }
+    }
+    rows = parseInt(rows) + logs.length;
+    console.log(now() + " portfolioFunctions.js:syncPortfolioAddressMetadata - rows: " + rows);
+    done = logs.length < BATCH_SIZE;
+  } while (!done);
+  console.log(now() + " portfolioFunctions.js:syncPortfolioAddressMetadata - rows: " + rows);
+  console.log(now() + " portfolioFunctions.js:syncPortfolioAddressMetadata - metadata: " + JSON.stringify(metadata, null, 2));
+}
+
 // ERC-20 Transfer (index_topic_1 address from, index_topic_2 address to, uint256 tokens)
 // ERC-721 Transfer (index_topic_1 address from, index_topic_2 address to, index_topic_3 uint256 id)
 // '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
