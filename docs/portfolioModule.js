@@ -158,18 +158,19 @@ const portfolioModule = {
       // console.log(now() + " portfolioModule - actions.loadPortfolio - addresses: " + JSON.stringify(addresses));
       context.commit('setInputData', { inputTagOrAddress, addresses });
 
-      const chainId = store.getters["web3/chainId"];
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const dbInfo = store.getters["db"];
-      const db = new Dexie(dbInfo.name);
-      db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
-      let data = await dbGetCachedData(db, chainId + "_portfolio_data", {});
-      console.log(now() + " portfolioModule - actions.loadPortfolio - _portfolio_data: " + JSON.stringify(data, null, 2));
-      context.commit('setData', data);
-      db.close();
+      // const chainId = store.getters["web3/chainId"];
+      // const provider = new ethers.providers.Web3Provider(window.ethereum);
+      // const dbInfo = store.getters["db"];
+      // const db = new Dexie(dbInfo.name);
+      // db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
+      // let data = await dbGetCachedData(db, chainId + "_portfolio_data", {});
+      // console.log(now() + " portfolioModule - actions.loadPortfolio - _portfolio_data: " + JSON.stringify(data, null, 2));
+      // context.commit('setData', data);
+      // db.close();
+      context.dispatch("collateData");
     },
-    async syncPortfolio(context, { selectedPortfolio, forceUpdate }) {
-      console.log(now() + " portfolioModule - actions.syncPortfolio - selectedPortfolio: " + selectedPortfolio + ", forceUpdate: " + forceUpdate);
+    async syncPortfolio(context, { forceUpdate }) {
+      console.log(now() + " portfolioModule - actions.syncPortfolio - forceUpdate: " + forceUpdate);
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const chainId = store.getters["web3/chainId"];
       const block = await provider.getBlock();
@@ -181,27 +182,27 @@ const portfolioModule = {
 
       context.commit('setSyncTotal', Object.keys(context.state.addresses).length);
       let completed = 0;
-
+      // console.log(now() + " portfolioModule - actions.syncPortfolio - context.state.addresses: " + JSON.stringify(context.state.addresses));
       for (const [address, addressInfo] of Object.entries(context.state.addresses)) {
         context.commit('setSyncInfo', "Syncing " + address);
         context.commit('setSyncCompleted', completed++);
-        console.log(now() + " portfolioModule - actions.syncPortfolio - address: " + address + " => " + JSON.stringify(addressInfo));
+        console.log(now() + " portfolioModule - actions.syncPortfolio - processing - address: " + address + " => " + JSON.stringify(addressInfo));
         let addressData = await dbGetCachedData(db, address + "_portfolio_address_data", {});
         await syncPortfolioAddress(address, addressData, provider, chainId);
-        console.log(now() + " portfolioModule - actions.syncPortfolio - processing - addressData: " + JSON.stringify(addressData, null, 2));
+        console.log(now() + " portfolioModule - actions.syncPortfolio - processing address - addressData: " + JSON.stringify(addressData, null, 2));
         await syncPortfolioAddressEvents(address, addressData, provider, db, chainId);
-        console.log(now() + " portfolioModule - actions.syncPortfolio - processing - addressData: " + JSON.stringify(addressData, null, 2));
+        console.log(now() + " portfolioModule - actions.syncPortfolio - processing events - addressData: " + JSON.stringify(addressData, null, 2));
         await dbSaveCacheData(db, address + "_portfolio_address_data", JSON.parse(JSON.stringify(addressData)));
       }
       context.commit('setSyncCompleted', completed++);
 
       db.close();
-      context.dispatch("collateData", selectedPortfolio);
+      context.dispatch("collateData");
       context.commit('setSyncInfo', null);
       context.commit('setSyncHalt', false);
     },
-    async collateData(context, selectedPortfolio) {
-      console.log(now() + " portfolioModule - actions.collateData - selectedPortfolio: " + selectedPortfolio);
+    async collateData(context) {
+      console.log(now() + " portfolioModule - actions.collateData");
       const chainId = store.getters["web3/chainId"];
       const dbInfo = store.getters["db"];
       const db = new Dexie(dbInfo.name);

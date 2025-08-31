@@ -257,7 +257,7 @@ data: {{ data }}
       settings: {
         selectTagOrAddress: "addresses",
         selectedTagOrAddress: null,
-        selectedPortfolio: null,
+        selectedPortfolio: null, // TODO: Delete
         tab: "assets",
         showFilter: false,
         addressFilter: {},
@@ -438,7 +438,7 @@ data: {{ data }}
     },
     syncPortfolio() {
       console.log(now() + " Portfolio - methods.syncPortfolio");
-      store.dispatch('portfolio/syncPortfolio', { selectedPortfolio: this.settings.selectedPortfolio, forceUpdate: true });
+      store.dispatch('portfolio/syncPortfolio', { forceUpdate: true });
     },
     showAddressBook() {
       console.log(now() + " Portfolio - methods.showAddressBook");
