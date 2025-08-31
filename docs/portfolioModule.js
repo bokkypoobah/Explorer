@@ -4,20 +4,8 @@ const portfolioModule = {
     inputTagOrAddress: null,
     addresses: {},
     data: {},
-
-    // addresses: [],
-    // addressesIndex: {},
-    // txHashes: [],
-    // txHashesIndex: {},
-
-    // numberOfEvents: null,
-    // balances: {},
-    // tokens: {},
-    // approvals: {},
-    // approvalForAlls: {},
-
-    // metadata: {},
-
+    data: {},
+    metadata: {},
     sync: {
       info: null,
       completed: null,
@@ -29,66 +17,8 @@ const portfolioModule = {
     inputTagOrAddress: state => state.inputTagOrAddress,
     addresses: state => state.addresses,
     data: state => state.data,
-
-    // addresses: state => state.addresses,
-    // addressesIndex: state => state.addressesIndex,
-    // txHashes: state => state.txHashes,
-    // txHashesIndex: state => state.txHashesIndex,
-    //
-    // numberOfEvents: state => state.numberOfEvents,
-    // balances: state => state.balances,
-    // tokens: state => state.tokens,
-    // approvals: state => state.approvals,
-    // approvalForAlls: state => state.approvalForAlls,
-    //
-    // metadata: state => state.metadata,
-    //
+    metadata: state => state.metadata,
     sync: state => state.sync,
-
-    // functions(state) {
-    //   console.log(now() + " portfolioModule - computed.functions");
-    //   const addressInfo = store.getters["addresses/getAddressInfo"](state.info.address);
-    //   // console.log(now() + " portfolioModule - computed.functions - addressInfo: " + JSON.stringify(addressInfo));
-    //   const results = {};
-    //   if (addressInfo.abi) {
-    //     try {
-    //       const interface = new ethers.utils.Interface(addressInfo.abi);
-    //       for (const fullName of interface.format(ethers.utils.FormatTypes.full)) {
-    //         if (fullName.substring(0, 8) == "function") {
-    //           const fragment = interface.getFunction(fullName.substring(9,));
-    //           const methodId = interface.getSighash(fragment);
-    //           results[methodId] = { fullName, ...fragment };
-    //         }
-    //       }
-    //     } catch (e) {
-    //       console.error(now() + " portfolioModule - computed.functions - ERROR: " + e.message);
-    //     }
-    //   }
-    //   return results;
-    // },
-    // events(state) {
-    //   console.log(now() + " portfolioModule - computed.events");
-    //   const addressInfo = store.getters["addresses/getAddressInfo"](state.info.address);
-    //   // console.log(now() + " portfolioModule - computed.functions - addressInfo: " + JSON.stringify(addressInfo));
-    //   const results = {};
-    //   if (addressInfo.abi) {
-    //     try {
-    //       const interface = new ethers.utils.Interface(addressInfo.abi);
-    //       for (const fullName of interface.format(ethers.utils.FormatTypes.full)) {
-    //         if (fullName.substring(0, 5) == "event") {
-    //           const fragment = interface.getEvent(fullName.substring(6,));
-    //           const topicCount = fragment.inputs.filter(e => e.indexed).length + 1;
-    //           const signature = interface.getEventTopic(fragment);
-    //           // const parameters = fragment.inputs.map(e => ({ name: e.name, type: e.type, indexed: e.indexed }));
-    //           results[signature] = { fullName, topicCount, ...fragment };
-    //         }
-    //       }
-    //     } catch (e) {
-    //       console.error(now() + " portfolioModule - computed.events - ERROR: " + e.message);
-    //     }
-    //   }
-    //   return results;
-    // },
   },
   mutations: {
     setInputData(state, { inputTagOrAddress, addresses }) {
@@ -100,26 +30,10 @@ const portfolioModule = {
       // console.log(now() + " portfolioModule - mutations.setData - data: " + JSON.stringify(data));
       state.data = data;
     },
-
-    // setLookups(state, { addresses, addressesIndex, txHashes, txHashesIndex }) {
-    //   // console.log(now() + " portfolioModule - mutations.setLookups - info: " + JSON.stringify(info));
-    //   state.addresses = addresses;
-    //   state.addressesIndex = addressesIndex;
-    //   state.txHashes = txHashes;
-    //   state.txHashesIndex = txHashesIndex;
-    // },
-    // setEventInfo(state, { numberOfEvents, balances, tokens, approvals, approvalForAlls }) {
-    //   console.log(now() + " portfolioModule - mutations.setEventInfo - numberOfEvents: " + JSON.stringify(numberOfEvents));
-    //   state.numberOfEvents = numberOfEvents;
-    //   state.balances = balances;
-    //   state.tokens = tokens;
-    //   state.approvals = approvals;
-    //   state.approvalForAlls = approvalForAlls;
-    // },
-    // setMetadata(state, metadata) {
-    //   console.log(now() + " portfolioModule - mutations.setMetadata - metadata: " + JSON.stringify(metadata).substring(0, 200));
-    //   state.metadata = metadata;
-    // },
+    setMetadata(state, metadata) {
+      console.error(now() + " portfolioModule - mutations.setMetadata - metadata: " + JSON.stringify(metadata).substring(0, 200));
+      state.metadata = metadata;
+    },
     setSyncInfo(state, info) {
       // console.log(now() + " portfolioModule - mutations.setSyncInfo - info: " + info);
       state.sync.info = info;
@@ -240,13 +154,10 @@ const portfolioModule = {
           // console.error(now() + " portfolioModule - actions.syncMetadata - logs: " + JSON.stringify(logs, null, 2));
           for (const log of logs) {
             if (log.topics[0] in tokenTopics) {
-              console.error(now() + " portfolioModule - actions.syncMetadata - log: " + JSON.stringify(log, null, 2));
+              // console.error(now() + " portfolioModule - actions.syncMetadata - log: " + JSON.stringify(log, null, 2));
               if (!(log.contract in metadata[chainId]) && !(log.contract in toProcess)) {
-                console.error(now() + " portfolioModule - actions.syncMetadata - new contract: " + log.contract);
+                // console.error(now() + " portfolioModule - actions.syncMetadata - new contract: " + log.contract);
                 toProcess[log.contract] = true;
-                // const info = await getAddressInfo(log.contract, provider);
-                // console.error(now() + " portfolioModule - actions.syncMetadata - info: " + JSON.stringify(info, null, 2));
-                // metadata[chainId][log.contract] = { type: info.type, ensName: info.ensName, balance: info.balance, name: info.name, symbol: info.symbol, decimals: info.decimals, totalSupply: info.totalSupply };
               }
             }
           }
@@ -272,6 +183,7 @@ const portfolioModule = {
       }
       console.error(now() + " portfolioModule - actions.syncMetadata - metadata: " + JSON.stringify(metadata, null, 2));
 
+      context.commit('setMetadata', metadata);
       await dbSaveCacheData(db, "portfolio_metadata", metadata);
       db.close();
       context.commit('setSyncInfo', null);
