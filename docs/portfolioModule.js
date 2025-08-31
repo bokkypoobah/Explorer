@@ -31,7 +31,7 @@ const portfolioModule = {
       state.data = data;
     },
     setMetadata(state, metadata) {
-      console.error(now() + " portfolioModule - mutations.setMetadata - metadata: " + JSON.stringify(metadata).substring(0, 200));
+      console.error(now() + " portfolioModule - mutations.setMetadata - metadata: " + JSON.stringify(metadata));
       state.metadata = metadata;
     },
     setSyncInfo(state, info) {
@@ -72,15 +72,15 @@ const portfolioModule = {
       // console.log(now() + " portfolioModule - actions.loadPortfolio - addresses: " + JSON.stringify(addresses));
       context.commit('setInputData', { inputTagOrAddress, addresses });
 
-      // const chainId = store.getters["web3/chainId"];
-      // const provider = new ethers.providers.Web3Provider(window.ethereum);
-      // const dbInfo = store.getters["db"];
-      // const db = new Dexie(dbInfo.name);
-      // db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
-      // let data = await dbGetCachedData(db, chainId + "_portfolio_data", {});
-      // console.log(now() + " portfolioModule - actions.loadPortfolio - _portfolio_data: " + JSON.stringify(data, null, 2));
-      // context.commit('setData', data);
-      // db.close();
+      const chainId = store.getters["web3/chainId"];
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const dbInfo = store.getters["db"];
+      const db = new Dexie(dbInfo.name);
+      db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
+      let metadata = await dbGetCachedData(db, "portfolio_metadata", {});
+      console.log(now() + " portfolioModule - actions.loadPortfolio - portfolio_metadata: " + JSON.stringify(metadata, null, 2));
+      context.commit('setMetadata', metadata);
+      db.close();
       context.dispatch("collateData");
     },
     async syncPortfolio(context, { forceUpdate }) {
@@ -109,10 +109,6 @@ const portfolioModule = {
         await dbSaveCacheData(db, address + "_portfolio_address_data", JSON.parse(JSON.stringify(addressData)));
       }
       context.commit('setSyncCompleted', ++completed);
-
-      // let metadata = await dbGetCachedData(db, "portfolio_metadata", {});
-      // await syncPortfolioMetadata(context.state.addresses, metadata, provider, db, chainId);
-      // console.error(now() + " portfolioModule - actions.syncPortfolio - processing metadata - metadata: " + JSON.stringify(metadata, null, 2));
       db.close();
 
       context.dispatch("syncMetadata");
