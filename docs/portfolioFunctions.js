@@ -161,7 +161,13 @@ async function syncPortfolioAddressMetadata(address, addressData, metadata, prov
     const logs = await db.addressEvents.where('[address+chainId+blockNumber+logIndex]').between([address, Dexie.minKey, Dexie.minKey, Dexie.minKey],[address, Dexie.maxKey, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(BATCH_SIZE).toArray();
     for (const log of logs) {
       if (log.topics[0] in tokenTopics) {
-        console.error(now() + " portfolioFunctions.js:syncPortfolioAddressMetadata - tokenTopic: " + tokenTopics[log.topics[0]] + ", log: " + JSON.stringify(log, null, 2));
+        console.log(now() + " portfolioFunctions.js:syncPortfolioAddressMetadata - tokenTopic: " + tokenTopics[log.topics[0]] + ", log: " + JSON.stringify(log, null, 2));
+        if (!(log.contract in metadata[chainId])) {
+          console.log(now() + " portfolioFunctions.js:syncPortfolioAddressMetadata - new contract: " + log.contract);
+          const info = await getAddressInfo(log.contract, provider);
+          console.error(now() + " portfolioFunctions.js:syncPortfolioAddressMetadata - info: " + JSON.stringify(info, null, 2));
+          metadata[chainId][log.contract] = { type: info.type, ensName: info.ensName, balance: info.balance, name: info.name, symbol: info.symbol, decimals: info.decimals, totalSupply: info.totalSupply };
+        }
       }
     }
     rows = parseInt(rows) + logs.length;

@@ -194,7 +194,7 @@ const portfolioModule = {
         await syncPortfolioAddressEvents(address, addressData, provider, db, chainId);
         console.log(now() + " portfolioModule - actions.syncPortfolio - processing events - addressData: " + JSON.stringify(addressData, null, 2));
         await syncPortfolioAddressMetadata(address, addressData, metadata, provider, db, chainId);
-        console.log(now() + " portfolioModule - actions.syncPortfolio - processing metadata - metadata: " + JSON.stringify(metadata, null, 2));
+        console.error(now() + " portfolioModule - actions.syncPortfolio - processing metadata - metadata: " + JSON.stringify(metadata, null, 2));
         await dbSaveCacheData(db, address + "_portfolio_address_data", JSON.parse(JSON.stringify(addressData)));
       }
       context.commit('setSyncCompleted', completed++);
