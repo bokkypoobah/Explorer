@@ -164,6 +164,8 @@ async function getAddressInfo(inputAddress, provider) {
       } catch (e) {
         console.error(now() + " functions.js:getAddressInfo - ERROR tokenContract.symbol(): " + e.message);
       }
+    }
+    if (results.type == "contract") {
       try {
         results.totalSupply = ethers.BigNumber.from(await tokenContract.totalSupply()).toString();
         console.log(now() + " functions.js:getAddressInfo - results.totalSupply: " + results.totalSupply);
