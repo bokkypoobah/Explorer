@@ -31,7 +31,7 @@ const portfolioModule = {
       state.data = data;
     },
     setMetadata(state, metadata) {
-      console.error(now() + " portfolioModule - mutations.setMetadata - metadata: " + JSON.stringify(metadata));
+      // console.log(now() + " portfolioModule - mutations.setMetadata - metadata: " + JSON.stringify(metadata));
       state.metadata = metadata;
     },
     setSyncInfo(state, info) {
@@ -78,7 +78,7 @@ const portfolioModule = {
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
       let metadata = await dbGetCachedData(db, "portfolio_metadata", {});
-      console.log(now() + " portfolioModule - actions.loadPortfolio - portfolio_metadata: " + JSON.stringify(metadata, null, 2));
+      // console.log(now() + " portfolioModule - actions.loadPortfolio - portfolio_metadata: " + JSON.stringify(metadata, null, 2));
       context.commit('setMetadata', metadata);
       db.close();
       context.dispatch("collateData");
@@ -192,6 +192,8 @@ const portfolioModule = {
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
 
+      let metadata = await dbGetCachedData(db, "portfolio_metadata", {});
+      console.error(now() + " portfolioModule - actions.collateData - processing - metadata: " + JSON.stringify(metadata));
       const data = {};
       for (const [address, addressInfo] of Object.entries(context.state.addresses)) {
         console.log(now() + " portfolioModule - actions.collateData - address: " + address + " => " + JSON.stringify(addressInfo));
