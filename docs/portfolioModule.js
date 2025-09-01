@@ -238,18 +238,29 @@ const portfolioModule = {
       console.error(now() + " portfolioModule - actions.syncMetadata - metadata: " + JSON.stringify(metadata, null, 2));
 
       const metadataToRetrieve = [];
-      for (const [tokenContract, tokenContractData] of Object.entries(metadata[chainId])) {
-        if (tokenContractData.type == "erc721" || tokenContractData.type == "erc1155") {
-          console.error(now() + " portfolioModule - actions.syncMetadata - tokenContract: " + tokenContract + " => " + JSON.stringify(tokenContractData, null, 2));
-          for (const [tokenId, tokenData] of Object.entries(tokenContractData.tokens)) {
+      for (const [contract, contractData] of Object.entries(metadata[chainId])) {
+        if (contractData.type == "erc721" || contractData.type == "erc1155") {
+          console.error(now() + " portfolioModule - actions.syncMetadata - contract: " + contract + " => " + JSON.stringify(contractData, null, 2));
+          for (const [tokenId, tokenData] of Object.entries(contractData.tokens)) {
             if (tokenData === true) {
-              console.error(now() + " portfolioModule - actions.syncMetadata - tokenContract: " + tokenContract + "/" + tokenId + " => " + JSON.stringify(tokenData, null, 2));
-              metadataToRetrieve.push({ tokenContract, tokenId });
+              console.error(now() + " portfolioModule - actions.syncMetadata - contract: " + contract + "/" + tokenId + " => " + JSON.stringify(tokenData, null, 2));
+              metadataToRetrieve.push({ contract, tokenId });
             }
           }
         }
       }
       console.error(now() + " portfolioModule - actions.syncMetadata - metadataToRetrieve: " + JSON.stringify(metadataToRetrieve, null, 2));
+
+      const BATCHSIZE = 25;
+      const DELAYINMILLIS = 2000;
+      completed = 0;
+      // context.commit('setSyncInfo', "Syncing token metadata for " + address.substring(0, 6) + "..." + address.slice(-4) + " => " + info.name);
+      // context.commit('setSyncCompleted', ++completed);
+      for (let i = 0; i < metadataToRetrieve.length && !context.state.sync.halt; i += BATCHSIZE) {
+        const batch = metadataToRetrieve.slice(i, parseInt(i) + BATCHSIZE);
+        console.error(now() + " portfolioModule - actions.syncMetadata - batch: " + JSON.stringify(batch));
+      }
+
 
       context.commit('setMetadata', metadata);
       await dbSaveCacheData(db, "portfolio_metadata", metadata);
