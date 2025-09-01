@@ -186,7 +186,8 @@ const portfolioModule = {
                   const tokenId = ethers.BigNumber.from(log.data.substring(0, 66)).toString();
                   const count = ethers.BigNumber.from("0x" + log.data.substring(66, 130)).toString();
                   if (!(tokenId in toProcess[log.contract])) {
-                    toProcess[log.contract][tokenId] = count;
+                    // toProcess[log.contract][tokenId] = count;
+                    toProcess[log.contract][tokenId] = true;
                   }
                 // ERC-1155 TransferBatch (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256[] ids, uint256[] values)
                 } else if (log.topics[0] == "0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb") {
@@ -196,7 +197,8 @@ const portfolioModule = {
                   for (const [index, tokenId] of tokenIds.entries()) {
                     const _tokenId = ethers.BigNumber.from(tokenId).toString();
                     const _value = ethers.BigNumber.from(values[index]).toString();
-                    toProcess[log.contract][_tokenId] = _value;
+                    // toProcess[log.contract][_tokenId] = _value;
+                    toProcess[log.contract][_tokenId] = true;
                   }
                 // ERC-721 Approval (index_topic_1 address owner, index_topic_2 address approved, index_topic_3 uint256 tokenId)
                 } else if (log.topics[0] == "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925" && log.topics.length == 4) {
@@ -230,10 +232,24 @@ const portfolioModule = {
         } else {
           metadata[chainId][address] = { type: info.type, ensName: info.ensName, balance: info.balance, name: info.name, symbol: info.symbol, decimals: info.decimals, totalSupply: info.totalSupply, tokens: toProcess[address] };
         }
-        context.commit('setSyncInfo', "Syncing metadata for " + address.substring(0, 6) + "..." + address.slice(-4) + " => " + info.name);
+        context.commit('setSyncInfo', "Syncing contract metadata for " + address.substring(0, 6) + "..." + address.slice(-4) + " => " + info.name);
         context.commit('setSyncCompleted', ++completed);
       }
       console.error(now() + " portfolioModule - actions.syncMetadata - metadata: " + JSON.stringify(metadata, null, 2));
+
+      const metadataToRetrieve = [];
+      for (const [tokenContract, tokenContractData] of Object.entries(metadata[chainId])) {
+        if (tokenContractData.type == "erc721" || tokenContractData.type == "erc1155") {
+          console.error(now() + " portfolioModule - actions.syncMetadata - tokenContract: " + tokenContract + " => " + JSON.stringify(tokenContractData, null, 2));
+          for (const [tokenId, tokenData] of Object.entries(tokenContractData.tokens)) {
+            if (tokenData === true) {
+              console.error(now() + " portfolioModule - actions.syncMetadata - tokenContract: " + tokenContract + "/" + tokenId + " => " + JSON.stringify(tokenData, null, 2));
+              metadataToRetrieve.push({ tokenContract, tokenId });
+            }
+          }
+        }
+      }
+      console.error(now() + " portfolioModule - actions.syncMetadata - metadataToRetrieve: " + JSON.stringify(metadataToRetrieve, null, 2));
 
       context.commit('setMetadata', metadata);
       await dbSaveCacheData(db, "portfolio_metadata", metadata);
