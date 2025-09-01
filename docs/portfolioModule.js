@@ -259,8 +259,30 @@ const portfolioModule = {
       for (let i = 0; i < metadataToRetrieve.length && !context.state.sync.halt; i += BATCHSIZE) {
         const batch = metadataToRetrieve.slice(i, parseInt(i) + BATCHSIZE);
         console.error(now() + " portfolioModule - actions.syncMetadata - batch: " + JSON.stringify(batch));
+        let continuation = null;
+        do {
+          let url = "https://api.reservoir.tools/tokens/v7?";
+          let separator = "";
+          for (let j = 0; j < batch.length; j++) {
+            url = url + separator + "tokens=" + batch[j].contract + "%3A" + batch[j].tokenId;
+            separator = "&";
+          }
+          url = url + (continuation != null ? "&continuation=" + continuation : '');
+          url = url + "&limit=100&includeAttributes=true&includeLastSale=true&includeTopBid=true";
+          console.log(url);
+          const data = await fetch(url).then(response => response.json());
+          console.error(now() + " portfolioModule - actions.syncMetadata - data: " + JSON.stringify(data));
+          continuation = data.continuation;
+          parseReservoirData(data, metadata);
+          // for (token of data.tokens) {
+          //   console.error(now() + " portfolioModule - actions.syncMetadata - token: " + JSON.stringify(token, null, 2));
+          // }
+          console.log(now() + " portfolioModule - actions.syncMetadata - metadata: " + JSON.stringify(metadata, null, 2));
+          if (continuation != null) {
+            await delay(DELAYINMILLIS);
+          }
+        } while (continuation != null && !context.state.sync.halt);
       }
-
 
       context.commit('setMetadata', metadata);
       await dbSaveCacheData(db, "portfolio_metadata", metadata);

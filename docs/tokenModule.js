@@ -529,7 +529,7 @@ const tokenModule = {
           });
         continuation = data.continuation;
         // console.log(now() + " tokenModule - actions.syncTokenMetadata - data: " + JSON.stringify(data, null, 2).substring(0, 200));
-        parseReservoirData(data, metadata);
+        parseReservoirDataForCollection(data, metadata);
         console.log(now() + " tokenModule - actions.syncTokenMetadata - metadata - #tokens: " + Object.keys(metadata.tokens).length);
         if (continuation != null) {
           await delay(1000);
