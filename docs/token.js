@@ -758,7 +758,7 @@ nftOwnersList: {{ nftOwnersList }}
       return store.getters['explorer'];
     },
     reservoir() {
-      return store.getters['reservoir'];
+      return store.getters['web3/reservoir'];
     },
     getEventsHeaders() {
       if (this.type == "erc20") {
