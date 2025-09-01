@@ -117,6 +117,23 @@ const portfolioModule = {
       context.commit('setSyncHalt', false);
     },
 
+    // x ERC-20 Transfer (index_topic_1 address from, index_topic_2 address to, uint256 tokens)
+    // v ERC-721 Transfer (index_topic_1 address from, index_topic_2 address to, index_topic_3 uint256 id)
+    // '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
+    // v ERC-1155 TransferSingle (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256 id, uint256 value)
+    // '0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62',
+    // v ERC-1155 TransferBatch (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256[] ids, uint256[] values)
+    // '0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb',
+    // x WETH Deposit (index_topic_1 address dst, uint256 wad)
+    // '0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c',
+    // x WETH Withdrawal (index_topic_1 address src, uint256 wad)
+    // '0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65',
+    // x ERC-20 Approval (index_topic_1 address owner, index_topic_2 address spender, uint256 value)
+    // v ERC-721 Approval (index_topic_1 address owner, index_topic_2 address approved, index_topic_3 uint256 tokenId)
+    // '0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925',
+    // ERC-721 ApprovalForAll (index_topic_1 address owner, index_topic_2 address operator, bool approved)
+    // ERC-1155 ApprovalForAll (index_topic_1 address account, index_topic_2 address operator, bool approved)
+    // '0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31',
     async syncMetadata(context) {
       console.error(now() + " portfolioModule - actions.syncMetadata");
       const BATCH_SIZE = 10000;
@@ -134,7 +151,10 @@ const portfolioModule = {
       const dbInfo = store.getters["db"];
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
+      const erc1155Interface = new ethers.utils.Interface(ERC1155ABI);
       const metadata = await dbGetCachedData(db, "portfolio_metadata", {});
+      // TODO
+      // const metadata = {};
       if (!(chainId in metadata)) {
         metadata[chainId] = {};
       }
@@ -143,17 +163,49 @@ const portfolioModule = {
       let rows = 0;
       for (const [address, addressInfo] of Object.entries(context.state.addresses)) {
         console.error(now() + " portfolioModule - actions.syncMetadata - address: " + address);
-
         let done = false;
         do {
           const logs = await db.addressEvents.where('[address+chainId+blockNumber+logIndex]').between([address, Dexie.minKey, Dexie.minKey, Dexie.minKey],[address, Dexie.maxKey, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(BATCH_SIZE).toArray();
-          // console.error(now() + " portfolioModule - actions.syncMetadata - logs: " + JSON.stringify(logs, null, 2));
           for (const log of logs) {
             if (log.topics[0] in tokenTopics) {
               // console.error(now() + " portfolioModule - actions.syncMetadata - log: " + JSON.stringify(log, null, 2));
-              if (!(log.contract in metadata[chainId]) && !(log.contract in toProcess)) {
-                // console.error(now() + " portfolioModule - actions.syncMetadata - new contract: " + log.contract);
-                toProcess[log.contract] = true;
+              if (!(log.contract in metadata[chainId])) {
+                if (!(log.contract in toProcess)) {
+                  toProcess[log.contract] = {};
+                }
+                // ERC-721 Transfer (index_topic_1 address from, index_topic_2 address to, index_topic_3 uint256 id)
+                if (log.topics[0] == "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef" && log.topics.length == 4) {
+                  // console.error(now() + " portfolioModule - actions.syncMetadata - ERC-721 Transfer log: " + JSON.stringify(log, null, 2));
+                  const tokenId = ethers.BigNumber.from(log.topics[3]).toString();
+                  if (!(tokenId in toProcess[log.contract])) {
+                    toProcess[log.contract][tokenId] = true;
+                  }
+                // ERC-1155 TransferSingle (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256 id, uint256 value)
+                } else if (log.topics[0] == "0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62") {
+                  // console.error(now() + " portfolioModule - actions.syncMetadata - ERC-1155 TransferSingle log: " + JSON.stringify(log, null, 2));
+                  const tokenId = ethers.BigNumber.from(log.data.substring(0, 66)).toString();
+                  const count = ethers.BigNumber.from("0x" + log.data.substring(66, 130)).toString();
+                  if (!(tokenId in toProcess[log.contract])) {
+                    toProcess[log.contract][tokenId] = count;
+                  }
+                // ERC-1155 TransferBatch (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256[] ids, uint256[] values)
+                } else if (log.topics[0] == "0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb") {
+                  // console.error(now() + " portfolioModule - actions.syncMetadata - ERC-1155 TransferBatch log: " + JSON.stringify(log, null, 2));
+                  const logData = erc1155Interface.parseLog(log);
+                  const [ operator, from, to, tokenIds, values ] = logData.args;
+                  for (const [index, tokenId] of tokenIds.entries()) {
+                    const _tokenId = ethers.BigNumber.from(tokenId).toString();
+                    const _value = ethers.BigNumber.from(values[index]).toString();
+                    toProcess[log.contract][_tokenId] = _value;
+                  }
+                // ERC-721 Approval (index_topic_1 address owner, index_topic_2 address approved, index_topic_3 uint256 tokenId)
+                } else if (log.topics[0] == "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925" && log.topics.length == 4) {
+                  // console.error(now() + " portfolioModule - actions.syncMetadata - ERC-721 Approval log: " + JSON.stringify(log, null, 2));
+                  const tokenId = ethers.BigNumber.from(log.topics[3]).toString();
+                  if (!(tokenId in toProcess[log.contract])) {
+                    toProcess[log.contract][tokenId] = true;
+                  }
+                }
               }
             }
           }
@@ -173,7 +225,11 @@ const portfolioModule = {
         console.error(now() + " portfolioModule - actions.syncMetadata - processing - address: " + address);
         const info = await getAddressInfo(address, provider);
         console.error(now() + " portfolioModule - actions.syncMetadata - processing - info: " + JSON.stringify(info, null, 2));
-        metadata[chainId][address] = { type: info.type, ensName: info.ensName, balance: info.balance, name: info.name, symbol: info.symbol, decimals: info.decimals, totalSupply: info.totalSupply };
+        if (info.type == "erc20") {
+          metadata[chainId][address] = { type: info.type, ensName: info.ensName, balance: info.balance, name: info.name, symbol: info.symbol, decimals: info.decimals, totalSupply: info.totalSupply };
+        } else {
+          metadata[chainId][address] = { type: info.type, ensName: info.ensName, balance: info.balance, name: info.name, symbol: info.symbol, decimals: info.decimals, totalSupply: info.totalSupply, tokens: toProcess[address] };
+        }
         context.commit('setSyncInfo', "Syncing metadata for " + address.substring(0, 6) + "..." + address.slice(-4) + " => " + info.name);
         context.commit('setSyncCompleted', ++completed);
       }

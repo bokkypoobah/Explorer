@@ -138,6 +138,7 @@ const Portfolio = {
           <v-col :cols="settings.showFilter ? 10 : 12" align="left">
             <v-card>
               <v-card-text class="ma-0 pa-2">
+                {{ metadata }}
                 <v-tabs-window v-model="settings.tab">
                   <v-tabs-window-item value="assets">
 
