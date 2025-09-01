@@ -86,8 +86,7 @@ function parseReservoirDataForCollection(data, reservoirData) {
 
 
 function parseReservoirData(data, metadata) {
-  console.log(moment().format("HH:mm:ss") + " parseReservoirData - data: " + JSON.stringify(data, null, 2).substring(0, 200));
-  // console.log(moment().format("HH:mm:ss") + " parseReservoirData - metadata: " + JSON.stringify(metadata, null, 2));
+  // console.error(moment().format("HH:mm:ss") + " parseReservoirData - data: " + JSON.stringify(data, null, 2));
   for (const item of (data && data.tokens || [])) {
     const token = item.token;
     const market = item.market;
@@ -139,11 +138,12 @@ function parseReservoirData(data, metadata) {
         netAmountUSD: topBidNetAmountUSD,
       };
     }
-    console.log("metadata[chainId]: " + JSON.stringify(metadata[token.chainId]));
 
     if (token.chainId in metadata && metadata[token.chainId][contract] && metadata[token.chainId][contract].tokens[token.tokenId]) {
-      console.error("metadata[chainId][contract].tokens[tokenId] BEFORE: " + JSON.stringify(metadata[token.chainId][contract].tokens[token.tokenId]));
       metadata[token.chainId][contract].tokens[token.tokenId] = {
+        collectionName: token.collection.name,
+        collectionImage: token.collection.image,
+        collectionSlug: token.collection.slug,
         name: token.name,
         description: token.description,
         image: token.image,
@@ -161,40 +161,7 @@ function parseReservoirData(data, metadata) {
         price,
         topBid,
       };
-      console.error("metadata[chainId][contract].tokens[tokenId] AFTER : " + JSON.stringify(metadata[token.chainId][contract].tokens[token.tokenId]));
-
     }
-
-
-    // if (!("chainId" in metadata)) {
-    //   metadata.chainId = token.chainId;
-    //   metadata.contract = contract;
-    //   metadata.type = token.kind;
-    //   metadata.name = token.collection.name;
-    //   metadata.slug = token.collection.slug;
-    //   metadata.tokens = {};
-    // }
-    // if (!(token.tokenId in metadata.tokens)) {
-    //   metadata.tokens[token.tokenId] = {
-    //     name: token.name,
-    //     description: token.description,
-    //     image: token.image,
-    //     media: token.media,
-    //     owner: token.owner || null,
-    //     mintedAt: token.mintedAt && moment.utc(token.mintedAt).unix() || null,
-    //     createdAt: token.createdAt && moment.utc(token.createdAt).unix() || null,
-    //     updatedAt: item.updatedAt && moment.utc(item.updatedAt).unix() || null,
-    //     attributes: token.attributes.map(e => ({ key: e.key, value: e.value })) || null,
-    //     count,
-    //     supply: token.supply || null,
-    //     remainingSupply: token.remainingSupply || null,
-    //     acquiredAt,
-    //     lastSale,
-    //     price,
-    //     topBid,
-    //   };
-    // }
   }
-  // console.log(moment().format("HH:mm:ss") + " parseReservoirData - metadata: " + JSON.stringify(metadata, null, 2).substring(0, 200));
   return metadata;
 }
