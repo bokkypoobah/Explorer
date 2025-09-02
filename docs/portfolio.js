@@ -163,6 +163,9 @@ const Portfolio = {
                       <template v-slot:item.rowNumber="{ index }">
                         {{ commify0((settings.collections.currentPage - 1) * settings.collections.itemsPerPage + index + 1) }}
                       </template>
+                      <template v-slot:item.address="{ item }">
+                        <render-address :address="item.address" shortAddress noXPadding></render-address>
+                      </template>
                       <template v-slot:item.info="{ item }">
                         {{ item }}
                       </template>
