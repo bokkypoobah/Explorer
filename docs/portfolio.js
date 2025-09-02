@@ -412,14 +412,16 @@ portfolioData: {{ portfolioData }}
       const results = [];
       // console.log(now() + " Portfolio - computed.collections - portfolioData: " + JSON.stringify(this.portfolioData, null, 2));
       for (const [address, addressData] of Object.entries(this.portfolioData)) {
-        for (const [chain, chainData] of Object.entries(addressData)) {
-          results.push({ type: 0, address, chain, contract: null, contractType: null, name: "ETH", balance: chainData.balance, decimals: 18, transactionCount: chainData.transactionCount, blockNumber: chainData.blockNumber, timestamp: chainData.timestamp });
+        for (const [chainId, chainData] of Object.entries(addressData)) {
+          results.push({ type: 0, address, chainId: parseInt(chainId), contract: null, contractType: null, name: "ETH", balance: chainData.balance, decimals: 18, transactionCount: chainData.transactionCount, blockNumber: chainData.blockNumber, timestamp: chainData.timestamp });
           for (const [token, balance] of Object.entries(chainData.tokenBalances || {})) {
-            results.push({ type: 1, address, chain, contract: token, contractType: "erc20", name: "{ERC-20 name}", balance, decimals: 18 });
+            const metadata = this.portfolioMetadata[chainId] && this.portfolioMetadata[chainId][token] || {};
+            results.push({ type: 1, address, chainId: parseInt(chainId), contract: token, contractType: metadata.type, symbol: metadata.symbol, name: metadata.name, balance, decimals: metadata.decimals });
           }
           for (const [token, tokenData] of Object.entries(chainData.tokens || {})) {
             const type = (token == ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS || token == ENS_NAMEWRAPPER_ADDRESS) ? 3 : 2;
-            results.push({ type, address, chain, contract: token, contractType: "erc721/1155", name: "{ERC-721/1155 name}", tokenData });
+            const metadata = this.portfolioMetadata[chainId] && this.portfolioMetadata[chainId][token] || {};
+            results.push({ type, address, chainId: parseInt(chainId), contract: token, contractType: metadata.type, name: addressData.name, collectionName: metadata.collectionName, collectionImage: metadata.collectionImage, collectionSlug: metadata.collectionSlug, tokenData });
           }
         }
       }
@@ -467,17 +469,29 @@ portfolioData: {{ portfolioData }}
       const results = [];
       for (const collection of this.collections) {
         if (collection.type == 2 || collection.type == 3) {
+          // console.log(now() + " Portfolio - computed.collections - portfolioMetadata[chainId][contract]: " + JSON.stringify(this.portfolioMetadata[collection.chainId][collection.contract], null, 2));
           for (const [tokenId, count] of Object.entries(collection.tokenData)) {
             const tokens = count === true ? null : count;
+            const metadata = this.portfolioMetadata[collection.chainId] && this.portfolioMetadata[collection.chainId][collection.contract] && this.portfolioMetadata[collection.chainId][collection.contract].tokens[tokenId] || {};
+            console.error(now() + " Portfolio - computed.collections - metadata: " + JSON.stringify(metadata, null, 2));
             results.push({
               type: collection.type,
               address: collection.address,
-              chain: collection.chain,
+              chainId: collection.chainId,
               contract: collection.contract,
               contractType: collection.contractType,
-              name: collection.name,
+              collectionName: collection.collectionName,
+              collectionImage: collection.collectionImage,
+              collectionSlug: collection.collectionSlug,
               tokenId,
               tokens,
+              name: metadata.name,
+              description: metadata.description,
+              image: metadata.image,
+              attributes: metadata.attributes,
+              lastSale: metadata.lastSale,
+              price: metadata.price,
+              topBid: metadata.topBid,
             });
           }
         } else {

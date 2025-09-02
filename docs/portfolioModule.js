@@ -224,9 +224,9 @@ const portfolioModule = {
         if (context.state.sync.halt) {
           break;
         }
-        console.error(now() + " portfolioModule - actions.syncMetadata - processing - address: " + address);
+        console.log(now() + " portfolioModule - actions.syncMetadata - processing - address: " + address);
         const info = await getAddressInfo(address, provider);
-        console.error(now() + " portfolioModule - actions.syncMetadata - processing - info: " + JSON.stringify(info, null, 2));
+        // console.error(now() + " portfolioModule - actions.syncMetadata - processing - info: " + JSON.stringify(info, null, 2));
         if (info.type == "erc20") {
           metadata[chainId][address] = { type: info.type, ensName: info.ensName, balance: info.balance, name: info.name, symbol: info.symbol, decimals: info.decimals, totalSupply: info.totalSupply };
         } else {
@@ -254,6 +254,7 @@ const portfolioModule = {
       const BATCHSIZE = 25;
       const DELAYINMILLIS = 2000;
       completed = 0;
+      // TODO
       // context.commit('setSyncInfo', "Syncing token metadata for " + address.substring(0, 6) + "..." + address.slice(-4) + " => " + info.name);
       // context.commit('setSyncCompleted', ++completed);
       for (let i = 0; i < metadataToRetrieve.length && !context.state.sync.halt; i += BATCHSIZE) {
