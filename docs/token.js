@@ -833,7 +833,7 @@ nftOwnersList: {{ nftOwnersList }}
     erc20OwnersList() {
       const results = [];
       for (const [address, balance] of Object.entries(this.balances)) {
-        const percent = ethers.BigNumber.from(balance).mul(1000000).div(this.totalSupply) / 10000.0;
+        const percent = this.totalSupply && ethers.BigNumber.from(balance).mul(1000000).div(this.totalSupply) / 10000.0 || null;
         results.push({ address, balance, percent });
       }
       results.sort((a, b) => {
@@ -1052,7 +1052,7 @@ nftOwnersList: {{ nftOwnersList }}
       for (const [index, row] of this.erc20OwnersList.entries()) {
         const value = parseFloat(ethers.utils.formatUnits(row.balance, this.decimals));
         if (index < this.settings.erc20Owners.top) {
-          labels.push(this.addresses[row.address].substring(0, 10) + " " + row.percent.toFixed(4) + "%");
+          labels.push(this.addresses[row.address].substring(0, 10) + " " + (row.percent && (row.percent.toFixed(4) + "%")));
         } else {
           other += value;
           otherPercent += row.percent;
