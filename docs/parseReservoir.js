@@ -139,11 +139,15 @@ function parseReservoirData(data, metadata) {
       };
     }
 
+    if (token.chainId in metadata && metadata[token.chainId][contract] && !('collectionSlug' in metadata[token.chainId][contract])) {
+      metadata[token.chainId][contract].collectionName = token.collection.name;
+      metadata[token.chainId][contract].collectionDescription = token.collection.description;
+      metadata[token.chainId][contract].collectionImage = token.collection.image;
+      metadata[token.chainId][contract].collectionSlug = token.collection.slug;
+    }
+
     if (token.chainId in metadata && metadata[token.chainId][contract] && metadata[token.chainId][contract].tokens[token.tokenId]) {
       metadata[token.chainId][contract].tokens[token.tokenId] = {
-        collectionName: token.collection.name,
-        collectionImage: token.collection.image,
-        collectionSlug: token.collection.slug,
         name: token.name,
         description: token.description,
         image: token.image,
@@ -161,6 +165,13 @@ function parseReservoirData(data, metadata) {
         price,
         topBid,
       };
+      // For contracts with multiple collections
+      if (metadata[token.chainId][contract].collectionName != token.collection.name) {
+        metadata[token.chainId][contract].tokens[token.tokenId].collectionName = token.collection.name;
+        metadata[token.chainId][contract].tokens[token.tokenId].collectionDescription = token.collection.description;
+        metadata[token.chainId][contract].tokens[token.tokenId].collectionImage = token.collection.image;
+        metadata[token.chainId][contract].tokens[token.tokenId].collectionSlug = token.collection.slug;
+      }
     }
   }
   return metadata;

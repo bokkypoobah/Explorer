@@ -140,10 +140,11 @@ const Portfolio = {
               <v-card-text class="ma-0 pa-2">
                 <v-tabs-window v-model="settings.tab">
                   <v-tabs-window-item value="summary">
-                    {{ metadata }}
+                    collections: {{ collections }}<br />
+                    items: {{ items }}<br />
+                    portfolioMetadata: {{ portfolioMetadata }}
                   </v-tabs-window-item>
                   <v-tabs-window-item value="assets">
-
                     <!-- v-if="settings.tokens.view == 'list'" -->
                     <!-- v-model:sort-by="settings.assets.sortBy" -->
                     <v-data-table
@@ -203,7 +204,7 @@ pagedFilteredSortedAssets: {{ pagedFilteredSortedAssets }}
                       <br />
 filteredSortedAssets: {{ filteredSortedAssets }}
                       <br />
-data: {{ data }}
+portfolioData: {{ portfolioData }}
                     </pre> -->
                   </v-tabs-window-item>
                   <!-- <v-tabs-window-item value="fungibles">
@@ -343,16 +344,25 @@ data: {{ data }}
     portfolioAddresses() {
       return store.getters['portfolio/addresses'];
     },
-    data() {
+    portfolioData() {
       return store.getters['portfolio/data'];
     },
-    metadata() {
+    portfolioMetadata() {
       return store.getters['portfolio/metadata'];
     },
+
+    collections() {
+
+    },
+
+    items() {
+
+    },
+
     assets() {
       const results = [];
       // console.log(now() + " Portfolio - computed.assets - data: " + JSON.stringify(this.data, null, 2));
-      for (const [address, addressData] of Object.entries(this.data)) {
+      for (const [address, addressData] of Object.entries(this.portfolioData)) {
         for (const [chain, chainData] of Object.entries(addressData)) {
           // console.error(address + "/" + chain + " => " + JSON.stringify(chainData));
           results.push({ type: 0, address, chain, contract: null, contractType: null, name: "ETH", balance: chainData.balance, decimals: 18, transactionCount: chainData.transactionCount });
