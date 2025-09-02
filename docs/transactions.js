@@ -40,7 +40,7 @@ const Transactions_ = {
     //   return store.getters['address/info'].implementation || null;
     // },
     // explorer() {
-    //   return store.getters['explorer'];
+    //   return store.getters['web3/explorer'];
     // },
   },
   methods: {

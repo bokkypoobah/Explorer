@@ -185,7 +185,7 @@ const Name = {
   },
   computed: {
     explorer() {
-      return store.getters['explorer'];
+      return store.getters['web3/explorer'];
     },
     name() {
       return store.getters['name/name'];

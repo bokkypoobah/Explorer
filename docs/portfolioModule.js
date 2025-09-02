@@ -705,7 +705,7 @@ const portfolioModule = {
     //   const metadata = {};
     //   let continuation = null;
     //   do {
-    //     let url = store.getters['reservoir'] + "tokens/v7?collection=" + validatedAddress + "&sortBy=updatedAt&limit=1000&includeTopBid=true&includeAttributes=true&includeLastSale=true";
+    //     let url = store.getters['web3/reservoir'] + "tokens/v7?collection=" + validatedAddress + "&sortBy=updatedAt&limit=1000&includeTopBid=true&includeAttributes=true&includeLastSale=true";
     //     url = url + (continuation != null ? "&continuation=" + continuation : "");
     //     console.log(moment().format("HH:mm:ss") + " downloadFromReservoir - url: " + url);
     //     const data = await fetch(url)

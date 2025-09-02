@@ -93,7 +93,7 @@ const RenderAddress = {
       return this.resolvedAddress && this.addressBook[this.resolvedAddress] && this.addressBook[this.resolvedAddress].ensName || null;
     },
     explorer() {
-      return store.getters['explorer'];
+      return store.getters['web3/explorer'];
     },
   },
   methods: {

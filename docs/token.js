@@ -755,7 +755,7 @@ nftOwnersList: {{ nftOwnersList }}
       return store.getters['token/sync'];
     },
     explorer() {
-      return store.getters['explorer'];
+      return store.getters['web3/explorer'];
     },
     reservoir() {
       return store.getters['web3/reservoir'];

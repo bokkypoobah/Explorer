@@ -159,7 +159,7 @@ const Transaction = {
   },
   computed: {
     explorer() {
-      return store.getters['explorer'];
+      return store.getters['web3/explorer'];
     },
     tx() {
       return store.getters['transaction/tx'];

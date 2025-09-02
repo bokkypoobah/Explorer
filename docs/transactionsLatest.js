@@ -58,7 +58,7 @@ const TransactionsLatest = {
   },
   computed: {
     explorer() {
-      return store.getters['explorer'];
+      return store.getters['web3/explorer'];
     },
     transactionsList() {
       return store.getters['blocks/transactionsList'];

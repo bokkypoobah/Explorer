@@ -62,7 +62,7 @@ const RenderTxHash = {
       return this.txHash;
     },
     explorer() {
-      return store.getters['explorer'];
+      return store.getters['web3/explorer'];
     },
   },
   methods: {

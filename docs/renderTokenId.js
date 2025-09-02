@@ -97,7 +97,7 @@ const RenderTokenId = {
     //   return this.address;
     // },
     explorer() {
-      return store.getters['explorer'];
+      return store.getters['web3/explorer'];
     },
   },
   methods: {

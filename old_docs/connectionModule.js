@@ -37,7 +37,7 @@ const Connection = {
       return store.getters['networkName'];
     },
     explorer() {
-      return store.getters['explorer'];
+      return store.getters['web3/explorer'];
     },
   },
   methods: {

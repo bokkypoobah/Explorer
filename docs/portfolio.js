@@ -419,10 +419,7 @@ data: {{ data }}
       return store.getters['portfolio/sync'];
     },
     explorer() {
-      return store.getters['explorer'];
-    },
-    reservoir() {
-      return store.getters['reservoir'];
+      return store.getters['web3/explorer'];
     },
   },
   methods: {
