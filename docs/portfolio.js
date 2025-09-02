@@ -39,8 +39,8 @@ const Portfolio = {
           <v-progress-circular v-if="sync.info != null" color="primary" :model-value="sync.total ? (parseInt(sync.completed * 100 / sync.total)) : 0" :size="30" :width="6" v-tooltip="sync.info + ': Part ' + commify0(sync.completed) + ' of ' + commify0(sync.total)"></v-progress-circular>
           <v-spacer></v-spacer>
           <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" right color="deep-purple-accent-4">
-            <v-tab prepend-icon="mdi-sigma" text="Summary" value="summary" class="lowercase-btn"></v-tab>
-            <v-tab prepend-icon="mdi-text-long" text="Assets" value="assets" class="lowercase-btn"></v-tab>
+            <v-tab prepend-icon="mdi-sigma" text="Collections" value="collections" class="lowercase-btn"></v-tab>
+            <v-tab prepend-icon="mdi-text-long" text="Items" value="items" class="lowercase-btn"></v-tab>
             <!-- <v-tab prepend-icon="mdi-cash-multiple" text="Fungibles" value="fungibles" class="lowercase-btn"></v-tab> -->
             <!-- <v-tab prepend-icon="mdi-cards-playing-heart-multiple-outline" text="Non-Fungibles" value="nonfungibles" class="lowercase-btn"></v-tab> -->
             <!-- <v-tab prepend-icon="mdi-alphabetical" text="Names" value="names" class="lowercase-btn"></v-tab> -->
@@ -69,12 +69,13 @@ const Portfolio = {
           <v-spacer></v-spacer>
           <v-spacer></v-spacer>
           <v-spacer></v-spacer>
-          <v-checkbox-btn v-model="settings.assets.expandCollections" @update:modelValue="saveSettings();" label="Expand Collections" color="primary" v-tooltip="'Expand ERC-721/1155 Non-Fungible Items including ENS names'"></v-checkbox-btn>
-          <v-spacer></v-spacer>
-          <p v-if="settings.tab == 'assets'" class="mr-1 text-caption text--disabled">
-            {{ commify0(filteredSortedAssets.length) + '/' + commify0(assets.length) }}
+          <p v-if="settings.tab == 'collections'" class="mr-1 text-caption text--disabled">
+            {{ commify0(filteredSortedCollections.length) + '/' + commify0(collections.length) }}
           </p>
-          <v-btn-toggle v-model="settings.assets.view" variant="plain" class="mr-3" @update:modelValue="saveSettings();" density="compact">
+          <p v-if="settings.tab == 'items'" class="mr-1 text-caption text--disabled">
+            {{ commify0(filteredSortedItems.length) + '/' + commify0(items.length) }}
+          </p>
+          <v-btn-toggle v-if="settings.tab == 'items'" v-model="settings.items.view" variant="plain" class="mr-3" @update:modelValue="saveSettings();" density="compact">
             <v-btn icon disabled value="large">
               <v-icon color="primary">mdi-grid-large</v-icon>
             </v-btn>
@@ -86,17 +87,27 @@ const Portfolio = {
             </v-btn>
           </v-btn-toggle>
           <v-pagination
-            v-if="settings.tab == 'assets'"
-            v-model="settings.assets.currentPage"
-            :length="Math.ceil(filteredSortedAssets.length / settings.assets.itemsPerPage)"
+            v-if="settings.tab == 'collections'"
+            v-model="settings.collections.currentPage"
+            :length="Math.ceil(filteredSortedCollections.length / settings.collections.itemsPerPage)"
             total-visible="0"
             density="comfortable"
             show-first-last-page
             class="mr-1"
             @update:modelValue="saveSettings();"
             color="primary"
-          >
-          </v-pagination>
+          ></v-pagination>
+          <v-pagination
+            v-if="settings.tab == 'items'"
+            v-model="settings.items.currentPage"
+            :length="Math.ceil(filteredSortedItems.length / settings.items.itemsPerPage)"
+            total-visible="0"
+            density="comfortable"
+            show-first-last-page
+            class="mr-1"
+            @update:modelValue="saveSettings();"
+            color="primary"
+          ></v-pagination>
         </v-toolbar>
 
         <v-row dense>
@@ -139,25 +150,40 @@ const Portfolio = {
             <v-card>
               <v-card-text class="ma-0 pa-2">
                 <v-tabs-window v-model="settings.tab">
-                  <v-tabs-window-item value="summary">
-                    collections: {{ collections }}<br />
-                    items: {{ items }}<br />
-                    portfolioMetadata: {{ portfolioMetadata }}
-                  </v-tabs-window-item>
-                  <v-tabs-window-item value="assets">
-                    <!-- v-if="settings.tokens.view == 'list'" -->
-                    <!-- v-model:sort-by="settings.assets.sortBy" -->
+                  <v-tabs-window-item value="collections">
                     <v-data-table
-                      :items="filteredSortedAssets"
-                      :headers="assetsHeaders"
-                      v-model:items-per-page="settings.assets.itemsPerPage"
-                      v-model:page="settings.assets.currentPage"
+                      :items="filteredSortedCollections"
+                      :headers="collectionsHeaders"
+                      v-model:items-per-page="settings.collections.itemsPerPage"
+                      :page="settings.collections.currentPage"
                       @update:options="saveSettings();"
                       density="comfortable"
                       hide-default-footer
                     >
                       <template v-slot:item.rowNumber="{ index }">
-                        {{ commify0((settings.assets.currentPage - 1) * settings.assets.itemsPerPage + index + 1) }}
+                        {{ commify0((settings.collections.currentPage - 1) * settings.collections.itemsPerPage + index + 1) }}
+                      </template>
+                      <template v-slot:item.info="{ item }">
+                        {{ item }}
+                      </template>
+                    </v-data-table>
+                    <!-- portfolioMetadata: {{ portfolioMetadata }} -->
+                  </v-tabs-window-item>
+                  <v-tabs-window-item value="items">
+                    <!-- items: {{ items }}<br /> -->
+                    <!-- v-if="settings.tokens.view == 'list'" -->
+                    <!-- v-model:sort-by="settings.items.sortBy" -->
+                    <v-data-table
+                      :items="pagedFilteredSortedItems"
+                      :headers="itemsHeaders"
+                      v-model:items-per-page="settings.items.itemsPerPage"
+                      :page="settings.items.currentPage"
+                      @update:options="saveSettings();"
+                      density="comfortable"
+                      hide-default-footer
+                    >
+                      <template v-slot:item.rowNumber="{ index }">
+                        {{ commify0((settings.items.currentPage - 1) * settings.items.itemsPerPage + index + 1) }}
                       </template>
                       <template v-slot:item.info="{ item }">
                         {{ item }}
@@ -227,8 +253,18 @@ portfolioData: {{ portfolioData }}
               <v-toolbar flat color="transparent" density="compact">
                 <v-spacer></v-spacer>
                 <v-select
-                  v-if="settings.tab == 'assets'"
-                  v-model="settings.assets.itemsPerPage"
+                  v-if="settings.tab == 'collections'"
+                  v-model="settings.collections.itemsPerPage"
+                  :items="itemsPerPageOptions"
+                  variant="plain"
+                  density="compact"
+                  class="mt-2 mr-2"
+                  style="max-width: 70px;"
+                  @update:modelValue="saveSettings();"
+                ></v-select>
+                <v-select
+                  v-if="settings.tab == 'items'"
+                  v-model="settings.items.itemsPerPage"
                   :items="itemsPerPageOptions"
                   variant="plain"
                   density="compact"
@@ -237,17 +273,27 @@ portfolioData: {{ portfolioData }}
                   @update:modelValue="saveSettings();"
                 ></v-select>
                 <v-pagination
-                  v-if="settings.tab == 'assets'"
-                  v-model="settings.assets.currentPage"
-                  :length="Math.ceil(filteredSortedAssets.length / settings.assets.itemsPerPage)"
+                  v-if="settings.tab == 'collections'"
+                  v-model="settings.collections.currentPage"
+                  :length="Math.ceil(filteredSortedCollections.length / settings.collections.itemsPerPage)"
                   total-visible="0"
                   density="comfortable"
                   show-first-last-page
                   class="mr-1"
                   @update:modelValue="saveSettings();"
                   color="primary"
-                >
-                </v-pagination>
+                ></v-pagination>
+                <v-pagination
+                  v-if="settings.tab == 'items'"
+                  v-model="settings.items.currentPage"
+                  :length="Math.ceil(filteredSortedItems.length / settings.items.itemsPerPage)"
+                  total-visible="0"
+                  density="comfortable"
+                  show-first-last-page
+                  class="mr-1"
+                  @update:modelValue="saveSettings();"
+                  color="primary"
+                ></v-pagination>
               </v-toolbar>
             </v-card>
           </v-col>
@@ -263,7 +309,7 @@ portfolioData: {{ portfolioData }}
         selectTagOrAddress: "addresses",
         selectedTagOrAddress: null,
         selectedPortfolio: null, // TODO: Delete
-        tab: "summary",
+        tab: "collections",
         showFilter: false,
         addressFilter: {},
         assetTypeFilter: {
@@ -273,15 +319,21 @@ portfolioData: {{ portfolioData }}
           nonFungibles: true,
           names: true,
         },
-        assets: {
+        collections: {
           filter: null,
-          expandCollections: false,
           view: "large",
           sortOption: "typenameasc",
           itemsPerPage: 10,
           currentPage: 1,
         },
-        version: 6,
+        items: {
+          filter: null,
+          view: "large",
+          sortOption: "typenameasc",
+          itemsPerPage: 10,
+          currentPage: 1,
+        },
+        version: 7,
       },
       _timerId: null,
       itemsPerPageOptions: [
@@ -296,7 +348,12 @@ portfolioData: {{ portfolioData }}
         { value: 500, title: "500" },
         { value: 1000, title: "1000" },
       ],
-      assetsHeaders: [
+      collectionsHeaders: [
+        { title: '#', value: 'rowNumber', width: '10%', align: 'end', sortable: false },
+        { title: 'Address', value: 'address', width: '20%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
+        { title: 'Info', value: 'info', width: '70%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
+      ],
+      itemsHeaders: [
         { title: '#', value: 'rowNumber', width: '10%', align: 'end', sortable: false },
         { title: 'Address', value: 'address', width: '20%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
         { title: 'Info', value: 'info', width: '70%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
@@ -352,44 +409,86 @@ portfolioData: {{ portfolioData }}
     },
 
     collections() {
-
-    },
-
-    items() {
-
-    },
-
-    assets() {
       const results = [];
-      // console.log(now() + " Portfolio - computed.assets - data: " + JSON.stringify(this.data, null, 2));
+      // console.log(now() + " Portfolio - computed.collections - portfolioData: " + JSON.stringify(this.portfolioData, null, 2));
       for (const [address, addressData] of Object.entries(this.portfolioData)) {
         for (const [chain, chainData] of Object.entries(addressData)) {
-          // console.error(address + "/" + chain + " => " + JSON.stringify(chainData));
-          results.push({ type: 0, address, chain, contract: null, contractType: null, name: "ETH", balance: chainData.balance, decimals: 18, transactionCount: chainData.transactionCount });
+          results.push({ type: 0, address, chain, contract: null, contractType: null, name: "ETH", balance: chainData.balance, decimals: 18, transactionCount: chainData.transactionCount, blockNumber: chainData.blockNumber, timestamp: chainData.timestamp });
           for (const [token, balance] of Object.entries(chainData.tokenBalances || {})) {
-            // console.error(address + "/" + chain + "/" + token + " => " + balance);
             results.push({ type: 1, address, chain, contract: token, contractType: "erc20", name: "{ERC-20 name}", balance, decimals: 18 });
           }
-          // console.error(address + "/" + chain + " => " + JSON.stringify(chainData.tokens));
           for (const [token, tokenData] of Object.entries(chainData.tokens || {})) {
             const type = (token == ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS || token == ENS_NAMEWRAPPER_ADDRESS) ? 3 : 2;
-            // console.log(address + "/" + chain + "/" + token + " => " + JSON.stringify(tokenData, null, 2));
-            if (this.settings.assets.expandCollections) {
-              for (const [tokenId, count] of Object.entries(tokenData)) {
-                const tokens = count === true ? null : count;
-                results.push({ type, address, chain, contract: token, contractType: "erc721/1155", name: "{ERC-721/1155 name}", tokenId, tokens });
-              }
-            } else {
-              results.push({ type, address, chain, contract: token, contractType: "erc721/1155", name: "{ERC-721/1155 name}", tokenData });
-            }
+            results.push({ type, address, chain, contract: token, contractType: "erc721/1155", name: "{ERC-721/1155 name}", tokenData });
           }
         }
       }
       return results;
     },
-    filteredSortedAssets() {
+    filteredSortedCollections() {
       const results = [];
-      // console.log(now() + " Portfolio - computed.filteredSortedAssets - assets: " + JSON.stringify(this.assets, null, 2));
+      // console.log(now() + " Portfolio - computed.filteredSortedCollections - assets: " + JSON.stringify(this.assets, null, 2));
+      const activeAddressFilter = {};
+      for (const [address, addressInfo] of Object.entries(this.portfolioAddresses)) {
+        if (this.settings.addressFilter[address]) {
+          activeAddressFilter[address] = true;
+        }
+      }
+      const filterByAddress = Object.keys(activeAddressFilter).length > 0;
+      for (const collection of this.collections) {
+        // console.error(now() + " Portfolio - computed.filteredSortedCollections - collection: " + JSON.stringify(collection, null, 2));
+        let include = false;
+        if ((collection.type == 0 && this.settings.assetTypeFilter.eth) ||
+          (collection.type == 1 && this.settings.assetTypeFilter.fungibles) ||
+          (collection.type == 2 && this.settings.assetTypeFilter.nonFungibles) ||
+          (collection.type == 3 && this.settings.assetTypeFilter.names)) {
+            include = true;
+        }
+        if (include && filterByAddress) {
+          if (!(collection.address in activeAddressFilter)) {
+            include = false;
+          }
+        }
+        if (include) {
+          results.push(collection);
+        }
+      }
+      // TODO: Sort
+      return results;
+    },
+    pagedFilteredSortedCollections() {
+      const results = this.filteredSortedCollections.slice((this.settings.collections.currentPage - 1) * this.settings.collections.itemsPerPage, this.settings.collections.currentPage * this.settings.collections.itemsPerPage);
+      console.log(now() + " Portfolio - computed.pagedFilteredSortedCollections - results: " + JSON.stringify(results, null, 2));
+      return results;
+    },
+
+
+    items() {
+      const results = [];
+      for (const collection of this.collections) {
+        if (collection.type == 2 || collection.type == 3) {
+          for (const [tokenId, count] of Object.entries(collection.tokenData)) {
+            const tokens = count === true ? null : count;
+            results.push({
+              type: collection.type,
+              address: collection.address,
+              chain: collection.chain,
+              contract: collection.contract,
+              contractType: collection.contractType,
+              name: collection.name,
+              tokenId,
+              tokens,
+            });
+          }
+        } else {
+          results.push(collection);
+        }
+      }
+      return results;
+    },
+    filteredSortedItems() {
+      const results = [];
+      // console.log(now() + " Portfolio - computed.filteredSortedItems - assets: " + JSON.stringify(this.assets, null, 2));
       const activeAddressFilter = {};
       for (const [address, addressInfo] of Object.entries(this.portfolioAddresses)) {
         if (this.settings.addressFilter[address]) {
@@ -398,33 +497,99 @@ portfolioData: {{ portfolioData }}
       }
       const filterByAddress = Object.keys(activeAddressFilter).length > 0;
 
-      for (const asset of this.assets) {
-        // console.error(now() + " Portfolio - computed.filteredSortedAssets - asset: " + JSON.stringify(asset, null, 2));
+      for (const item of this.items) {
+        // console.error(now() + " Portfolio - computed.filteredSortedItems - item: " + JSON.stringify(item, null, 2));
         let include = false;
-        if ((asset.type == 0 && this.settings.assetTypeFilter.eth) ||
-          (asset.type == 1 && this.settings.assetTypeFilter.fungibles) ||
-          (asset.type == 2 && this.settings.assetTypeFilter.nonFungibles) ||
-          (asset.type == 3 && this.settings.assetTypeFilter.names)) {
+        if ((item.type == 0 && this.settings.assetTypeFilter.eth) ||
+          (item.type == 1 && this.settings.assetTypeFilter.fungibles) ||
+          (item.type == 2 && this.settings.assetTypeFilter.nonFungibles) ||
+          (item.type == 3 && this.settings.assetTypeFilter.names)) {
             include = true;
         }
         if (include && filterByAddress) {
-          if (!(asset.address in activeAddressFilter)) {
+          if (!(item.address in activeAddressFilter)) {
             include = false;
           }
         }
         if (include) {
-          results.push(asset);
+          results.push(item);
         }
       }
-
       // TODO: Sort
       return results;
     },
-    pagedFilteredSortedAssets() {
-      const results = this.filteredSortedAssets.slice((this.settings.assets.currentPage - 1) * this.settings.assets.itemsPerPage, this.settings.assets.currentPage * this.settings.assets.itemsPerPage);
-      // console.log(now() + " Portfolio - computed.pagedFilteredSortedAssets - results: " + JSON.stringify(results, null, 2));
+    pagedFilteredSortedItems() {
+      const results = this.filteredSortedItems.slice((this.settings.items.currentPage - 1) * this.settings.items.itemsPerPage, this.settings.items.currentPage * this.settings.items.itemsPerPage);
+      // console.log(now() + " Portfolio - computed.pagedFilteredSortedItems - results: " + JSON.stringify(results, null, 2));
       return results;
     },
+
+    // assets() {
+    //   const results = [];
+    //   // console.log(now() + " Portfolio - computed.assets - portfolioData: " + JSON.stringify(this.portfolioData, null, 2));
+    //   for (const [address, addressData] of Object.entries(this.portfolioData)) {
+    //     for (const [chain, chainData] of Object.entries(addressData)) {
+    //       // console.error(address + "/" + chain + " => " + JSON.stringify(chainData));
+    //       results.push({ type: 0, address, chain, contract: null, contractType: null, name: "ETH", balance: chainData.balance, decimals: 18, transactionCount: chainData.transactionCount });
+    //       for (const [token, balance] of Object.entries(chainData.tokenBalances || {})) {
+    //         // console.error(address + "/" + chain + "/" + token + " => " + balance);
+    //         results.push({ type: 1, address, chain, contract: token, contractType: "erc20", name: "{ERC-20 name}", balance, decimals: 18 });
+    //       }
+    //       // console.error(address + "/" + chain + " => " + JSON.stringify(chainData.tokens));
+    //       for (const [token, tokenData] of Object.entries(chainData.tokens || {})) {
+    //         const type = (token == ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS || token == ENS_NAMEWRAPPER_ADDRESS) ? 3 : 2;
+    //         // console.log(address + "/" + chain + "/" + token + " => " + JSON.stringify(tokenData, null, 2));
+    //         // if (this.settings.items.expandCollections) {
+    //         if (false) {
+    //           for (const [tokenId, count] of Object.entries(tokenData)) {
+    //             const tokens = count === true ? null : count;
+    //             results.push({ type, address, chain, contract: token, contractType: "erc721/1155", name: "{ERC-721/1155 name}", tokenId, tokens });
+    //           }
+    //         } else {
+    //           results.push({ type, address, chain, contract: token, contractType: "erc721/1155", name: "{ERC-721/1155 name}", tokenData });
+    //         }
+    //       }
+    //     }
+    //   }
+    //   return results;
+    // },
+    // filteredSortedAssets() {
+    //   const results = [];
+    //   // console.log(now() + " Portfolio - computed.filteredSortedAssets - assets: " + JSON.stringify(this.assets, null, 2));
+    //   const activeAddressFilter = {};
+    //   for (const [address, addressInfo] of Object.entries(this.portfolioAddresses)) {
+    //     if (this.settings.addressFilter[address]) {
+    //       activeAddressFilter[address] = true;
+    //     }
+    //   }
+    //   const filterByAddress = Object.keys(activeAddressFilter).length > 0;
+    //
+    //   for (const asset of this.assets) {
+    //     // console.error(now() + " Portfolio - computed.filteredSortedAssets - asset: " + JSON.stringify(asset, null, 2));
+    //     let include = false;
+    //     if ((asset.type == 0 && this.settings.assetTypeFilter.eth) ||
+    //       (asset.type == 1 && this.settings.assetTypeFilter.fungibles) ||
+    //       (asset.type == 2 && this.settings.assetTypeFilter.nonFungibles) ||
+    //       (asset.type == 3 && this.settings.assetTypeFilter.names)) {
+    //         include = true;
+    //     }
+    //     if (include && filterByAddress) {
+    //       if (!(asset.address in activeAddressFilter)) {
+    //         include = false;
+    //       }
+    //     }
+    //     if (include) {
+    //       results.push(asset);
+    //     }
+    //   }
+    //   // TODO: Sort
+    //   return results;
+    // },
+    // pagedFilteredSortedAssets() {
+    //   const results = this.filteredSortedAssets.slice((this.settings.items.currentPage - 1) * this.settings.items.itemsPerPage, this.settings.items.currentPage * this.settings.items.itemsPerPage);
+    //   // console.log(now() + " Portfolio - computed.pagedFilteredSortedAssets - results: " + JSON.stringify(results, null, 2));
+    //   return results;
+    // },
     sync() {
       return store.getters['portfolio/sync'];
     },

@@ -298,7 +298,7 @@ const portfolioModule = {
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
 
       let metadata = await dbGetCachedData(db, "portfolio_metadata", {});
-      console.error(now() + " portfolioModule - actions.collateData - processing - metadata: " + JSON.stringify(metadata));
+      // console.log(now() + " portfolioModule - actions.collateData - processing - metadata: " + JSON.stringify(metadata));
       const data = {};
       for (const [address, addressInfo] of Object.entries(context.state.addresses)) {
         console.log(now() + " portfolioModule - actions.collateData - address: " + address + " => " + JSON.stringify(addressInfo));
