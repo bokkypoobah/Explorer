@@ -135,7 +135,7 @@ const portfolioModule = {
     // ERC-1155 ApprovalForAll (index_topic_1 address account, index_topic_2 address operator, bool approved)
     // '0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31',
     async syncMetadata(context) {
-      console.error(now() + " portfolioModule - actions.syncMetadata");
+      console.log(now() + " portfolioModule - actions.syncMetadata");
       const BATCH_SIZE = 10000;
       const tokenTopics = {
         "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": "ERC-20/721 Transfer",
@@ -162,7 +162,7 @@ const portfolioModule = {
       const toProcess = {};
       let rows = 0;
       for (const [address, addressInfo] of Object.entries(context.state.addresses)) {
-        console.error(now() + " portfolioModule - actions.syncMetadata - address: " + address);
+        // console.log(now() + " portfolioModule - actions.syncMetadata - address: " + address);
         let done = false;
         do {
           const logs = await db.addressEvents.where('[address+chainId+blockNumber+logIndex]').between([address, Dexie.minKey, Dexie.minKey, Dexie.minKey],[address, Dexie.maxKey, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(BATCH_SIZE).toArray();
@@ -216,7 +216,7 @@ const portfolioModule = {
           done = logs.length < BATCH_SIZE;
         } while (!done);
       }
-      console.error(now() + " portfolioModule - actions.syncMetadata - toProcess: " + JSON.stringify(toProcess, null, 2));
+      console.log(now() + " portfolioModule - actions.syncMetadata - toProcess: " + JSON.stringify(toProcess, null, 2));
 
       context.commit('setSyncTotal', Object.keys(toProcess).length);
       let completed = 0;
@@ -235,21 +235,21 @@ const portfolioModule = {
         context.commit('setSyncInfo', "Syncing contract metadata for " + address.substring(0, 6) + "..." + address.slice(-4) + " => " + info.name);
         context.commit('setSyncCompleted', ++completed);
       }
-      console.error(now() + " portfolioModule - actions.syncMetadata - metadata: " + JSON.stringify(metadata, null, 2));
+      // console.log(now() + " portfolioModule - actions.syncMetadata - metadata: " + JSON.stringify(metadata, null, 2));
 
       const metadataToRetrieve = [];
       for (const [contract, contractData] of Object.entries(metadata[chainId])) {
         if (contractData.type == "erc721" || contractData.type == "erc1155") {
-          console.error(now() + " portfolioModule - actions.syncMetadata - contract: " + contract + " => " + JSON.stringify(contractData, null, 2));
+          // console.log(now() + " portfolioModule - actions.syncMetadata - contract: " + contract + " => " + JSON.stringify(contractData, null, 2));
           for (const [tokenId, tokenData] of Object.entries(contractData.tokens)) {
             if (tokenData === true) {
-              console.error(now() + " portfolioModule - actions.syncMetadata - contract: " + contract + "/" + tokenId + " => " + JSON.stringify(tokenData, null, 2));
+              // console.log(now() + " portfolioModule - actions.syncMetadata - contract: " + contract + "/" + tokenId + " => " + JSON.stringify(tokenData, null, 2));
               metadataToRetrieve.push({ contract, tokenId });
             }
           }
         }
       }
-      console.error(now() + " portfolioModule - actions.syncMetadata - metadataToRetrieve: " + JSON.stringify(metadataToRetrieve, null, 2));
+      console.log(now() + " portfolioModule - actions.syncMetadata - metadataToRetrieve: " + JSON.stringify(metadataToRetrieve, null, 2));
 
       const BATCHSIZE = 25;
       const DELAYINMILLIS = 2000;
