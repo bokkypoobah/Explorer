@@ -237,6 +237,9 @@ const portfolioModule = {
       }
       // console.log(now() + " portfolioModule - actions.syncMetadata - metadata: " + JSON.stringify(metadata, null, 2));
 
+      // TODO: Get ERC-20 logos from
+      // <b-avatar rounded variant="light" size="3.0rem" :src="'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/' + data.item.account + '/logo.png'" v-b-popover.hover="'ERC-20 logo if available'"></b-avatar>
+
       const metadataToRetrieve = [];
       for (const [contract, contractData] of Object.entries(metadata[chainId])) {
         if (contractData.type == "erc721" || contractData.type == "erc1155") {

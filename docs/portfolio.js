@@ -164,7 +164,7 @@ const Portfolio = {
                         {{ commify0((settings.collections.currentPage - 1) * settings.collections.itemsPerPage + index + 1) }}
                       </template>
                       <template v-slot:item.address="{ item }">
-                        <render-address :address="item.address" shortAddress noXPadding></render-address>
+                        <portfolio-render-address :address="item.address" shortAddress noXPadding></portfolio-render-address>
                       </template>
                       <template v-slot:item.info="{ item }">
                         {{ item }}
@@ -416,7 +416,7 @@ portfolioData: {{ portfolioData }}
       // console.log(now() + " Portfolio - computed.collections - portfolioData: " + JSON.stringify(this.portfolioData, null, 2));
       for (const [address, addressData] of Object.entries(this.portfolioData)) {
         for (const [chainId, chainData] of Object.entries(addressData)) {
-          results.push({ type: 0, address, chainId: parseInt(chainId), contract: null, contractType: null, name: "ETH", balance: chainData.balance, decimals: 18, transactionCount: chainData.transactionCount, blockNumber: chainData.blockNumber, timestamp: chainData.timestamp });
+          results.push({ type: 0, address, chainId: parseInt(chainId), contract: null, contractType: "eth", name: "ETH", balance: chainData.balance, decimals: 18, transactionCount: chainData.transactionCount, blockNumber: chainData.blockNumber, timestamp: chainData.timestamp });
           for (const [token, balance] of Object.entries(chainData.tokenBalances || {})) {
             const metadata = this.portfolioMetadata[chainId] && this.portfolioMetadata[chainId][token] || {};
             results.push({ type: 1, address, chainId: parseInt(chainId), contract: token, contractType: metadata.type, symbol: metadata.symbol, name: metadata.name, balance, decimals: metadata.decimals });
@@ -455,7 +455,7 @@ portfolioData: {{ portfolioData }}
               include = true;
           }
         } else {
-          include = true;          
+          include = true;
         }
         if (include && filterByAddress) {
           if (!(collection.address in activeAddressFilter)) {

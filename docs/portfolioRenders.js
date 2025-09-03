@@ -1,4 +1,4 @@
-const RenderAddress = {
+const PortfolioRenderAddress = {
   template: `
     <v-btn v-if="address != null" color="primary" dark :size="miniAddress ? 'x-small' : ''" variant="text" :class="noXPadding ? 'ma-0 px-0 lowercase-btn' : 'ma-0 px-2 pt-2 lowercase-btn'">
       <span v-if="miniAddress">
