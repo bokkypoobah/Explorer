@@ -163,6 +163,10 @@ const web3Module = {
       const chain = state.data.chainId && store.getters['config/chains'][state.data.chainId] || null;
       return chain && chain.reservoir || null;
     },
+    opensea(state) {
+      const chain = state.data.chainId && store.getters['config/chains'][state.data.chainId] || null;
+      return chain && chain.opensea || null;
+    },
   },
   mutations: {
     setProvider(state, provider) {
