@@ -99,12 +99,19 @@ const PortfolioRenderCollection = {
   template: `
 
     <v-card flat class="d-flex">
-      <div class="pa-1 flex-shrink-0">
-        <v-img
-          src="http://localhost:7676/images/fknchad_FkqVTzBaUAAiE8x_nobg.png"
-          width="70"
-          alt="Card image"
-        ></v-img>
+      <div class="pa-1 flex-shrink-0" style="width: 70px;">
+        <div v-if="type == 0">
+          <v-icon size="40px">mdi-ethereum</v-icon>
+        </div>
+        <div v-else-if="type == 1">
+          <v-icon size="40px">mdi-cash-multiple</v-icon>
+        </div>
+        <div v-else>
+          <v-img
+            :src="image"
+            alt="Card image"
+          ></v-img>
+        </div>
       </div>
       <div class="pa-1 d-flex d-flex-shrink-1 d-flex-grow-0">
         <v-card-text>
@@ -115,31 +122,37 @@ const PortfolioRenderCollection = {
               <v-list>
                 <v-list-subheader>{{ contract }}</v-list-subheader>
                 <v-list-subheader v-if="name || ensName"><v-chip variant="plain" density="compact" class="ma-0 pa-0">{{ name }}</v-chip><v-chip variant="plain" density="compact" class="ma-0 ml-2 pa-0">{{ ensName }}</v-chip></v-list-subheader>
-                <v-list-item :href="'#/address/' + address">
+                <v-list-item v-if="contract" :href="'#/address/' + contract">
                   <template v-slot:prepend>
                     <v-icon>mdi-arrow-right-bold-outline</v-icon>
                   </template>
-                  <v-list-item-title>View address</v-list-item-title>
+                  <v-list-item-title>View contract address</v-list-item-title>
                 </v-list-item>
-                <v-list-item @click="copyToClipboard(address);">
+                <v-list-item v-if="contract" :href="'#/token/' + contract">
+                  <template v-slot:prepend>
+                    <v-icon>mdi-arrow-right-bold-outline</v-icon>
+                  </template>
+                  <v-list-item-title>View as token contract</v-list-item-title>
+                </v-list-item>
+                <v-list-item v-if="contract" @click="copyToClipboard(contract);">
                   <template v-slot:prepend>
                     <v-icon>mdi-content-copy</v-icon>
                   </template>
-                  <v-list-item-title>Copy address to clipboard</v-list-item-title>
+                  <v-list-item-title>Copy contract address to clipboard</v-list-item-title>
                 </v-list-item>
-                <v-list-item @click="copyToClipboard(ensName);">
+                <!-- <v-list-item @click="copyToClipboard(ensName);">
                   <template v-slot:prepend>
                     <v-icon>mdi-content-copy</v-icon>
                   </template>
                   <v-list-item-title>Copy ENS name to clipboard</v-list-item-title>
-                </v-list-item>
-                <v-list-item :href="explorer + 'address/' + address" target="_blank">
+                </v-list-item> -->
+                <v-list-item :href="explorer + 'address/' + contract" target="_blank">
                   <template v-slot:prepend>
                     <v-icon>mdi-link-variant</v-icon>
                   </template>
-                  <v-list-item-title>View address in the explorer</v-list-item-title>
+                  <v-list-item-title>View contract address in the explorer</v-list-item-title>
                 </v-list-item>
-                <v-list-item v-if="token" :href="explorer + 'token/' + token + '?a=' + address" target="_blank">
+                <v-list-item v-if="contract && address" :href="explorer + 'token/' + contract + '?a=' + address" target="_blank">
                   <template v-slot:prepend>
                     <v-icon>mdi-link-variant</v-icon>
                   </template>
@@ -208,12 +221,21 @@ const PortfolioRenderCollection = {
       }
       return null;
     },
-    ensName() {
-      if (this.address && this.address in this.portfolioData && "1" in this.portfolioData[this.address]) {
-        return this.portfolioData[this.address]["1"].ensName;
+    image() {
+      if (this.type > 1) {
+        if (this.contract && this.chainId in this.portfolioMetadata && this.contract in this.portfolioMetadata[this.chainId]) {
+          const contract = this.portfolioMetadata[this.chainId][this.contract];
+          return contract.collectionImage;
+        }
       }
       return null;
     },
+    // ensName() {
+    //   if (this.address && this.address in this.portfolioData && "1" in this.portfolioData[this.address]) {
+    //     return this.portfolioData[this.address]["1"].ensName;
+    //   }
+    //   return null;
+    // },
     explorer() {
       return store.getters['web3/explorer'];
     },
