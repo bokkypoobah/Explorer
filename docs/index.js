@@ -261,6 +261,7 @@ app.use(store);
 app.use(vuetify);
 app.component("web3", Web3);
 app.component("portfolioRenderAddress", PortfolioRenderAddress);
+app.component("portfolioRenderCollection", PortfolioRenderCollection);
 app.component("renderAddress", RenderAddress);
 app.component("renderBlockNumber", RenderBlockNumber);
 app.component("renderTokenId", RenderTokenId);

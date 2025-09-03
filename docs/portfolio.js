@@ -166,7 +166,10 @@ const Portfolio = {
                       <template v-slot:item.address="{ item }">
                         <portfolio-render-address :address="item.address" noXPadding></portfolio-render-address>
                       </template>
-                      <template v-slot:item.info="{ item }">
+                      <template v-slot:item.collection="{ item }">
+                        <portfolio-render-collection :type="item.type" :contract="item.contract" :address="item.address" noXPadding></portfolio-render-collection>
+                      </template>
+                      <template v-slot:item.balance="{ item }">
                         {{ item }}
                       </template>
                     </v-data-table>
@@ -354,7 +357,8 @@ portfolioData: {{ portfolioData }}
       collectionsHeaders: [
         { title: '#', value: 'rowNumber', width: '10%', align: 'end', sortable: false },
         { title: 'Address', value: 'address', width: '20%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
-        { title: 'Info', value: 'info', width: '70%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
+        { title: 'Collection', value: 'collection', width: '40%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
+        { title: 'Balance', value: 'balance', width: '30%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
       ],
       itemsHeaders: [
         { title: '#', value: 'rowNumber', width: '10%', align: 'end', sortable: false },
