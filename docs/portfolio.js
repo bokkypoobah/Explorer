@@ -440,14 +440,22 @@ portfolioData: {{ portfolioData }}
         }
       }
       const filterByAddress = Object.keys(activeAddressFilter).length > 0;
+
+      const filterByType = this.settings.assetTypeFilter.eth != this.settings.assetTypeFilter.fungibles ||
+        this.settings.assetTypeFilter.eth != this.settings.assetTypeFilter.nonFungibles ||
+        this.settings.assetTypeFilter.eth != this.settings.assetTypeFilter.names;
       for (const collection of this.collections) {
         // console.error(now() + " Portfolio - computed.filteredSortedCollections - collection: " + JSON.stringify(collection, null, 2));
         let include = false;
-        if ((collection.type == 0 && this.settings.assetTypeFilter.eth) ||
-          (collection.type == 1 && this.settings.assetTypeFilter.fungibles) ||
-          (collection.type == 2 && this.settings.assetTypeFilter.nonFungibles) ||
-          (collection.type == 3 && this.settings.assetTypeFilter.names)) {
-            include = true;
+        if (filterByType) {
+          if ((collection.type == 0 && this.settings.assetTypeFilter.eth) ||
+            (collection.type == 1 && this.settings.assetTypeFilter.fungibles) ||
+            (collection.type == 2 && this.settings.assetTypeFilter.nonFungibles) ||
+            (collection.type == 3 && this.settings.assetTypeFilter.names)) {
+              include = true;
+          }
+        } else {
+          include = true;          
         }
         if (include && filterByAddress) {
           if (!(collection.address in activeAddressFilter)) {
