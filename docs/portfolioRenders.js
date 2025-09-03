@@ -1,11 +1,11 @@
 const PortfolioRenderAddress = {
   template: `
-    <v-btn v-if="address != null" color="primary" dark variant="text" :class="noXPadding ? 'ma-0 px-0 lowercase-btn' : 'ma-0 px-2 pt-2 lowercase-btn'">
-      {{ address.substring(0, 8) + "..." + address.slice(-6) }}
+    <v-btn v-if="address != null" color="primary" dark variant="text" density="compact" :class="noXPadding ? 'ma-0 px-0 pt-2 lowercase-btn' : 'ma-0 px-2 pt-2 lowercase-btn'">
+      {{ address.substring(0, 8) + "&hellip;" + address.slice(-6) }}
       <v-menu activator="parent" location="bottom">
         <v-list>
           <v-list-subheader>{{ address }}</v-list-subheader>
-          <v-list-subheader v-if="name || ensName">{{ name }} {{ ensName }}</v-list-subheader>
+          <v-list-subheader v-if="name || ensName"><v-chip variant="plain" density="compact" class="ma-0 pa-0" style="min-width: 50px;">{{ name }}</v-chip><v-chip variant="plain" density="compact" class="ma-0 pa-0">{{ ensName }}</v-chip></v-list-subheader>
           <v-list-item :href="'#/address/' + address">
             <template v-slot:prepend>
               <v-icon>mdi-arrow-right-bold-outline</v-icon>
@@ -17,6 +17,12 @@ const PortfolioRenderAddress = {
               <v-icon>mdi-content-copy</v-icon>
             </template>
             <v-list-item-title>Copy address to clipboard</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="copyToClipboard(ensName);">
+            <template v-slot:prepend>
+              <v-icon>mdi-content-copy</v-icon>
+            </template>
+            <v-list-item-title>Copy ENS name to clipboard</v-list-item-title>
           </v-list-item>
           <v-list-item :href="explorer + 'address/' + address" target="_blank">
             <template v-slot:prepend>
@@ -33,7 +39,7 @@ const PortfolioRenderAddress = {
         </v-list>
       </v-menu>
     </v-btn><br />
-    <v-chip variant="plain" class="ma-0 pa-0" style="min-width: 50px;">{{ name }}</v-chip><v-chip variant="plain" class="ma-0 pa-0">{{ ensName }}</v-chip>
+    <v-chip variant="plain" density="compact" class="ma-0 pa-0" style="min-width: 50px;">{{ name }}</v-chip><v-chip variant="plain" density="compact" class="ma-0 pa-0">{{ ensName }}</v-chip>
   `,
   props: {
     address: {
@@ -72,8 +78,6 @@ const PortfolioRenderAddress = {
       return null;
     },
     ensName() {
-      // console.error("this.portfolioData: " + JSON.stringify(this.portfolioData, null, 2));
-      // console.error("this.portfolioMetadata: " + JSON.stringify(this.portfolioMetadata, null, 2));
       if (this.address && this.address in this.portfolioData && "1" in this.portfolioData[this.address]) {
         return this.portfolioData[this.address]["1"].ensName;
       }
