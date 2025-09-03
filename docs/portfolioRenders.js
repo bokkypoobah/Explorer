@@ -116,7 +116,7 @@ const PortfolioRenderCollection = {
       <div class="pa-1 d-flex d-flex-shrink-1 d-flex-grow-0">
         <v-card-text>
           <v-btn color="primary" dark variant="text" density="compact" :class="noXPadding ? 'ma-0 px-0 pt-2 lowercase-btn' : 'ma-0 px-2 pt-2 lowercase-btn'" style="min-width: 0px;">
-            {{ name }}
+            {{ name || "(none)"}}
             <!-- {{ address.substring(0, 8) + "&hellip;" + address.slice(-6) }} -->
             <v-menu activator="parent" location="bottom">
               <v-list>
