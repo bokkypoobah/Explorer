@@ -96,9 +96,113 @@ const PortfolioRenderAddress = {
 };
 
 
+const PortfolioRenderBalance = {
+  template: `
+    <!-- <v-chip variant="plain" class="ma-0 pa-0" style="min-width: 50px;">{{ contract == null ? "Ethereums" : (contract.substring(0, 8) + "..." + contract.slice(-6)) }}</v-chip>
+    <v-chip variant="plain" class="ma-0 ml-1 pa-0">{{ balance }}</v-chip>
+    <v-chip variant="plain" class="ma-0 ml-1 pa-0">{{ decimals }}</v-chip> -->
+    <div v-if="type <= 1">
+      {{ formatUnits(balance, decimals) }} {{ symbol }}
+    </div>
+    <div v-else>
+      {{ Object.keys(tokenData).join(", ") }}
+    </div>
+  `,
+  props: {
+    type: {
+      type: Number,
+    },
+    contract: {
+      type: String,
+    },
+    address: {
+      type: String,
+    },
+    balance: {
+      type: String,
+    },
+    tokenData: {
+      type: Object,
+    },
+    noXPadding: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  data: function () {
+    return {
+    };
+  },
+  computed: {
+    chainId() {
+      return store.getters['web3/chainId'];
+    },
+    addressBook() {
+      return store.getters['addressBook/addresses'];
+    },
+    portfolioData() {
+      return store.getters['portfolio/data'];
+    },
+    portfolioMetadata() {
+      return store.getters['portfolio/metadata'];
+    },
+    typeString() {
+      if (this.type == 0) {
+        return "ETH";
+      } else if (this.type == 1) {
+        return "ERC-20";
+      } else if (this.type == 2) {
+        return "ERC-721";
+      } else if (this.type == 3) {
+        return "ERC-1155";
+      } else {
+        return "Contract";
+      }
+    },
+    symbol() {
+      if (this.type == 0) {
+        return "ETH";
+      } else if (this.type == 1) {
+        if (this.contract && this.chainId in this.portfolioMetadata && this.contract in this.portfolioMetadata[this.chainId]) {
+          const contract = this.portfolioMetadata[this.chainId][this.contract];
+          return contract.symbol || null;
+        }
+      } else {
+        return null;
+      }
+    },
+    decimals() {
+      if (this.type == 0) {
+        return 18;
+      } else if (this.type == 1) {
+        if (this.contract && this.chainId in this.portfolioMetadata && this.contract in this.portfolioMetadata[this.chainId]) {
+          const contract = this.portfolioMetadata[this.chainId][this.contract];
+          return contract.decimals || 0;
+        }
+      } else {
+        return null;
+      }
+    },
+    explorer() {
+      return store.getters['web3/explorer'];
+    },
+  },
+  methods: {
+    copyToClipboard(str) {
+      navigator.clipboard.writeText(str);
+    },
+    formatUnits(e, decimals) {
+      if (e) {
+        return ethers.utils.formatUnits(e, decimals).replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+      }
+      return null;
+    },
+  },
+};
+
+
 const PortfolioRenderCollection = {
   template: `
-
     <v-card flat class="d-flex">
       <div class="pa-1 flex-shrink-0" style="width: 70px;">
         <div v-if="type == 0">

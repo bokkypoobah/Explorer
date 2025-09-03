@@ -170,7 +170,7 @@ const Portfolio = {
                         <portfolio-render-collection :type="item.type" :contract="item.contract" :address="item.address" noXPadding></portfolio-render-collection>
                       </template>
                       <template v-slot:item.balance="{ item }">
-                        {{ item }}
+                        <portfolio-render-balance :type="item.type" :contract="item.contract" :address="item.address" :balance="item.balance" :tokenData="item.tokenData" noXPadding></portfolio-render-balance>
                       </template>
                     </v-data-table>
                     <!-- portfolioMetadata: {{ portfolioMetadata }} -->
