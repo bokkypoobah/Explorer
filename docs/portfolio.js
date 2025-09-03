@@ -191,7 +191,13 @@ const Portfolio = {
                       <template v-slot:item.rowNumber="{ index }">
                         {{ commify0((settings.items.currentPage - 1) * settings.items.itemsPerPage + index + 1) }}
                       </template>
-                      <template v-slot:item.info="{ item }">
+                      <template v-slot:item.address="{ item }">
+                        <portfolio-render-address :address="item.address" noXPadding></portfolio-render-address>
+                      </template>
+                      <template v-slot:item.collection="{ item }">
+                        <portfolio-render-collection :type="item.type" :contract="item.contract" :address="item.address" noXPadding></portfolio-render-collection>
+                      </template>
+                      <template v-slot:item.token="{ item }">
                         {{ item }}
                       </template>
                       <!-- <template v-slot:item.punkId="{ item }">
@@ -363,7 +369,8 @@ portfolioData: {{ portfolioData }}
       itemsHeaders: [
         { title: '#', value: 'rowNumber', width: '10%', align: 'end', sortable: false },
         { title: 'Address', value: 'address', width: '20%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
-        { title: 'Info', value: 'info', width: '70%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
+        { title: 'Collection', value: 'collection', width: '40%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
+        { title: 'Token', value: 'token', width: '30%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
       ],
     };
   },
