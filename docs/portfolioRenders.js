@@ -39,7 +39,8 @@ const PortfolioRenderAddress = {
         </v-list>
       </v-menu>
     </v-btn><br />
-    <v-chip variant="plain" density="compact" class="ma-0 pa-0" style="min-width: 50px;">{{ name }}</v-chip><v-chip variant="plain" density="compact" class="ma-0 ml-1 pa-0">{{ ensName }}</v-chip>
+    <v-chip variant="plain" density="compact" class="ma-0 pa-1" style="min-width: 40px;">{{ name }}</v-chip>
+    <v-chip variant="plain" density="compact" class="ma-0 ml-1 pa-1">{{ ensName }}</v-chip>
   `,
   props: {
     address: {
@@ -120,8 +121,14 @@ const PortfolioRenderCollection = {
             <!-- {{ address.substring(0, 8) + "&hellip;" + address.slice(-6) }} -->
             <v-menu activator="parent" location="bottom">
               <v-list>
-                <v-list-subheader>{{ contract }}</v-list-subheader>
+                <v-list-subheader>{{ contract || "Ethereums" }}</v-list-subheader>
                 <v-list-subheader v-if="name || ensName"><v-chip variant="plain" density="compact" class="ma-0 pa-0">{{ name }}</v-chip><v-chip variant="plain" density="compact" class="ma-0 ml-2 pa-0">{{ ensName }}</v-chip></v-list-subheader>
+                <v-list-item v-if="!contract" :href="'#/address/' + address">
+                  <template v-slot:prepend>
+                    <v-icon>mdi-arrow-right-bold-outline</v-icon>
+                  </template>
+                  <v-list-item-title>View address</v-list-item-title>
+                </v-list-item>
                 <v-list-item v-if="contract" :href="'#/address/' + contract">
                   <template v-slot:prepend>
                     <v-icon>mdi-arrow-right-bold-outline</v-icon>
@@ -146,7 +153,13 @@ const PortfolioRenderCollection = {
                   </template>
                   <v-list-item-title>Copy ENS name to clipboard</v-list-item-title>
                 </v-list-item> -->
-                <v-list-item :href="explorer + 'address/' + contract" target="_blank">
+                <v-list-item v-if="!contract" :href="explorer + 'address/' + address" target="_blank">
+                  <template v-slot:prepend>
+                    <v-icon>mdi-link-variant</v-icon>
+                  </template>
+                  <v-list-item-title>View address in the explorer</v-list-item-title>
+                </v-list-item>
+                <v-list-item v-if="contract" :href="explorer + 'address/' + contract" target="_blank">
                   <template v-slot:prepend>
                     <v-icon>mdi-link-variant</v-icon>
                   </template>
@@ -156,13 +169,13 @@ const PortfolioRenderCollection = {
                   <template v-slot:prepend>
                     <v-icon>mdi-link-variant</v-icon>
                   </template>
-                  <v-list-item-title>View address in token contract in the explorer</v-list-item-title>
+                  <v-list-item-title>View contract as token in the explorer</v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
           </v-btn><br />
-          <v-chip variant="plain" density="compact" class="ma-0 pa-0" style="min-width: 50px;">{{ contract == null ? "Ethereums" : (contract.substring(0, 8) + "..." + contract.slice(-6)) }}</v-chip>
-          <v-chip variant="plain" density="compact" class="ma-0 ml-1 pa-0">{{ typeString }}</v-chip>
+          <v-chip variant="plain" class="ma-0 pa-0" style="min-width: 50px;">{{ contract == null ? "Ethereums" : (contract.substring(0, 8) + "..." + contract.slice(-6)) }}</v-chip>
+          <v-chip variant="plain" class="ma-0 ml-1 pa-0">{{ typeString }}</v-chip>
         </v-card-text>
       </div>
     </v-card>

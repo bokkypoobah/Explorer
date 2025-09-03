@@ -428,7 +428,8 @@ portfolioData: {{ portfolioData }}
           for (const [token, tokenData] of Object.entries(chainData.tokens || {})) {
             const type = (token == ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS || token == ENS_NAMEWRAPPER_ADDRESS) ? 3 : 2;
             const metadata = this.portfolioMetadata[chainId] && this.portfolioMetadata[chainId][token] || {};
-            results.push({ type, address, chainId: parseInt(chainId), contract: token, contractType: metadata.type, name: addressData.name, collectionName: metadata.collectionName, collectionImage: metadata.collectionImage, collectionSlug: metadata.collectionSlug, tokenData });
+            // results.push({ type, address, chainId: parseInt(chainId), contract: token, contractType: metadata.type, name: addressData.name, collectionName: metadata.collectionName, collectionImage: metadata.collectionImage, collectionSlug: metadata.collectionSlug, tokenData });
+            results.push({ type, address, chainId: parseInt(chainId), contract: token, contractType: metadata.type, name: addressData.name, collectionName: metadata.collectionName, tokenData });
           }
         }
       }
