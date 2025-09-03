@@ -1,43 +1,30 @@
 const PortfolioRenderAddress = {
   template: `
-    <v-btn v-if="address != null" color="primary" dark :size="miniAddress ? 'x-small' : ''" variant="text" :class="noXPadding ? 'ma-0 px-0 lowercase-btn' : 'ma-0 px-2 pt-2 lowercase-btn'">
-      <span v-if="miniAddress">
-        {{ resolvedAddress.length == 42 ? (resolvedAddress.substring(0, 10)) : resolvedAddress }}
-      </span>
-      <span v-else-if="shortAddress">
-        {{ resolvedAddress.substring(0, 10) + "..." + resolvedAddress.slice(-8) }}
-      </span>
-      <span v-else>
-        <span v-if="name">
-          {{ name + " " + resolvedAddress.substring(0, 10) + "..." + resolvedAddress.slice(-8) }}
-        </span>
-        <span v-else>
-          {{ resolvedAddress }}
-        </span>
-      </span>
+    <v-btn v-if="address != null" color="primary" dark variant="text" :class="noXPadding ? 'ma-0 px-0 lowercase-btn' : 'ma-0 px-2 pt-2 lowercase-btn'">
+      {{ address.substring(0, 8) + "..." + address.slice(-6) }}
       <v-menu activator="parent" location="bottom">
         <v-list>
-          <v-list-subheader>Address {{ resolvedAddress }}</v-list-subheader>
-          <v-list-subheader v-if="name">Name {{ name }}</v-list-subheader>
-          <v-list-item :href="'#/address/' + resolvedAddress">
+          <v-list-subheader>{{ address }}</v-list-subheader>
+          <v-list-subheader v-if="name || ensName">{{ name }} {{ ensName }}</v-list-subheader>
+          <v-list-item :href="'#/address/' + address">
             <template v-slot:prepend>
               <v-icon>mdi-arrow-right-bold-outline</v-icon>
             </template>
             <v-list-item-title>View address</v-list-item-title>
           </v-list-item>
-          <v-list-item @click="copyToClipboard(resolvedAddress);">
+          <v-list-item @click="copyToClipboard(address);">
             <template v-slot:prepend>
               <v-icon>mdi-content-copy</v-icon>
             </template>
             <v-list-item-title>Copy address to clipboard</v-list-item-title>
           </v-list-item>
-          <v-list-item :href="explorer + 'address/' + resolvedAddress" target="_blank">
+          <v-list-item :href="explorer + 'address/' + address" target="_blank">
             <template v-slot:prepend>
               <v-icon>mdi-link-variant</v-icon>
             </template>
             <v-list-item-title>View address in the explorer</v-list-item-title>
           </v-list-item>
-          <v-list-item v-if="token" :href="explorer + 'token/' + token + '?a=' + resolvedAddress" target="_blank">
+          <v-list-item v-if="token" :href="explorer + 'token/' + token + '?a=' + address" target="_blank">
             <template v-slot:prepend>
               <v-icon>mdi-link-variant</v-icon>
             </template>
@@ -45,27 +32,16 @@ const PortfolioRenderAddress = {
           </v-list-item>
         </v-list>
       </v-menu>
-    </v-btn>
+    </v-btn><br />
+    <v-chip variant="plain" class="ma-0 pa-0" style="min-width: 50px;">{{ name }}</v-chip><v-chip variant="plain" class="ma-0 pa-0">{{ ensName }}</v-chip>
   `,
   props: {
     address: {
-      type: [String, Number],
-    },
-    addresses: {
-      type: Array,
-      default: () => []
+      type: String,
     },
     token: {
       type: String,
       default: null,
-    },
-    miniAddress: {
-      type: Boolean,
-      default: false,
-    },
-    shortAddress: {
-      type: Boolean,
-      default: false,
     },
     noXPadding: {
       type: Boolean,
@@ -77,17 +53,31 @@ const PortfolioRenderAddress = {
     };
   },
   computed: {
-    resolvedAddress() {
-      if (this.address.length != 42) {
-        return this.addresses[this.address] || this.address;
-      }
-      return this.address;
+    chainId() {
+      return store.getters['chainId'];
     },
     addressBook() {
-      return store.getters['addresses/addresses'];
+      return store.getters['addressBook/addresses'];
+    },
+    portfolioData() {
+      return store.getters['portfolio/data'];
+    },
+    portfolioMetadata() {
+      return store.getters['portfolio/metadata'];
     },
     name() {
-      return this.resolvedAddress && this.addressBook[this.resolvedAddress] && this.addressBook[this.resolvedAddress].ensName || null;
+      if (this.address && this.address in this.addressBook) {
+        return this.addressBook[this.address].name;
+      }
+      return null;
+    },
+    ensName() {
+      // console.error("this.portfolioData: " + JSON.stringify(this.portfolioData, null, 2));
+      // console.error("this.portfolioMetadata: " + JSON.stringify(this.portfolioMetadata, null, 2));
+      if (this.address && this.address in this.portfolioData && "1" in this.portfolioData[this.address]) {
+        return this.portfolioData[this.address]["1"].ensName;
+      }
+      return null;
     },
     explorer() {
       return store.getters['web3/explorer'];
