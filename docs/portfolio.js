@@ -782,6 +782,7 @@ portfolioData: {{ portfolioData }}
       }
     }
     this.initialised = true;
+    this.settings.selectedTagOrAddress = this.inputTagOrAddress;
     console.log(now() + " Portfolio - mounted - this.settings: " + JSON.stringify(this.settings));
 
     const t = this;

@@ -282,9 +282,9 @@ const portfolioModule = {
           //   console.error(now() + " portfolioModule - actions.syncMetadata - token: " + JSON.stringify(token, null, 2));
           // }
           console.log(now() + " portfolioModule - actions.syncMetadata - metadata: " + JSON.stringify(metadata, null, 2));
-          if (continuation != null) {
+          // if (continuation != null) {
             await delay(DELAYINMILLIS);
-          }
+          // }
         } while (continuation != null && !context.state.sync.halt);
       }
 
