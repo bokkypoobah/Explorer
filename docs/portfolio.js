@@ -199,6 +199,7 @@ const Portfolio = {
                         <portfolio-render-collection :type="item.type" :contract="item.contract" :address="item.address" noXPadding></portfolio-render-collection>
                       </template>
                       <template v-slot:item.token="{ item }">
+                        <portfolio-render-token :type="item.type" :contract="item.contract" :address="item.address" :balance="item.balance" :tokenId="item.tokenId" noXPadding></portfolio-render-token>
                         {{ item }}
                       </template>
                       <!-- <template v-slot:item.punkId="{ item }">
