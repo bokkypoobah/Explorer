@@ -67,7 +67,7 @@ const CHAINS = {
   },
   // Polygon
   "137": {
-    name: "OP Mainnet",
+    name: "Polygon",
     explorer: "https://polygonscan.com/",
     api: "https://api.etherscan.io/v2/api?chainid=137",
     reservoir: "https://api-polygon.reservoir.tools/",

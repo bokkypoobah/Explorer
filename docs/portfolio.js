@@ -167,7 +167,7 @@ const Portfolio = {
                         <portfolio-render-address :address="item.address" noXPadding></portfolio-render-address>
                       </template>
                       <template v-slot:item.collection="{ item }">
-                        <portfolio-render-collection :type="item.type" :contract="item.contract" :address="item.address" noXPadding></portfolio-render-collection>
+                        <portfolio-render-collection :type="item.type" :contractType="item.contractType" :contract="item.contract" :address="item.address" noXPadding></portfolio-render-collection>
                       </template>
                       <template v-slot:item.balance="{ item }">
                         <portfolio-render-balance :type="item.type" :contract="item.contract" :address="item.address" :balance="item.balance" :tokenData="item.tokenData" noXPadding></portfolio-render-balance>
@@ -196,7 +196,7 @@ const Portfolio = {
                         <portfolio-render-address :address="item.address" noXPadding></portfolio-render-address>
                       </template>
                       <template v-slot:item.collection="{ item }">
-                        <portfolio-render-collection :type="item.type" :contract="item.contract" :address="item.address" noXPadding></portfolio-render-collection>
+                        <portfolio-render-collection :type="item.type" :contractType="item.contractType" :contract="item.contract" :address="item.address" noXPadding></portfolio-render-collection>
                       </template>
                       <template v-slot:item.token="{ item }">
                         <portfolio-render-token :type="item.type" :contract="item.contract" :address="item.address" :balance="item.balance" :tokenId="item.tokenId" noXPadding></portfolio-render-token>

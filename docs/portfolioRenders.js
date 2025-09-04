@@ -174,7 +174,7 @@ const PortfolioRenderCollection = {
             </v-menu>
           </v-btn><br />
           <v-chip variant="plain" class="ma-0 pa-0" style="min-width: 50px;">{{ contract == null ? "Ethereums" : (contract.substring(0, 8) + "..." + contract.slice(-6)) }}</v-chip>
-          <v-chip variant="plain" class="ma-0 ml-1 pa-0">{{ typeString }}</v-chip>
+          <v-chip variant="plain" class="ma-0 ml-1 pa-0">{{ contractTypeString }}</v-chip>
         </v-card-text>
       </div>
     </v-card>
@@ -183,6 +183,9 @@ const PortfolioRenderCollection = {
   props: {
     type: {
       type: Number,
+    },
+    contractType: {
+      type: String,
     },
     contract: {
       type: String,
@@ -212,15 +215,15 @@ const PortfolioRenderCollection = {
     portfolioMetadata() {
       return store.getters['portfolio/metadata'];
     },
-    typeString() {
-      if (this.type == 0) {
+    contractTypeString() {
+      if (this.contractType == "eth") {
         return "ETH";
-      } else if (this.type == 1) {
-        return "Fungible";
-      } else if (this.type == 2) {
-        return "Non-Fungible";
-      } else if (this.type == 3) {
-        return "ENS Name";
+      } else if (this.contractType == "erc20") {
+        return "ERC-20";
+      } else if (this.contractType == "erc721") {
+        return "ERC-721";
+      } else if (this.contractType == "erc1155") {
+        return "ERC-1155";
       } else {
         return "Contract";
       }
