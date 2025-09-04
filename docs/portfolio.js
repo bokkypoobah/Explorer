@@ -171,6 +171,7 @@ const Portfolio = {
                       </template>
                       <template v-slot:item.balance="{ item }">
                         <portfolio-render-balance :type="item.type" :contract="item.contract" :address="item.address" :balance="item.balance" :tokenData="item.tokenData" noXPadding></portfolio-render-balance>
+                        {{ item }}
                       </template>
                     </v-data-table>
                     <!-- portfolioMetadata: {{ portfolioMetadata }} -->
@@ -435,11 +436,19 @@ portfolioData: {{ portfolioData }}
           for (const [token, tokenData] of Object.entries(chainData.tokens || {})) {
             const type = (token == ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS || token == ENS_NAMEWRAPPER_ADDRESS) ? 3 : 2;
             const metadata = this.portfolioMetadata[chainId] && this.portfolioMetadata[chainId][token] || {};
-            // results.push({ type, address, chainId: parseInt(chainId), contract: token, contractType: metadata.type, name: addressData.name, collectionName: metadata.collectionName, collectionImage: metadata.collectionImage, collectionSlug: metadata.collectionSlug, tokenData });
-            results.push({ type, address, chainId: parseInt(chainId), contract: token, contractType: metadata.type, name: addressData.name, collectionName: metadata.collectionName, tokenData });
+            // console.log(now() + " Portfolio - computed.collections - metadata: " + JSON.stringify(metadata, null, 2));
+            const newTokenData = {};
+            for (const [tokenId, count] of Object.entries(tokenData)) {
+              const tokens = count === true ? null : count;
+              const tokenMetadata = metadata && metadata.tokens && metadata.tokens[tokenId] || {};
+              // console.error(now() + " Portfolio - computed.collections - tokenMetadata: " + JSON.stringify(tokenMetadata, null, 2));
+              newTokenData[tokenId] = { tokens, name: tokenMetadata.name, description: tokenMetadata.description };
+            }
+            results.push({ type, address, chainId: parseInt(chainId), contract: token, contractType: metadata.type, name: addressData.name, collectionName: metadata.collectionName, tokenData: newTokenData });
           }
         }
       }
+      // console.error(now() + " Portfolio - computed.collections - results: " + JSON.stringify(results, null, 2));
       return results;
     },
     filteredSortedCollections() {
@@ -493,10 +502,8 @@ portfolioData: {{ portfolioData }}
       for (const collection of this.collections) {
         if (collection.type == 2 || collection.type == 3) {
           // console.log(now() + " Portfolio - computed.collections - portfolioMetadata[chainId][contract]: " + JSON.stringify(this.portfolioMetadata[collection.chainId][collection.contract], null, 2));
-          for (const [tokenId, count] of Object.entries(collection.tokenData)) {
-            const tokens = count === true ? null : count;
+          for (const [tokenId, tokenInfo] of Object.entries(collection.tokenData)) {
             const metadata = this.portfolioMetadata[collection.chainId] && this.portfolioMetadata[collection.chainId][collection.contract] && this.portfolioMetadata[collection.chainId][collection.contract].tokens[tokenId] || {};
-            console.error(now() + " Portfolio - computed.collections - metadata: " + JSON.stringify(metadata, null, 2));
             results.push({
               type: collection.type,
               address: collection.address,
@@ -507,14 +514,9 @@ portfolioData: {{ portfolioData }}
               collectionImage: collection.collectionImage,
               collectionSlug: collection.collectionSlug,
               tokenId,
-              tokens,
-              name: metadata.name,
-              description: metadata.description,
-              image: metadata.image,
-              attributes: metadata.attributes,
-              lastSale: metadata.lastSale,
-              price: metadata.price,
-              topBid: metadata.topBid,
+              tokens: tokenInfo.tokens,
+              name: tokenInfo.name,
+              description: tokenInfo.description,
             });
           }
         } else {
