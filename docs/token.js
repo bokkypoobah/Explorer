@@ -833,7 +833,6 @@ nftOwnersList: {{ nftOwnersList }}
     erc20OwnersList() {
       const results = [];
       for (const [address, balance] of Object.entries(this.balances)) {
-        // TODO: Bug with totalSupply
         const percent = this.totalSupply && ethers.BigNumber.from(balance).mul(1000000).div(this.totalSupply) / 10000.0 || null;
         results.push({ address, balance, percent });
       }
