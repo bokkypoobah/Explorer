@@ -216,11 +216,11 @@ const PortfolioRenderCollection = {
       if (this.type == 0) {
         return "ETH";
       } else if (this.type == 1) {
-        return "ERC-20";
+        return "Fungible";
       } else if (this.type == 2) {
-        return "ERC-721";
+        return "Non-Fungible";
       } else if (this.type == 3) {
-        return "ERC-1155";
+        return "ENS Name";
       } else {
         return "Contract";
       }
@@ -323,19 +323,6 @@ const PortfolioRenderBalance = {
     portfolioMetadata() {
       return store.getters['portfolio/metadata'];
     },
-    typeString() {
-      if (this.type == 0) {
-        return "ETH";
-      } else if (this.type == 1) {
-        return "ERC-20";
-      } else if (this.type == 2) {
-        return "ERC-721";
-      } else if (this.type == 3) {
-        return "ERC-1155";
-      } else {
-        return "Contract";
-      }
-    },
     symbol() {
       if (this.type == 0) {
         return "ETH";
@@ -387,7 +374,8 @@ const PortfolioRenderToken = {
       {{ formatUnits(balance, decimals) }} {{ symbol }}
     </div>
     <div v-else>
-      {{ tokenId }}
+      tokenId: {{ tokenId }}
+      image: {{ image }}
     </div>
   `,
   props: {
@@ -428,19 +416,6 @@ const PortfolioRenderToken = {
     portfolioMetadata() {
       return store.getters['portfolio/metadata'];
     },
-    typeString() {
-      if (this.type == 0) {
-        return "ETH";
-      } else if (this.type == 1) {
-        return "ERC-20";
-      } else if (this.type == 2) {
-        return "ERC-721";
-      } else if (this.type == 3) {
-        return "ERC-1155";
-      } else {
-        return "Contract";
-      }
-    },
     symbol() {
       if (this.type == 0) {
         return "ETH";
@@ -461,9 +436,17 @@ const PortfolioRenderToken = {
           const contract = this.portfolioMetadata[this.chainId][this.contract];
           return contract.decimals || 0;
         }
-      } else {
-        return null;
       }
+      return null;
+    },
+    image() {
+      if (this.type >= 1) {
+        if (this.contract && this.chainId in this.portfolioMetadata && this.contract in this.portfolioMetadata[this.chainId]) {
+          const contract = this.portfolioMetadata[this.chainId][this.contract];
+          return contract && contract.tokens && contract.tokens[this.tokenId] && contract.tokens[this.tokenId].image;
+        }
+      }
+      return null;
     },
     explorer() {
       return store.getters['web3/explorer'];
