@@ -30,7 +30,7 @@ const Portfolio = {
             <v-icon>mdi-book-open-variant-outline</v-icon>
           </v-btn>
           <v-spacer></v-spacer>
-          <v-btn v-if="sync.info == null" @click="syncPortfolio();" color="primary" icon v-tooltip="'Sync Portfolio'">
+          <v-btn v-if="sync.info == null" :disabled="!settings.selectedTagOrAddress" @click="syncPortfolio();" color="primary" icon v-tooltip="'Sync Portfolio'">
             <v-icon>mdi-refresh</v-icon>
           </v-btn>
           <v-btn v-if="sync.info != null" @click="setSyncHalt();" color="primary" icon v-tooltip="'Halt syncing'">

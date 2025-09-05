@@ -257,9 +257,9 @@ const portfolioModule = {
       const BATCHSIZE = 25;
       const DELAYINMILLIS = 2000;
       completed = 0;
-      // TODO
-      // context.commit('setSyncInfo', "Syncing token metadata for " + address.substring(0, 6) + "..." + address.slice(-4) + " => " + info.name);
-      // context.commit('setSyncCompleted', ++completed);
+      context.commit('setSyncInfo', "Syncing token metadata");
+      context.commit('setSyncTotal', metadataToRetrieve.length);
+      context.commit('setSyncCompleted', completed);
       for (let i = 0; i < metadataToRetrieve.length && !context.state.sync.halt; i += BATCHSIZE) {
         const batch = metadataToRetrieve.slice(i, parseInt(i) + BATCHSIZE);
         console.error(now() + " portfolioModule - actions.syncMetadata - batch: " + JSON.stringify(batch));
@@ -282,9 +282,9 @@ const portfolioModule = {
           //   console.error(now() + " portfolioModule - actions.syncMetadata - token: " + JSON.stringify(token, null, 2));
           // }
           console.log(now() + " portfolioModule - actions.syncMetadata - metadata: " + JSON.stringify(metadata, null, 2));
-          // if (continuation != null) {
-            await delay(DELAYINMILLIS);
-          // }
+          completed += batch.length;
+          context.commit('setSyncCompleted', completed);
+          await delay(DELAYINMILLIS);
         } while (continuation != null && !context.state.sync.halt);
       }
 
