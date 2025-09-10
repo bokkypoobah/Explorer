@@ -122,6 +122,11 @@ async function syncPortfolioAddressEvents(address, data, provider, db, chainId) 
 }
 
 
+async function syncPortfolioAddressENSEvents(tokenIds, wrappedTokenIds, provider, db, chainId) {
+  console.error(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents - tokenIds: " + JSON.stringify(tokenIds) + ", wrappedTokenIds: " + JSON.stringify(wrappedTokenIds));
+}
+
+
 // TODO: Delete
 // ERC-20 Transfer (index_topic_1 address from, index_topic_2 address to, uint256 tokens)
 // ERC-721 Transfer (index_topic_1 address from, index_topic_2 address to, index_topic_3 uint256 id)

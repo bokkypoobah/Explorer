@@ -296,26 +296,39 @@ const portfolioModule = {
 
     async syncENSEvents(context) {
       // console.error(now() + " portfolioModule - actions.syncENSEvents - context.state.metadata: " + JSON.stringify(context.state.metadata, null, 2));
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
       const chainId = store.getters["web3/chainId"];
       if (chainId != 1) {
         return;
       }
-      let tokenIds = [];
-      let wrappedTokenIds = [];
-      for (const [contract, contractInfo] of Object.entries(context.state.metadata[chainId] || {})) {
-        if (contract == ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS) {
-          console.error(now() + " portfolioModule - actions.syncENSEvents - contract: " + contract);
-          tokenIds = Object.keys(contractInfo.tokens);
-          console.error(now() + " portfolioModule - actions.syncENSEvents - tokenIds: " + JSON.stringify(tokenIds, null, 2));
-        } else if (contract == ENS_NAMEWRAPPER_ADDRESS) {
-          console.error(now() + " portfolioModule - actions.syncENSEvents - wrapped contract: " + contract);
-          wrappedTokenIds = Object.keys(contractInfo.tokens);
-          console.error(now() + " portfolioModule - actions.syncENSEvents - wrapped tokenIds: " + JSON.stringify(wrappedTokenIds, null, 2));
-        }
-        // if (contract == ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS || contract == ENS_NAMEWRAPPER_ADDRESS) {
-        //   console.error(now() + " portfolioModule - actions.syncENSEvents - contract: " + contract);
-        // }
-      }
+      const dbInfo = store.getters["db"];
+      const db = new Dexie(dbInfo.name);
+      db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
+
+      const tokenIds = context.state.metadata[chainId] && context.state.metadata[chainId][ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS] && Object.keys(context.state.metadata[chainId][ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS].tokens) || [];
+      // console.log(now() + " portfolioModule - actions.syncENSEvents - tokenIds: " + JSON.stringify(tokenIds, null, 2));
+
+      const wrappedTokenIds = context.state.metadata[chainId] && context.state.metadata[chainId][ENS_NAMEWRAPPER_ADDRESS] && Object.keys(context.state.metadata[chainId][ENS_NAMEWRAPPER_ADDRESS].tokens) || [];
+      // console.log(now() + " portfolioModule - actions.syncENSEvents - wrappedTokenIds: " + JSON.stringify(wrappedTokenIds, null, 2));
+
+      await syncPortfolioAddressENSEvents(tokenIds, wrappedTokenIds, provider, db, chainId);
+
+      // let tokenIds = [];
+      // let wrappedTokenIds = [];
+      // for (const [contract, contractInfo] of Object.entries(context.state.metadata[chainId] || {})) {
+      //   if (contract == ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS) {
+      //     console.error(now() + " portfolioModule - actions.syncENSEvents - contract: " + contract);
+      //     tokenIds = Object.keys(contractInfo.tokens);
+      //     console.error(now() + " portfolioModule - actions.syncENSEvents - tokenIds: " + JSON.stringify(tokenIds, null, 2));
+      //   } else if (contract == ENS_NAMEWRAPPER_ADDRESS) {
+      //     console.error(now() + " portfolioModule - actions.syncENSEvents - wrapped contract: " + contract);
+      //     wrappedTokenIds = Object.keys(contractInfo.tokens);
+      //     console.error(now() + " portfolioModule - actions.syncENSEvents - wrapped tokenIds: " + JSON.stringify(wrappedTokenIds, null, 2));
+      //   }
+      //   // if (contract == ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS || contract == ENS_NAMEWRAPPER_ADDRESS) {
+      //   //   console.error(now() + " portfolioModule - actions.syncENSEvents - contract: " + contract);
+      //   // }
+      // }
     },
 
     async collateData(context) {
