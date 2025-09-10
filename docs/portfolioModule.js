@@ -4,7 +4,6 @@ const portfolioModule = {
     inputTagOrAddress: null,
     addresses: {},
     data: {},
-    data: {},
     metadata: {},
     sync: {
       info: null,
@@ -112,6 +111,7 @@ const portfolioModule = {
       db.close();
 
       context.dispatch("syncMetadata");
+      context.dispatch("syncENSEvents");
       context.dispatch("collateData");
       context.commit('setSyncInfo', null);
       context.commit('setSyncHalt', false);
@@ -262,7 +262,7 @@ const portfolioModule = {
       context.commit('setSyncCompleted', completed);
       for (let i = 0; i < metadataToRetrieve.length && !context.state.sync.halt; i += BATCHSIZE) {
         const batch = metadataToRetrieve.slice(i, parseInt(i) + BATCHSIZE);
-        console.error(now() + " portfolioModule - actions.syncMetadata - batch: " + JSON.stringify(batch));
+        // console.error(now() + " portfolioModule - actions.syncMetadata - batch: " + JSON.stringify(batch));
         let continuation = null;
         do {
           let url = "https://api.reservoir.tools/tokens/v7?";
@@ -275,7 +275,7 @@ const portfolioModule = {
           url = url + "&limit=100&includeAttributes=true&includeLastSale=true&includeTopBid=true";
           console.log(url);
           const data = await fetch(url).then(response => response.json());
-          console.error(now() + " portfolioModule - actions.syncMetadata - data: " + JSON.stringify(data));
+          // console.error(now() + " portfolioModule - actions.syncMetadata - data: " + JSON.stringify(data));
           continuation = data.continuation;
           parseReservoirData(data, metadata);
           // for (token of data.tokens) {
@@ -292,6 +292,30 @@ const portfolioModule = {
       await dbSaveCacheData(db, "portfolio_metadata", metadata);
       db.close();
       context.commit('setSyncInfo', null);
+    },
+
+    async syncENSEvents(context) {
+      // console.error(now() + " portfolioModule - actions.syncENSEvents - context.state.metadata: " + JSON.stringify(context.state.metadata, null, 2));
+      const chainId = store.getters["web3/chainId"];
+      if (chainId != 1) {
+        return;
+      }
+      let tokenIds = [];
+      let wrappedTokenIds = [];
+      for (const [contract, contractInfo] of Object.entries(context.state.metadata[chainId] || {})) {
+        if (contract == ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS) {
+          console.error(now() + " portfolioModule - actions.syncENSEvents - contract: " + contract);
+          tokenIds = Object.keys(contractInfo.tokens);
+          console.error(now() + " portfolioModule - actions.syncENSEvents - tokenIds: " + JSON.stringify(tokenIds, null, 2));
+        } else if (contract == ENS_NAMEWRAPPER_ADDRESS) {
+          console.error(now() + " portfolioModule - actions.syncENSEvents - wrapped contract: " + contract);
+          wrappedTokenIds = Object.keys(contractInfo.tokens);
+          console.error(now() + " portfolioModule - actions.syncENSEvents - wrapped tokenIds: " + JSON.stringify(wrappedTokenIds, null, 2));
+        }
+        // if (contract == ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS || contract == ENS_NAMEWRAPPER_ADDRESS) {
+        //   console.error(now() + " portfolioModule - actions.syncENSEvents - contract: " + contract);
+        // }
+      }
     },
 
     async collateData(context) {

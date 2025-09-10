@@ -51,7 +51,7 @@ async function getAddressInfo(inputAddress, provider) {
       // results.sourceCode = null;
       // console.log(now() + " functions.js:getAddressInfo - results.code: " + results.code);
     } catch (e) {
-      console.error(now() + " functions.js:getAddressInfo - provider.getCode: " + e.message);
+      // console.error(now() + " functions.js:getAddressInfo - provider.getCode: " + e.message);
     }
   }
   // ENS name
@@ -59,7 +59,7 @@ async function getAddressInfo(inputAddress, provider) {
     try {
       results.ensName = await provider.lookupAddress(results.address);
     } catch (e) {
-      console.error(now() + " functions.js:getAddressInfo - provider.lookupAddress: " + e.message);
+      // console.error(now() + " functions.js:getAddressInfo - provider.lookupAddress: " + e.message);
     }
   }
   if (results.address) {
@@ -67,7 +67,7 @@ async function getAddressInfo(inputAddress, provider) {
       results.balance = ethers.BigNumber.from(await provider.getBalance(results.address)).toString();
       console.log(now() + " functions.js:getAddressInfo - balance: " + results.balance);
     } catch (e) {
-      console.error(now() + " functions.js:getAddressInfo - provider.getBalance: " + e.message);
+      // console.error(now() + " functions.js:getAddressInfo - provider.getBalance: " + e.message);
     }
   }
   if (results.address && results.type == "eoa") {
@@ -75,7 +75,7 @@ async function getAddressInfo(inputAddress, provider) {
       results.transactionCount = await provider.getTransactionCount(results.address);
       console.log(now() + " functions.js:getAddressInfo - results.transactionCount: " + results.transactionCount);
     } catch (e) {
-      console.error(now() + " functions.js:getAddressInfo - ERROR provider.getStorageAt: " + e.message);
+      // console.error(now() + " functions.js:getAddressInfo - ERROR provider.getStorageAt: " + e.message);
     }
   // } else {
   //   try {
@@ -99,9 +99,9 @@ async function getAddressInfo(inputAddress, provider) {
     const allSafesContract = new ethers.Contract(results.address, ALL_SAFES_ABI, provider);
     try {
       results.version = await allSafesContract.VERSION();
-      console.log(now() + " functions.js:getAddressInfo - results.version: " + results.version);
+      // console.log(now() + " functions.js:getAddressInfo - results.version: " + results.version);
     } catch (e) {
-      console.error(now() + " functions.js:getAddressInfo - ERROR allSafesContract.VERSION(): " + e.message);
+      // console.error(now() + " functions.js:getAddressInfo - ERROR allSafesContract.VERSION(): " + e.message);
     }
     if (["1.0.0", "1.1.1", "1.3.0", "1.4.1"].includes(results.version)) {
       console.log(now() + " functions.js:getAddressInfo - CHECKING results.version: " + results.version);
@@ -109,19 +109,19 @@ async function getAddressInfo(inputAddress, provider) {
         results.owners = await allSafesContract.getOwners();
         console.log(now() + " functions.js:getAddressInfo - results.owners: " + JSON.stringify(results.owners));
       } catch (e) {
-        console.error(now() + " functions.js:getAddressInfo - ERROR allSafesContract.getOwners(): " + e.message);
+        // console.error(now() + " functions.js:getAddressInfo - ERROR allSafesContract.getOwners(): " + e.message);
       }
       try {
         results.threshold = parseInt(await allSafesContract.getThreshold());
         console.log(now() + " functions.js:getAddressInfo - results.threshold: " + results.threshold);
       } catch (e) {
-        console.error(now() + " functions.js:getAddressInfo - ERROR allSafesContract.getThreshold(): " + e.message);
+        // console.error(now() + " functions.js:getAddressInfo - ERROR allSafesContract.getThreshold(): " + e.message);
       }
       try {
         results.nonce = parseInt(await allSafesContract.nonce());
         console.log(now() + " functions.js:getAddressInfo - results.nonce: " + results.nonce);
       } catch (e) {
-        console.error(now() + " functions.js:getAddressInfo - ERROR allSafesContract.nonce(): " + e.message);
+        // console.error(now() + " functions.js:getAddressInfo - ERROR allSafesContract.nonce(): " + e.message);
       }
       try {
         const storage0 = await allSafesContract.getStorageAt(0, 1);
@@ -130,7 +130,7 @@ async function getAddressInfo(inputAddress, provider) {
           console.log(now() + " functions.js:getAddressInfo - results.implementation: " + results.implementation);
         }
       } catch (e) {
-        console.error(now() + " functions.js:getAddressInfo - ERROR allSafesContract.getStorageAt(): " + e.message);
+        // console.error(now() + " functions.js:getAddressInfo - ERROR allSafesContract.getStorageAt(): " + e.message);
       }
       if (results.owners && results.threshold && results.nonce) {
         // TODO: Should check that result.implementation a valid safe contract
@@ -147,13 +147,13 @@ async function getAddressInfo(inputAddress, provider) {
       results.name = await tokenContract.name();
       console.log(now() + " functions.js:getAddressInfo - results.name: " + results.name);
     } catch (e) {
-      console.error(now() + " functions.js:getAddressInfo - ERROR tokenContract.name(): " + e.message);
+      // console.error(now() + " functions.js:getAddressInfo - ERROR tokenContract.name(): " + e.message);
     }
     try {
       results.decimals = parseInt(await tokenContract.decimals());
       console.log(now() + " functions.js:getAddressInfo - results.decimals: " + results.decimals);
     } catch (e) {
-      console.error(now() + " functions.js:getAddressInfo - ERROR tokenContract.decimals(): " + e.message);
+      // console.error(now() + " functions.js:getAddressInfo - ERROR tokenContract.decimals(): " + e.message);
     }
     if (results.name && results.decimals) {
       results.type = "erc20";
@@ -162,7 +162,7 @@ async function getAddressInfo(inputAddress, provider) {
         results.symbol = await tokenContract.symbol();
         console.log(now() + " functions.js:getAddressInfo - results.symbol: " + results.symbol);
       } catch (e) {
-        console.error(now() + " functions.js:getAddressInfo - ERROR tokenContract.symbol(): " + e.message);
+        // console.error(now() + " functions.js:getAddressInfo - ERROR tokenContract.symbol(): " + e.message);
       }
     }
     if (results.type == "contract" || results.type == "erc20") {
@@ -170,7 +170,7 @@ async function getAddressInfo(inputAddress, provider) {
         results.totalSupply = ethers.BigNumber.from(await tokenContract.totalSupply()).toString();
         console.log(now() + " functions.js:getAddressInfo - results.totalSupply: " + results.totalSupply);
       } catch (e) {
-        console.error(now() + " functions.js:getAddressInfo - ERROR tokenContract.totalSupply(): " + e.message);
+        // console.error(now() + " functions.js:getAddressInfo - ERROR tokenContract.totalSupply(): " + e.message);
       }
     }
     if (results.type == "contract") {
@@ -180,7 +180,7 @@ async function getAddressInfo(inputAddress, provider) {
           // results.abi = JSON.stringify(ERC721ABI);
         }
       } catch (e) {
-        console.error(now() + " functions.js:getAddressInfo - ERROR tokenContract.supportsInterface(ERC721_INTERFACE): " + e.message);
+        // console.error(now() + " functions.js:getAddressInfo - ERROR tokenContract.supportsInterface(ERC721_INTERFACE): " + e.message);
       }
     }
     if (results.type == "contract") {
@@ -190,7 +190,7 @@ async function getAddressInfo(inputAddress, provider) {
           // results.abi = JSON.stringify(ERC1155ABI);
         }
       } catch (e) {
-        console.error(now() + " functions.js:getAddressInfo - ERROR tokenContract.supportsInterface(ERC1155_INTERFACE): " + e.message);
+        // console.error(now() + " functions.js:getAddressInfo - ERROR tokenContract.supportsInterface(ERC1155_INTERFACE): " + e.message);
       }
     }
   }
