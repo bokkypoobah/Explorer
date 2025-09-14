@@ -151,6 +151,9 @@ const Portfolio = {
               <v-card-text class="ma-0 pa-2">
                 <v-tabs-window v-model="settings.tab">
                   <v-tabs-window-item value="collections">
+
+                    <!-- {{ portfolioENSData }} -->
+
                     <v-data-table
                       :items="filteredSortedCollections"
                       :headers="collectionsHeaders"
@@ -423,6 +426,9 @@ portfolioData: {{ portfolioData }}
     portfolioMetadata() {
       return store.getters['portfolio/metadata'];
     },
+    portfolioENSData() {
+      return store.getters['portfolio/ensData'];
+    },
 
     collections() {
       const results = [];
@@ -505,6 +511,14 @@ portfolioData: {{ portfolioData }}
           // console.log(now() + " Portfolio - computed.collections - portfolioMetadata[chainId][contract]: " + JSON.stringify(this.portfolioMetadata[collection.chainId][collection.contract], null, 2));
           for (const [tokenId, tokenInfo] of Object.entries(collection.tokenData)) {
             const metadata = this.portfolioMetadata[collection.chainId] && this.portfolioMetadata[collection.chainId][collection.contract] && this.portfolioMetadata[collection.chainId][collection.contract].tokens[tokenId] || {};
+            let expiry = null;
+            if (collection.contract == ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS || collection.contract == ENS_NAMEWRAPPER_ADDRESS) {
+              if (collection.contract in this.portfolioENSData) {
+                if (tokenId in this.portfolioENSData[collection.contract]) {
+                  expiry = this.portfolioENSData[collection.contract][tokenId].expiry;                                  
+                }
+              }
+            }
             results.push({
               type: collection.type,
               address: collection.address,
@@ -518,6 +532,7 @@ portfolioData: {{ portfolioData }}
               tokens: tokenInfo.tokens,
               name: tokenInfo.name,
               description: tokenInfo.description,
+              expiry,
             });
           }
         } else {

@@ -5,6 +5,7 @@ const portfolioModule = {
     addresses: {},
     data: {},
     metadata: {},
+    ensData: {},
     sync: {
       info: null,
       completed: null,
@@ -17,6 +18,7 @@ const portfolioModule = {
     addresses: state => state.addresses,
     data: state => state.data,
     metadata: state => state.metadata,
+    ensData: state => state.ensData,
     sync: state => state.sync,
   },
   mutations: {
@@ -32,6 +34,10 @@ const portfolioModule = {
     setMetadata(state, metadata) {
       // console.log(now() + " portfolioModule - mutations.setMetadata - metadata: " + JSON.stringify(metadata));
       state.metadata = metadata;
+    },
+    setENSData(state, ensData) {
+      console.error(now() + " portfolioModule - mutations.setENSData - ensData: " + JSON.stringify(ensData));
+      state.ensData = ensData;
     },
     setSyncInfo(state, info) {
       // console.log(now() + " portfolioModule - mutations.setSyncInfo - info: " + info);
@@ -336,6 +342,8 @@ const portfolioModule = {
 
       let ensData = {};
       await collatePortfolioENSData(ensData, db, chainId);
+      context.commit('setENSData', ensData);
+      console.log(now() + " portfolioModule - actions.collateENSData - ensData: " + JSON.stringify(ensData, null, 2));
     },
 
     async collateData(context) {
