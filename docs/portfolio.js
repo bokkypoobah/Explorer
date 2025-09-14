@@ -200,11 +200,9 @@ const Portfolio = {
                       </template>
                       <template v-slot:item.token="{ item }">
                         <portfolio-render-token :type="item.type" :contract="item.contract" :address="item.address" :balance="item.balance" :tokenId="item.tokenId" noXPadding></portfolio-render-token>
-                        <font size="-2">
-                          <pre>
+                        <pre>
 {{ item }}
-                          </pre>
-                        </font>
+                        </pre>
                       </template>
                       <template v-slot:item.expiry="{ item }">
                         <!-- <portfolio-render-token :type="item.type" :contract="item.contract" :address="item.address" :balance="item.balance" :tokenId="item.tokenId" noXPadding></portfolio-render-token> -->
