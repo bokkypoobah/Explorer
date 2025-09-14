@@ -151,9 +151,6 @@ const Portfolio = {
               <v-card-text class="ma-0 pa-2">
                 <v-tabs-window v-model="settings.tab">
                   <v-tabs-window-item value="collections">
-
-                    <!-- {{ portfolioENSData }} -->
-
                     <v-data-table
                       :items="filteredSortedCollections"
                       :headers="collectionsHeaders"
@@ -203,7 +200,17 @@ const Portfolio = {
                       </template>
                       <template v-slot:item.token="{ item }">
                         <portfolio-render-token :type="item.type" :contract="item.contract" :address="item.address" :balance="item.balance" :tokenId="item.tokenId" noXPadding></portfolio-render-token>
-                        {{ item }}
+                        <font size="-2">
+                          <pre>
+{{ item }}
+                          </pre>
+                        </font>
+                      </template>
+                      <template v-slot:item.expiry="{ item }">
+                        <!-- <portfolio-render-token :type="item.type" :contract="item.contract" :address="item.address" :balance="item.balance" :tokenId="item.tokenId" noXPadding></portfolio-render-token> -->
+                        <div v-if="item.expiry">
+                          {{ formatTimestamp(item.expiry) }}
+                        </div>
                       </template>
                       <!-- <template v-slot:item.punkId="{ item }">
                         {{ commify0(item[0]) }}
@@ -374,8 +381,9 @@ portfolioData: {{ portfolioData }}
       itemsHeaders: [
         { title: '#', value: 'rowNumber', width: '10%', align: 'end', sortable: false },
         { title: 'Address', value: 'address', width: '20%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
-        { title: 'Collection', value: 'collection', width: '40%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
-        { title: 'Token', value: 'token', width: '30%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
+        { title: 'Collection', value: 'collection', width: '15%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
+        { title: 'Token', value: 'token', width: '15%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
+        { title: 'Expiry', value: 'expiry', width: '15%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
       ],
     };
   },
@@ -515,7 +523,7 @@ portfolioData: {{ portfolioData }}
             if (collection.contract == ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS || collection.contract == ENS_NAMEWRAPPER_ADDRESS) {
               if (collection.contract in this.portfolioENSData) {
                 if (tokenId in this.portfolioENSData[collection.contract]) {
-                  expiry = this.portfolioENSData[collection.contract][tokenId].expiry;                                  
+                  expiry = this.portfolioENSData[collection.contract][tokenId].expiry;
                 }
               }
             }

@@ -377,8 +377,12 @@ const PortfolioRenderToken = {
       {{ formatUnits(balance, decimals) }} {{ symbol }}
     </div>
     <div v-else>
-      tokenId: {{ tokenId }}
-      image: {{ image }}
+      <font size="-2">
+        <pre>
+tokenId: {{ tokenId }}
+image: {{ image && (image.substring(0, 22) + "..." + image.slice(-20)) }}
+        </pre>
+      </font>
     </div>
   `,
   props: {
