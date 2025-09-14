@@ -165,7 +165,7 @@ const portfolioModule = {
         // console.log(now() + " portfolioModule - actions.syncMetadata - address: " + address);
         let done = false;
         do {
-          const logs = await db.addressEvents.where('[address+chainId+blockNumber+logIndex]').between([address, Dexie.minKey, Dexie.minKey, Dexie.minKey],[address, Dexie.maxKey, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(BATCH_SIZE).toArray();
+          const logs = await db.portfolioAddressEvents.where('[address+chainId+blockNumber+logIndex]').between([address, Dexie.minKey, Dexie.minKey, Dexie.minKey],[address, Dexie.maxKey, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(BATCH_SIZE).toArray();
           for (const log of logs) {
             if (log.topics[0] in tokenTopics) {
               // console.error(now() + " portfolioModule - actions.syncMetadata - log: " + JSON.stringify(log, null, 2));
@@ -305,13 +305,7 @@ const portfolioModule = {
       const db = new Dexie(dbInfo.name);
       db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
 
-      const tokenIds = context.state.metadata[chainId] && context.state.metadata[chainId][ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS] && Object.keys(context.state.metadata[chainId][ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS].tokens) || [];
-      // console.log(now() + " portfolioModule - actions.syncENSEvents - tokenIds: " + JSON.stringify(tokenIds, null, 2));
-
-      const wrappedTokenIds = context.state.metadata[chainId] && context.state.metadata[chainId][ENS_NAMEWRAPPER_ADDRESS] && Object.keys(context.state.metadata[chainId][ENS_NAMEWRAPPER_ADDRESS].tokens) || [];
-      // console.log(now() + " portfolioModule - actions.syncENSEvents - wrappedTokenIds: " + JSON.stringify(wrappedTokenIds, null, 2));
-
-      await syncPortfolioAddressENSEvents(tokenIds, wrappedTokenIds, provider, db, chainId);
+      await syncPortfolioENSEvents(context.state.metadata, provider, db, chainId);
 
       // let tokenIds = [];
       // let wrappedTokenIds = [];

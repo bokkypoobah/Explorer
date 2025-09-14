@@ -6,13 +6,14 @@ const router = VueRouter.createRouter({
 const store = new Vuex.Store({
   state: {
     db: {
-      name: "explorer088j",
+      name: "explorer088k",
       version: 1,
       schemaDefinition: {
         blocks: '[chainId+number]',
         tokenEvents: '[chainId+address+blockNumber+logIndex]',
         punkEvents: '[chainId+address+blockNumber+logIndex],punkId,type',
-        addressEvents: '[address+chainId+blockNumber+logIndex]',
+        portfolioAddressEvents: '[address+chainId+blockNumber+logIndex]',
+        portfolioENSEvents: '[chainId+blockNumber+logIndex]',
         cache: '&objectName',
       },
     },

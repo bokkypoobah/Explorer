@@ -58,7 +58,7 @@ async function syncPortfolioAddressEvents(address, data, provider, db, chainId) 
     console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressEvents.processLogs - records: " + JSON.stringify(records));
     console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressEvents.processLogs - records.length: " + records.length);
     if (records.length > 0) {
-      await db.addressEvents.bulkAdd(records).then(function(lastKey) {
+      await db.portfolioAddressEvents.bulkAdd(records).then(function(lastKey) {
         console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressEvents.processLogs - bulkAdd lastKey: " + JSON.stringify(lastKey));
         }).catch(Dexie.BulkError, function(e) {
           console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressEvents.processLogs - bulkAdd e: " + JSON.stringify(e.failures, null, 2));
@@ -108,9 +108,9 @@ async function syncPortfolioAddressEvents(address, data, provider, db, chainId) 
   console.log(now() + " portfolioFunctions.js:syncPortfolioAddressEvents - startBlock: " + startBlock + ", endBlock: " + endBlock);
 
   if (startBlock > 0) {
-    const toDelete = await db.addressEvents.where('[address+chainId+blockNumber+logIndex]').between([address, chainId, startBlock, Dexie.minKey],[address, chainId, Dexie.maxKey, Dexie.maxKey]).toArray();
+    const toDelete = await db.portfolioAddressEvents.where('[address+chainId+blockNumber+logIndex]').between([address, chainId, startBlock, Dexie.minKey],[address, chainId, Dexie.maxKey, Dexie.maxKey]).toArray();
     console.log(now() + " portfolioFunctions.js:syncPortfolioAddressEvents - toDelete: " + JSON.stringify(toDelete, null, 2));
-    const rowsDeleted = await db.addressEvents.where('[address+chainId+blockNumber+logIndex]').between([address, chainId, startBlock, Dexie.minKey],[address, chainId, Dexie.maxKey, Dexie.maxKey]).delete()
+    const rowsDeleted = await db.portfolioAddressEvents.where('[address+chainId+blockNumber+logIndex]').between([address, chainId, startBlock, Dexie.minKey],[address, chainId, Dexie.maxKey, Dexie.maxKey]).delete()
     console.log(now() + " portfolioFunctions.js:syncPortfolioAddressEvents - rowsDeleted: " + rowsDeleted);
   }
 
@@ -122,8 +122,49 @@ async function syncPortfolioAddressEvents(address, data, provider, db, chainId) 
 }
 
 
-async function syncPortfolioAddressENSEvents(tokenIds, wrappedTokenIds, provider, db, chainId) {
-  console.error(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents - tokenIds: " + JSON.stringify(tokenIds) + ", wrappedTokenIds: " + JSON.stringify(wrappedTokenIds));
+async function syncPortfolioENSEvents(metadata, provider, db, chainId) {
+  // console.error(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents - metadata: " + JSON.stringify(metadata, null, 2));
+  const BATCH_SIZE = 10;
+
+  const tokenIds = metadata[chainId] && metadata[chainId][ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS] && Object.keys(metadata[chainId][ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS].tokens) || [];
+  const wrappedTokenIds = metadata[chainId] && metadata[chainId][ENS_NAMEWRAPPER_ADDRESS] && Object.keys(metadata[chainId][ENS_NAMEWRAPPER_ADDRESS].tokens) || [];
+  const allTokenIds = [ ...tokenIds, ...wrappedTokenIds ];
+  // console.error(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents - allTokenIds: " + JSON.stringify(allTokenIds, null, 2));
+
+  const block = await provider.getBlock();
+  const fromBlock = 0;
+  const toBlock = block.number;
+  for (let i = 0; i < allTokenIds.length; i += BATCH_SIZE) {
+    const batch = allTokenIds.slice(i, parseInt(i) + BATCH_SIZE).map(e => ethers.BigNumber.from(e).toHexString());
+    console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents - batch: " + JSON.stringify(batch, null, 2));
+    try {
+      const topics = [[
+          '0xb3d987963d01b2f68493b4bdb130988f157ea43070d4ad840fee0466ed9370d9', // NameRegistered (index_topic_1 uint256 id, index_topic_2 address owner, uint256 expires)
+          '0xca6abbe9d7f11422cb6ca7629fbf6fe9efb1c621f71ce8f02b9f2a230097404f', // NameRegistered (string name, index_topic_1 bytes32 label, index_topic_2 address owner, uint256 cost, uint256 expires)
+          '0x3da24c024582931cfaf8267d8ed24d13a82a8068d5bd337d30ec45cea4e506ae', // NameRenewed (string name, index_topic_1 bytes32 label, uint256 cost, uint256 expires)
+          '0x8ce7013e8abebc55c3890a68f5a27c67c3f7efa64e584de5fb22363c606fd340', // NameWrapped (index_topic_1 bytes32 node, bytes name, address owner, uint32 fuses, uint64 expiry)
+          '0xee2ba1195c65bcf218a83d874335c6bf9d9067b4c672f3c3bf16cf40de7586c4', // NameUnwrapped (index_topic_1 bytes32 node, address owner)
+          // Implementation
+          '0x335721b01866dc23fbee8b6b2c7b1e14d6f05c28cd35a2c934239f94095602a0', // NewResolver (index_topic_1 bytes32 node, address resolver)
+          '0xce0457fe73731f824cc272376169235128c118b49d344817417c6d108d155e82', // NewOwner (index_topic_1 bytes32 node, index_topic_2 bytes32 label, address owner)
+          // Public Resolver, Public Resolver 1, Public Resolver 2
+          '0xb7d29e911041e8d9b843369e890bcb72c9388692ba48b65ac54e7214c4c348f7', // NameChanged (index_topic_1 bytes32 node, string name)
+          '0x52d7d861f09ab3d26239d492e8968629f95e9e318cf0b73bfddc441522a15fd2', // AddrChanged (index_topic_1 bytes32 node, address a)
+          '0x65412581168e88a1e60c6459d7f44ae83ad0832e670826c05a4e2476b57af752', // AddressChanged (index_topic_1 bytes32 node, uint256 coinType, bytes newAddress)
+          '0xd8c9334b1a9c2f9da342a0a2b32629c1a229b6445dad78947f674b44444a7550', // TextChanged (index_topic_1 bytes32 node, index_topic_2 string indexedKey, string key)
+          '0x448bc014f1536726cf8d54ff3d6481ed3cbc683c2591ca204274009afa09b1a1', // TextChanged (index_topic_1 bytes32 node, index_topic_2 string indexedKey, string key, string value)
+          '0xe379c1624ed7e714cc0937528a32359d69d5281337765313dba4e081b72d7578', // ContenthashChanged (index_topic_1 bytes32 node, bytes hash)
+        ],
+        batch,
+        null
+      ];
+      const logs = await provider.getLogs({ address: null, fromBlock, toBlock, topics });
+      // const logs = await provider.getLogs({ address: null, fromBlock, toBlock, topics: [topic0s, batch] })
+      console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents - logs: " + JSON.stringify(logs, null, 2));
+    } catch (e) {
+      console.error(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents - error: " + e.message);
+    }
+  }
 }
 
 
@@ -167,7 +208,7 @@ async function syncPortfolioAddressENSEvents(tokenIds, wrappedTokenIds, provider
 //     console.error(now() + " portfolioFunctions.js:syncPortfolioAddressMetadata - address: " + JSON.stringify(address, null, 2));
 //     let done = false;
 //     do {
-//       const logs = await db.addressEvents.where('[address+chainId+blockNumber+logIndex]').between([address, Dexie.minKey, Dexie.minKey, Dexie.minKey],[address, Dexie.maxKey, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(BATCH_SIZE).toArray();
+//       const logs = await db.portfolioAddressEvents.where('[address+chainId+blockNumber+logIndex]').between([address, Dexie.minKey, Dexie.minKey, Dexie.minKey],[address, Dexie.maxKey, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(BATCH_SIZE).toArray();
 //       for (const log of logs) {
 //         if (log.topics[0] in tokenTopics) {
 //           console.log(now() + " portfolioFunctions.js:syncPortfolioAddressMetadata - tokenTopic: " + tokenTopics[log.topics[0]] + ", log: " + JSON.stringify(log, null, 2));
@@ -312,7 +353,7 @@ async function collatePortfolioAddress(address, data, db, chainId) {
   let rows = 0;
   let done = false;
   do {
-    const logs = await db.addressEvents.where('[address+chainId+blockNumber+logIndex]').between([address, Dexie.minKey, Dexie.minKey, Dexie.minKey],[address, Dexie.maxKey, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(BATCH_SIZE).toArray();
+    const logs = await db.portfolioAddressEvents.where('[address+chainId+blockNumber+logIndex]').between([address, Dexie.minKey, Dexie.minKey, Dexie.minKey],[address, Dexie.maxKey, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(BATCH_SIZE).toArray();
     if (logs.length > 0) {
       // console.log(now() + " portfolioFunctions.js:collatePortfolioAddress - logs: " + JSON.stringify(logs, null, 2));
       for (const log of logs) {
