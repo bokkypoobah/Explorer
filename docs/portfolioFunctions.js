@@ -123,8 +123,28 @@ async function syncPortfolioAddressEvents(address, data, provider, db, chainId) 
 
 
 async function syncPortfolioENSEvents(metadata, provider, db, chainId) {
+
+  async function processLogs(fromBlock, toBlock, logs) {
+    console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents.processLogs - fromBlock: " + fromBlock + ", toBlock: " + toBlock + ", logs.length: " + logs.length);
+    const records = [];
+    for (const log of logs) {
+      if (!log.removed) {
+        records.push({ chainId, ...log });
+      }
+    }
+    console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents.processLogs - records: " + JSON.stringify(records));
+    console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents.processLogs - records.length: " + records.length);
+    if (records.length > 0) {
+      await db.portfolioENSEvents.bulkAdd(records).then(function(lastKey) {
+        console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents.processLogs - bulkAdd lastKey: " + JSON.stringify(lastKey));
+        }).catch(Dexie.BulkError, function(e) {
+          console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents.processLogs - bulkAdd e: " + JSON.stringify(e.failures, null, 2));
+        });
+    }
+  }
+
   // console.error(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents - metadata: " + JSON.stringify(metadata, null, 2));
-  const BATCH_SIZE = 10;
+  const BATCH_SIZE = 100;
 
   const tokenIds = metadata[chainId] && metadata[chainId][ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS] && Object.keys(metadata[chainId][ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS].tokens) || [];
   const wrappedTokenIds = metadata[chainId] && metadata[chainId][ENS_NAMEWRAPPER_ADDRESS] && Object.keys(metadata[chainId][ENS_NAMEWRAPPER_ADDRESS].tokens) || [];
@@ -160,6 +180,7 @@ async function syncPortfolioENSEvents(metadata, provider, db, chainId) {
       ];
       const logs = await provider.getLogs({ address: null, fromBlock, toBlock, topics });
       console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents - logs: " + JSON.stringify(logs, null, 2));
+      await processLogs(fromBlock, toBlock, logs);
     } catch (e) {
       console.error(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents - error: " + e.message);
     }
