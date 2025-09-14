@@ -214,3 +214,10 @@ async function dbSaveCacheData(db, name, data) {
       console.error(now() + " functions.js:dbSaveCacheData - ERROR: " + e.message);
     });
 }
+
+function padLeft0(s, l) {
+  while (s.length < l) {
+    s = "0" + s;
+  }
+  return s;
+}

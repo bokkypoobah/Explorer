@@ -129,13 +129,13 @@ async function syncPortfolioENSEvents(metadata, provider, db, chainId) {
   const tokenIds = metadata[chainId] && metadata[chainId][ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS] && Object.keys(metadata[chainId][ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS].tokens) || [];
   const wrappedTokenIds = metadata[chainId] && metadata[chainId][ENS_NAMEWRAPPER_ADDRESS] && Object.keys(metadata[chainId][ENS_NAMEWRAPPER_ADDRESS].tokens) || [];
   const allTokenIds = [ ...tokenIds, ...wrappedTokenIds ];
-  // console.error(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents - allTokenIds: " + JSON.stringify(allTokenIds, null, 2));
+  console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents - allTokenIds: " + JSON.stringify(allTokenIds, null, 2));
 
   const block = await provider.getBlock();
   const fromBlock = 0;
   const toBlock = block.number;
   for (let i = 0; i < allTokenIds.length; i += BATCH_SIZE) {
-    const batch = allTokenIds.slice(i, parseInt(i) + BATCH_SIZE).map(e => ethers.BigNumber.from(e).toHexString());
+    const batch = allTokenIds.slice(i, parseInt(i) + BATCH_SIZE).map(e => "0x" + padLeft0(ethers.BigNumber.from(e).toHexString().substring(2,), 64));
     console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents - batch: " + JSON.stringify(batch, null, 2));
     try {
       const topics = [[
@@ -159,7 +159,6 @@ async function syncPortfolioENSEvents(metadata, provider, db, chainId) {
         null
       ];
       const logs = await provider.getLogs({ address: null, fromBlock, toBlock, topics });
-      // const logs = await provider.getLogs({ address: null, fromBlock, toBlock, topics: [topic0s, batch] })
       console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents - logs: " + JSON.stringify(logs, null, 2));
     } catch (e) {
       console.error(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents - error: " + e.message);
