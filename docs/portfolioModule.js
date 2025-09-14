@@ -80,6 +80,7 @@ const portfolioModule = {
       // console.log(now() + " portfolioModule - actions.loadPortfolio - portfolio_metadata: " + JSON.stringify(metadata, null, 2));
       context.commit('setMetadata', metadata);
       db.close();
+      context.dispatch("collateENSData");
       context.dispatch("collateData");
     },
     async syncPortfolio(context, { forceUpdate }) {
@@ -112,6 +113,7 @@ const portfolioModule = {
 
       context.dispatch("syncMetadata");
       context.dispatch("syncENSEvents");
+      context.dispatch("collateENSData");
       context.dispatch("collateData");
       context.commit('setSyncInfo', null);
       context.commit('setSyncHalt', false);
@@ -323,6 +325,17 @@ const portfolioModule = {
       //   //   console.error(now() + " portfolioModule - actions.syncENSEvents - contract: " + contract);
       //   // }
       // }
+    },
+
+    async collateENSData(context) {
+      console.log(now() + " portfolioModule - actions.collateENSData");
+      const chainId = store.getters["web3/chainId"];
+      const dbInfo = store.getters["db"];
+      const db = new Dexie(dbInfo.name);
+      db.version(dbInfo.version).stores(dbInfo.schemaDefinition);
+
+      let ensData = {};
+      await collatePortfolioENSData(ensData, db, chainId);
     },
 
     async collateData(context) {
