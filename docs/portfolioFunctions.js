@@ -188,11 +188,52 @@ async function syncPortfolioENSEvents(metadata, provider, db, chainId) {
   }
 }
 
-function parseENSEvent(log) {
-  console.error(now() + " portfolioFunctions.js:parseENSEvent - log: " + JSON.stringify(log, null, 2));
-}
-
 async function collatePortfolioENSData(ensData, db, chainId) {
+
+  function parseENSEvent(log) {
+    if ((log.address in ENS_INFO)) {
+      const ensInfo = ENS_INFO[log.address] || {};
+      if (log.topics[0] == "0xb3d987963d01b2f68493b4bdb130988f157ea43070d4ad840fee0466ed9370d9") {
+        console.log(now() + " portfolioFunctions.js:parseENSEvent - log: " + JSON.stringify(log, null, 2));
+        console.error(now() + " portfolioFunctions.js:parseENSEvent - log.address: " + log.address + ", ensInfo.name: " + JSON.stringify(ensInfo.name, null, 2));
+        // NameRegistered (index_topic_1 uint256 id, index_topic_2 address owner, uint256 expires)
+        const logData = ethBaseRegistarImplementationInterface.parseLog(log);
+        const [labelhash, owner, expires] = logData.args;
+        console.error(now() + " portfolioFunctions.js:parseENSEvent - labelhash: " + labelhash + ", owner: " + owner + ", expires: " + moment.unix(expires).format("YYYY-MM-DD HH:mm:ss"));
+        // eventRecord = { type: "NameRegistered", labelhash: labelhash.toHexString(), owner, expires: parseInt(expires) };
+      } else if (log.topics[0] == "0xca6abbe9d7f11422cb6ca7629fbf6fe9efb1c621f71ce8f02b9f2a230097404f") {
+        console.log(now() + " portfolioFunctions.js:parseENSEvent - log: " + JSON.stringify(log, null, 2));
+        console.error(now() + " portfolioFunctions.js:parseENSEvent - log.address: " + log.address + ", ensInfo.name: " + JSON.stringify(ensInfo.name, null, 2));
+        // ERC-721 NameRegistered (string name, index_topic_1 bytes32 label, index_topic_2 address owner, uint256 cost, uint256 expires)
+        const logData = oldETHRegistarControllerInterface.parseLog(log);
+        const [name, label, owner, cost, expires] = logData.args;
+        console.error(now() + " portfolioFunctions.js:parseENSEvent - name: " + name + ", label: " + label + ", owner: " + owner + ", cost: " + cost + ", expires: " + moment.unix(expires).format("YYYY-MM-DD HH:mm:ss"));
+        // eventRecord = { type: "NameRegistered", label: name, labelhash: label, owner, cost: cost.toString(), expires: parseInt(expires) };
+      } else if (log.topics[0] == "0x3da24c024582931cfaf8267d8ed24d13a82a8068d5bd337d30ec45cea4e506ae") {
+        console.log(now() + " portfolioFunctions.js:parseENSEvent - log: " + JSON.stringify(log, null, 2));
+        console.error(now() + " portfolioFunctions.js:parseENSEvent - log.address: " + log.address + ", ensInfo.name: " + JSON.stringify(ensInfo.name, null, 2));
+        // ERC-721 NameRenewed (string name, index_topic_1 bytes32 label, uint256 cost, uint256 expires)
+        const logData = oldETHRegistarControllerInterface.parseLog(log);
+        const [name, label, cost, expires] = logData.args;
+        console.error(now() + " portfolioFunctions.js:parseENSEvent - name: " + name + ", label: " + label + ", cost: " + cost + ", expires: " + moment.unix(expires).format("YYYY-MM-DD HH:mm:ss"));
+        // if (ethers.utils.isValidName(name)) {
+        //   eventRecord = { type: "NameRenewed", label: name, cost: cost.toString(), expiry: parseInt(expiry) };
+        // }
+      } else if (log.topics[0] == "0x8ce7013e8abebc55c3890a68f5a27c67c3f7efa64e584de5fb22363c606fd340") {
+        console.log(now() + " portfolioFunctions.js:parseENSEvent - log: " + JSON.stringify(log, null, 2));
+        console.error(now() + " portfolioFunctions.js:parseENSEvent - log.address: " + log.address + ", ensInfo.name: " + JSON.stringify(ensInfo.name, null, 2));
+        // ERC-1155 NameWrapped (index_topic_1 bytes32 node, bytes name, address owner, uint32 fuses, uint64 expiry)
+        const logData = nameWrapperInterface.parseLog(log);
+        const [node, name, owner, fuses, expiry] = logData.args;
+        console.error(now() + " portfolioFunctions.js:parseENSEvent - node: " + node + ", name: " + name + ", owner: " + owner + ", fuses: " + fuses + ", expiry: " + moment.unix(expiry).format("YYYY-MM-DD HH:mm:ss"));
+      }
+    }
+  }
+
+  const ethBaseRegistarImplementationInterface = new ethers.utils.Interface(ENS_BASEREGISTRARIMPLEMENTATION_ABI);
+  const oldETHRegistarControllerInterface = new ethers.utils.Interface(ENS_OLDETHREGISTRARCONTROLLER_ABI);
+  const nameWrapperInterface = new ethers.utils.Interface(ENS_NAMEWRAPPER_ABI);
+
   console.error(now() + " portfolioFunctions.js:collatePortfolioENSData - ensData: " + JSON.stringify(ensData, null, 2));
   const BATCH_SIZE = 10000; // TODO: 100000;
   let rows = 0;
@@ -200,7 +241,7 @@ async function collatePortfolioENSData(ensData, db, chainId) {
   do {
     const logs = await db.portfolioENSEvents.where('[chainId+blockNumber+logIndex]').between([Dexie.minKey, Dexie.minKey, Dexie.minKey],[Dexie.maxKey, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(BATCH_SIZE).toArray();
     if (logs.length > 0) {
-      console.log(now() + " portfolioFunctions.js:collatePortfolioENSData - logs: " + JSON.stringify(logs, null, 2));
+      // console.log(now() + " portfolioFunctions.js:collatePortfolioENSData - logs: " + JSON.stringify(logs, null, 2));
       for (const log of logs) {
         const item = parseENSEvent(log);
       }
