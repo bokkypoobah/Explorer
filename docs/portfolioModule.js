@@ -36,7 +36,7 @@ const portfolioModule = {
       state.metadata = metadata;
     },
     setENSData(state, ensData) {
-      console.error(now() + " portfolioModule - mutations.setENSData - ensData: " + JSON.stringify(ensData));
+      // console.error(now() + " portfolioModule - mutations.setENSData - ensData: " + JSON.stringify(ensData));
       state.ensData = ensData;
     },
     setSyncInfo(state, info) {
@@ -253,6 +253,9 @@ const portfolioModule = {
         if (contractData.type == "erc721" || contractData.type == "erc1155") {
           // console.log(now() + " portfolioModule - actions.syncMetadata - contract: " + contract + " => " + JSON.stringify(contractData, null, 2));
           for (const [tokenId, tokenData] of Object.entries(contractData.tokens)) {
+            if (tokenData && Object.keys(tokenData) < 3) {
+              console.error(now() + " portfolioModule - actions.syncMetadata - contract: " + contract + "/" + tokenId + " => " + JSON.stringify(tokenData, null, 2));
+            }
             if (tokenData === true) {
               // console.log(now() + " portfolioModule - actions.syncMetadata - contract: " + contract + "/" + tokenId + " => " + JSON.stringify(tokenData, null, 2));
               metadataToRetrieve.push({ contract, tokenId });
@@ -343,7 +346,7 @@ const portfolioModule = {
       let ensData = {};
       await collatePortfolioENSData(ensData, db, chainId);
       context.commit('setENSData', ensData);
-      console.log(now() + " portfolioModule - actions.collateENSData - ensData: " + JSON.stringify(ensData, null, 2));
+      // console.log(now() + " portfolioModule - actions.collateENSData - ensData: " + JSON.stringify(ensData, null, 2));
     },
 
     async collateData(context) {

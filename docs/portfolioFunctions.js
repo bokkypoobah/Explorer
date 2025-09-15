@@ -194,36 +194,36 @@ async function collatePortfolioENSData(ensData, db, chainId) {
     if ((log.address in ENS_INFO)) {
       const ensInfo = ENS_INFO[log.address] || {};
       if (log.topics[0] == "0xb3d987963d01b2f68493b4bdb130988f157ea43070d4ad840fee0466ed9370d9") {
-        console.log(now() + " portfolioFunctions.js:parseENSEvent - log: " + JSON.stringify(log, null, 2));
-        console.error(now() + " portfolioFunctions.js:parseENSEvent - log.address: " + log.address + ", ensInfo.name: " + JSON.stringify(ensInfo.name, null, 2));
         // NameRegistered (index_topic_1 uint256 id, index_topic_2 address owner, uint256 expires)
+        // console.log(now() + " portfolioFunctions.js:parseENSEvent - log: " + JSON.stringify(log, null, 2));
+        // console.error(now() + " portfolioFunctions.js:parseENSEvent - log.address: " + log.address + ", ensInfo.name: " + JSON.stringify(ensInfo.name, null, 2));
         const logData = ethBaseRegistarImplementationInterface.parseLog(log);
         const [labelhash, owner, expires] = logData.args;
-        console.error(now() + " portfolioFunctions.js:parseENSEvent - labelhash: " + labelhash + ", owner: " + owner + ", expires: " + moment.unix(expires).format("YYYY-MM-DD HH:mm:ss"));
+        // console.error(now() + " portfolioFunctions.js:parseENSEvent - labelhash: " + labelhash + ", owner: " + owner + ", expires: " + moment.unix(expires).format("YYYY-MM-DD HH:mm:ss"));
         if (!(ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS in ensData)) {
           ensData[ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS] = {};
         }
         const tokenId = ethers.BigNumber.from(labelhash).toString();
         ensData[ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS][tokenId] = { owner, expiry: parseInt(expires), url: ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS + "/" + tokenId };
       } else if (log.topics[0] == "0xca6abbe9d7f11422cb6ca7629fbf6fe9efb1c621f71ce8f02b9f2a230097404f") {
-        console.log(now() + " portfolioFunctions.js:parseENSEvent - log: " + JSON.stringify(log, null, 2));
-        console.error(now() + " portfolioFunctions.js:parseENSEvent - log.address: " + log.address + ", ensInfo.name: " + JSON.stringify(ensInfo.name, null, 2));
         // ERC-721 NameRegistered (string name, index_topic_1 bytes32 label, index_topic_2 address owner, uint256 cost, uint256 expires)
+        // console.log(now() + " portfolioFunctions.js:parseENSEvent - log: " + JSON.stringify(log, null, 2));
+        // console.error(now() + " portfolioFunctions.js:parseENSEvent - log.address: " + log.address + ", ensInfo.name: " + JSON.stringify(ensInfo.name, null, 2));
         const logData = oldETHRegistarControllerInterface.parseLog(log);
         const [name, label, owner, cost, expires] = logData.args;
-        console.error(now() + " portfolioFunctions.js:parseENSEvent - name: " + name + ", label: " + label + ", owner: " + owner + ", cost: " + cost + ", expires: " + moment.unix(expires).format("YYYY-MM-DD HH:mm:ss"));
+        // console.error(now() + " portfolioFunctions.js:parseENSEvent - name: " + name + ", label: " + label + ", owner: " + owner + ", cost: " + cost + ", expires: " + moment.unix(expires).format("YYYY-MM-DD HH:mm:ss"));
         if (!(ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS in ensData)) {
           ensData[ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS] = {};
         }
         const tokenId = ethers.BigNumber.from(label).toString();
         ensData[ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS][tokenId] = { name, label, owner, cost: parseInt(cost), expiry: parseInt(expires), url: ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS + "/" + tokenId };
       } else if (log.topics[0] == "0x3da24c024582931cfaf8267d8ed24d13a82a8068d5bd337d30ec45cea4e506ae") {
-        console.log(now() + " portfolioFunctions.js:parseENSEvent - log: " + JSON.stringify(log, null, 2));
-        console.error(now() + " portfolioFunctions.js:parseENSEvent - log.address: " + log.address + ", ensInfo.name: " + JSON.stringify(ensInfo.name, null, 2));
         // ERC-721 NameRenewed (string name, index_topic_1 bytes32 label, uint256 cost, uint256 expires)
+        // console.log(now() + " portfolioFunctions.js:parseENSEvent - log: " + JSON.stringify(log, null, 2));
+        // console.error(now() + " portfolioFunctions.js:parseENSEvent - log.address: " + log.address + ", ensInfo.name: " + JSON.stringify(ensInfo.name, null, 2));
         const logData = oldETHRegistarControllerInterface.parseLog(log);
         const [name, label, cost, expires] = logData.args;
-        console.error(now() + " portfolioFunctions.js:parseENSEvent - name: " + name + ", label: " + label + ", cost: " + cost + ", expires: " + moment.unix(expires).format("YYYY-MM-DD HH:mm:ss"));
+        // console.error(now() + " portfolioFunctions.js:parseENSEvent - name: " + name + ", label: " + label + ", cost: " + cost + ", expires: " + moment.unix(expires).format("YYYY-MM-DD HH:mm:ss"));
         // if (ethers.utils.isValidName(name)) {
         //   eventRecord = { type: "NameRenewed", label: name, cost: cost.toString(), expiry: parseInt(expiry) };
         // }
@@ -234,12 +234,12 @@ async function collatePortfolioENSData(ensData, db, chainId) {
         ensData[ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS][tokenId] = { name, label, cost: parseInt(cost), expiry: parseInt(expires), url: ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS + "/" + tokenId };
 
       } else if (log.topics[0] == "0x8ce7013e8abebc55c3890a68f5a27c67c3f7efa64e584de5fb22363c606fd340") {
-        console.log(now() + " portfolioFunctions.js:parseENSEvent - log: " + JSON.stringify(log, null, 2));
-        console.error(now() + " portfolioFunctions.js:parseENSEvent - log.address: " + log.address + ", ensInfo.name: " + JSON.stringify(ensInfo.name, null, 2));
         // ERC-1155 NameWrapped (index_topic_1 bytes32 node, bytes name, address owner, uint32 fuses, uint64 expiry)
+        // console.log(now() + " portfolioFunctions.js:parseENSEvent - log: " + JSON.stringify(log, null, 2));
+        // console.error(now() + " portfolioFunctions.js:parseENSEvent - log.address: " + log.address + ", ensInfo.name: " + JSON.stringify(ensInfo.name, null, 2));
         const logData = nameWrapperInterface.parseLog(log);
         const [node, name, owner, fuses, expiry] = logData.args;
-        console.error(now() + " portfolioFunctions.js:parseENSEvent - node: " + node + ", name: " + name + ", owner: " + owner + ", fuses: " + fuses + ", expiry: " + moment.unix(expiry).format("YYYY-MM-DD HH:mm:ss"));
+        // console.error(now() + " portfolioFunctions.js:parseENSEvent - node: " + node + ", name: " + name + ", owner: " + owner + ", fuses: " + fuses + ", expiry: " + moment.unix(expiry).format("YYYY-MM-DD HH:mm:ss"));
         let parts = decodeNameWrapperBytes(name);
         let nameString = parts.join(".");
         let label = null;
@@ -280,8 +280,7 @@ async function collatePortfolioENSData(ensData, db, chainId) {
     done = logs.length < BATCH_SIZE;
   } while (!done);
   console.log(now() + " portfolioFunctions.js:collatePortfolioENSData - rows: " + rows);
-  console.error(now() + " portfolioFunctions.js:collatePortfolioENSData - ensData: " + JSON.stringify(ensData, null, 2));
-
+  // console.error(now() + " portfolioFunctions.js:collatePortfolioENSData - ensData: " + JSON.stringify(ensData, null, 2));
 }
 
 // ERC-20 Transfer (index_topic_1 address from, index_topic_2 address to, uint256 tokens)
@@ -538,7 +537,6 @@ async function collatePortfolioAddress(address, data, db, chainId) {
     console.log(now() + " portfolioFunctions.js:collatePortfolioAddress - rows: " + rows);
     done = logs.length < BATCH_SIZE;
   } while (!done);
-  console.log(now() + " portfolioFunctions.js:collatePortfolioAddress - rows: " + rows);
   // if (!("tokenBalances" in data)) {
   //   data.tokenBalances = {};
   // }

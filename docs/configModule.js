@@ -12,7 +12,7 @@ const configModule = {
     config: state => state.config,
     portfolios: state => state.config.portfolios,
     chains(state) {
-      console.log(now() + " configModule - getters.chains");
+      // console.log(now() + " configModule - getters.chains");
       return { ...CHAINS, ...state.config.chains };
     },
   },
