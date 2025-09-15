@@ -140,13 +140,9 @@ Click on the [Sync Portfolio] button
 
 <kbd><img src="images/SampleScreen42.png" width="800" /></kbd>
 
-Some data for the 3 addresses selected by a tag
+Some data
 
 <kbd><img src="images/SampleScreen43.png" width="800" /></kbd>
-
-Expanding the ERC-721 and ERC-1155 NFT collections into the individual tokens
-
-<kbd><img src="images/SampleScreen44.png" width="800" /></kbd>
 
 <br />
 
