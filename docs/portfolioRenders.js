@@ -107,10 +107,7 @@ const PortfolioRenderCollection = {
           <v-icon size="40px">mdi-cash-multiple</v-icon>
         </div>
         <div v-else>
-          <v-img
-            :src="image"
-            alt="Card image"
-          ></v-img>
+          <v-img :src="image" alt="Card image"></v-img>
         </div>
       </div>
       <div class="pa-1 d-flex d-flex-shrink-1 d-flex-grow-0">
@@ -178,7 +175,6 @@ const PortfolioRenderCollection = {
         </v-card-text>
       </div>
     </v-card>
-
   `,
   props: {
     type: {
@@ -370,6 +366,35 @@ const PortfolioRenderBalance = {
 
 const PortfolioRenderToken = {
   template: `
+    <v-card flat class="d-flex">
+      <div class="pa-1 flex-shrink-0" style="width: 140px;">
+        <div v-if="type == 0">
+          ETH
+        </div>
+        <div v-else-if="type == 1">
+          {{ symbol }}
+        </div>
+        <div v-else>
+          <v-img :src="image" alt="Card image"></v-img>
+        </div>
+      </div>
+      <div class="pa-1 d-flex d-flex-shrink-1 d-flex-grow-0">
+        <div v-if="type == 0">
+          {{ formatUnits(balance, decimals) }}
+        </div>
+        <div v-else-if="type == 1">
+          {{ formatUnits(balance, decimals) }}
+        </div>
+        <div v-else>
+          {{ name }}
+          <!-- <v-img :src="image" alt="Card image"></v-img> -->
+        </div>
+        <!-- <v-card-text>
+          Blah
+        </v-card-text> -->
+      </div>
+    </v-card>
+
     <!-- <v-chip variant="plain" class="ma-0 pa-0" style="min-width: 50px;">{{ contract == null ? "Ethereums" : (contract.substring(0, 8) + "..." + contract.slice(-6)) }}</v-chip>
     <v-chip variant="plain" class="ma-0 ml-1 pa-0">{{ balance }}</v-chip>
     <v-chip variant="plain" class="ma-0 ml-1 pa-0">{{ decimals }}</v-chip> -->
@@ -431,6 +456,21 @@ image: {{ image && (image.substring(0, 22) + "..." + image.slice(-20)) }}
         }
       } else {
         return null;
+      }
+    },
+    name() {
+      if (this.type == 0) {
+        return "ETH";
+      } else if (this.type == 1) {
+        if (this.contract && this.chainId in this.portfolioMetadata && this.contract in this.portfolioMetadata[this.chainId]) {
+          const contract = this.portfolioMetadata[this.chainId][this.contract];
+          return contract.name || null;
+        }
+      } else {
+        if (this.contract && this.chainId in this.portfolioMetadata && this.contract in this.portfolioMetadata[this.chainId]) {
+          const contract = this.portfolioMetadata[this.chainId][this.contract];
+          return contract && contract.tokens && contract.tokens[this.tokenId] && contract.tokens[this.tokenId].name;
+        }
       }
     },
     decimals() {

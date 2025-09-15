@@ -372,16 +372,16 @@ portfolioData: {{ portfolioData }}
       ],
       collectionsHeaders: [
         { title: '#', value: 'rowNumber', width: '10%', align: 'end', sortable: false },
-        { title: 'Address', value: 'address', width: '20%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
-        { title: 'Collection', value: 'collection', width: '40%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
-        { title: 'Balance', value: 'balance', width: '30%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
+        { title: 'Address', value: 'address', width: '20%', sortable: false },
+        { title: 'Collection', value: 'collection', width: '40%', sortable: false },
+        { title: 'Balance', value: 'balance', width: '30%', sortable: false },
       ],
       itemsHeaders: [
         { title: '#', value: 'rowNumber', width: '10%', align: 'end', sortable: false },
-        { title: 'Address', value: 'address', width: '20%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
-        { title: 'Collection', value: 'collection', width: '15%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
-        { title: 'Token', value: 'token', width: '15%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
-        { title: 'Expiry', value: 'expiry', width: '15%', sortable: false }, // TODO: Sortable: true after deleting from index worked out
+        { title: 'Address', value: 'address', width: '20%', sortable: false },
+        { title: 'Collection', value: 'collection', width: '15%', sortable: false },
+        { title: 'Token', value: 'token', width: '15%', sortable: false },
+        { title: 'Expiry', value: 'expiry', width: '15%', sortable: false },
       ],
     };
   },
