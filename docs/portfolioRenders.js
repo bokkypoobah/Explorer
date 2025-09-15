@@ -113,12 +113,12 @@ const PortfolioRenderCollection = {
       <div class="pa-1 d-flex d-flex-shrink-1 d-flex-grow-0">
         <v-card-text>
           <v-btn color="primary" dark variant="text" density="compact" :class="noXPadding ? 'ma-0 px-0 pt-2 lowercase-btn' : 'ma-0 px-2 pt-2 lowercase-btn'" style="min-width: 0px;">
-            {{ name || "(none)"}}
+            {{ name || "(none)" }}
             <!-- {{ address.substring(0, 8) + "&hellip;" + address.slice(-6) }} -->
             <v-menu activator="parent" location="bottom">
               <v-list>
                 <v-list-subheader>{{ contract || "Ethereums" }}</v-list-subheader>
-                <v-list-subheader v-if="name"><v-chip variant="plain" density="compact" class="ma-0 pa-0">{{ name }}</v-chip>></v-list-subheader>
+                <v-list-subheader v-if="name"><v-chip variant="plain" density="compact" class="ma-0 pa-0">{{ name }}</v-chip></v-list-subheader>
                 <v-list-item v-if="!contract" :href="'#/address/' + address">
                   <template v-slot:prepend>
                     <v-icon>mdi-arrow-right-bold-outline</v-icon>
