@@ -387,18 +387,14 @@ const PortfolioRenderToken = {
         </div>
         <div v-else>
           {{ name }}
-          <!-- <v-img :src="image" alt="Card image"></v-img> -->
         </div>
-        <!-- <v-card-text>
-          Blah
-        </v-card-text> -->
       </div>
     </v-card>
 
     <!-- <v-chip variant="plain" class="ma-0 pa-0" style="min-width: 50px;">{{ contract == null ? "Ethereums" : (contract.substring(0, 8) + "..." + contract.slice(-6)) }}</v-chip>
     <v-chip variant="plain" class="ma-0 ml-1 pa-0">{{ balance }}</v-chip>
     <v-chip variant="plain" class="ma-0 ml-1 pa-0">{{ decimals }}</v-chip> -->
-    <div v-if="type <= 1">
+    <!-- <div v-if="type <= 1">
       {{ formatUnits(balance, decimals) }} {{ symbol }}
     </div>
     <div v-else>
@@ -406,7 +402,7 @@ const PortfolioRenderToken = {
 tokenId: {{ tokenId }}
 image: {{ image && (image.substring(0, 22) + "..." + image.slice(-20)) }}
       </pre>
-    </div>
+    </div> -->
   `,
   props: {
     type: {
