@@ -485,11 +485,11 @@ image: {{ image && (image.substring(0, 22) + "..." + image.slice(-20)) }}
         if (this.contract && this.chainId in this.portfolioMetadata && this.contract in this.portfolioMetadata[this.chainId]) {
           const contract = this.portfolioMetadata[this.chainId][this.contract];
           let image = contract && contract.tokens && contract.tokens[this.tokenId] && contract.tokens[this.tokenId].image;
-          if (!image) {
+          // if (!image) {
             if (this.contract == ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS || this.contract == ENS_NAMEWRAPPER_ADDRESS) {
               return "https://metadata.ens.domains/mainnet/" + this.contract + "/" + this.tokenId + "/image";
             }
-          }
+          // }
           return image;
         }
       }
