@@ -306,6 +306,17 @@ const portfolioModule = {
         for (const [tokenId, tokenData] of Object.entries(contractMetadata.tokens)) {
           if (!tokenData.name || !tokenData.description) {
             console.error(now() + " portfolioModule - actions.syncMetadata - contractAddress: " + contractAddress + ", tokenId: " + tokenId + " => " + JSON.stringify(tokenData, null, 2));
+
+
+            let url = "https://metadata.ens.domains/mainnet/" + contractAddress + "/" + tokenId;
+            console.error(url);
+            const data = await fetch(url)
+              .then(response => response.json())
+              .catch(function(e) {
+                console.log("error: " + e);
+              });
+            console.error(JSON.stringify(data, null, 2));
+
           }
         }
       }
