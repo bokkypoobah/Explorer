@@ -66,6 +66,7 @@ const Portfolio = {
           <v-btn icon @click="settings.showFilter = !settings.showFilter; saveSettings();" color="primary" class="lowercase-btn" v-tooltip="'Filters'">
             <v-icon :icon="settings.showFilter ? 'mdi-filter' : 'mdi-filter-outline'"></v-icon>
           </v-btn>
+          <v-text-field :model-value="settings.items.filter" @update:modelValue="itemsFilterUpdated($event);" variant="solo" flat density="compact" clearable prepend-inner-icon="mdi-magnify" hide-details single-line class="ml-2" style="max-width: 240px;" v-tooltip:bottom="'e.g., token id or name'"></v-text-field>
           <v-spacer></v-spacer>
           <v-spacer></v-spacer>
           <v-spacer></v-spacer>
@@ -693,6 +694,20 @@ portfolioData: {{ portfolioData }}
     setSyncHalt() {
       console.log(now() + " Portfolio - methods.setSyncHalt");
       store.dispatch('portfolio/setSyncHalt');
+    },
+
+    itemsFilterUpdated(filter) {
+      // console.log(now() + " Punks - methods.itemsFilterUpdated - filter: " + filter);
+      clearTimeout(this._timerId);
+      this._timerId = setTimeout(async () => {
+        this.itemsFilterUpdatedDebounced(filter);
+      }, 1000);
+    },
+
+    itemsFilterUpdatedDebounced(filter) {
+      console.log(now() + " Punks - methods.itemsFilterUpdatedDebounced - filter: " + filter);
+      this.settings.items.filter = filter;
+      this.saveSettings();
     },
 
     updateAddressFilter(address, value) {
