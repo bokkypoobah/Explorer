@@ -568,14 +568,21 @@ portfolioData: {{ portfolioData }}
         }
       }
 
+      const filterByType = this.settings.assetTypeFilter.eth != this.settings.assetTypeFilter.fungibles ||
+        this.settings.assetTypeFilter.eth != this.settings.assetTypeFilter.nonFungibles ||
+        this.settings.assetTypeFilter.eth != this.settings.assetTypeFilter.names;
       for (const item of this.items) {
         // console.error(now() + " Portfolio - computed.filteredSortedItems - item: " + JSON.stringify(item, null, 2));
         let include = false;
-        if ((item.type == 0 && this.settings.assetTypeFilter.eth) ||
-          (item.type == 1 && this.settings.assetTypeFilter.fungibles) ||
-          (item.type == 2 && this.settings.assetTypeFilter.nonFungibles) ||
-          (item.type == 3 && this.settings.assetTypeFilter.names)) {
-            include = true;
+        if (filterByType) {
+          if ((item.type == 0 && this.settings.assetTypeFilter.eth) ||
+            (item.type == 1 && this.settings.assetTypeFilter.fungibles) ||
+            (item.type == 2 && this.settings.assetTypeFilter.nonFungibles) ||
+            (item.type == 3 && this.settings.assetTypeFilter.names)) {
+              include = true;
+          }
+        } else {
+          include = true;
         }
         if (include && filterByAddress) {
           if (!(item.address in activeAddressFilter)) {
