@@ -253,9 +253,9 @@ const portfolioModule = {
         if (contractData.type == "erc721" || contractData.type == "erc1155") {
           // console.log(now() + " portfolioModule - actions.syncMetadata - contract: " + contract + " => " + JSON.stringify(contractData, null, 2));
           for (const [tokenId, tokenData] of Object.entries(contractData.tokens)) {
-            if (tokenData && Object.keys(tokenData) < 3) {
-              console.error(now() + " portfolioModule - actions.syncMetadata - contract: " + contract + "/" + tokenId + " => " + JSON.stringify(tokenData, null, 2));
-            }
+            // if (tokenData && Object.keys(tokenData) < 3) {
+            //   console.error(now() + " portfolioModule - actions.syncMetadata - contract: " + contract + "/" + tokenId + " => " + JSON.stringify(tokenData, null, 2));
+            // }
             if (tokenData === true) {
               // console.log(now() + " portfolioModule - actions.syncMetadata - contract: " + contract + "/" + tokenId + " => " + JSON.stringify(tokenData, null, 2));
               metadataToRetrieve.push({ contract, tokenId });
@@ -297,6 +297,17 @@ const portfolioModule = {
           context.commit('setSyncCompleted', completed);
           await delay(DELAYINMILLIS);
         } while (continuation != null && !context.state.sync.halt);
+      }
+
+      // Retrieve ENS names missing the metadata from the Reservoir API
+      for (const contractAddress of [ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS, ENS_NAMEWRAPPER_ADDRESS]) {
+        const contractMetadata = metadata[chainId][contractAddress] || null;
+        // console.error(now() + " portfolioModule - actions.syncMetadata - contractMetadata: " + JSON.stringify(contractMetadata, null, 2));
+        for (const [tokenId, tokenData] of Object.entries(contractMetadata.tokens)) {
+          if (!tokenData.name || !tokenData.description) {
+            console.error(now() + " portfolioModule - actions.syncMetadata - contractAddress: " + contractAddress + ", tokenId: " + tokenId + " => " + JSON.stringify(tokenData, null, 2));
+          }
+        }
       }
 
       context.commit('setMetadata', metadata);

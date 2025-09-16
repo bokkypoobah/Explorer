@@ -132,8 +132,8 @@ async function syncPortfolioENSEvents(metadata, provider, db, chainId) {
         records.push({ chainId, ...log });
       }
     }
-    console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents.processLogs - records: " + JSON.stringify(records));
-    console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents.processLogs - records.length: " + records.length);
+    // console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents.processLogs - records: " + JSON.stringify(records));
+    // console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents.processLogs - records.length: " + records.length);
     if (records.length > 0) {
       await db.portfolioENSEvents.bulkAdd(records).then(function(lastKey) {
         console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents.processLogs - bulkAdd lastKey: " + JSON.stringify(lastKey));
@@ -150,14 +150,14 @@ async function syncPortfolioENSEvents(metadata, provider, db, chainId) {
   const tokenIds = metadata[chainId] && metadata[chainId][ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS] && Object.keys(metadata[chainId][ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS].tokens) || [];
   const wrappedTokenIds = metadata[chainId] && metadata[chainId][ENS_NAMEWRAPPER_ADDRESS] && Object.keys(metadata[chainId][ENS_NAMEWRAPPER_ADDRESS].tokens) || [];
   const allTokenIds = [ ...tokenIds, ...wrappedTokenIds ];
-  console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents - allTokenIds: " + JSON.stringify(allTokenIds, null, 2));
+  // console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents - allTokenIds: " + JSON.stringify(allTokenIds, null, 2));
 
   const block = await provider.getBlock();
   const fromBlock = 0;
   const toBlock = block.number;
   for (let i = 0; i < allTokenIds.length; i += BATCH_SIZE) {
     const batch = allTokenIds.slice(i, parseInt(i) + BATCH_SIZE).map(e => "0x" + padLeft0(ethers.BigNumber.from(e).toHexString().substring(2,), 64));
-    console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents - batch: " + JSON.stringify(batch, null, 2));
+    // console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents - batch: " + JSON.stringify(batch, null, 2));
     try {
       const topics = [[
           '0xb3d987963d01b2f68493b4bdb130988f157ea43070d4ad840fee0466ed9370d9', // NameRegistered (index_topic_1 uint256 id, index_topic_2 address owner, uint256 expires)
@@ -180,7 +180,7 @@ async function syncPortfolioENSEvents(metadata, provider, db, chainId) {
         null
       ];
       const logs = await provider.getLogs({ address: null, fromBlock, toBlock, topics });
-      console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents - logs: " + JSON.stringify(logs, null, 2));
+      // console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents - logs: " + JSON.stringify(logs, null, 2));
       await processLogs(fromBlock, toBlock, logs);
     } catch (e) {
       console.error(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents - error: " + e.message);
