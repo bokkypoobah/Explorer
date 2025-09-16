@@ -303,20 +303,42 @@ const portfolioModule = {
       for (const contractAddress of [ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS, ENS_NAMEWRAPPER_ADDRESS]) {
         const contractMetadata = metadata[chainId][contractAddress] || null;
         // console.error(now() + " portfolioModule - actions.syncMetadata - contractMetadata: " + JSON.stringify(contractMetadata, null, 2));
-        for (const [tokenId, tokenData] of Object.entries(contractMetadata.tokens)) {
-          if (!tokenData.name || !tokenData.description) {
-            console.error(now() + " portfolioModule - actions.syncMetadata - contractAddress: " + contractAddress + ", tokenId: " + tokenId + " => " + JSON.stringify(tokenData, null, 2));
+        if (contractMetadata) {
+          for (const [tokenId, tokenData] of Object.entries(contractMetadata.tokens)) {
+            if (!tokenData.name || !tokenData.description) {
+              console.error(now() + " portfolioModule - actions.syncMetadata - contractAddress: " + contractAddress + ", tokenId: " + tokenId + " => " + JSON.stringify(tokenData, null, 2));
 
+              let url = "https://metadata.ens.domains/mainnet/" + contractAddress + "/" + tokenId;
+              console.error(url);
+              const data = await fetch(url)
+                .then(response => response.json())
+                .catch(function(e) {
+                  console.log("error: " + e);
+                });
+              console.error(JSON.stringify(data, null, 2));
 
-            let url = "https://metadata.ens.domains/mainnet/" + contractAddress + "/" + tokenId;
-            console.error(url);
-            const data = await fetch(url)
-              .then(response => response.json())
-              .catch(function(e) {
-                console.log("error: " + e);
-              });
-            console.error(JSON.stringify(data, null, 2));
-
+              metadata[chainId][contractAddress].tokens[tokenId].name = data.name;
+              metadata[chainId][contractAddress].tokens[tokenId].description = data.description;
+              metadata[chainId][contractAddress].tokens[tokenId].image = data.image;
+              // metadata[token.chainId][contract].tokens[token.tokenId] = {
+              //   name: token.name,
+              //   description: token.description,
+              //   image: token.image,
+              //   media: token.media,
+              //   owner: token.owner || null,
+              //   mintedAt: token.mintedAt && moment.utc(token.mintedAt).unix() || null,
+              //   createdAt: token.createdAt && moment.utc(token.createdAt).unix() || null,
+              //   updatedAt: item.updatedAt && moment.utc(item.updatedAt).unix() || null,
+              //   attributes: token.attributes.map(e => ({ key: e.key, value: e.value })) || null,
+              //   count,
+              //   supply: token.supply || null,
+              //   remainingSupply: token.remainingSupply || null,
+              //   acquiredAt,
+              //   lastSale,
+              //   price,
+              //   topBid,
+              // };
+            }
           }
         }
       }
