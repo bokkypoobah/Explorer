@@ -66,7 +66,7 @@ const Portfolio = {
           <v-btn icon @click="settings.showFilter = !settings.showFilter; saveSettings();" color="primary" class="lowercase-btn" v-tooltip="'Filters'">
             <v-icon :icon="settings.showFilter ? 'mdi-filter' : 'mdi-filter-outline'"></v-icon>
           </v-btn>
-          <v-text-field :model-value="settings.items.filter" @update:modelValue="itemsFilterUpdated($event);" variant="solo" flat density="compact" clearable prepend-inner-icon="mdi-magnify" hide-details single-line class="ml-2" style="max-width: 240px;" v-tooltip:bottom="'e.g., token id or name'"></v-text-field>
+          <v-text-field :model-value="settings.items.filter" @update:modelValue="itemsFilterUpdated($event);" variant="solo" flat density="compact" clearable prepend-inner-icon="mdi-magnify" hide-details single-line class="ml-2" style="max-width: 240px;" v-tooltip:bottom="'Token id or name regex'"></v-text-field>
           <v-spacer></v-spacer>
           <v-spacer></v-spacer>
           <v-spacer></v-spacer>
@@ -558,6 +558,15 @@ portfolioData: {{ portfolioData }}
         }
       }
       const filterByAddress = Object.keys(activeAddressFilter).length > 0;
+      let regex = null;
+      if (this.settings.items.filter != null && this.settings.items.filter.length > 0) {
+        try {
+          regex = new RegExp(this.settings.items.filter, 'i');
+        } catch (e) {
+          console.error(now() + " Portfolio - computed.filteredSortedItems - regex error: " + e.message);
+          regex = new RegExp(/thequickbrowndogjumpsoverthelazyfox/, 'i');
+        }
+      }
 
       for (const item of this.items) {
         // console.error(now() + " Portfolio - computed.filteredSortedItems - item: " + JSON.stringify(item, null, 2));
@@ -570,6 +579,19 @@ portfolioData: {{ portfolioData }}
         }
         if (include && filterByAddress) {
           if (!(item.address in activeAddressFilter)) {
+            include = false;
+          }
+        }
+        if (include && regex) {
+          // console.error(now() + " Portfolio - computed.filteredSortedItems - item: " + JSON.stringify(item, null, 2));
+          const name = item.name || null;
+          if (name) {
+            label = name.replace(/\.eth$/, '');
+            if (!(regex.test(label)) && !(regex.test(item.tokenId))) {
+              include = false;
+            }
+          } else {
+            console.error(now() + " Portfolio - computed.filteredSortedItems - missing name: " + JSON.stringify(item, null, 2));
             include = false;
           }
         }
@@ -697,7 +719,7 @@ portfolioData: {{ portfolioData }}
     },
 
     itemsFilterUpdated(filter) {
-      // console.log(now() + " Punks - methods.itemsFilterUpdated - filter: " + filter);
+      // console.log(now() + " Portfolio - methods.itemsFilterUpdated - filter: " + filter);
       clearTimeout(this._timerId);
       this._timerId = setTimeout(async () => {
         this.itemsFilterUpdatedDebounced(filter);
@@ -705,7 +727,7 @@ portfolioData: {{ portfolioData }}
     },
 
     itemsFilterUpdatedDebounced(filter) {
-      console.log(now() + " Punks - methods.itemsFilterUpdatedDebounced - filter: " + filter);
+      // console.log(now() + " Portfolio - methods.itemsFilterUpdatedDebounced - filter: " + filter);
       this.settings.items.filter = filter;
       this.saveSettings();
     },
