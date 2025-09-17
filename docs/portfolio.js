@@ -153,7 +153,7 @@ const Portfolio = {
                       <v-checkbox-btn v-model="settings.ensDateFilter.active" @update:modelValue="saveSettings();" label="Active" class="ma-0 pa-0"></v-checkbox-btn>
                     </v-list-item>
                     <v-list-item append-icon="mdi-clock-alert-outline" density="compact" class="ma-0 pa-1">
-                      <v-checkbox-btn v-model="settings.ensDateFilter.grace" @update:modelValue="saveSettings();" label="Grace Period" class="ma-0 pa-0" v-tooltip="'Expired, in grace period for ERC-721'"></v-checkbox-btn>
+                      <v-checkbox-btn v-model="settings.ensDateFilter.grace" @update:modelValue="saveSettings();" label="Expired, in Grace Period" class="ma-0 pa-0" v-tooltip="'Expired, in grace period for ERC-721'"></v-checkbox-btn>
                     </v-list-item>
                     <v-list-item append-icon="mdi-clock-alert" density="compact" class="ma-0 pa-1">
                       <v-checkbox-btn v-model="settings.ensDateFilter.expired" @update:modelValue="saveSettings();" label="Expired" class="ma-0 pa-0" v-tooltip="'Expired'"></v-checkbox-btn>
@@ -162,7 +162,7 @@ const Portfolio = {
                       <v-checkbox-btn v-model="settings.ensDateFilter.premium" @update:modelValue="saveSettings();" label="Premium Period" class="ma-0 pa-0" v-tooltip="'In the premium period'"></v-checkbox-btn>
                     </v-list-item>
                     <v-list-item append-icon="mdi-pencil-plus-outline" density="compact" class="ma-0 pa-1">
-                      <v-checkbox-btn v-model="settings.ensDateFilter.available" @update:modelValue="saveSettings();" label="Available" class="ma-0 pa-0" v-tooltip="'Available for registration'"></v-checkbox-btn>
+                      <v-checkbox-btn v-model="settings.ensDateFilter.available" @update:modelValue="saveSettings();" label="Available for Registration" class="ma-0 pa-0" v-tooltip="'Available for registration'"></v-checkbox-btn>
                     </v-list-item>
                   </v-expansion-panel-text>
                 </v-expansion-panel>
@@ -542,6 +542,8 @@ portfolioData: {{ portfolioData }}
 
     items() {
       const results = [];
+      const currentUnixtime = moment().unix();
+      // const currentUnixtime = moment("2024-10-05 12:34:12").unix();
       for (const collection of this.collections) {
         if (collection.type == 2 || collection.type == 3) {
           // console.log(now() + " Portfolio - computed.collections - portfolioMetadata[chainId][contract]: " + JSON.stringify(this.portfolioMetadata[collection.chainId][collection.contract], null, 2));
@@ -551,9 +553,13 @@ portfolioData: {{ portfolioData }}
             if (collection.contract == ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS || collection.contract == ENS_NAMEWRAPPER_ADDRESS) {
               if (collection.contract in this.portfolioENSData) {
                 if (tokenId in this.portfolioENSData[collection.contract]) {
+                  console.log(now() + " Portfolio - computed.collections - contract: " + collection.contract + ", tokenId: " + tokenId);
                   expiry = this.portfolioENSData[collection.contract][tokenId].expiry;
                 }
               }
+              // if (tokenId == "74351365047673779449386923687970128051082206397273997134547035868684575763549") {
+                const dateStatus = ensDateStatus(collection.contract, expiry, currentUnixtime);
+              // }
             }
             results.push({
               type: collection.type,
