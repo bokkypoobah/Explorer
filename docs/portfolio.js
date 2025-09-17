@@ -114,7 +114,7 @@ const Portfolio = {
         <v-row dense>
           <v-col v-if="settings.showFilter" cols="2">
             <v-card>
-              <v-expansion-panels v-model="settings.assetTypeFilter.visible" @update:modelValue="saveSettings();" multiple flat>
+              <v-expansion-panels v-model="settings.filterExpansionStatus" @update:modelValue="saveSettings();" multiple flat>
                 <v-expansion-panel class="ma-0 pa-0">
                   <v-expansion-panel-title>
                     Addresses
@@ -141,6 +141,28 @@ const Portfolio = {
                     </v-list-item>
                     <v-list-item append-icon="mdi-alphabetical" density="compact" class="ma-0 pa-1">
                       <v-checkbox-btn v-model="settings.assetTypeFilter.names" @update:modelValue="saveSettings();" label="ENS Names" class="ma-0 pa-0" v-tooltip="'ERC-721 & ERC-1155 ENS Names'"></v-checkbox-btn>
+                    </v-list-item>
+                  </v-expansion-panel-text>
+                </v-expansion-panel>
+                <v-expansion-panel v-if="settings.tab == 'items'" class="ma-0 pa-0">
+                  <v-expansion-panel-title>
+                    ENS Status
+                  </v-expansion-panel-title>
+                  <v-expansion-panel-text class="ma-0 pa-0">
+                    <v-list-item append-icon="mdi-clock-check-outline" density="compact" class="ma-0 pa-1">
+                      <v-checkbox-btn v-model="settings.ensDateFilter.active" @update:modelValue="saveSettings();" label="Active" class="ma-0 pa-0"></v-checkbox-btn>
+                    </v-list-item>
+                    <v-list-item append-icon="mdi-clock-alert-outline" density="compact" class="ma-0 pa-1">
+                      <v-checkbox-btn v-model="settings.ensDateFilter.grace" @update:modelValue="saveSettings();" label="Grace Period" class="ma-0 pa-0" v-tooltip="'Expired, in grace period for ERC-721'"></v-checkbox-btn>
+                    </v-list-item>
+                    <v-list-item append-icon="mdi-clock-alert" density="compact" class="ma-0 pa-1">
+                      <v-checkbox-btn v-model="settings.ensDateFilter.expired" @update:modelValue="saveSettings();" label="Expired" class="ma-0 pa-0" v-tooltip="'Expired'"></v-checkbox-btn>
+                    </v-list-item>
+                    <v-list-item append-icon="mdi-chart-ppf" density="compact" class="ma-0 pa-1">
+                      <v-checkbox-btn v-model="settings.ensDateFilter.premium" @update:modelValue="saveSettings();" label="Premium Period" class="ma-0 pa-0" v-tooltip="'In the premium period'"></v-checkbox-btn>
+                    </v-list-item>
+                    <v-list-item append-icon="mdi-pencil-plus-outline" density="compact" class="ma-0 pa-1">
+                      <v-checkbox-btn v-model="settings.ensDateFilter.available" @update:modelValue="saveSettings();" label="Available" class="ma-0 pa-0" v-tooltip="'Available for registration'"></v-checkbox-btn>
                     </v-list-item>
                   </v-expansion-panel-text>
                 </v-expansion-panel>
@@ -334,13 +356,20 @@ portfolioData: {{ portfolioData }}
         selectedPortfolio: null, // TODO: Delete
         tab: "collections",
         showFilter: false,
+        filterExpansionStatus: [],
         addressFilter: {},
         assetTypeFilter: {
-          visible: false,
           eth: true,
           fungibles: true,
           nonFungibles: true,
           names: true,
+        },
+        ensDateFilter: {
+          active: true,
+          grace: false,
+          expired: false,
+          premium: false,
+          available: false,
         },
         collections: {
           filter: null,
@@ -356,7 +385,7 @@ portfolioData: {{ portfolioData }}
           itemsPerPage: 10,
           currentPage: 1,
         },
-        version: 7,
+        version: 8,
       },
       _timerId: null,
       itemsPerPageOptions: [
