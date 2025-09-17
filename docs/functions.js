@@ -257,19 +257,28 @@ function ensDateStatus(contractAddress, expiry, currentUnixtime) {
   const _expiry = moment.unix(expiry);
   const _currentTime = moment.unix(currentUnixtime);
   if (contractAddress == ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS) {
-    // console.error(now() + " functions.js:ensDateStatus - contractAddress: " + contractAddress + ", expiry: " + moment.unix(expiry).format("YYYY-MM-DD HH:mm:ss") + ", currentUnixtime: " + moment.unix(currentUnixtime).format("YYYY-MM-DD HH:mm:ss"));
-    // const grace = moment.unix(expiry).add(90, "days").unix();
-    // console.error(now() + " functions.js:ensDateStatus - ERC-721 grace: " + moment.unix(grace).format("YYYY-MM-DD HH:mm:ss"));
+    const _grace = moment.unix(expiry).add(90, "days");
+    const _available = moment.unix(expiry).add(90, "days").add(21, "days");
+    // console.error(now() + " functions.js:ensDateStatus - contractAddress: " + contractAddress.substring(0, 12)  + ", _currentTime: " + _currentTime.unix() + " " + _currentTime.format("YYYY-MM-DD HH:mm:ss") + ", _expiry: " + _expiry.unix() + " " + _expiry.format("YYYY-MM-DD HH:mm:ss") + ", _grace: "  + _grace.unix() + " " + _grace.format("YYYY-MM-DD HH:mm:ss") + ", _available: "  + _available.unix() + " " + _available.format("YYYY-MM-DD HH:mm:ss"));
+    if (_currentTime.isSameOrBefore(_expiry)) {
+      return "ACTIVE";
+    } else if (_currentTime.isSameOrBefore(_grace)) {
+      return "GRACE";
+    } else if (_currentTime.isSameOrBefore(_available)) {
+      return "PREMIUM";
+    } else {
+      return "AVAILABLE";
+    }
   } else {
     const _available = moment.unix(expiry).add(21, "days");
-    console.error(now() + " functions.js:ensDateStatus - contractAddress: " + contractAddress.substring(0, 12)  + ", _currentTime: " + _currentTime.unix() + " " + _currentTime.format("YYYY-MM-DD HH:mm:ss") + ", _expiry: " + _expiry.unix() + " " + _expiry.format("YYYY-MM-DD HH:mm:ss") + ", _available: "  + _available.unix() + " " + _available.format("YYYY-MM-DD HH:mm:ss"));
+    // console.error(now() + " functions.js:ensDateStatus - contractAddress: " + contractAddress.substring(0, 12)  + ", _currentTime: " + _currentTime.unix() + " " + _currentTime.format("YYYY-MM-DD HH:mm:ss") + ", _expiry: " + _expiry.unix() + " " + _expiry.format("YYYY-MM-DD HH:mm:ss") + ", _available: "  + _available.unix() + " " + _available.format("YYYY-MM-DD HH:mm:ss"));
     if (_currentTime.isSameOrBefore(_expiry)) {
-      console.error("ACTIVE");
+      return "ACTIVE";
     } else if (_currentTime.isSameOrBefore(_available)) {
-      console.error("PREMIUM");
+      return "PREMIUM";
     } else {
-      console.error("AVAILABLE");
+      return "AVAILABLE";
     }
   }
-  return "blah";
+  return null;
 }

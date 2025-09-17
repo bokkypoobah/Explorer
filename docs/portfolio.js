@@ -539,17 +539,17 @@ portfolioData: {{ portfolioData }}
       return results;
     },
 
-
     items() {
       const results = [];
-      const currentUnixtime = moment().unix();
-      // const currentUnixtime = moment("2024-10-05 12:34:12").unix();
+      // const currentUnixtime = moment().unix();
+      const currentUnixtime = moment("2025-11-05 12:34:12").unix();
       for (const collection of this.collections) {
         if (collection.type == 2 || collection.type == 3) {
           // console.log(now() + " Portfolio - computed.collections - portfolioMetadata[chainId][contract]: " + JSON.stringify(this.portfolioMetadata[collection.chainId][collection.contract], null, 2));
           for (const [tokenId, tokenInfo] of Object.entries(collection.tokenData)) {
             const metadata = this.portfolioMetadata[collection.chainId] && this.portfolioMetadata[collection.chainId][collection.contract] && this.portfolioMetadata[collection.chainId][collection.contract].tokens[tokenId] || {};
             let expiry = null;
+            let dateStatus = null;
             if (collection.contract == ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS || collection.contract == ENS_NAMEWRAPPER_ADDRESS) {
               if (collection.contract in this.portfolioENSData) {
                 if (tokenId in this.portfolioENSData[collection.contract]) {
@@ -557,9 +557,8 @@ portfolioData: {{ portfolioData }}
                   expiry = this.portfolioENSData[collection.contract][tokenId].expiry;
                 }
               }
-              // if (tokenId == "74351365047673779449386923687970128051082206397273997134547035868684575763549") {
-                const dateStatus = ensDateStatus(collection.contract, expiry, currentUnixtime);
-              // }
+              ensStatus = ensDateStatus(collection.contract, expiry, currentUnixtime);
+              console.log(now() + " Portfolio - computed.collections - ensStatus: " + ensStatus);
             }
             results.push({
               type: collection.type,
@@ -575,6 +574,7 @@ portfolioData: {{ portfolioData }}
               name: tokenInfo.name,
               description: tokenInfo.description,
               expiry,
+              ensStatus,
             });
           }
         } else {
