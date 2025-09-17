@@ -541,8 +541,8 @@ portfolioData: {{ portfolioData }}
 
     items() {
       const results = [];
-      // const currentUnixtime = moment().unix();
-      const currentUnixtime = moment("2025-11-05 12:34:12").unix();
+      const currentUnixtime = moment().unix();
+      // const currentUnixtime = moment("2025-11-05 12:34:12").unix();
       for (const collection of this.collections) {
         if (collection.type == 2 || collection.type == 3) {
           // console.log(now() + " Portfolio - computed.collections - portfolioMetadata[chainId][contract]: " + JSON.stringify(this.portfolioMetadata[collection.chainId][collection.contract], null, 2));
