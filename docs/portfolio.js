@@ -153,13 +153,10 @@ const Portfolio = {
                       <v-checkbox-btn v-model="settings.ensDateFilter.active" @update:modelValue="saveSettings();" label="Active" class="ma-0 pa-0"></v-checkbox-btn>
                     </v-list-item>
                     <v-list-item append-icon="mdi-clock-alert-outline" density="compact" class="ma-0 pa-1">
-                      <v-checkbox-btn v-model="settings.ensDateFilter.grace" @update:modelValue="saveSettings();" label="Expired, in Grace Period" class="ma-0 pa-0" v-tooltip="'Expired, in grace period for ERC-721'"></v-checkbox-btn>
-                    </v-list-item>
-                    <v-list-item append-icon="mdi-clock-alert" density="compact" class="ma-0 pa-1">
-                      <v-checkbox-btn v-model="settings.ensDateFilter.expired" @update:modelValue="saveSettings();" label="Expired" class="ma-0 pa-0" v-tooltip="'Expired'"></v-checkbox-btn>
+                      <v-checkbox-btn v-model="settings.ensDateFilter.grace" @update:modelValue="saveSettings();" label="Grace Period" class="ma-0 pa-0" v-tooltip="'Expired, in grace period, for ERC-721 only'"></v-checkbox-btn>
                     </v-list-item>
                     <v-list-item append-icon="mdi-chart-ppf" density="compact" class="ma-0 pa-1">
-                      <v-checkbox-btn v-model="settings.ensDateFilter.premium" @update:modelValue="saveSettings();" label="Premium Period" class="ma-0 pa-0" v-tooltip="'In the premium period'"></v-checkbox-btn>
+                      <v-checkbox-btn v-model="settings.ensDateFilter.premium" @update:modelValue="saveSettings();" label="Premium Period" class="ma-0 pa-0" v-tooltip="'In the premium period after expiry and grace period for ERC-721 only'"></v-checkbox-btn>
                     </v-list-item>
                     <v-list-item append-icon="mdi-pencil-plus-outline" density="compact" class="ma-0 pa-1">
                       <v-checkbox-btn v-model="settings.ensDateFilter.available" @update:modelValue="saveSettings();" label="Available for Registration" class="ma-0 pa-0" v-tooltip="'Available for registration'"></v-checkbox-btn>
@@ -367,7 +364,6 @@ portfolioData: {{ portfolioData }}
         ensDateFilter: {
           active: true,
           grace: false,
-          expired: false,
           premium: false,
           available: false,
         },
@@ -385,6 +381,12 @@ portfolioData: {{ portfolioData }}
           itemsPerPage: 10,
           currentPage: 1,
         },
+        // syncDialog: {
+        //   show: false,
+        //   addressEvents: true,
+        //   reservoirMetadata: true,
+        //   ensMetadata: true,
+        // },
         version: 8,
       },
       _timerId: null,
@@ -549,7 +551,7 @@ portfolioData: {{ portfolioData }}
           for (const [tokenId, tokenInfo] of Object.entries(collection.tokenData)) {
             const metadata = this.portfolioMetadata[collection.chainId] && this.portfolioMetadata[collection.chainId][collection.contract] && this.portfolioMetadata[collection.chainId][collection.contract].tokens[tokenId] || {};
             let expiry = null;
-            let dateStatus = null;
+            let ensStatus = null;
             if (collection.contract == ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS || collection.contract == ENS_NAMEWRAPPER_ADDRESS) {
               if (collection.contract in this.portfolioENSData) {
                 if (tokenId in this.portfolioENSData[collection.contract]) {
@@ -557,8 +559,10 @@ portfolioData: {{ portfolioData }}
                   expiry = this.portfolioENSData[collection.contract][tokenId].expiry;
                 }
               }
-              ensStatus = ensDateStatus(collection.contract, expiry, currentUnixtime);
-              console.log(now() + " Portfolio - computed.collections - ensStatus: " + ensStatus);
+              if (expiry) {
+                ensStatus = ensDateStatus(collection.contract, expiry, currentUnixtime);
+                console.log(now() + " Portfolio - computed.collections - ensStatus: " + ensStatus);
+              }
             }
             results.push({
               type: collection.type,
@@ -634,6 +638,15 @@ portfolioData: {{ portfolioData }}
             }
           } else {
             console.error(now() + " Portfolio - computed.filteredSortedItems - missing name: " + JSON.stringify(item, null, 2));
+            include = false;
+          }
+        }
+        if (include && item.type == 3) {
+          // console.error(now() + " Portfolio - computed.filteredSortedItems - item: " + JSON.stringify(item, null, 2));
+          if (!((this.settings.ensDateFilter.active && item.ensStatus == "ACTIVE") ||
+                (this.settings.ensDateFilter.grace && item.ensStatus == "GRACE") ||
+                (this.settings.ensDateFilter.premium && item.ensStatus == "PREMIUM") ||
+                (this.settings.ensDateFilter.available && item.ensStatus == "AVAILABLE"))) {
             include = false;
           }
         }
