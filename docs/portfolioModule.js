@@ -313,6 +313,9 @@ const portfolioModule = {
       }
       console.log(now() + " portfolioModule - actions.syncMetadata - metadataToRetrieve: " + JSON.stringify(metadataToRetrieve, null, 2));
 
+      const reservoir = store.getters["web3/reservoir"];
+      console.log(now() + " portfolioModule - actions.syncMetadata - reservoir: " + reservoir);
+
       const BATCHSIZE = 25;
       const DELAYINMILLIS = 2000;
       completed = 0;
@@ -324,7 +327,7 @@ const portfolioModule = {
         console.log(now() + " portfolioModule - actions.syncMetadata - batch: " + JSON.stringify(batch));
         let continuation = null;
         do {
-          let url = "https://api.reservoir.tools/tokens/v7?";
+          let url = reservoir + "tokens/v7?";
           let separator = "";
           for (let j = 0; j < batch.length; j++) {
             url = url + separator + "tokens=" + batch[j].contract + "%3A" + batch[j].tokenId;
