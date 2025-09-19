@@ -122,7 +122,7 @@ async function syncPortfolioAddressEvents(address, data, provider, chainId, db) 
 }
 
 
-async function syncPortfolioENSEvents(metadata, provider, chainId, db) {
+async function syncPortfolioENSEvents(data, provider, chainId, db) {
 
   async function processLogs(fromBlock, toBlock, logs) {
     console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents.processLogs - fromBlock: " + fromBlock + ", toBlock: " + toBlock + ", logs.length: " + logs.length);
@@ -144,12 +144,22 @@ async function syncPortfolioENSEvents(metadata, provider, chainId, db) {
     }
   }
 
-  // console.error(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents - metadata: " + JSON.stringify(metadata, null, 2));
-  const BATCH_SIZE = 100;
+  // console.error(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents - data: " + JSON.stringify(data, null, 2));
+  const BATCH_SIZE = 50;
 
-  const tokenIds = metadata[chainId] && metadata[chainId][ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS] && Object.keys(metadata[chainId][ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS].tokens) || [];
-  const wrappedTokenIds = metadata[chainId] && metadata[chainId][ENS_NAMEWRAPPER_ADDRESS] && Object.keys(metadata[chainId][ENS_NAMEWRAPPER_ADDRESS].tokens) || [];
-  const allTokenIds = [ ...tokenIds, ...wrappedTokenIds ];
+  const tokenIdsMap = {};
+  for (const [address, addressData] of Object.entries(data)) {
+    for (const [contract, contractData] of Object.entries(addressData[chainId] && addressData[chainId].tokens || {})) {
+      if (contract == ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS || contract == ENS_NAMEWRAPPER_ADDRESS) {
+        for (const [tokenId, tokenData] of Object.entries(contractData)) {
+          tokenIdsMap[tokenId] = "0x" + padLeft0(ethers.BigNumber.from(tokenId).toHexString().substring(2,), 64);
+        }
+      }
+    }
+  }
+  // console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents - tokenIdsMap: " + JSON.stringify(tokenIdsMap, null, 2));
+
+  const allTokenIds = Object.keys(tokenIdsMap);
   // console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents - allTokenIds: " + JSON.stringify(allTokenIds, null, 2));
 
   const block = await provider.getBlock();
@@ -157,7 +167,7 @@ async function syncPortfolioENSEvents(metadata, provider, chainId, db) {
   const toBlock = block.number;
   for (let i = 0; i < allTokenIds.length; i += BATCH_SIZE) {
     const batch = allTokenIds.slice(i, parseInt(i) + BATCH_SIZE).map(e => "0x" + padLeft0(ethers.BigNumber.from(e).toHexString().substring(2,), 64));
-    // console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents - batch: " + JSON.stringify(batch, null, 2));
+    console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents - batch: " + JSON.stringify(batch, null, 2));
     try {
       const topics = [[
           '0xb3d987963d01b2f68493b4bdb130988f157ea43070d4ad840fee0466ed9370d9', // NameRegistered (index_topic_1 uint256 id, index_topic_2 address owner, uint256 expires)

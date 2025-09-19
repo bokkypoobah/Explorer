@@ -596,6 +596,16 @@ portfolioData: {{ portfolioData }}
                 // console.log(now() + " Portfolio - computed.items - ensStatus: " + ensStatus);
               }
             }
+            let name = tokenInfo.name;
+            if ((name == null || name == "") && (collection.contract == ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS || collection.contract == ENS_NAMEWRAPPER_ADDRESS)) {
+              if (collection.contract in this.portfolioENSData) {
+                if (tokenId in this.portfolioENSData[collection.contract]) {
+                  name = this.portfolioENSData[collection.contract][tokenId].name;
+                  // console.error(now() + " Portfolio - computed.items - name: " + name);
+                }
+              }
+            }
+            // console.error(now() + " Portfolio - computed.items - tokenId: " + tokenId + ", name: " + name);
             results.push({
               type: collection.type,
               address: collection.address,
@@ -607,7 +617,7 @@ portfolioData: {{ portfolioData }}
               collectionSlug: collection.collectionSlug,
               tokenId,
               tokens: tokenInfo.tokens,
-              name: tokenInfo.name,
+              name,
               description: tokenInfo.description,
               expiry,
               ensStatus,

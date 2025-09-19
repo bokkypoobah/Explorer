@@ -92,7 +92,7 @@ const portfolioModule = {
       context.commit('setMetadata', metadata);
       await context.dispatch("collateENSData", parameters);
       await context.dispatch("collateData", parameters);
-      // db.close();
+      db.close();
     },
     async syncPortfolio(context, { forceUpdate, options }) {
       console.log(now() + " portfolioModule - actions.syncPortfolio - forceUpdate: " + forceUpdate + ", options: " + JSON.stringify(options));
@@ -113,16 +113,15 @@ const portfolioModule = {
       if (options.includes("reservoir") || options.includes("all")) {
         await context.dispatch("syncMetadata", parameters);
       }
+      await context.dispatch("collateData", parameters);
       if (options.includes("ens") || options.includes("all")) {
         await context.dispatch("syncENSEvents", parameters);
       }
-
       await context.dispatch("collateENSData", parameters);
-      await context.dispatch("collateData", parameters);
 
       context.commit('setSyncInfo', null);
       context.commit('setSyncHalt', false);
-      // db.close();
+      db.close();
     },
 
     async syncAddresses(context, parameters) {
@@ -168,59 +167,85 @@ const portfolioModule = {
       };
       const erc1155Interface = new ethers.utils.Interface(ERC1155ABI);
       const metadata = await dbGetCachedData(parameters.db, "portfolio_metadata", {});
+      console.log(now() + " portfolioModule - actions.syncMetadata - metadata: " + JSON.stringify(metadata, null, 2));
       // TODO
       // const metadata = {};
       if (!(parameters.chainId in metadata)) {
         metadata[parameters.chainId] = {};
       }
 
-      const toProcess = {};
+      const tokens = {};
       let rows = 0;
       for (const [address, addressInfo] of Object.entries(context.state.addresses)) {
         // console.log(now() + " portfolioModule - actions.syncMetadata - address: " + address);
         let done = false;
         do {
-          const logs = await parameters.db.portfolioAddressEvents.where('[address+chainId+blockNumber+logIndex]').between([address, Dexie.minKey, Dexie.minKey, Dexie.minKey],[address, Dexie.maxKey, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(BATCH_SIZE).toArray();
+          const logs = await parameters.db.portfolioAddressEvents.where('[address+chainId+blockNumber+logIndex]').between([address, parameters.chainId, Dexie.minKey, Dexie.minKey],[address, parameters.chainId, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(BATCH_SIZE).toArray();
           for (const log of logs) {
             if (log.topics[0] in tokenTopics) {
               // console.error(now() + " portfolioModule - actions.syncMetadata - log: " + JSON.stringify(log, null, 2));
-              if (!(log.contract in metadata[parameters.chainId])) {
-                if (!(log.contract in toProcess)) {
-                  toProcess[log.contract] = {};
+              let tokenId = null;
+              let tokenIds = null;
+              // ERC-721 Transfer (index_topic_1 address from, index_topic_2 address to, index_topic_3 uint256 id)
+              if (log.topics[0] == "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef" && log.topics.length == 4) {
+                // console.error(now() + " portfolioModule - actions.syncMetadata - ERC-721 Transfer log: " + JSON.stringify(log, null, 2));
+                tokenId = ethers.BigNumber.from(log.topics[3]).toString();
+                // if (!(log.contract in tokens)) {
+                //   tokens[log.contract] = {};
+                // }
+                // if (!(tokenId in tokens[log.contract])) {
+                //   tokens[log.contract][tokenId] = true;
+                // }
+              // ERC-1155 TransferSingle (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256 id, uint256 value)
+              } else if (log.topics[0] == "0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62") {
+                // console.error(now() + " portfolioModule - actions.syncMetadata - ERC-1155 TransferSingle log: " + JSON.stringify(log, null, 2));
+                tokenId = ethers.BigNumber.from(log.data.substring(0, 66)).toString();
+                // const count = ethers.BigNumber.from("0x" + log.data.substring(66, 130)).toString();
+                // if (!(log.contract in tokens)) {
+                //   tokens[log.contract] = {};
+                // }
+                // if (!(tokenId in tokens[log.contract])) {
+                //   // tokens[log.contract][tokenId] = count;
+                //   tokens[log.contract][tokenId] = true;
+                // }
+              // ERC-1155 TransferBatch (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256[] ids, uint256[] values)
+              } else if (log.topics[0] == "0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb") {
+                // console.error(now() + " portfolioModule - actions.syncMetadata - ERC-1155 TransferBatch log: " + JSON.stringify(log, null, 2));
+                const logData = erc1155Interface.parseLog(log);
+                const [ operator, from, to, _tokenIds, values ] = logData.args;
+                tokenIds = _tokenIds;
+                // if (!(log.contract in tokens)) {
+                //   tokens[log.contract] = {};
+                // }
+                // for (const [index, tokenId] of tokenIds.entries()) {
+                //   const _tokenId = ethers.BigNumber.from(tokenId).toString();
+                //   const _value = ethers.BigNumber.from(values[index]).toString();
+                //   // tokens[log.contract][_tokenId] = _value;
+                //   tokens[log.contract][_tokenId] = true;
+                // }
+              // ERC-721 Approval (index_topic_1 address owner, index_topic_2 address approved, index_topic_3 uint256 tokenId)
+              } else if (log.topics[0] == "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925" && log.topics.length == 4) {
+                // console.error(now() + " portfolioModule - actions.syncMetadata - ERC-721 Approval log: " + JSON.stringify(log, null, 2));
+                tokenId = ethers.BigNumber.from(log.topics[3]).toString();
+                // if (!(log.contract in tokens)) {
+                //   tokens[log.contract] = {};
+                // }
+                // if (!(tokenId in tokens[log.contract])) {
+                //   tokens[log.contract][tokenId] = true;
+                // }
+              }
+              if (tokenId != null || tokenIds) {
+                if (!(log.contract in tokens)) {
+                  tokens[log.contract] = {};
                 }
-                // ERC-721 Transfer (index_topic_1 address from, index_topic_2 address to, index_topic_3 uint256 id)
-                if (log.topics[0] == "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef" && log.topics.length == 4) {
-                  // console.error(now() + " portfolioModule - actions.syncMetadata - ERC-721 Transfer log: " + JSON.stringify(log, null, 2));
-                  const tokenId = ethers.BigNumber.from(log.topics[3]).toString();
-                  if (!(tokenId in toProcess[log.contract])) {
-                    toProcess[log.contract][tokenId] = true;
-                  }
-                // ERC-1155 TransferSingle (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256 id, uint256 value)
-                } else if (log.topics[0] == "0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62") {
-                  // console.error(now() + " portfolioModule - actions.syncMetadata - ERC-1155 TransferSingle log: " + JSON.stringify(log, null, 2));
-                  const tokenId = ethers.BigNumber.from(log.data.substring(0, 66)).toString();
-                  const count = ethers.BigNumber.from("0x" + log.data.substring(66, 130)).toString();
-                  if (!(tokenId in toProcess[log.contract])) {
-                    // toProcess[log.contract][tokenId] = count;
-                    toProcess[log.contract][tokenId] = true;
-                  }
-                // ERC-1155 TransferBatch (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256[] ids, uint256[] values)
-                } else if (log.topics[0] == "0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb") {
-                  // console.error(now() + " portfolioModule - actions.syncMetadata - ERC-1155 TransferBatch log: " + JSON.stringify(log, null, 2));
-                  const logData = erc1155Interface.parseLog(log);
-                  const [ operator, from, to, tokenIds, values ] = logData.args;
+                if (tokenId != null) {
+                  tokens[log.contract][tokenId] = true;
+                } else {
                   for (const [index, tokenId] of tokenIds.entries()) {
                     const _tokenId = ethers.BigNumber.from(tokenId).toString();
-                    const _value = ethers.BigNumber.from(values[index]).toString();
-                    // toProcess[log.contract][_tokenId] = _value;
-                    toProcess[log.contract][_tokenId] = true;
-                  }
-                // ERC-721 Approval (index_topic_1 address owner, index_topic_2 address approved, index_topic_3 uint256 tokenId)
-                } else if (log.topics[0] == "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925" && log.topics.length == 4) {
-                  // console.error(now() + " portfolioModule - actions.syncMetadata - ERC-721 Approval log: " + JSON.stringify(log, null, 2));
-                  const tokenId = ethers.BigNumber.from(log.topics[3]).toString();
-                  if (!(tokenId in toProcess[log.contract])) {
-                    toProcess[log.contract][tokenId] = true;
+                    // const _value = ethers.BigNumber.from(values[index]).toString();
+                    // tokens[log.contract][_tokenId] = _value;
+                    tokens[log.contract][_tokenId] = true;
                   }
                 }
               }
@@ -231,23 +256,39 @@ const portfolioModule = {
           done = logs.length < BATCH_SIZE;
         } while (!done);
       }
-      console.log(now() + " portfolioModule - actions.syncMetadata - toProcess: " + JSON.stringify(toProcess, null, 2));
+      console.error(now() + " portfolioModule - actions.syncMetadata - tokens: " + JSON.stringify(tokens, null, 2));
 
-      context.commit('setSyncTotal', Object.keys(toProcess).length);
+      context.commit('setSyncTotal', Object.keys(tokens).length);
       let completed = 0;
-      for (let address of Object.keys(toProcess)) {
+      for (let [contract, contractData] of Object.entries(tokens)) {
         if (context.state.sync.halt) {
           break;
         }
-        console.log(now() + " portfolioModule - actions.syncMetadata - processing - address: " + address);
-        const info = await getAddressInfo(address, parameters.provider);
-        // console.error(now() + " portfolioModule - actions.syncMetadata - processing - info: " + JSON.stringify(info, null, 2));
-        if (info.type == "erc20") {
-          metadata[parameters.chainId][address] = { type: info.type, ensName: info.ensName, balance: info.balance, name: info.name, symbol: info.symbol, decimals: info.decimals, totalSupply: info.totalSupply };
+        // console.error(now() + " portfolioModule - actions.syncMetadata - processing - contract: " + contract + " => " + JSON.stringify(contractData, null, 2));
+
+        if (!(contract in metadata[parameters.chainId])) {
+          const info = await getAddressInfo(contract, parameters.provider);
+          console.error(now() + " portfolioModule - actions.syncMetadata - processing - info: " + JSON.stringify(info, null, 2));
+          metadata[parameters.chainId][contract] = { type: info.type, ensName: info.ensName, balance: info.balance, name: info.name, symbol: info.symbol, decimals: info.decimals, totalSupply: info.totalSupply, tokens: tokens[contract] };
         } else {
-          metadata[parameters.chainId][address] = { type: info.type, ensName: info.ensName, balance: info.balance, name: info.name, symbol: info.symbol, decimals: info.decimals, totalSupply: info.totalSupply, tokens: toProcess[address] };
+          for (let tokenId of Object.keys(tokens[contract])) {
+            if (!(tokenId in metadata[parameters.chainId][contract].tokens)) {
+              metadata[parameters.chainId][contract].tokens[tokenId] = true;
+            }
+          }
+          // metadata[parameters.chainId][contract].tokens = tokens[contract];
         }
-        context.commit('setSyncInfo', "Syncing contract metadata for " + address.substring(0, 6) + "..." + address.slice(-4) + " => " + info.name);
+
+        // // if (!(log.contract in metadata[parameters.chainId])) {
+        // // }
+        // const info = await getAddressInfo(contract, parameters.provider);
+        // // console.error(now() + " portfolioModule - actions.syncMetadata - processing - info: " + JSON.stringify(info, null, 2));
+        // // if (info.type == "erc20") {
+        // //   metadata[parameters.chainId][contract] = { type: info.type, ensName: info.ensName, balance: info.balance, name: info.name, symbol: info.symbol, decimals: info.decimals, totalSupply: info.totalSupply };
+        // // } else {
+        //   metadata[parameters.chainId][contract] = { type: info.type, ensName: info.ensName, balance: info.balance, name: info.name, symbol: info.symbol, decimals: info.decimals, totalSupply: info.totalSupply, tokens: tokens[contract] };
+        // // }
+        context.commit('setSyncInfo', "Syncing contract metadata for " + contract.substring(0, 6) + "..." + contract.slice(-4) + " => " + metadata[parameters.chainId][contract].name);
         context.commit('setSyncCompleted', ++completed);
       }
       // console.log(now() + " portfolioModule - actions.syncMetadata - metadata: " + JSON.stringify(metadata, null, 2));
@@ -256,19 +297,19 @@ const portfolioModule = {
       // <b-avatar rounded variant="light" size="3.0rem" :src="'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/' + data.item.account + '/logo.png'" v-b-popover.hover="'ERC-20 logo if available'"></b-avatar>
 
       const metadataToRetrieve = [];
-      for (const [contract, contractData] of Object.entries(metadata[parameters.chainId])) {
-        if (contractData.type == "erc721" || contractData.type == "erc1155") {
+      for (const [contract, contractData] of Object.entries(tokens)) {
+        // if (contractData.type == "erc721" || contractData.type == "erc1155") {
           // console.log(now() + " portfolioModule - actions.syncMetadata - contract: " + contract + " => " + JSON.stringify(contractData, null, 2));
-          for (const [tokenId, tokenData] of Object.entries(contractData.tokens)) {
+          for (const [tokenId, tokenData] of Object.entries(contractData)) {
             // if (tokenData && Object.keys(tokenData) < 3) {
             //   console.error(now() + " portfolioModule - actions.syncMetadata - contract: " + contract + "/" + tokenId + " => " + JSON.stringify(tokenData, null, 2));
             // }
-            if (tokenData === true) {
+            // if (tokenData === true) {
               // console.log(now() + " portfolioModule - actions.syncMetadata - contract: " + contract + "/" + tokenId + " => " + JSON.stringify(tokenData, null, 2));
               metadataToRetrieve.push({ contract, tokenId });
-            }
+            // }
           }
-        }
+        // }
       }
       console.log(now() + " portfolioModule - actions.syncMetadata - metadataToRetrieve: " + JSON.stringify(metadataToRetrieve, null, 2));
 
@@ -280,7 +321,7 @@ const portfolioModule = {
       context.commit('setSyncCompleted', completed);
       for (let i = 0; i < metadataToRetrieve.length && !context.state.sync.halt; i += BATCHSIZE) {
         const batch = metadataToRetrieve.slice(i, parseInt(i) + BATCHSIZE);
-        // console.error(now() + " portfolioModule - actions.syncMetadata - batch: " + JSON.stringify(batch));
+        console.log(now() + " portfolioModule - actions.syncMetadata - batch: " + JSON.stringify(batch));
         let continuation = null;
         do {
           let url = "https://api.reservoir.tools/tokens/v7?";
@@ -299,11 +340,11 @@ const portfolioModule = {
           // for (token of data.tokens) {
           //   console.error(now() + " portfolioModule - actions.syncMetadata - token: " + JSON.stringify(token, null, 2));
           // }
-          console.log(now() + " portfolioModule - actions.syncMetadata - metadata: " + JSON.stringify(metadata, null, 2));
           completed += batch.length;
           context.commit('setSyncCompleted', completed);
           await delay(DELAYINMILLIS);
         } while (continuation != null && !context.state.sync.halt);
+        console.log(now() + " portfolioModule - actions.syncMetadata - metadata: " + JSON.stringify(metadata, null, 2));
       }
 
       // Retrieve ENS names missing the metadata from the Reservoir API
@@ -356,22 +397,6 @@ const portfolioModule = {
       context.commit('setSyncInfo', null);
     },
 
-    async syncENSEvents(context, parameters) {
-      console.error(now() + " portfolioModule - actions.syncENSEvents - chainId: " + parameters.chainId + ", blockNumber: " + parameters.blockNumber + ", timestamp: " + moment.unix(parameters.timestamp).format("YYYY-MM-DD HH:mm:ss"));
-      if (parameters.chainId == 1) {
-        await syncPortfolioENSEvents(context.state.metadata, parameters.provider, parameters.chainId, parameters.db);
-      }
-    },
-
-    async collateENSData(context, parameters) {
-      console.error(now() + " portfolioModule - actions.collateENSData - chainId: " + parameters.chainId + ", blockNumber: " + parameters.blockNumber + ", timestamp: " + moment.unix(parameters.timestamp).format("YYYY-MM-DD HH:mm:ss"));
-      let ensData = {};
-      await collatePortfolioENSData(ensData, parameters.chainId, parameters.db);
-      context.commit('setENSData', ensData);
-      // console.log(now() + " portfolioModule - actions.collateENSData - ensData: " + JSON.stringify(ensData, null, 2));
-      console.error(now() + " portfolioModule - actions.collateENSData END - chainId: " + parameters.chainId + ", blockNumber: " + parameters.blockNumber + ", timestamp: " + moment.unix(parameters.timestamp).format("YYYY-MM-DD HH:mm:ss"));
-    },
-
     async collateData(context, parameters) {
       console.error(now() + " portfolioModule - actions.collateData - chainId: " + parameters.chainId + ", blockNumber: " + parameters.blockNumber + ", timestamp: " + moment.unix(parameters.timestamp).format("YYYY-MM-DD HH:mm:ss"));
 
@@ -393,6 +418,23 @@ const portfolioModule = {
       context.commit('setSyncInfo', null);
       context.commit('setSyncHalt', false);
       console.error(now() + " portfolioModule - actions.collateData END - chainId: " + parameters.chainId + ", blockNumber: " + parameters.blockNumber + ", timestamp: " + moment.unix(parameters.timestamp).format("YYYY-MM-DD HH:mm:ss"));
+    },
+
+    async syncENSEvents(context, parameters) {
+      console.error(now() + " portfolioModule - actions.syncENSEvents - chainId: " + parameters.chainId + ", blockNumber: " + parameters.blockNumber + ", timestamp: " + moment.unix(parameters.timestamp).format("YYYY-MM-DD HH:mm:ss"));
+      console.error(now() + " portfolioModule - actions.syncENSEvents - context.state.data: " + JSON.stringify(context.state.data, null, 2));
+      if (parameters.chainId == 1) {
+        await syncPortfolioENSEvents(context.state.data, parameters.provider, parameters.chainId, parameters.db);
+      }
+    },
+
+    async collateENSData(context, parameters) {
+      console.error(now() + " portfolioModule - actions.collateENSData - chainId: " + parameters.chainId + ", blockNumber: " + parameters.blockNumber + ", timestamp: " + moment.unix(parameters.timestamp).format("YYYY-MM-DD HH:mm:ss"));
+      let ensData = {};
+      await collatePortfolioENSData(ensData, parameters.chainId, parameters.db);
+      context.commit('setENSData', ensData);
+      // console.error(now() + " portfolioModule - actions.collateENSData - ensData: " + JSON.stringify(ensData, null, 2));
+      console.error(now() + " portfolioModule - actions.collateENSData END - chainId: " + parameters.chainId + ", blockNumber: " + parameters.blockNumber + ", timestamp: " + moment.unix(parameters.timestamp).format("YYYY-MM-DD HH:mm:ss"));
     },
 
     setSyncHalt(context) {
