@@ -45,7 +45,7 @@ async function syncPortfolioAddress(address, addressData, provider, chainId) {
   console.log(now() + " portfolioFunctions.js:syncPortfolioAddress - addressData: " + JSON.stringify(addressData, null, 2));
 }
 
-async function syncPortfolioAddressEvents(address, data, provider, db, chainId) {
+async function syncPortfolioAddressEvents(address, data, provider, chainId, db) {
 
   async function processLogs(section, fromBlock, toBlock, logs) {
     console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressEvents.processLogs - section: " + section + ", fromBlock: " + fromBlock + ", toBlock: " + toBlock + ", logs.length: " + logs.length);
@@ -55,7 +55,7 @@ async function syncPortfolioAddressEvents(address, data, provider, db, chainId) 
         records.push({ chainId, ...log, address: address, contract: log.address });
       }
     }
-    console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressEvents.processLogs - records: " + JSON.stringify(records));
+    // console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressEvents.processLogs - records: " + JSON.stringify(records));
     console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressEvents.processLogs - records.length: " + records.length);
     if (records.length > 0) {
       await db.portfolioAddressEvents.bulkAdd(records).then(function(lastKey) {
@@ -122,7 +122,7 @@ async function syncPortfolioAddressEvents(address, data, provider, db, chainId) 
 }
 
 
-async function syncPortfolioENSEvents(metadata, provider, db, chainId) {
+async function syncPortfolioENSEvents(metadata, provider, chainId, db) {
 
   async function processLogs(fromBlock, toBlock, logs) {
     console.log(moment().format("HH:mm:ss") + " portfolioFunctions.js:syncPortfolioAddressENSEvents.processLogs - fromBlock: " + fromBlock + ", toBlock: " + toBlock + ", logs.length: " + logs.length);
@@ -188,7 +188,7 @@ async function syncPortfolioENSEvents(metadata, provider, db, chainId) {
   }
 }
 
-async function collatePortfolioENSData(ensData, db, chainId) {
+async function collatePortfolioENSData(ensData, chainId, db) {
 
   function parseENSEvent(log) {
     if ((log.address in ENS_INFO)) {
@@ -396,7 +396,7 @@ function parseEvent(log) {
   return result;
 }
 
-async function collatePortfolioAddress(address, data, db, chainId) {
+async function collatePortfolioAddress(address, data, chainId, db) {
   console.log(now() + " portfolioFunctions.js:collatePortfolioAddress - address: " + address + ", data keys: " + Object.keys(data));
 
   const DEBUG_TOKENID = "xyz";
