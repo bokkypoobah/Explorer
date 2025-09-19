@@ -264,7 +264,7 @@ async function collatePortfolioENSData(ensData, chainId, db) {
         if (!(ENS_NAMEWRAPPER_ADDRESS in ensData)) {
           ensData[ENS_NAMEWRAPPER_ADDRESS] = {};
         }
-        ensData[ENS_NAMEWRAPPER_ADDRESS][tokenId] = { node, label, name, fuses, expiry: parseInt(expiry), url: ENS_NAMEWRAPPER_ADDRESS + "/" + tokenId };
+        ensData[ENS_NAMEWRAPPER_ADDRESS][tokenId] = { node, name: label, nameData: name, fuses, expiry: parseInt(expiry), url: ENS_NAMEWRAPPER_ADDRESS + "/" + tokenId };
       }
     }
   }

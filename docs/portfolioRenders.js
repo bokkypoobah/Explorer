@@ -442,6 +442,9 @@ image: {{ image && (image.substring(0, 22) + "..." + image.slice(-20)) }}
     portfolioMetadata() {
       return store.getters['portfolio/metadata'];
     },
+    portfolioENSData() {
+      return store.getters['portfolio/ensData'];
+    },
     symbol() {
       if (this.type == 0) {
         return "ETH";
@@ -465,7 +468,14 @@ image: {{ image && (image.substring(0, 22) + "..." + image.slice(-20)) }}
       } else {
         if (this.contract && this.chainId in this.portfolioMetadata && this.contract in this.portfolioMetadata[this.chainId]) {
           const contract = this.portfolioMetadata[this.chainId][this.contract];
-          return contract && contract.tokens && contract.tokens[this.tokenId] && contract.tokens[this.tokenId].name;
+          let name = contract && contract.tokens && contract.tokens[this.tokenId] && contract.tokens[this.tokenId].name;
+          if ((name == null || name == "") && (this.contract == ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS || this.contract == ENS_NAMEWRAPPER_ADDRESS)) {
+            if (this.contract in this.portfolioENSData && this.tokenId in this.portfolioENSData[this.contract]) {
+              name = this.portfolioENSData[this.contract][this.tokenId].name;
+              // console.error(now() + " PortfolioRenderToken - computed.items - name: " + name);
+            }
+          }
+          return name;
         }
       }
     },

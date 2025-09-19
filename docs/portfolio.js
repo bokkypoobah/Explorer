@@ -598,11 +598,9 @@ portfolioData: {{ portfolioData }}
             }
             let name = tokenInfo.name;
             if ((name == null || name == "") && (collection.contract == ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS || collection.contract == ENS_NAMEWRAPPER_ADDRESS)) {
-              if (collection.contract in this.portfolioENSData) {
-                if (tokenId in this.portfolioENSData[collection.contract]) {
-                  name = this.portfolioENSData[collection.contract][tokenId].name;
-                  // console.error(now() + " Portfolio - computed.items - name: " + name);
-                }
+              if (collection.contract in this.portfolioENSData && tokenId in this.portfolioENSData[collection.contract]) {
+                name = this.portfolioENSData[collection.contract][tokenId].name;
+                // console.error(now() + " Portfolio - computed.items - name: " + name);
               }
             }
             // console.error(now() + " Portfolio - computed.items - tokenId: " + tokenId + ", name: " + name);
