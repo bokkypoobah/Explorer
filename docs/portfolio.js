@@ -934,6 +934,8 @@ portfolioData: {{ portfolioData }}
       // console.log(now() + " Portfolio - mounted - tempSettings: " + JSON.stringify(tempSettings));
       if ('version' in tempSettings && tempSettings.version == this.settings.version) {
         this.settings = tempSettings;
+        this.settings.collections.currentPage = 1;
+        this.settings.items.currentPage = 1;
       }
     }
     this.initialised = true;
