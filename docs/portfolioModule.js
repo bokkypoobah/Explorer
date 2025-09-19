@@ -89,8 +89,8 @@ const portfolioModule = {
       context.dispatch("collateENSData");
       context.dispatch("collateData");
     },
-    async syncPortfolio(context, { forceUpdate }) {
-      console.log(now() + " portfolioModule - actions.syncPortfolio - forceUpdate: " + forceUpdate);
+    async syncPortfolio(context, { forceUpdate, options }) {
+      console.log(now() + " portfolioModule - actions.syncPortfolio - forceUpdate: " + forceUpdate + ", options: " + JSON.stringify(options));
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const chainId = store.getters["web3/chainId"];
       const block = await provider.getBlock();

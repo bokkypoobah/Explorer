@@ -30,8 +30,43 @@ const Portfolio = {
             <v-icon>mdi-book-open-variant-outline</v-icon>
           </v-btn>
           <v-spacer></v-spacer>
-          <v-btn v-if="sync.info == null" :disabled="!settings.selectedTagOrAddress" @click="syncPortfolio();" color="primary" icon v-tooltip="'Sync Portfolio'">
-            <v-icon>mdi-refresh</v-icon>
+          <v-btn v-if="sync.info == null" :disabled="!settings.selectedTagOrAddress" color="primary" size="large" class="lowercase-btn" text>
+            <v-icon size="x-large">mdi-refresh</v-icon>
+            <v-menu activator="parent">
+              <v-list density="compact">
+                <v-list-subheader>Sync</v-list-subheader>
+                <v-list-item @click="syncPortfolio(['all']);" density="compact">
+                  <template v-slot:prepend>
+                    <v-icon color="primary">mdi-refresh-circle</v-icon>
+                  </template>
+                  <v-list-item-title>All</v-list-item-title>
+                </v-list-item>
+                <v-list-item @click="syncPortfolio(['addresses']);" density="compact">
+                  <template v-slot:prepend>
+                    <v-icon color="blue-lighten-1">mdi-refresh</v-icon>
+                  </template>
+                  <v-list-item-title>Address Balances and Events</v-list-item-title>
+                </v-list-item>
+                <!-- <v-list-item disabled @click="syncPortfolio(['etherscan']);" density="compact">
+                  <template v-slot:prepend>
+                    <v-icon color="blue-lighten-1">mdi-refresh</v-icon>
+                  </template>
+                  <v-list-item-title>Etherscan Imports (Internal Transactions and EOA-to-EOA)</v-list-item-title>
+                </v-list-item> -->
+                <v-list-item @click="syncPortfolio(['reservoir']);" density="compact">
+                  <template v-slot:prepend>
+                    <v-icon color="blue-lighten-1">mdi-refresh</v-icon>
+                  </template>
+                  <v-list-item-title>NFT Metadata and Prices</v-list-item-title>
+                </v-list-item>
+                <v-list-item @click="syncPortfolio(['ens']);" density="compact">
+                  <template v-slot:prepend>
+                    <v-icon color="blue-lighten-1">mdi-refresh</v-icon>
+                  </template>
+                  <v-list-item-title>ENS Metadata and Expiries</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
           </v-btn>
           <v-btn v-if="sync.info != null" @click="setSyncHalt();" color="primary" icon v-tooltip="'Halt syncing'">
             <v-icon>mdi-stop</v-icon>
@@ -381,12 +416,6 @@ portfolioData: {{ portfolioData }}
           itemsPerPage: 10,
           currentPage: 1,
         },
-        // syncDialog: {
-        //   show: false,
-        //   addressEvents: true,
-        //   reservoirMetadata: true,
-        //   ensMetadata: true,
-        // },
         version: 8,
       },
       _timerId: null,
@@ -750,9 +779,9 @@ portfolioData: {{ portfolioData }}
       store.dispatch('portfolio/loadPortfolio', { inputTagOrAddress: (this.settings.selectedTagOrAddress && this.settings.selectedTagOrAddress.value) || this.settings.selectedTagOrAddress, forceUpdate: true });
       this.saveSettings();
     },
-    syncPortfolio() {
-      console.log(now() + " Portfolio - methods.syncPortfolio");
-      store.dispatch('portfolio/syncPortfolio', { forceUpdate: true });
+    syncPortfolio(options) {
+      console.log(now() + " Portfolio - methods.syncPortfolio - options: " + JSON.stringify(options));
+      store.dispatch('portfolio/syncPortfolio', { forceUpdate: true, options });
     },
     showAddressBook() {
       console.log(now() + " Portfolio - methods.showAddressBook");
