@@ -576,21 +576,24 @@ portfolioData: {{ portfolioData }}
       // const currentUnixtime = moment("2025-11-05 12:34:12").unix();
       for (const collection of this.collections) {
         if (collection.type == 2 || collection.type == 3) {
-          // console.log(now() + " Portfolio - computed.collections - portfolioMetadata[chainId][contract]: " + JSON.stringify(this.portfolioMetadata[collection.chainId][collection.contract], null, 2));
+          // console.log(now() + " Portfolio - computed.items - portfolioMetadata[chainId][contract]: " + JSON.stringify(this.portfolioMetadata[collection.chainId][collection.contract], null, 2));
           for (const [tokenId, tokenInfo] of Object.entries(collection.tokenData)) {
+            // console.log(now() + " Portfolio - computed.items - tokenId: " + tokenId + ", tokenInfo: " + JSON.stringify(tokenInfo, null, 2));
             const metadata = this.portfolioMetadata[collection.chainId] && this.portfolioMetadata[collection.chainId][collection.contract] && this.portfolioMetadata[collection.chainId][collection.contract].tokens[tokenId] || {};
+            // console.log(now() + " Portfolio - computed.items - metadata: " + JSON.stringify(metadata, null, 2));
             let expiry = null;
             let ensStatus = null;
             if (collection.contract == ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS || collection.contract == ENS_NAMEWRAPPER_ADDRESS) {
               if (collection.contract in this.portfolioENSData) {
                 if (tokenId in this.portfolioENSData[collection.contract]) {
-                  console.log(now() + " Portfolio - computed.collections - contract: " + collection.contract + ", tokenId: " + tokenId);
+                  // console.log(now() + " Portfolio - computed.items - contract: " + collection.contract + ", tokenId: " + tokenId + ", this.portfolioENSData[collection.contract][tokenId]: " + JSON.stringify(this.portfolioENSData[collection.contract][tokenId], null, 2));
                   expiry = this.portfolioENSData[collection.contract][tokenId].expiry;
+                  // console.log(now() + " Portfolio - computed.items - expiry: " + moment.unix(expiry).format("YYYY-MM-DD HH:mm:ss"));
                 }
               }
               if (expiry) {
                 ensStatus = ensDateStatus(collection.contract, expiry, currentUnixtime);
-                console.log(now() + " Portfolio - computed.collections - ensStatus: " + ensStatus);
+                // console.log(now() + " Portfolio - computed.items - ensStatus: " + ensStatus);
               }
             }
             results.push({
@@ -614,6 +617,7 @@ portfolioData: {{ portfolioData }}
           results.push(collection);
         }
       }
+      // console.log(now() + " Portfolio - computed.items - results: " + JSON.stringify(results, null, 2));
       return results;
     },
     filteredSortedItems() {
@@ -675,7 +679,8 @@ portfolioData: {{ portfolioData }}
           if (!((this.settings.ensDateFilter.active && item.ensStatus == "ACTIVE") ||
                 (this.settings.ensDateFilter.grace && item.ensStatus == "GRACE") ||
                 (this.settings.ensDateFilter.premium && item.ensStatus == "PREMIUM") ||
-                (this.settings.ensDateFilter.available && item.ensStatus == "AVAILABLE"))) {
+                (this.settings.ensDateFilter.available && item.ensStatus == "AVAILABLE") ||
+                item.ensStatus == null)) {
             include = false;
           }
         }
