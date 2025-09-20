@@ -3,14 +3,14 @@ const configModule = {
   state: {
     config: {
       etherscanAPIKey: null,
-      portfolios: {},
+      // portfolios: {},
       chains: {},
-      version: 3,
+      version: 4,
     },
   },
   getters: {
     config: state => state.config,
-    portfolios: state => state.config.portfolios,
+    // portfolios: state => state.config.portfolios,
     chains(state) {
       // console.log(now() + " configModule - getters.chains");
       return { ...CHAINS, ...state.config.chains };
@@ -25,22 +25,22 @@ const configModule = {
       // console.log(now() + " configModule - mutations.setEtherscanAPIKey - etherscanAPIKey: " + etherscanAPIKey);
       state.config.etherscanAPIKey = etherscanAPIKey;
     },
-    addPortfolio(state, { name, originalName, accounts }) {
-      console.log(now() + " configModule - mutations.addPortfolio - name: " + name + ", originalName: " + originalName + ", accounts: " + JSON.stringify(accounts));
-      if (originalName != null && name != originalName) {
-        delete state.config.portfolios[originalName];
-      }
-      const accountsMap = {};
-      for (const account of accounts) {
-        accountsMap[account.account] = { active: account.active };
-      }
-      state.config.portfolios[name] = accountsMap;
-      console.log(now() + " configModule - mutations.addPortfolio - state.config.portfolios[name]: " + JSON.stringify(state.config.portfolios[name]));
-    },
-    deletePortfolio(state, name) {
-      console.log(now() + " configModule - mutations.deletePortfolio - name: " + name);
-      delete state.config.portfolios[name];
-    },
+    // addPortfolio(state, { name, originalName, accounts }) {
+    //   console.log(now() + " configModule - mutations.addPortfolio - name: " + name + ", originalName: " + originalName + ", accounts: " + JSON.stringify(accounts));
+    //   if (originalName != null && name != originalName) {
+    //     delete state.config.portfolios[originalName];
+    //   }
+    //   const accountsMap = {};
+    //   for (const account of accounts) {
+    //     accountsMap[account.account] = { active: account.active };
+    //   }
+    //   state.config.portfolios[name] = accountsMap;
+    //   console.log(now() + " configModule - mutations.addPortfolio - state.config.portfolios[name]: " + JSON.stringify(state.config.portfolios[name]));
+    // },
+    // deletePortfolio(state, name) {
+    //   console.log(now() + " configModule - mutations.deletePortfolio - name: " + name);
+    //   delete state.config.portfolios[name];
+    // },
   },
   // watch: {
   //   config(newVal, oldVal) {
@@ -68,14 +68,14 @@ const configModule = {
     setEtherscanAPIKey(context, etherscanAPIKey) {
       context.commit('setEtherscanAPIKey', etherscanAPIKey);
     },
-    addPortfolio(context, { name, originalName, accounts }) {
-      console.log(now() + " configModule - actions.addPortfolio - name: " + name + ", originalName: " + originalName + ", accounts: " + JSON.stringify(accounts));
-      context.commit('addPortfolio', { name, originalName, accounts });
-    },
-    deletePortfolio(context, name) {
-      console.log(now() + " configModule - actions.deletePortfolio - name: " + name);
-      context.commit('deletePortfolio', name);
-    },
+    // addPortfolio(context, { name, originalName, accounts }) {
+    //   console.log(now() + " configModule - actions.addPortfolio - name: " + name + ", originalName: " + originalName + ", accounts: " + JSON.stringify(accounts));
+    //   context.commit('addPortfolio', { name, originalName, accounts });
+    // },
+    // deletePortfolio(context, name) {
+    //   console.log(now() + " configModule - actions.deletePortfolio - name: " + name);
+    //   context.commit('deletePortfolio', name);
+    // },
     // TODO:
     // addChain(context, chain) {
     //   if (!(chain.chainId in state.config.chains)) {
