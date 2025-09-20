@@ -24,6 +24,12 @@ const PortfolioRenderAddress = {
             </template>
             <v-list-item-title>Copy ENS name to clipboard</v-list-item-title>
           </v-list-item>
+          <v-list-item :href="'https://opensea.io/' + address" target="_blank">
+            <template v-slot:prepend>
+              <v-icon>mdi-link-variant</v-icon>
+            </template>
+            <v-list-item-title>View address in OpenSea</v-list-item-title>
+          </v-list-item>
           <v-list-item :href="explorer + 'address/' + address" target="_blank">
             <template v-slot:prepend>
               <v-icon>mdi-link-variant</v-icon>
@@ -149,6 +155,12 @@ const PortfolioRenderCollection = {
                   </template>
                   <v-list-item-title>Copy ENS name to clipboard</v-list-item-title>
                 </v-list-item> -->
+                <v-list-item v-if="slug" :href="'https://opensea.io/collection/' + slug" target="_blank">
+                  <template v-slot:prepend>
+                    <v-icon>mdi-link-variant</v-icon>
+                  </template>
+                  <v-list-item-title>View collection in the OpenSea</v-list-item-title>
+                </v-list-item>
                 <v-list-item v-if="!contract" :href="explorer + 'address/' + address" target="_blank">
                   <template v-slot:prepend>
                     <v-icon>mdi-link-variant</v-icon>
@@ -250,6 +262,15 @@ const PortfolioRenderCollection = {
         if (this.contract && this.chainId in this.portfolioMetadata && this.contract in this.portfolioMetadata[this.chainId]) {
           const contract = this.portfolioMetadata[this.chainId][this.contract];
           return contract.collectionImage;
+        }
+      }
+      return null;
+    },
+    slug() {
+      if (this.type > 1) {
+        if (this.contract && this.chainId in this.portfolioMetadata && this.contract in this.portfolioMetadata[this.chainId]) {
+          const contract = this.portfolioMetadata[this.chainId][this.contract];
+          return contract.collectionSlug;
         }
       }
       return null;
