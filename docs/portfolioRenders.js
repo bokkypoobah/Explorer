@@ -431,25 +431,24 @@ const PortfolioRenderToken = {
                 <v-list-item-title>Copy token id to clipboard</v-list-item-title>
               </v-list-item>
 
-              <!-- <v-list-subheader v-if="name"><v-chip variant="plain" density="compact" class="ma-0 pa-0">{{ name }}</v-chip></v-list-subheader> -->
+              <v-list-item v-if="type > 1" :href="opensea.replace(/chain/,'item') + contract + '/' + tokenId" target="_blank">
+                <template v-slot:prepend>
+                  <v-icon>mdi-link-variant</v-icon>
+                </template>
+                <v-list-item-title>View token in the OpenSea</v-list-item-title>
+              </v-list-item>
+
+              <v-list-item v-if="type > 1"  :href="explorer + 'nft/' + contract + '/' + tokenId" target="_blank">
+                <template v-slot:prepend>
+                  <v-icon>mdi-link-variant</v-icon>
+                </template>
+                <v-list-item-title>View token in the explorer</v-list-item-title>
+              </v-list-item>
             </v-list>
           </v-menu>
         </v-btn>
       </div>
     </v-card>
-
-    <!-- <v-chip variant="plain" class="ma-0 pa-0" style="min-width: 50px;">{{ contract == null ? "Ethereums" : (contract.substring(0, 8) + "..." + contract.slice(-6)) }}</v-chip>
-    <v-chip variant="plain" class="ma-0 ml-1 pa-0">{{ balance }}</v-chip>
-    <v-chip variant="plain" class="ma-0 ml-1 pa-0">{{ decimals }}</v-chip> -->
-    <!-- <div v-if="type <= 1">
-      {{ formatUnits(balance, decimals) }} {{ symbol }}
-    </div>
-    <div v-else>
-      <pre>
-tokenId: {{ tokenId }}
-image: {{ image && (image.substring(0, 22) + "..." + image.slice(-20)) }}
-      </pre>
-    </div> -->
   `,
   props: {
     type: {
@@ -479,6 +478,9 @@ image: {{ image && (image.substring(0, 22) + "..." + image.slice(-20)) }}
   computed: {
     chainId() {
       return store.getters['web3/chainId'];
+    },
+    opensea() {
+      return store.getters['web3/opensea'];
     },
     addressBook() {
       return store.getters['addressBook/addresses'];
