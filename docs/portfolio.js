@@ -105,12 +105,22 @@ const Portfolio = {
           <v-spacer></v-spacer>
           <v-spacer></v-spacer>
           <v-spacer></v-spacer>
-          <p v-if="settings.tab == 'collections'" class="mr-1 text-caption text--disabled">
+          <p v-if="settings.tab == 'collections'" class="mr-3 text-caption text--disabled">
             {{ commify0(filteredSortedCollections.length) + '/' + commify0(collections.length) }}
           </p>
-          <p v-if="settings.tab == 'items'" class="mr-1 text-caption text--disabled">
+          <p v-if="settings.tab == 'items'" class="mr-3 text-caption text--disabled">
             {{ commify0(filteredSortedItems.length) + '/' + commify0(items.length) }}
           </p>
+          <v-select
+            v-if="settings.tab == 'items'"
+            v-model="settings.items.sortOption"
+            :items="itemsSortOptions"
+            variant="plain"
+            density="compact"
+            class="mt-3 mr-3"
+            style="max-width: 300px;"
+            @update:modelValue="saveSettings();"
+          ></v-select>
           <v-btn-toggle v-if="settings.tab == 'items'" v-model="settings.items.view" variant="plain" class="mr-3" @update:modelValue="saveSettings();" density="compact">
             <v-btn icon disabled value="large">
               <v-icon color="primary">mdi-grid-large</v-icon>
@@ -412,11 +422,11 @@ portfolioData: {{ portfolioData }}
         items: {
           filter: null,
           view: "large",
-          sortOption: "typenameasc",
+          sortOption: "addresscollectiontokenasc",
           itemsPerPage: 10,
           currentPage: 1,
         },
-        version: 8,
+        version: 9,
       },
       _timerId: null,
       itemsPerPageOptions: [
@@ -430,6 +440,17 @@ portfolioData: {{ portfolioData }}
         { value: 250, title: "250" },
         { value: 500, title: "500" },
         { value: 1000, title: "1000" },
+      ],
+      itemsSortOptions: [
+        { value: "addresscollectiontokenasc", title: "▲ Address, ▲ Collection, ▲ Token" },
+        // { value: "punkidasc", title: "▲ Punk Id" },
+        // { value: "punkiddsc", title: "▼ Punk Id" },
+        // { value: "bidasc", title: "▲ Bid, ▲ Punk Id" },
+        // { value: "biddsc", title: "▼ Bid, ▲ Punk Id" },
+        // { value: "offerasc", title: "▲ Offer, ▲ Punk Id" },
+        // { value: "offerdsc", title: "▼ Offer, ▲ Punk Id" },
+        // { value: "lastasc", title: "▲ Last, ▲ Punk Id" },
+        // { value: "lastdsc", title: "▼ Last, ▲ Punk Id" },
       ],
       collectionsHeaders: [
         { title: '#', value: 'rowNumber', width: '10%', align: 'end', sortable: false },
