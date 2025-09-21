@@ -400,15 +400,41 @@ const PortfolioRenderToken = {
         </div>
       </div>
       <div class="pa-1 d-flex d-flex-shrink-1 d-flex-grow-0">
-        <div v-if="type == 0">
-          {{ formatUnits(balance, decimals) }}
-        </div>
-        <div v-else-if="type == 1">
-          {{ formatUnits(balance, decimals) }}
-        </div>
-        <div v-else>
-          {{ name }}
-        </div>
+        <v-btn color="primary" dark variant="text" density="compact" :class="noXPadding ? 'ma-0 px-0 pt-2 lowercase-btn' : 'ma-0 px-2 pt-2 lowercase-btn'" style="min-width: 0px;">
+          <div v-if="type <= 1">
+            {{ formatUnits(balance, decimals) }}
+          </div>
+          <div v-else>
+            {{ name }}
+          </div>
+          <v-menu activator="parent" location="bottom">
+            <v-list>
+              <v-list-subheader v-if="type <= 1">{{ symbol }}</v-list-subheader>
+              <v-list-subheader v-if="type > 1">{{ name }}</v-list-subheader>
+
+              <v-list-item v-if="type <= 1" @click="copyToClipboard(formatUnits(balance, decimals));">
+                <template v-slot:prepend>
+                  <v-icon>mdi-content-copy</v-icon>
+                </template>
+                <v-list-item-title>Copy value to clipboard</v-list-item-title>
+              </v-list-item>
+              <v-list-item v-if="type > 1" @click="copyToClipboard(name);">
+                <template v-slot:prepend>
+                  <v-icon>mdi-content-copy</v-icon>
+                </template>
+                <v-list-item-title>Copy name to clipboard</v-list-item-title>
+              </v-list-item>
+              <v-list-item v-if="type > 1" @click="copyToClipboard(tokenId);">
+                <template v-slot:prepend>
+                  <v-icon>mdi-content-copy</v-icon>
+                </template>
+                <v-list-item-title>Copy token id to clipboard</v-list-item-title>
+              </v-list-item>
+
+              <!-- <v-list-subheader v-if="name"><v-chip variant="plain" density="compact" class="ma-0 pa-0">{{ name }}</v-chip></v-list-subheader> -->
+            </v-list>
+          </v-menu>
+        </v-btn>
       </div>
     </v-card>
 
