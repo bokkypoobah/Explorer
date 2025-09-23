@@ -736,19 +736,63 @@ portfolioData: {{ portfolioData }}
       // TODO: Sort
       if (this.settings.items.sortOption == "addresscollectiontokenidasc") {
         results.sort((a, b) => {
-          return a.address.localeCompare(b.address);
+          if (('' + a.address).localeCompare(b.address) == 0) {
+            if (a.type == b.type) {
+              if (('' + a.collectionName).localeCompare(b.collectionName) == 0) {
+                const tokenIdA = ethers.BigNumber.from(a.tokenId || "0");
+                const tokenIdB = ethers.BigNumber.from(b.tokenId || "0");
+                return tokenIdA.sub(tokenIdB);
+              } else {
+                return ('' + a.collectionName).localeCompare(b.collectionName);
+              }
+            } else {
+              return a.type - b.type;
+            }
+          } else {
+            return ('' + a.address).localeCompare(b.address);
+          }
         });
       } else if (this.settings.items.sortOption == "addresscollectiontokennameasc") {
         results.sort((a, b) => {
-          return a.address.localeCompare(b.address);
+          if (('' + a.address).localeCompare(b.address) == 0) {
+            if (a.type == b.type) {
+              if (('' + a.collectionName).localeCompare(b.collectionName) == 0) {
+                return ('' + a.name).localeCompare(b.name);
+              } else {
+                return ('' + a.collectionName).localeCompare(b.collectionName);
+              }
+            } else {
+              return a.type - b.type;
+            }
+          } else {
+            return ('' + a.address).localeCompare(b.address);
+          }
         });
       } else if (this.settings.items.sortOption == "collectiontokenidasc") {
         results.sort((a, b) => {
-          return a.type - b.type;
+          if (a.type == b.type) {
+            if (('' + a.collectionName).localeCompare(b.collectionName) == 0) {
+              const tokenIdA = ethers.BigNumber.from(a.tokenId || "0");
+              const tokenIdB = ethers.BigNumber.from(b.tokenId || "0");
+              return tokenIdA.sub(tokenIdB);
+            } else {
+              return ('' + a.collectionName).localeCompare(b.collectionName);
+            }
+          } else {
+            return a.type - b.type;
+          }
         });
       } else if (this.settings.items.sortOption == "collectiontokennameasc") {
         results.sort((a, b) => {
-          return a.type - b.type;
+          if (a.type == b.type) {
+            if (('' + a.collectionName).localeCompare(b.collectionName) == 0) {
+              return ('' + a.name).localeCompare(b.name);
+            } else {
+              return ('' + a.collectionName).localeCompare(b.collectionName);
+            }
+          } else {
+            return a.type - b.type;
+          }
         });
       }
 
