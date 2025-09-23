@@ -6,6 +6,7 @@ const PortfolioRenderAddress = {
         <v-list>
           <v-list-subheader>{{ address }}</v-list-subheader>
           <v-list-subheader v-if="name || ensName"><v-chip variant="plain" density="compact" class="ma-0 pa-0">{{ name }}</v-chip><v-chip variant="plain" density="compact" class="ma-0 ml-2 pa-0">{{ ensName }}</v-chip></v-list-subheader>
+          <v-divider></v-divider>
           <v-list-item :href="'#/address/' + address">
             <template v-slot:prepend>
               <v-icon>mdi-arrow-right-bold-outline</v-icon>
@@ -124,7 +125,8 @@ const PortfolioRenderCollection = {
             <v-menu activator="parent" location="bottom">
               <v-list>
                 <v-list-subheader>{{ contract || "Ethereums" }}</v-list-subheader>
-                <v-list-subheader v-if="name"><v-chip variant="plain" density="compact" class="ma-0 pa-0">{{ name }}</v-chip></v-list-subheader>
+                <v-list-subheader v-if="name"><v-chip variant="plain" density="compact" class="ma-0 pa-0">{{ name }}</v-chip><v-chip variant="plain" density="compact" class="ma-0 ml-3 pa-0">{{ contractTypeString }}</v-chip></v-list-subheader>
+                <v-divider></v-divider>
                 <v-list-item v-if="!contract" :href="'#/address/' + address">
                   <template v-slot:prepend>
                     <v-icon>mdi-arrow-right-bold-outline</v-icon>
@@ -411,7 +413,8 @@ const PortfolioRenderToken = {
             <v-list>
               <v-list-subheader v-if="type <= 1">{{ symbol }}</v-list-subheader>
               <v-list-subheader v-if="type > 1">{{ name }}</v-list-subheader>
-
+              <v-list-subheader v-if="type > 1"><v-chip variant="plain" density="compact" class="ma-0 pa-0" v-tooltip="'Token Id'">{{ tokenId }}</v-chip><v-chip variant="plain" density="compact" class="ma-0 ml-3 pa-0">{{ contractTypeString }}</v-chip></v-list-subheader>
+              <v-divider></v-divider>
               <v-list-item v-if="type <= 1" @click="copyToClipboard(formatUnits(balance, decimals));">
                 <template v-slot:prepend>
                   <v-icon>mdi-content-copy</v-icon>
@@ -453,6 +456,9 @@ const PortfolioRenderToken = {
   props: {
     type: {
       type: Number,
+    },
+    contractType: {
+      type: String,
     },
     contract: {
       type: String,
@@ -504,6 +510,19 @@ const PortfolioRenderToken = {
         }
       } else {
         return null;
+      }
+    },
+    contractTypeString() {
+      if (this.contractType == "eth") {
+        return "ETH";
+      } else if (this.contractType == "erc20") {
+        return "ERC-20";
+      } else if (this.contractType == "erc721") {
+        return "ERC-721";
+      } else if (this.contractType == "erc1155") {
+        return "ERC-1155";
+      } else {
+        return "Contract";
       }
     },
     name() {

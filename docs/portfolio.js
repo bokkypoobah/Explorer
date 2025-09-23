@@ -161,50 +161,52 @@ const Portfolio = {
             <v-card>
               <v-expansion-panels v-model="settings.filterExpansionStatus" @update:modelValue="saveSettings();" multiple flat>
                 <v-expansion-panel class="ma-0 pa-0">
-                  <v-expansion-panel-title>
+                  <v-expansion-panel-title min-height="8px">
                     Addresses
                   </v-expansion-panel-title>
                   <v-expansion-panel-text class="ma-0 pa-0">
                     <v-list-item v-for="(addressData, address) of portfolioAddresses" density="compact" class="ma-0 pa-1">
-                      <v-checkbox-btn :model-value="settings.addressFilter[address]" @update:modelValue="updateAddressFilter(address, $event);" :label="address.substring(0, 8) + '...' + address.slice(-6)" class="ma-0 pa-0" v-tooltip="address"></v-checkbox-btn>
+                      <v-checkbox-btn :model-value="settings.addressFilter[address]" @update:modelValue="updateAddressFilter(address, $event);" :label="address.substring(0, 8) + '...' + address.slice(-6)" density="compact" class="ma-0 pa-0" v-tooltip="address"></v-checkbox-btn>
                     </v-list-item>
                   </v-expansion-panel-text>
                 </v-expansion-panel>
+                <v-divider></v-divider>
                 <v-expansion-panel class="ma-0 pa-0">
-                  <v-expansion-panel-title>
+                  <v-expansion-panel-title min-height="8px">
                     Asset Type
                   </v-expansion-panel-title>
                   <v-expansion-panel-text class="ma-0 pa-0">
                     <v-list-item append-icon="mdi-ethereum" density="compact" class="ma-0 pa-1">
-                      <v-checkbox-btn v-model="settings.assetTypeFilter.eth" @update:modelValue="saveSettings();" label="ETH" class="ma-0 pa-0"></v-checkbox-btn>
+                      <v-checkbox-btn v-model="settings.assetTypeFilter.eth" @update:modelValue="saveSettings();" label="ETH" density="compact" class="ma-0 pa-0"></v-checkbox-btn>
                     </v-list-item>
                     <v-list-item append-icon="mdi-cash-multiple" density="compact" class="ma-0 pa-1">
-                      <v-checkbox-btn v-model="settings.assetTypeFilter.fungibles" @update:modelValue="saveSettings();" label="Fungibles" class="ma-0 pa-0" v-tooltip="'ERC-20'"></v-checkbox-btn>
+                      <v-checkbox-btn v-model="settings.assetTypeFilter.fungibles" @update:modelValue="saveSettings();" label="Fungibles" density="compact" class="ma-0 pa-0" v-tooltip="'ERC-20'"></v-checkbox-btn>
                     </v-list-item>
                     <v-list-item append-icon="mdi-cards-playing-heart-multiple-outline" density="compact" class="ma-0 pa-1">
-                      <v-checkbox-btn v-model="settings.assetTypeFilter.nonFungibles" @update:modelValue="saveSettings();" label="Non-Fungibles" class="ma-0 pa-0" v-tooltip="'ERC-721 & ERC-1155 excluding ENS Names'"></v-checkbox-btn>
+                      <v-checkbox-btn v-model="settings.assetTypeFilter.nonFungibles" @update:modelValue="saveSettings();" label="Non-Fungibles" density="compact" class="ma-0 pa-0" v-tooltip="'ERC-721 & ERC-1155 excluding ENS Names'"></v-checkbox-btn>
                     </v-list-item>
                     <v-list-item append-icon="mdi-alphabetical" density="compact" class="ma-0 pa-1">
-                      <v-checkbox-btn v-model="settings.assetTypeFilter.names" @update:modelValue="saveSettings();" label="ENS Names" class="ma-0 pa-0" v-tooltip="'ERC-721 & ERC-1155 ENS Names'"></v-checkbox-btn>
+                      <v-checkbox-btn v-model="settings.assetTypeFilter.names" @update:modelValue="saveSettings();" label="ENS Names" density="compact" class="ma-0 pa-0" v-tooltip="'ERC-721 & ERC-1155 ENS Names'"></v-checkbox-btn>
                     </v-list-item>
                   </v-expansion-panel-text>
                 </v-expansion-panel>
+                <v-divider></v-divider>
                 <v-expansion-panel v-if="settings.tab == 'items'" class="ma-0 pa-0">
-                  <v-expansion-panel-title>
+                  <v-expansion-panel-title min-height="8px">
                     ENS Status
                   </v-expansion-panel-title>
                   <v-expansion-panel-text class="ma-0 pa-0">
                     <v-list-item append-icon="mdi-clock-check-outline" density="compact" class="ma-0 pa-1">
-                      <v-checkbox-btn v-model="settings.ensDateFilter.active" @update:modelValue="saveSettings();" label="Active" class="ma-0 pa-0"></v-checkbox-btn>
+                      <v-checkbox-btn v-model="settings.ensDateFilter.active" @update:modelValue="saveSettings();" label="Active" density="compact" class="ma-0 pa-0"></v-checkbox-btn>
                     </v-list-item>
                     <v-list-item append-icon="mdi-clock-alert-outline" density="compact" class="ma-0 pa-1">
-                      <v-checkbox-btn v-model="settings.ensDateFilter.grace" @update:modelValue="saveSettings();" label="Grace Period" class="ma-0 pa-0" v-tooltip="'Expired, in grace period, for ERC-721 only'"></v-checkbox-btn>
+                      <v-checkbox-btn v-model="settings.ensDateFilter.grace" @update:modelValue="saveSettings();" label="Grace Period" density="compact" class="ma-0 pa-0" v-tooltip="'Expired, in grace period, for ERC-721 only'"></v-checkbox-btn>
                     </v-list-item>
                     <v-list-item append-icon="mdi-chart-ppf" density="compact" class="ma-0 pa-1">
-                      <v-checkbox-btn v-model="settings.ensDateFilter.premium" @update:modelValue="saveSettings();" label="Premium Period" class="ma-0 pa-0" v-tooltip="'In the premium period after expiry and grace period for ERC-721 only'"></v-checkbox-btn>
+                      <v-checkbox-btn v-model="settings.ensDateFilter.premium" @update:modelValue="saveSettings();" label="Premium Period" density="compact" class="ma-0 pa-0" v-tooltip="'In the premium period after expiry and grace period for ERC-721 only'"></v-checkbox-btn>
                     </v-list-item>
                     <v-list-item append-icon="mdi-pencil-plus-outline" density="compact" class="ma-0 pa-1">
-                      <v-checkbox-btn v-model="settings.ensDateFilter.available" @update:modelValue="saveSettings();" label="Available for Registration" class="ma-0 pa-0" v-tooltip="'Available for registration'"></v-checkbox-btn>
+                      <v-checkbox-btn v-model="settings.ensDateFilter.available" @update:modelValue="saveSettings();" label="Unregistered" density="compact" class="ma-0 pa-0" v-tooltip="'Available for registration'"></v-checkbox-btn>
                     </v-list-item>
                   </v-expansion-panel-text>
                 </v-expansion-panel>
@@ -264,7 +266,7 @@ const Portfolio = {
                         <portfolio-render-collection :type="item.type" :contractType="item.contractType" :contract="item.contract" :address="item.address" noXPadding></portfolio-render-collection>
                       </template>
                       <template v-slot:item.token="{ item }">
-                        <portfolio-render-token :type="item.type" :contract="item.contract" :address="item.address" :balance="item.balance" :tokenId="item.tokenId" noXPadding></portfolio-render-token>
+                        <portfolio-render-token :type="item.type" :contractType="item.contractType" :contract="item.contract" :address="item.address" :balance="item.balance" :tokenId="item.tokenId" noXPadding></portfolio-render-token>
                         <!-- <pre>
 {{ item }}
                         </pre> -->
