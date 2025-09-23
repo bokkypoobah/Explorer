@@ -118,7 +118,7 @@ const Portfolio = {
             variant="plain"
             density="compact"
             class="mt-3 mr-3"
-            style="max-width: 300px;"
+            style="max-width: 350px;"
             @update:modelValue="saveSettings();"
           ></v-select>
           <v-btn-toggle v-if="settings.tab == 'items'" v-model="settings.items.view" variant="plain" class="mr-3" @update:modelValue="saveSettings();" density="compact">
@@ -165,8 +165,8 @@ const Portfolio = {
                     Addresses
                   </v-expansion-panel-title>
                   <v-expansion-panel-text class="ma-0 pa-0">
-                    <v-list-item v-for="(addressData, address) of portfolioAddresses" density="compact" class="ma-0 pa-1">
-                      <v-checkbox-btn :model-value="settings.addressFilter[address]" @update:modelValue="updateAddressFilter(address, $event);" :label="address.substring(0, 8) + '...' + address.slice(-6)" density="compact" class="ma-0 pa-0" v-tooltip="address"></v-checkbox-btn>
+                    <v-list-item v-for="(address, addressIndex) of portfolioAddressesSortedList" density="compact" class="ma-0 pa-1">
+                      <v-checkbox-btn :model-value="settings.addressFilter[address.address]" @update:modelValue="updateAddressFilter(address.address, $event);" :label="address.address.substring(0, 8) + '...' + address.address.slice(-6)" density="compact" class="ma-0 pa-0" v-tooltip="address.address"></v-checkbox-btn>
                     </v-list-item>
                   </v-expansion-panel-text>
                 </v-expansion-panel>
@@ -424,7 +424,7 @@ portfolioData: {{ portfolioData }}
         items: {
           filter: null,
           view: "large",
-          sortOption: "addresscollectiontokenasc",
+          sortOption: "addresscollectiontokennameasc",
           itemsPerPage: 10,
           currentPage: 1,
         },
@@ -444,7 +444,10 @@ portfolioData: {{ portfolioData }}
         { value: 1000, title: "1000" },
       ],
       itemsSortOptions: [
-        { value: "addresscollectiontokenasc", title: "▲ Address, ▲ Collection, ▲ Token" },
+        { value: "addresscollectiontokenidasc", title: "▲ Address, ▲ Collection, ▲ Token Id" },
+        { value: "addresscollectiontokennameasc", title: "▲ Address, ▲ Collection, ▲ Token Name" },
+        { value: "collectiontokenidasc", title: "▲ Collection, ▲ Token Id" },
+        { value: "collectiontokennameasc", title: "▲ Collection, ▲ Token Name" },
         // { value: "punkidasc", title: "▲ Punk Id" },
         // { value: "punkiddsc", title: "▼ Punk Id" },
         // { value: "bidasc", title: "▲ Bid, ▲ Punk Id" },
@@ -509,6 +512,16 @@ portfolioData: {{ portfolioData }}
     },
     portfolioAddresses() {
       return store.getters['portfolio/addresses'];
+    },
+    portfolioAddressesSortedList() {
+      const results = [];
+      for (const [address, addressData] of Object.entries(this.portfolioAddresses)) {
+        results.push({ address, name: addressData.name, tags: addressData.tags });
+      }
+      results.sort((a, b) => {
+        return a.address.localeCompare(b.address);
+      });
+      return results;
     },
     portfolioData() {
       return store.getters['portfolio/data'];
@@ -719,7 +732,26 @@ portfolioData: {{ portfolioData }}
           results.push(item);
         }
       }
+
       // TODO: Sort
+      if (this.settings.items.sortOption == "addresscollectiontokenidasc") {
+        results.sort((a, b) => {
+          return a.address.localeCompare(b.address);
+        });
+      } else if (this.settings.items.sortOption == "addresscollectiontokennameasc") {
+        results.sort((a, b) => {
+          return a.address.localeCompare(b.address);
+        });
+      } else if (this.settings.items.sortOption == "collectiontokenidasc") {
+        results.sort((a, b) => {
+          return a.type - b.type;
+        });
+      } else if (this.settings.items.sortOption == "collectiontokennameasc") {
+        results.sort((a, b) => {
+          return a.type - b.type;
+        });
+      }
+
       return results;
     },
     pagedFilteredSortedItems() {
