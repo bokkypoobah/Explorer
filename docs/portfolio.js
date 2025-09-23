@@ -30,7 +30,7 @@ const Portfolio = {
             <v-icon>mdi-book-open-variant-outline</v-icon>
           </v-btn>
           <v-spacer></v-spacer>
-          <v-btn v-if="sync.info == null" :disabled="!settings.selectedTagOrAddress" color="primary" size="large" class="lowercase-btn" text>
+          <v-btn v-if="sync.info == null" :disabled="!connected || !settings.selectedTagOrAddress" color="primary" size="large" class="lowercase-btn" text>
             <v-icon size="x-large">mdi-refresh</v-icon>
             <v-menu activator="parent">
               <v-list density="compact">
@@ -470,8 +470,8 @@ portfolioData: {{ portfolioData }}
     };
   },
   computed: {
-    chainId() {
-      return store.getters['chainId'];
+    connected() {
+      return store.getters['web3/connected'];
     },
     addressBook() {
       return store.getters['addressBook/addresses'];
