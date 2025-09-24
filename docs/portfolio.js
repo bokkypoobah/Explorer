@@ -101,7 +101,8 @@ const Portfolio = {
           <v-btn icon @click="settings.showFilter = !settings.showFilter; saveSettings();" color="primary" class="lowercase-btn" v-tooltip="'Filters'">
             <v-icon :icon="settings.showFilter ? 'mdi-filter' : 'mdi-filter-outline'"></v-icon>
           </v-btn>
-          <v-text-field :model-value="settings.items.filter" @update:modelValue="itemsFilterUpdated($event);" variant="solo" flat density="compact" clearable prepend-inner-icon="mdi-magnify" hide-details single-line class="ml-2" style="max-width: 240px;" v-tooltip:bottom="'Token id or name regex'"></v-text-field>
+          <v-text-field v-if="settings.tab == 'collections'" :model-value="settings.collections.filter" @update:modelValue="collectionsFilterUpdated($event);" variant="solo" flat density="compact" clearable prepend-inner-icon="mdi-magnify" hide-details single-line class="ml-2" style="max-width: 240px;" v-tooltip:bottom="'Collection address, name or description regex'"></v-text-field>
+          <v-text-field v-if="settings.tab == 'items'" :model-value="settings.items.filter" @update:modelValue="itemsFilterUpdated($event);" variant="solo" flat density="compact" clearable prepend-inner-icon="mdi-magnify" hide-details single-line class="ml-2" style="max-width: 240px;" v-tooltip:bottom="'Token id or name regex'"></v-text-field>
           <v-spacer></v-spacer>
           <v-spacer></v-spacer>
           <v-spacer></v-spacer>
@@ -571,6 +572,15 @@ portfolioData: {{ portfolioData }}
         }
       }
       const filterByAddress = Object.keys(activeAddressFilter).length > 0;
+      let regex = null;
+      if (this.settings.collections.filter != null && this.settings.collections.filter.length > 0) {
+        try {
+          regex = new RegExp(this.settings.collections.filter, 'i');
+        } catch (e) {
+          console.error(now() + " Portfolio - computed.filteredSortedCollections - regex error: " + e.message);
+          regex = new RegExp(/thequickbrowndogjumpsoverthelazyfox/, 'i');
+        }
+      }
 
       const filterByType = this.settings.assetTypeFilter.eth != this.settings.assetTypeFilter.fungibles ||
         this.settings.assetTypeFilter.eth != this.settings.assetTypeFilter.nonFungibles ||
@@ -590,6 +600,11 @@ portfolioData: {{ portfolioData }}
         }
         if (include && filterByAddress) {
           if (!(collection.address in activeAddressFilter)) {
+            include = false;
+          }
+        }
+        if (include && regex) {
+          if (!(regex.test(collection.name)) && !(regex.test(collection.collectionName)) && !(regex.test(collection.collectionDescription))) {
             include = false;
           }
         }
@@ -914,6 +929,18 @@ portfolioData: {{ portfolioData }}
       store.dispatch('portfolio/setSyncHalt');
     },
 
+    collectionsFilterUpdated(filter) {
+      // console.log(now() + " Portfolio - methods.collectionsFilterUpdated - filter: " + filter);
+      clearTimeout(this._timerId);
+      this._timerId = setTimeout(async () => {
+        this.collectionsFilterUpdatedDebounced(filter);
+      }, 1000);
+    },
+    collectionsFilterUpdatedDebounced(filter) {
+      // console.log(now() + " Portfolio - methods.collectionsFilterUpdatedDebounced - filter: " + filter);
+      this.settings.collections.filter = filter;
+      this.saveSettings();
+    },
     itemsFilterUpdated(filter) {
       // console.log(now() + " Portfolio - methods.itemsFilterUpdated - filter: " + filter);
       clearTimeout(this._timerId);
@@ -921,7 +948,6 @@ portfolioData: {{ portfolioData }}
         this.itemsFilterUpdatedDebounced(filter);
       }, 1000);
     },
-
     itemsFilterUpdatedDebounced(filter) {
       // console.log(now() + " Portfolio - methods.itemsFilterUpdatedDebounced - filter: " + filter);
       this.settings.items.filter = filter;
