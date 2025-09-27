@@ -658,20 +658,41 @@ portfolioData: {{ portfolioData }}
     },
 
     fungibles() {
-      const results = [];
       // console.error(now() + " Portfolio - computed.fungibles - portfolioMetadata: " + JSON.stringify(this.portfolioMetadata, null, 2));
-      for (const collection of this.collections) {
-        if (collection.type == 1) {
-          console.log(now() + " Portfolio - computed.fungibles - collection: " + JSON.stringify(collection, null, 2));
-          // console.error(now() + " Portfolio - computed.fungibles - portfolioMetadata[chainId][contract]: " + JSON.stringify(this.portfolioMetadata[collection.chainId][collection.contract], null, 2));
-          results.push({
-            type: collection.type,
-            chainId: collection.chainId,
-            contract: collection.contract,
-            // TODO: ERC-20 name/symbol
-          });
+      const collator = {};
+      for (const [address, addressData] of Object.entries(this.portfolioData)) {
+        for (const [chainId, chainData] of Object.entries(addressData)) {
+          if (!(chainId in collator)) {
+            collator[chainId] = {};
+          }
+          for (const [token, balance] of Object.entries(chainData.tokenBalances || {})) {
+            // console.error(address + "/" + chainId + "/" + token + " -> " + JSON.stringify(balance));
+            // TODO: Fix ERC-20 metadata issue
+            const metadata = this.portfolioMetadata[chainId] && this.portfolioMetadata[chainId][token] || {};
+            if (!(token in collator[chainId])) {
+              collator[chainId][token] = {
+                balance,
+                metadata,
+              };
+            }
+          }
         }
       }
+      // console.error(now() + " Portfolio - computed.fungibles - collator: " + JSON.stringify(collator, null, 2));
+      const results = [];
+      for (const [chainId, chainData] of Object.entries(collator)) {
+        for (const [token, tokenData] of Object.entries(chainData)) {
+          // console.error(chainId + "/" + token + " -> " + JSON.stringify(tokenData, null, 2));
+          results.push({ chainId, contract: token, symbol: token.substring(2,10).toUpperCase() });
+        }
+      }
+      results.sort((a, b) => {
+        if (('' + a.symbol).localeCompare(b.symbol) == 0) {
+          return ('' + a.contract).localeCompare(b.contract);
+        } else {
+          return ('' + a.symbol).localeCompare(b.symbol);
+        }
+      });
       return results;
     },
 
