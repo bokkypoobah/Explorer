@@ -192,6 +192,34 @@ const Portfolio = {
                   </v-expansion-panel-text>
                 </v-expansion-panel>
                 <v-divider></v-divider>
+
+                <v-expansion-panel class="ma-0 pa-0">
+                  <v-expansion-panel-title min-height="8px">
+                    Fungibles
+                  </v-expansion-panel-title>
+                  <v-expansion-panel-text class="ma-0 pa-0">
+                    <v-list-item v-for="(fungible, fungibleIndex) of fungibles" density="compact" class="ma-0 pa-1">
+                      <!-- {{ fungible.contract }} -->
+                      <v-checkbox-btn :model-value="settings.fungiblesFilter[fungible.contract]" @update:modelValue="updateFungiblesFilter(fungible.contract, $event);" :label="fungible.contract.substring(0, 8) + '...' + fungible.contract.slice(-6)" density="compact" class="ma-0 pa-0" v-tooltip="fungible.contract"></v-checkbox-btn>
+                    </v-list-item>
+                  </v-expansion-panel-text>
+                </v-expansion-panel>
+                <v-divider></v-divider>
+
+                <v-expansion-panel class="ma-0 pa-0">
+                  <v-expansion-panel-title min-height="8px">
+                    Non-Fungibles
+                  </v-expansion-panel-title>
+                  <v-expansion-panel-text class="ma-0 pa-0">
+                    <v-list-item v-for="(nonFungible, nonFungibleIndex) of nonFungibles" density="compact" class="ma-0 pa-1">
+                      <!-- {{ nonFungible }} -->
+                      <v-checkbox-btn :model-value="settings.nonFungiblesFilter[nonFungible.contract]" @update:modelValue="updateNonFungiblesFilter(nonFungible.contract, $event);" :label="nonFungible.contract.substring(0, 8) + '...' + nonFungible.contract.slice(-6)" density="compact" class="ma-0 pa-0" v-tooltip="nonFungible.contract"></v-checkbox-btn>
+                    </v-list-item>
+                  </v-expansion-panel-text>
+                </v-expansion-panel>
+                <v-divider></v-divider>
+
+
                 <v-expansion-panel v-if="settings.tab == 'items'" class="ma-0 pa-0">
                   <v-expansion-panel-title min-height="8px">
                     ENS Status
@@ -403,6 +431,8 @@ portfolioData: {{ portfolioData }}
         showFilter: false,
         filterExpansionStatus: [],
         addressFilter: {},
+        fungiblesFilter: {},
+        nonFungiblesFilter: {},
         assetTypeFilter: {
           eth: true,
           fungibles: true,
@@ -429,7 +459,7 @@ portfolioData: {{ portfolioData }}
           itemsPerPage: 10,
           currentPage: 1,
         },
-        version: 9,
+        version: 10,
       },
       _timerId: null,
       itemsPerPageOptions: [
@@ -533,6 +563,12 @@ portfolioData: {{ portfolioData }}
     portfolioENSData() {
       return store.getters['portfolio/ensData'];
     },
+    sync() {
+      return store.getters['portfolio/sync'];
+    },
+    explorer() {
+      return store.getters['web3/explorer'];
+    },
 
     collections() {
       const results = [];
@@ -618,6 +654,55 @@ portfolioData: {{ portfolioData }}
     pagedFilteredSortedCollections() {
       const results = this.filteredSortedCollections.slice((this.settings.collections.currentPage - 1) * this.settings.collections.itemsPerPage, this.settings.collections.currentPage * this.settings.collections.itemsPerPage);
       console.log(now() + " Portfolio - computed.pagedFilteredSortedCollections - results: " + JSON.stringify(results, null, 2));
+      return results;
+    },
+
+    fungibles() {
+      const results = [];
+      // console.error(now() + " Portfolio - computed.fungibles - portfolioMetadata: " + JSON.stringify(this.portfolioMetadata, null, 2));
+      for (const collection of this.collections) {
+        if (collection.type == 1) {
+          console.log(now() + " Portfolio - computed.fungibles - collection: " + JSON.stringify(collection, null, 2));
+          // console.error(now() + " Portfolio - computed.fungibles - portfolioMetadata[chainId][contract]: " + JSON.stringify(this.portfolioMetadata[collection.chainId][collection.contract], null, 2));
+          results.push({
+            type: collection.type,
+            chainId: collection.chainId,
+            contract: collection.contract,
+            // TODO: ERC-20 name/symbol
+          });
+        }
+      }
+      return results;
+    },
+
+    nonFungibles() {
+      const results = [];
+      // console.error(now() + " Portfolio - computed.nonFungibles - this.collections: " + JSON.stringify(this.collections, null, 2));
+      for (const collection of this.collections) {
+        if (collection.type == 2 || collection.type == 3) {
+          // console.log(now() + " Portfolio - computed.nonFungibles - collection: " + JSON.stringify(collection, null, 2));
+          const metadata = this.portfolioMetadata[collection.chainId] && this.portfolioMetadata[collection.chainId][collection.contract] || {};
+          // console.error(now() + " Portfolio - computed.nonFungibles - metadata: " + JSON.stringify(metadata, null, 2));
+          results.push({
+            type: collection.type,
+            chainId: collection.chainId,
+            contract: collection.contract,
+            collectionName: collection.collectionName,
+            // TODO: ERC-721 #tokens / ERC-1155 sum(token x count) name
+          });
+        }
+      }
+      results.sort((a, b) => {
+        if (a.type == b.type) {
+          if (('' + a.collectionName).localeCompare(b.collectionName) == 0) {
+            return ('' + a.contract).localeCompare(b.contract);
+          } else {
+            return ('' + a.collectionName).localeCompare(b.collectionName);
+          }
+        } else {
+          return a.type - b.type;
+        }
+      });
       return results;
     },
 
@@ -885,12 +970,6 @@ portfolioData: {{ portfolioData }}
     //   // console.log(now() + " Portfolio - computed.pagedFilteredSortedAssets - results: " + JSON.stringify(results, null, 2));
     //   return results;
     // },
-    sync() {
-      return store.getters['portfolio/sync'];
-    },
-    explorer() {
-      return store.getters['web3/explorer'];
-    },
   },
   methods: {
     async loadPortfolio() {
@@ -961,6 +1040,28 @@ portfolioData: {{ portfolioData }}
       } else {
         if (this.settings.addressFilter[address]) {
           delete this.settings.addressFilter[address];
+        }
+      }
+      this.saveSettings();
+    },
+    updateFungiblesFilter(contract, value) {
+      console.log(now() + " Portfolio - methods.updateFungiblesFilter - contract: " + contract + ", value: " + value);
+      if (value) {
+        this.settings.fungiblesFilter[contract] = true;
+      } else {
+        if (this.settings.fungiblesFilter[contract]) {
+          delete this.settings.fungiblesFilter[contract];
+        }
+      }
+      this.saveSettings();
+    },
+    updateNonFungiblesFilter(contract, value) {
+      console.log(now() + " Portfolio - methods.updateNonFungiblesFilter - contract: " + contract + ", value: " + value);
+      if (value) {
+        this.settings.nonFungiblesFilter[contract] = true;
+      } else {
+        if (this.settings.nonFungiblesFilter[contract]) {
+          delete this.settings.nonFungiblesFilter[contract];
         }
       }
       this.saveSettings();

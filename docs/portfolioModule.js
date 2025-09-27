@@ -304,10 +304,10 @@ const portfolioModule = {
             // if (tokenData && Object.keys(tokenData) < 3) {
             //   console.log(now() + " portfolioModule - actions.syncMetadata - contract: " + contract + "/" + tokenId + " => " + JSON.stringify(tokenData, null, 2));
             // }
-            // if (tokenData === true) {
-              // console.log(now() + " portfolioModule - actions.syncMetadata - contract: " + contract + "/" + tokenId + " => " + JSON.stringify(tokenData, null, 2));
+            if (tokenData === true) {
+              console.log(now() + " portfolioModule - actions.syncMetadata - contract: " + contract + "/" + tokenId + " => " + JSON.stringify(tokenData, null, 2));
               metadataToRetrieve.push({ contract, tokenId });
-            // }
+            }
           }
         // }
       }
