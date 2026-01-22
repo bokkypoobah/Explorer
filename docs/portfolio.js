@@ -697,6 +697,19 @@ portfolioData: {{ portfolioData }}
     },
 
     nonFungibles() {
+      // TODO
+      // const collator = {};
+      // for (const [address, addressData] of Object.entries(this.portfolioData)) {
+      //   for (const [chainId, chainData] of Object.entries(addressData)) {
+      //     if (!(chainId in collator)) {
+      //       collator[chainId] = {};
+      //     }
+      //     for (const [token, tokenData] of Object.entries(chainData.tokens || {})) {
+      //       console.error(address + "/" + chainId + "/" + token + " -> " + JSON.stringify(tokenData));
+      //     }
+      //   }
+      // }
+
       const results = [];
       // console.error(now() + " Portfolio - computed.nonFungibles - this.collections: " + JSON.stringify(this.collections, null, 2));
       for (const collection of this.collections) {
