@@ -221,6 +221,8 @@ const web3Module = {
         }
         if (connected) {
           provider = new ethers.providers.Web3Provider(window.ethereum);
+          // TODO: Detect wallet type window.ethereum.isRabby and window.ethereum.isMetaMask
+          // console.table(window.ethereum);
           // console.log("OLD POLLING INTERVAL: " + provider.pollingInterval);
           // provider.pollingInterval = 1000;
           // console.log("NEW POLLING INTERVAL: " + provider.pollingInterval);
