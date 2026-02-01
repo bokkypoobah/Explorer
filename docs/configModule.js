@@ -3,9 +3,10 @@ const configModule = {
   state: {
     config: {
       etherscanAPIKey: null,
+      openseaAPIKey: null,
       // portfolios: {},
       chains: {},
-      version: 4,
+      version: 5,
     },
   },
   getters: {
@@ -24,6 +25,10 @@ const configModule = {
     setEtherscanAPIKey(state, etherscanAPIKey) {
       // console.log(now() + " configModule - mutations.setEtherscanAPIKey - etherscanAPIKey: " + etherscanAPIKey);
       state.config.etherscanAPIKey = etherscanAPIKey;
+    },
+    setOpenseaAPIKey(state, openseaAPIKey) {
+      console.log(now() + " configModule - mutations.setOpenseaAPIKey - openseaAPIKey: " + openseaAPIKey);
+      state.config.openseaAPIKey = openseaAPIKey;
     },
     // addPortfolio(state, { name, originalName, accounts }) {
     //   console.log(now() + " configModule - mutations.addPortfolio - name: " + name + ", originalName: " + originalName + ", accounts: " + JSON.stringify(accounts));
@@ -59,7 +64,7 @@ const configModule = {
         }
       }
       store.subscribe((mutation, state) => {
-        if (mutation.type == "config/setEtherscanAPIKey" || mutation.type == "config/addChain" || mutation.type == "config/addPortfolio" || mutation.type == "config/deletePortfolio") {
+        if (mutation.type == "config/setEtherscanAPIKey" || mutation.type == "config/setOpenseaAPIKey" || mutation.type == "config/addChain" || mutation.type == "config/addPortfolio" || mutation.type == "config/deletePortfolio") {
           console.log(now() + " configModule - actions.loadConfig - subscribe - mutation.type: " + mutation.type);
           localStorage.explorerConfig = JSON.stringify(context.state.config);
         }
@@ -67,6 +72,9 @@ const configModule = {
     },
     setEtherscanAPIKey(context, etherscanAPIKey) {
       context.commit('setEtherscanAPIKey', etherscanAPIKey);
+    },
+    setOpenseaAPIKey(context, openseaAPIKey) {
+      context.commit('setOpenseaAPIKey', openseaAPIKey);
     },
     // addPortfolio(context, { name, originalName, accounts }) {
     //   console.log(now() + " configModule - actions.addPortfolio - name: " + name + ", originalName: " + originalName + ", accounts: " + JSON.stringify(accounts));

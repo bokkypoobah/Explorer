@@ -6,7 +6,7 @@ const Config = {
           <v-card-item prepend-icon="mdi-cog" title="Config"></v-card-item>
           <v-spacer></v-spacer>
           <v-tabs v-model="settings.tab" @update:modelValue="saveSettings();" right color="deep-purple-accent-4">
-            <v-tab prepend-icon="mdi-key-variant" text="API Key" value="apikey" class="lowercase-btn"></v-tab>
+            <v-tab prepend-icon="mdi-key-variant" text="API Keys" value="apikey" class="lowercase-btn"></v-tab>
             <!-- TODO: Delete <v-tab prepend-icon="mdi-bank" text="Portfolios" value="portfolios" class="lowercase-btn"></v-tab> -->
             <v-tab prepend-icon="mdi-link-variant" text="Chains" value="chains" class="lowercase-btn"></v-tab>
           </v-tabs>
@@ -19,14 +19,28 @@ const Config = {
                   <v-row>
                     <v-col cols="4">
                       <v-text-field
-                        :type="showAPIKey ? 'text' : 'password'"
+                        :type="showEtherscanAPIKey ? 'text' : 'password'"
                         autocomplete
                         v-model="etherscanAPIKey"
                         label="Etherscan API Key:"
                         placeholder="See https://etherscan.io/apis"
                         hint="For API calls to retrieve contract ABI and source, and internal and normal transaction listings by account"
-                        :append-inner-icon="showAPIKey ? 'mdi-eye' : 'mdi-eye-off'"
-                        @click:append-inner="showAPIKey = !showAPIKey"
+                        :append-inner-icon="showEtherscanAPIKey ? 'mdi-eye' : 'mdi-eye-off'"
+                        @click:append-inner="showEtherscanAPIKey = !showEtherscanAPIKey"
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="4">
+                      <v-text-field
+                        :type="showOpenseaAPIKey ? 'text' : 'password'"
+                        autocomplete
+                        v-model="openseaAPIKey"
+                        label="Opensea API Key:"
+                        placeholder="See https://opensea.io/settings/developer"
+                        hint="For API calls to retrieve token metadata and prices"
+                        :append-inner-icon="showOpenseaAPIKey ? 'mdi-eye' : 'mdi-eye-off'"
+                        @click:append-inner="showOpenseaAPIKey = !showOpenseaAPIKey"
                       ></v-text-field>
                     </v-col>
                   </v-row>
@@ -117,7 +131,8 @@ const Config = {
         tab: "apikey",
         version: 0,
       },
-      showAPIKey: false,
+      showEtherscanAPIKey: false,
+      showOpenseaAPIKey: false,
       portfolioDialog: {
         mode: null,
         name: null,
@@ -156,6 +171,14 @@ const Config = {
       },
       set: function(etherscanAPIKey) {
         store.dispatch('config/setEtherscanAPIKey', etherscanAPIKey);
+      },
+    },
+    openseaAPIKey: {
+      get: function() {
+        return store.getters['config/config'].openseaAPIKey;
+      },
+      set: function(openseaAPIKey) {
+        store.dispatch('config/setOpenseaAPIKey', openseaAPIKey);
       },
     },
     portfolios() {
