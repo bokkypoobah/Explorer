@@ -238,6 +238,8 @@ const web3Module = {
           coinbase = await signer.getAddress();
           feeData = await provider.getFeeData();
           store.dispatch('blocks/addBlock', block);
+          // TODO: Detect if this is an archive node or a node unable to provide historical logs
+          // e.g. provide.getLogs(TheDAO @ 0xBB9bc244D798123fDe783fCc1C72d3Bb8C189413, )
         }
 
         if (connected) {
