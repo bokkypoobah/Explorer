@@ -167,13 +167,14 @@ const portfolioModule = {
       };
       const erc1155Interface = new ethers.utils.Interface(ERC1155ABI);
       const metadata = await dbGetCachedData(parameters.db, "portfolio_metadata", {});
-      console.log(now() + " portfolioModule - actions.syncMetadata - metadata: " + JSON.stringify(metadata, null, 2));
+      // console.log(now() + " portfolioModule - actions.syncMetadata - metadata: " + JSON.stringify(metadata, null, 2));
       // TODO
       // const metadata = {};
       if (!(parameters.chainId in metadata)) {
         metadata[parameters.chainId] = {};
       }
 
+      // Only ERC-721 and ERC-1155 tokens
       const tokens = {};
       let rows = 0;
       for (const [address, addressInfo] of Object.entries(context.state.addresses)) {
@@ -190,49 +191,20 @@ const portfolioModule = {
               if (log.topics[0] == "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef" && log.topics.length == 4) {
                 // console.log(now() + " portfolioModule - actions.syncMetadata - ERC-721 Transfer log: " + JSON.stringify(log, null, 2));
                 tokenId = ethers.BigNumber.from(log.topics[3]).toString();
-                // if (!(log.contract in tokens)) {
-                //   tokens[log.contract] = {};
-                // }
-                // if (!(tokenId in tokens[log.contract])) {
-                //   tokens[log.contract][tokenId] = true;
-                // }
               // ERC-1155 TransferSingle (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256 id, uint256 value)
               } else if (log.topics[0] == "0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62") {
                 // console.log(now() + " portfolioModule - actions.syncMetadata - ERC-1155 TransferSingle log: " + JSON.stringify(log, null, 2));
                 tokenId = ethers.BigNumber.from(log.data.substring(0, 66)).toString();
-                // const count = ethers.BigNumber.from("0x" + log.data.substring(66, 130)).toString();
-                // if (!(log.contract in tokens)) {
-                //   tokens[log.contract] = {};
-                // }
-                // if (!(tokenId in tokens[log.contract])) {
-                //   // tokens[log.contract][tokenId] = count;
-                //   tokens[log.contract][tokenId] = true;
-                // }
               // ERC-1155 TransferBatch (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256[] ids, uint256[] values)
               } else if (log.topics[0] == "0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb") {
                 // console.log(now() + " portfolioModule - actions.syncMetadata - ERC-1155 TransferBatch log: " + JSON.stringify(log, null, 2));
                 const logData = erc1155Interface.parseLog(log);
                 const [ operator, from, to, _tokenIds, values ] = logData.args;
                 tokenIds = _tokenIds;
-                // if (!(log.contract in tokens)) {
-                //   tokens[log.contract] = {};
-                // }
-                // for (const [index, tokenId] of tokenIds.entries()) {
-                //   const _tokenId = ethers.BigNumber.from(tokenId).toString();
-                //   const _value = ethers.BigNumber.from(values[index]).toString();
-                //   // tokens[log.contract][_tokenId] = _value;
-                //   tokens[log.contract][_tokenId] = true;
-                // }
               // ERC-721 Approval (index_topic_1 address owner, index_topic_2 address approved, index_topic_3 uint256 tokenId)
               } else if (log.topics[0] == "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925" && log.topics.length == 4) {
                 // console.log(now() + " portfolioModule - actions.syncMetadata - ERC-721 Approval log: " + JSON.stringify(log, null, 2));
                 tokenId = ethers.BigNumber.from(log.topics[3]).toString();
-                // if (!(log.contract in tokens)) {
-                //   tokens[log.contract] = {};
-                // }
-                // if (!(tokenId in tokens[log.contract])) {
-                //   tokens[log.contract][tokenId] = true;
-                // }
               }
               if (tokenId != null || tokenIds) {
                 if (!(log.contract in tokens)) {
@@ -256,7 +228,7 @@ const portfolioModule = {
           done = logs.length < BATCH_SIZE;
         } while (!done);
       }
-      console.log(now() + " portfolioModule - actions.syncMetadata - tokens: " + JSON.stringify(tokens, null, 2));
+      // console.log(now() + " portfolioModule - actions.syncMetadata - tokens: " + JSON.stringify(tokens, null, 2));
 
       context.commit('setSyncTotal', Object.keys(tokens).length);
       let completed = 0;
@@ -305,23 +277,45 @@ const portfolioModule = {
             //   console.log(now() + " portfolioModule - actions.syncMetadata - contract: " + contract + "/" + tokenId + " => " + JSON.stringify(tokenData, null, 2));
             // }
             if (tokenData === true) {
-              console.log(now() + " portfolioModule - actions.syncMetadata - contract: " + contract + "/" + tokenId + " => " + JSON.stringify(tokenData, null, 2));
+              // console.log(now() + " portfolioModule - actions.syncMetadata - contract: " + contract + "/" + tokenId + " => " + JSON.stringify(tokenData, null, 2));
               metadataToRetrieve.push({ contract, tokenId });
             }
           }
         // }
       }
-      console.log(now() + " portfolioModule - actions.syncMetadata - metadataToRetrieve: " + JSON.stringify(metadataToRetrieve, null, 2));
+      // console.log(now() + " portfolioModule - actions.syncMetadata - metadataToRetrieve: " + JSON.stringify(metadataToRetrieve, null, 2));
 
-      const reservoir = store.getters["web3/reservoir"];
-      console.log(now() + " portfolioModule - actions.syncMetadata - reservoir: " + reservoir);
+      const openseaAPIKey = store.getters['config/config'].openseaAPIKey;
+      const openseaAPIFetchOptions = {
+        method: 'GET',
+        headers: {accept: '*/*', 'x-api-key': openseaAPIKey}
+      };
+      // console.log(now() + " portfolioModule - actions.syncMetadata - openseaAPIFetchOptions: " + JSON.stringify(openseaAPIFetchOptions));
 
-      const BATCHSIZE = 25;
-      const DELAYINMILLIS = 2000;
+      // const BATCHSIZE = 25;
+      const DELAYINMILLIS = 500;
       completed = 0;
       context.commit('setSyncInfo', "Syncing token metadata");
       context.commit('setSyncTotal', metadataToRetrieve.length);
       context.commit('setSyncCompleted', completed);
+
+      console.log(now() + " portfolioModule - actions.syncMetadata - metadata BEFORE: " + JSON.stringify(metadata, null, 2));
+      for (let i = 0; i < metadataToRetrieve.length && i < 2000 && !context.state.sync.halt; i++) {
+        const item = metadataToRetrieve[i];
+        // console.error(now() + " portfolioModule - actions.syncMetadata - item: " + JSON.stringify(item));
+        const url = "https://api.opensea.io/api/v2/chain/ethereum/contract/" + item.contract + "/nfts/" + item.tokenId;
+        console.error(now() + " portfolioModule - actions.syncMetadata - url: " + url);
+
+        const data = await fetch(url, openseaAPIFetchOptions)
+          .then(res => res.json())
+          .catch(err => console.error(err));
+        // console.log(now() + " portfolioModule - actions.syncMetadata - data: " + JSON.stringify(data, null, 2));
+        parseOpenseaNFTMetadata(data, metadata, parameters.chainId);
+        context.commit('setSyncCompleted', i+1);
+        await delay(DELAYINMILLIS);
+      }
+      console.log(now() + " portfolioModule - actions.syncMetadata - metadata AFTER: " + JSON.stringify(metadata, null, 2));
+
       // TODO: Delete Reservoir deprecated. Replace with OpenSea
       // for (let i = 0; i < metadataToRetrieve.length && !context.state.sync.halt; i += BATCHSIZE) {
       //   const batch = metadataToRetrieve.slice(i, parseInt(i) + BATCHSIZE);
@@ -351,51 +345,51 @@ const portfolioModule = {
       //   console.log(now() + " portfolioModule - actions.syncMetadata - metadata: " + JSON.stringify(metadata, null, 2));
       // }
 
-      // Retrieve ENS names missing the metadata from the Reservoir API
-      for (const contractAddress of [ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS, ENS_NAMEWRAPPER_ADDRESS]) {
-        const contractMetadata = metadata[parameters.chainId][contractAddress] || null;
-        // console.log(now() + " portfolioModule - actions.syncMetadata - contractMetadata: " + JSON.stringify(contractMetadata, null, 2));
-        if (contractMetadata) {
-          for (const [tokenId, tokenData] of Object.entries(contractMetadata.tokens)) {
-            console.error(now() + " portfolioModule - actions.syncMetadata - contractAddress: " + contractAddress + ", tokenId: " + tokenId + " => " + JSON.stringify(tokenData, null, 2));
-            if (!tokenData.name || !tokenData.description) {
-              // console.log(now() + " portfolioModule - actions.syncMetadata - contractAddress: " + contractAddress + ", tokenId: " + tokenId + " => " + JSON.stringify(tokenData, null, 2));
-
-              let url = "https://metadata.ens.domains/mainnet/" + contractAddress + "/" + tokenId;
-              console.log(url);
-              console.log(now() + " portfolioModule - actions.syncMetadata - url: " + url);
-              const data = await fetch(url)
-                .then(response => response.json())
-                .catch(function(e) {
-                  console.log(now() + " portfolioModule - actions.syncMetadata - error: " + e.message);
-                });
-              // console.log(JSON.stringify(data, null, 2));
-
-              metadata[parameters.chainId][contractAddress].tokens[tokenId].name = data.name;
-              metadata[parameters.chainId][contractAddress].tokens[tokenId].description = data.description;
-              metadata[parameters.chainId][contractAddress].tokens[tokenId].image = data.image;
-              // metadata[token.chainId][contract].tokens[token.tokenId] = {
-              //   name: token.name,
-              //   description: token.description,
-              //   image: token.image,
-              //   media: token.media,
-              //   owner: token.owner || null,
-              //   mintedAt: token.mintedAt && moment.utc(token.mintedAt).unix() || null,
-              //   createdAt: token.createdAt && moment.utc(token.createdAt).unix() || null,
-              //   updatedAt: item.updatedAt && moment.utc(item.updatedAt).unix() || null,
-              //   attributes: token.attributes.map(e => ({ key: e.key, value: e.value })) || null,
-              //   count,
-              //   supply: token.supply || null,
-              //   remainingSupply: token.remainingSupply || null,
-              //   acquiredAt,
-              //   lastSale,
-              //   price,
-              //   topBid,
-              // };
-            }
-          }
-        }
-      }
+      // TODO: Restore after above fixed
+      // // Retrieve ENS names missing the metadata from the Reservoir API
+      // for (const contractAddress of [ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS, ENS_NAMEWRAPPER_ADDRESS]) {
+      //   const contractMetadata = metadata[parameters.chainId][contractAddress] || null;
+      //   // console.log(now() + " portfolioModule - actions.syncMetadata - contractMetadata: " + JSON.stringify(contractMetadata, null, 2));
+      //   if (contractMetadata) {
+      //     for (const [tokenId, tokenData] of Object.entries(contractMetadata.tokens)) {
+      //       if (!tokenData.name || !tokenData.description) {
+      //         console.log(now() + " portfolioModule - actions.syncMetadata - contractAddress: " + contractAddress + ", tokenId: " + tokenId + " => " + JSON.stringify(tokenData, null, 2));
+      //
+      //         let url = "https://metadata.ens.domains/mainnet/" + contractAddress + "/" + tokenId;
+      //         console.log(url);
+      //         console.log(now() + " portfolioModule - actions.syncMetadata - url: " + url);
+      //         const data = await fetch(url)
+      //           .then(response => response.json())
+      //           .catch(function(e) {
+      //             console.log(now() + " portfolioModule - actions.syncMetadata - error: " + e.message);
+      //           });
+      //         // console.log(JSON.stringify(data, null, 2));
+      //
+      //         metadata[parameters.chainId][contractAddress].tokens[tokenId].name = data.name;
+      //         metadata[parameters.chainId][contractAddress].tokens[tokenId].description = data.description;
+      //         metadata[parameters.chainId][contractAddress].tokens[tokenId].image = data.image;
+      //         // metadata[token.chainId][contract].tokens[token.tokenId] = {
+      //         //   name: token.name,
+      //         //   description: token.description,
+      //         //   image: token.image,
+      //         //   media: token.media,
+      //         //   owner: token.owner || null,
+      //         //   mintedAt: token.mintedAt && moment.utc(token.mintedAt).unix() || null,
+      //         //   createdAt: token.createdAt && moment.utc(token.createdAt).unix() || null,
+      //         //   updatedAt: item.updatedAt && moment.utc(item.updatedAt).unix() || null,
+      //         //   attributes: token.attributes.map(e => ({ key: e.key, value: e.value })) || null,
+      //         //   count,
+      //         //   supply: token.supply || null,
+      //         //   remainingSupply: token.remainingSupply || null,
+      //         //   acquiredAt,
+      //         //   lastSale,
+      //         //   price,
+      //         //   topBid,
+      //         // };
+      //       }
+      //     }
+      //   }
+      // }
 
       context.commit('setMetadata', metadata);
       await dbSaveCacheData(parameters.db, "portfolio_metadata", metadata);
