@@ -110,7 +110,7 @@ const portfolioModule = {
       if (options.includes("addresses") || options.includes("all")) {
         await context.dispatch("syncAddresses", parameters);
       }
-      if (options.includes("reservoir") || options.includes("all")) {
+      if (options.includes("metadata") || options.includes("all")) {
         await context.dispatch("syncMetadata", parameters);
       }
       await context.dispatch("collateData", parameters);
@@ -322,33 +322,34 @@ const portfolioModule = {
       context.commit('setSyncInfo', "Syncing token metadata");
       context.commit('setSyncTotal', metadataToRetrieve.length);
       context.commit('setSyncCompleted', completed);
-      for (let i = 0; i < metadataToRetrieve.length && !context.state.sync.halt; i += BATCHSIZE) {
-        const batch = metadataToRetrieve.slice(i, parseInt(i) + BATCHSIZE);
-        console.log(now() + " portfolioModule - actions.syncMetadata - batch: " + JSON.stringify(batch));
-        let continuation = null;
-        do {
-          let url = reservoir + "tokens/v7?";
-          let separator = "";
-          for (let j = 0; j < batch.length; j++) {
-            url = url + separator + "tokens=" + batch[j].contract + "%3A" + batch[j].tokenId;
-            separator = "&";
-          }
-          url = url + (continuation != null ? "&continuation=" + continuation : '');
-          url = url + "&limit=100&includeAttributes=true&includeLastSale=true&includeTopBid=true";
-          console.log(url);
-          const data = await fetch(url).then(response => response.json());
-          // console.log(now() + " portfolioModule - actions.syncMetadata - data: " + JSON.stringify(data));
-          continuation = data.continuation;
-          parseReservoirData(data, metadata);
-          // for (token of data.tokens) {
-          //   console.log(now() + " portfolioModule - actions.syncMetadata - token: " + JSON.stringify(token, null, 2));
-          // }
-          completed += batch.length;
-          context.commit('setSyncCompleted', completed);
-          await delay(DELAYINMILLIS);
-        } while (continuation != null && !context.state.sync.halt);
-        console.log(now() + " portfolioModule - actions.syncMetadata - metadata: " + JSON.stringify(metadata, null, 2));
-      }
+      // TODO: Delete Reservoir deprecated. Replace with OpenSea
+      // for (let i = 0; i < metadataToRetrieve.length && !context.state.sync.halt; i += BATCHSIZE) {
+      //   const batch = metadataToRetrieve.slice(i, parseInt(i) + BATCHSIZE);
+      //   console.log(now() + " portfolioModule - actions.syncMetadata - batch: " + JSON.stringify(batch));
+      //   let continuation = null;
+      //   do {
+      //     let url = reservoir + "tokens/v7?";
+      //     let separator = "";
+      //     for (let j = 0; j < batch.length; j++) {
+      //       url = url + separator + "tokens=" + batch[j].contract + "%3A" + batch[j].tokenId;
+      //       separator = "&";
+      //     }
+      //     url = url + (continuation != null ? "&continuation=" + continuation : '');
+      //     url = url + "&limit=100&includeAttributes=true&includeLastSale=true&includeTopBid=true";
+      //     console.log(url);
+      //     const data = await fetch(url).then(response => response.json());
+      //     // console.log(now() + " portfolioModule - actions.syncMetadata - data: " + JSON.stringify(data));
+      //     continuation = data.continuation;
+      //     parseReservoirData(data, metadata);
+      //     // for (token of data.tokens) {
+      //     //   console.log(now() + " portfolioModule - actions.syncMetadata - token: " + JSON.stringify(token, null, 2));
+      //     // }
+      //     completed += batch.length;
+      //     context.commit('setSyncCompleted', completed);
+      //     await delay(DELAYINMILLIS);
+      //   } while (continuation != null && !context.state.sync.halt);
+      //   console.log(now() + " portfolioModule - actions.syncMetadata - metadata: " + JSON.stringify(metadata, null, 2));
+      // }
 
       // Retrieve ENS names missing the metadata from the Reservoir API
       for (const contractAddress of [ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS, ENS_NAMEWRAPPER_ADDRESS]) {
@@ -356,17 +357,19 @@ const portfolioModule = {
         // console.log(now() + " portfolioModule - actions.syncMetadata - contractMetadata: " + JSON.stringify(contractMetadata, null, 2));
         if (contractMetadata) {
           for (const [tokenId, tokenData] of Object.entries(contractMetadata.tokens)) {
+            console.error(now() + " portfolioModule - actions.syncMetadata - contractAddress: " + contractAddress + ", tokenId: " + tokenId + " => " + JSON.stringify(tokenData, null, 2));
             if (!tokenData.name || !tokenData.description) {
-              console.log(now() + " portfolioModule - actions.syncMetadata - contractAddress: " + contractAddress + ", tokenId: " + tokenId + " => " + JSON.stringify(tokenData, null, 2));
+              // console.log(now() + " portfolioModule - actions.syncMetadata - contractAddress: " + contractAddress + ", tokenId: " + tokenId + " => " + JSON.stringify(tokenData, null, 2));
 
               let url = "https://metadata.ens.domains/mainnet/" + contractAddress + "/" + tokenId;
               console.log(url);
+              console.log(now() + " portfolioModule - actions.syncMetadata - url: " + url);
               const data = await fetch(url)
                 .then(response => response.json())
                 .catch(function(e) {
                   console.log(now() + " portfolioModule - actions.syncMetadata - error: " + e.message);
                 });
-              console.log(JSON.stringify(data, null, 2));
+              // console.log(JSON.stringify(data, null, 2));
 
               metadata[parameters.chainId][contractAddress].tokens[tokenId].name = data.name;
               metadata[parameters.chainId][contractAddress].tokens[tokenId].description = data.description;

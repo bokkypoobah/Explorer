@@ -53,7 +53,7 @@ const Portfolio = {
                   </template>
                   <v-list-item-title>Etherscan Imports (Internal Transactions and EOA-to-EOA)</v-list-item-title>
                 </v-list-item> -->
-                <v-list-item @click="syncPortfolio(['reservoir']);" density="compact">
+                <v-list-item @click="syncPortfolio(['metadata']);" density="compact">
                   <template v-slot:prepend>
                     <v-icon color="blue-lighten-1">mdi-refresh</v-icon>
                   </template>
