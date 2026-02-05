@@ -1,5 +1,7 @@
 # Ethereum Explorer (WIP)
 
+Lightweight EVM (Ethereum Virtual Machine) chain explorer, using your web3 connection to an archive node. Uses Etherscan to detect some transactions and OpenSea to retrieve NFT metadata and events.
+
 Web3 dapp: https://bokkypoobah.github.io/Explorer/ connected to Ethereum Mainnet (WIP)
 
 <br />
