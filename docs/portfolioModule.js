@@ -244,6 +244,7 @@ const portfolioModule = {
 
     async syncMetadata(context, parameters) {
       console.log(now() + " portfolioModule - actions.syncMetadata - chainId: " + parameters.chainId + ", blockNumber: " + parameters.blockNumber + ", timestamp: " + moment.unix(parameters.timestamp).format("YYYY-MM-DD HH:mm:ss"));
+      const DELAYINMILLIS = 500;
       const openseaAPIFetchOptions = {
         method: 'GET',
         headers: {accept: '*/*', 'x-api-key': store.getters['config/config'].openseaAPIKey}
@@ -311,8 +312,6 @@ const portfolioModule = {
       }
       // console.log(now() + " portfolioModule - actions.syncMetadata - metadataToRetrieve: " + JSON.stringify(metadataToRetrieve, null, 2));
 
-      // const BATCHSIZE = 25;
-      const DELAYINMILLIS = 500;
       completed = 0;
       context.commit('setSyncInfo', "Syncing token metadata");
       context.commit('setSyncTotal', metadataToRetrieve.length);
@@ -418,16 +417,42 @@ const portfolioModule = {
 
     async syncPrices(context, parameters) {
       console.log(now() + " portfolioModule - actions.syncPrices - chainId: " + parameters.chainId + ", blockNumber: " + parameters.blockNumber + ", timestamp: " + moment.unix(parameters.timestamp).format("YYYY-MM-DD HH:mm:ss"));
+      const DELAYINMILLIS = 500;
       const openseaAPIFetchOptions = {
         method: 'GET',
         headers: {accept: '*/*', 'x-api-key': store.getters['config/config'].openseaAPIKey}
       };
       const prices = await dbGetCachedData(parameters.db, "portfolio_prices", {});
-      // console.log(now() + " portfolioModule - actions.syncMetadata - prices: " + JSON.stringify(prices, null, 2));
+      // console.log(now() + " portfolioModule - actions.syncPrices - prices: " + JSON.stringify(prices, null, 2));
       // TODO
       // const prices = {};
       if (!(parameters.chainId in prices)) {
         prices[parameters.chainId] = {};
+      }
+      let total = 0;
+      for (let [contract, contractData] of Object.entries(context.state.nftMap)) {
+        total += Object.keys(contractData).length;
+      }
+      context.commit('setSyncTotal', total);
+
+      let completed = 0;
+      for (let [contract, contractData] of Object.entries(context.state.nftMap)) {
+        if (context.state.sync.halt) {
+          break;
+        }
+        console.error(now() + " portfolioModule - actions.syncPrices - contract: " + contract + " => " + JSON.stringify(contractData, null, 2));
+        for (const [tokenId, tokenData] of Object.entries(contractData)) {
+          console.error(now() + " portfolioModule - actions.syncPrices - tokenId: " + tokenId + " => " + JSON.stringify(tokenData));
+          const url = "https://api.opensea.io/api/v2/chain/ethereum/contract/" + contract + "/nfts/" + tokenId;
+          console.error(now() + " portfolioModule - actions.syncPrices - url: " + url);
+          const data = await fetch(url, openseaAPIFetchOptions)
+            .then(res => res.json())
+            .catch(err => console.error(err));
+          console.log(now() + " portfolioModule - actions.syncPrices - data: " + JSON.stringify(data, null, 2));
+          context.commit('setSyncInfo', "Syncing prices for " + contract.substring(0, 6) + "..." + contract.slice(-4) + "/" + tokenId);
+          context.commit('setSyncCompleted', ++completed);
+          await delay(DELAYINMILLIS);
+        }
       }
 
       context.commit('setPrices', prices);
