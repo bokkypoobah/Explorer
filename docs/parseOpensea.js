@@ -6,18 +6,19 @@ function parseOpenseaNFTMetadata(data, metadata, chainId) {
     const contract = ethers.utils.getAddress(nft.contract);
     const slug = nft.collection;
 
-    if (!("slug" in metadata[chainId][contract])) {
-      metadata[chainId][contract].slug = slug;
+    if (metadata[chainId] && metadata[chainId][contract]) {
+      if (!("slug" in metadata[chainId][contract]) || !metadata[chainId][contract].slug) {
+        metadata[chainId][contract].slug = slug;
+      }
+      if (metadata[chainId][contract].tokens[tokenId] === true) {
+        metadata[chainId][contract].tokens[tokenId] = {};
+      }
+      metadata[chainId][contract].tokens[tokenId].slug = slug;
+      metadata[chainId][contract].tokens[tokenId].name = nft.name;
+      metadata[chainId][contract].tokens[tokenId].description = nft.description;
+      metadata[chainId][contract].tokens[tokenId].image = nft.image_url;
+      metadata[chainId][contract].tokens[tokenId].traits = nft.traits;
     }
-    if (metadata[chainId][contract].tokens[tokenId] === true) {
-      metadata[chainId][contract].tokens[tokenId] = {};
-    }
-    metadata[chainId][contract].tokens[tokenId].slug = slug;
-    metadata[chainId][contract].tokens[tokenId].name = nft.name;
-    metadata[chainId][contract].tokens[tokenId].description = nft.description;
-    metadata[chainId][contract].tokens[tokenId].image = nft.image_url;
-    metadata[chainId][contract].tokens[tokenId].traits = nft.traits;
-
     // console.log(moment().format("HH:mm:ss") + " parseOpenseaNFTMetadata - nft: " + slug + " " + chainId + "/" + contract + "/" + tokenId);
   }
   // for (const item of (data && data.tokens || [])) {

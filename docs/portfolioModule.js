@@ -113,6 +113,9 @@ const portfolioModule = {
       if (options.includes("metadata") || options.includes("all")) {
         await context.dispatch("syncMetadata", parameters);
       }
+      if (options.includes("prices") || options.includes("all")) {
+        await context.dispatch("syncPrices", parameters);
+      }
       await context.dispatch("collateData", parameters);
       if (options.includes("ens") || options.includes("all")) {
         await context.dispatch("syncENSEvents", parameters);
@@ -395,6 +398,10 @@ const portfolioModule = {
       await dbSaveCacheData(parameters.db, "portfolio_metadata", metadata);
       // db.close();
       context.commit('setSyncInfo', null);
+    },
+
+    async syncPrices(context, parameters) {
+      console.log(now() + " portfolioModule - actions.syncPrices - chainId: " + parameters.chainId + ", blockNumber: " + parameters.blockNumber + ", timestamp: " + moment.unix(parameters.timestamp).format("YYYY-MM-DD HH:mm:ss"));
     },
 
     async collateData(context, parameters) {
