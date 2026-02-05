@@ -184,13 +184,6 @@ const portfolioModule = {
         "0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31": "ERC-1155 ApprovalForAll",
       };
       const erc1155Interface = new ethers.utils.Interface(ERC1155ABI);
-      const metadata = await dbGetCachedData(parameters.db, "portfolio_metadata", {});
-      // console.log(now() + " portfolioModule - actions.buildNFTMap - metadata: " + JSON.stringify(metadata, null, 2));
-      // TODO
-      // const metadata = {};
-      if (!(parameters.chainId in metadata)) {
-        metadata[parameters.chainId] = {};
-      }
       // Only ERC-721 and ERC-1155 tokens
       const nftMap = {};
       let rows = 0;
