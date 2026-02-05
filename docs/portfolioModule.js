@@ -6,6 +6,7 @@ const portfolioModule = {
     data: {},
     nftMap: {},
     metadata: {},
+    prices: {},
     ensData: {},
     sync: {
       info: null,
@@ -20,6 +21,7 @@ const portfolioModule = {
     data: state => state.data,
     nftMap: state => state.nftMap,
     metadata: state => state.metadata,
+    prices: state => state.prices,
     ensData: state => state.ensData,
     sync: state => state.sync,
   },
@@ -33,13 +35,17 @@ const portfolioModule = {
       // console.log(now() + " portfolioModule - mutations.setData - data: " + JSON.stringify(data));
       state.data = data;
     },
+    setNFTMap(state, nftMap) {
+      // console.log(now() + " portfolioModule - mutations.setNFTMap - nftMap: " + JSON.stringify(nftMap));
+      state.nftMap = nftMap;
+    },
     setMetadata(state, metadata) {
       // console.log(now() + " portfolioModule - mutations.setMetadata - metadata: " + JSON.stringify(metadata));
       state.metadata = metadata;
     },
-    setNFTMap(state, nftMap) {
-      // console.log(now() + " portfolioModule - mutations.setNFTMap - nftMap: " + JSON.stringify(nftMap));
-      state.nftMap = nftMap;
+    setPrices(state, prices) {
+      // console.log(now() + " portfolioModule - mutations.setPrices - prices: " + JSON.stringify(prices));
+      state.prices = prices;
     },
     setENSData(state, ensData) {
       // console.log(now() + " portfolioModule - mutations.setENSData - ensData: " + JSON.stringify(ensData));
@@ -168,8 +174,7 @@ const portfolioModule = {
     // ERC-1155 ApprovalForAll (index_topic_1 address account, index_topic_2 address operator, bool approved)
     // '0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31',
     async buildNFTMap(context, parameters) {
-      console.error(now() + " portfolioModule - actions.buildNFTMap - chainId: " + parameters.chainId + ", blockNumber: " + parameters.blockNumber + ", timestamp: " + moment.unix(parameters.timestamp).format("YYYY-MM-DD HH:mm:ss"));
-
+      console.log(now() + " portfolioModule - actions.buildNFTMap - chainId: " + parameters.chainId + ", blockNumber: " + parameters.blockNumber + ", timestamp: " + moment.unix(parameters.timestamp).format("YYYY-MM-DD HH:mm:ss"));
       const BATCH_SIZE = 10000;
       const tokenTopics = {
         "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": "ERC-20/721 Transfer",
@@ -186,7 +191,6 @@ const portfolioModule = {
       if (!(parameters.chainId in metadata)) {
         metadata[parameters.chainId] = {};
       }
-
       // Only ERC-721 and ERC-1155 tokens
       const nftMap = {};
       let rows = 0;
@@ -247,7 +251,10 @@ const portfolioModule = {
 
     async syncMetadata(context, parameters) {
       console.log(now() + " portfolioModule - actions.syncMetadata - chainId: " + parameters.chainId + ", blockNumber: " + parameters.blockNumber + ", timestamp: " + moment.unix(parameters.timestamp).format("YYYY-MM-DD HH:mm:ss"));
-      const BATCH_SIZE = 10000;
+      const openseaAPIFetchOptions = {
+        method: 'GET',
+        headers: {accept: '*/*', 'x-api-key': store.getters['config/config'].openseaAPIKey}
+      };
       const metadata = await dbGetCachedData(parameters.db, "portfolio_metadata", {});
       // console.log(now() + " portfolioModule - actions.syncMetadata - metadata: " + JSON.stringify(metadata, null, 2));
       // TODO
@@ -255,14 +262,7 @@ const portfolioModule = {
       if (!(parameters.chainId in metadata)) {
         metadata[parameters.chainId] = {};
       }
-
       console.log(now() + " portfolioModule - actions.syncMetadata - context.state.nftMap: " + JSON.stringify(context.state.nftMap, null, 2));
-
-      const openseaAPIFetchOptions = {
-        method: 'GET',
-        headers: {accept: '*/*', 'x-api-key': store.getters['config/config'].openseaAPIKey}
-      };
-      // console.log(now() + " portfolioModule - actions.syncMetadata - openseaAPIFetchOptions: " + JSON.stringify(openseaAPIFetchOptions));
 
       context.commit('setSyncTotal', Object.keys(context.state.nftMap).length);
       let completed = 0;
@@ -426,6 +426,20 @@ const portfolioModule = {
 
     async syncPrices(context, parameters) {
       console.log(now() + " portfolioModule - actions.syncPrices - chainId: " + parameters.chainId + ", blockNumber: " + parameters.blockNumber + ", timestamp: " + moment.unix(parameters.timestamp).format("YYYY-MM-DD HH:mm:ss"));
+      const openseaAPIFetchOptions = {
+        method: 'GET',
+        headers: {accept: '*/*', 'x-api-key': store.getters['config/config'].openseaAPIKey}
+      };
+      const prices = await dbGetCachedData(parameters.db, "portfolio_prices", {});
+      // console.log(now() + " portfolioModule - actions.syncMetadata - prices: " + JSON.stringify(prices, null, 2));
+      // TODO
+      // const prices = {};
+      if (!(parameters.chainId in prices)) {
+        prices[parameters.chainId] = {};
+      }
+
+      context.commit('setPrices', prices);
+      await dbSaveCacheData(parameters.db, "portfolio_prices", prices);
     },
 
     async collateData(context, parameters) {
