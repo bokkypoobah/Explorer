@@ -275,15 +275,14 @@ const portfolioModule = {
         if (!(contract in metadata[parameters.chainId])) {
           const info = await getAddressInfo(contract, parameters.provider);
           // console.log(now() + " portfolioModule - actions.syncMetadata - processing - info: " + JSON.stringify(info, null, 2));
-          metadata[parameters.chainId][contract] = { type: info.type, ensName: info.ensName, balance: info.balance, name: info.name, symbol: info.symbol, decimals: info.decimals, totalSupply: info.totalSupply, tokens: context.state.nftMap[contract] };
-        } else {
-          for (let tokenId of Object.keys(context.state.nftMap[contract])) {
-            if (!(tokenId in metadata[parameters.chainId][contract].tokens)) {
-              metadata[parameters.chainId][contract].tokens[tokenId] = true;
-            }
-          }
-          // metadata[parameters.chainId][contract].tokens = tokens[contract];
+          metadata[parameters.chainId][contract] = { type: info.type, ensName: info.ensName, balance: info.balance, name: info.name, symbol: info.symbol, decimals: info.decimals, totalSupply: info.totalSupply, tokens: {} };
         }
+        for (let tokenId of Object.keys(context.state.nftMap[contract])) {
+          if (!(tokenId in metadata[parameters.chainId][contract].tokens)) {
+            metadata[parameters.chainId][contract].tokens[tokenId] = true;
+          }
+        }
+        // metadata[parameters.chainId][contract].tokens = tokens[contract];
 
         // // if (!(log.contract in metadata[parameters.chainId])) {
         // // }
