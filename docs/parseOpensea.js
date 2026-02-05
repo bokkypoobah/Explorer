@@ -113,14 +113,14 @@ function parseOpenseaNFTMetadata(data, metadata, chainId) {
 
 
 function parseOpenseaNFTEvents(data, prices, chainId, contract, tokenId) {
-  // console.error(moment().format("HH:mm:ss") + " parseOpenseaNFTMetadata - data: " + JSON.stringify(data, null, 2));
+  // console.log(moment().format("HH:mm:ss") + " parseOpenseaNFTMetadata - data: " + JSON.stringify(data, null, 2));
   const events = data && data.asset_events || null;
   if (events) {
     for (const event of events) {
-      // console.error(moment().format("HH:mm:ss") + " parseOpenseaNFTMetadata - event: " + JSON.stringify(event, null, 2));
+      // console.log(moment().format("HH:mm:ss") + " parseOpenseaNFTMetadata - event: " + JSON.stringify(event, null, 2));
       let record = null;
       if (event.event_type == "order") {
-        // console.error(moment().format("HH:mm:ss") + " parseOpenseaNFTMetadata - ORDER event: " + JSON.stringify(event, null, 2));
+        // console.log(moment().format("HH:mm:ss") + " parseOpenseaNFTMetadata - ORDER event: " + JSON.stringify(event, null, 2));
         record = {
           eventType: event.event_type,
           orderType: event.order_type,
@@ -139,7 +139,7 @@ function parseOpenseaNFTEvents(data, prices, chainId, contract, tokenId) {
         };
 
       } else if (event.event_type == "sale") {
-        // console.error(moment().format("HH:mm:ss") + " parseOpenseaNFTMetadata - SALE event: " + JSON.stringify(event, null, 2));
+        // console.log(moment().format("HH:mm:ss") + " parseOpenseaNFTMetadata - SALE event: " + JSON.stringify(event, null, 2));
         record = {
           eventType: event.event_type,
           timestamp: parseInt(event.event_timestamp),
@@ -156,7 +156,7 @@ function parseOpenseaNFTEvents(data, prices, chainId, contract, tokenId) {
         };
 
       } else if (event.event_type == "transfer") {
-        // console.error(moment().format("HH:mm:ss") + " parseOpenseaNFTMetadata - TRANSFER event: " + JSON.stringify(event, null, 2));
+        // console.log(moment().format("HH:mm:ss") + " parseOpenseaNFTMetadata - TRANSFER event: " + JSON.stringify(event, null, 2));
         record = {
           eventType: event.event_type,
           transferType: event.transfer_type,
@@ -168,7 +168,7 @@ function parseOpenseaNFTEvents(data, prices, chainId, contract, tokenId) {
         };
       }
       if (record) {
-        console.error(moment().format("HH:mm:ss") + " parseOpenseaNFTMetadata - record: " + JSON.stringify(record, null, 2));
+        console.log(moment().format("HH:mm:ss") + " parseOpenseaNFTMetadata - record: " + JSON.stringify(record, null, 2));
       }
     }
   }
