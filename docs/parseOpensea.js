@@ -110,3 +110,66 @@ function parseOpenseaNFTMetadata(data, metadata, chainId) {
   // }
   // return metadata;
 }
+
+
+function parseOpenseaNFTEvents(data, prices, chainId, contract, tokenId) {
+  // console.error(moment().format("HH:mm:ss") + " parseOpenseaNFTMetadata - data: " + JSON.stringify(data, null, 2));
+  const events = data && data.asset_events || null;
+  if (events) {
+    for (const event of events) {
+      // console.error(moment().format("HH:mm:ss") + " parseOpenseaNFTMetadata - event: " + JSON.stringify(event, null, 2));
+      let record = null;
+      if (event.event_type == "order") {
+        // console.error(moment().format("HH:mm:ss") + " parseOpenseaNFTMetadata - ORDER event: " + JSON.stringify(event, null, 2));
+        record = {
+          eventType: event.event_type,
+          orderType: event.order_type,
+          timestamp: parseInt(event.event_timestamp),
+          payment: {
+            quantity: ethers.BigNumber.from(event.payment.quantity).toString(),
+            token: ethers.utils.getAddress(event.payment.token_address),
+            decimals: parseInt(event.payment.decimals),
+            symbol: event.payment.symbol,
+          },
+          startDate: event.start_date && parseInt(event.start_date) || null,
+          expirationDate: event.expiration_date && parseInt(event.expiration_date) || null,
+          maker: event.maker && ethers.utils.getAddress(event.maker) || null,
+          taker: event.taker && ethers.utils.getAddress(event.taker) || null,
+          quantity: parseInt(event.quantity),
+        };
+
+      } else if (event.event_type == "sale") {
+        // console.error(moment().format("HH:mm:ss") + " parseOpenseaNFTMetadata - SALE event: " + JSON.stringify(event, null, 2));
+        record = {
+          eventType: event.event_type,
+          timestamp: parseInt(event.event_timestamp),
+          txHash: event.transaction,
+          payment: {
+            quantity: ethers.BigNumber.from(event.payment.quantity).toString(),
+            token: ethers.utils.getAddress(event.payment.token_address),
+            decimals: parseInt(event.payment.decimals),
+            symbol: event.payment.symbol,
+          },
+          buyer: ethers.utils.getAddress(event.buyer),
+          seller: ethers.utils.getAddress(event.seller),
+          quantity: parseInt(event.quantity),
+        };
+
+      } else if (event.event_type == "transfer") {
+        // console.error(moment().format("HH:mm:ss") + " parseOpenseaNFTMetadata - TRANSFER event: " + JSON.stringify(event, null, 2));
+        record = {
+          eventType: event.event_type,
+          transferType: event.transfer_type,
+          timestamp: parseInt(event.event_timestamp),
+          txHash: event.transaction,
+          from: ethers.utils.getAddress(event.from_address),
+          to: ethers.utils.getAddress(event.to_address),
+          quantity: parseInt(event.quantity),
+        };
+      }
+      if (record) {
+        console.error(moment().format("HH:mm:ss") + " parseOpenseaNFTMetadata - record: " + JSON.stringify(record, null, 2));
+      }
+    }
+  }
+}

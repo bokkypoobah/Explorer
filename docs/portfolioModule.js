@@ -475,12 +475,18 @@ const portfolioModule = {
         if (context.state.sync.halt) {
           break;
         }
+        // if (contract != "0x8FA600364B93C53e0c71C7A33d2adE21f4351da3") {
+        //   continue;
+        // }
         const contractMetadata = context.state.metadata[parameters.chainId] && context.state.metadata[parameters.chainId][contract] || null;
         // console.error(now() + " portfolioModule - actions.syncPrices - contractMetadata: " + JSON.stringify(contractMetadata, null, 2));
         const slug = contractMetadata.slug || null;
 
         console.error(now() + " portfolioModule - actions.syncPrices - contract: " + contract + " => " + JSON.stringify(contractData, null, 2));
         for (const [tokenId, tokenData] of Object.entries(contractData)) {
+          if (context.state.sync.halt) {
+            break;
+          }
           console.error(now() + " portfolioModule - actions.syncPrices - tokenId: " + tokenId + " => " + JSON.stringify(tokenData));
 
           // const d = await fetch('https://api.opensea.io/api/v2/events/chain/ethereum/contract/0x8fa600364b93c53e0c71c7a33d2ade21f4351da3/nfts/2186', options)
@@ -488,13 +494,15 @@ const portfolioModule = {
 
           // /api/v2/offers/collection/${slug}/nfts/${token_id}/best
           // https://api.opensea.io/api/v2/orders/ethereum/seaport/listings?asset_contract_address=0x8fa600364b93c53e0c71c7a33d2ade21f4351da3&token_ids=2186
-          const eventsUrl = "https://api.opensea.io/api/v2/events/chain/ethereum/contract/" + contract + "/nfts/" + tokenId;
+          // Continuation using `?next=test`
+          const eventsUrl = "https://api.opensea.io/api/v2/events/chain/ethereum/contract/" + contract + "/nfts/" + tokenId + "?limit=200";
           // const eventsUrl = "https://api.opensea.io/api/v2/orders/ethereum/seaport/listings?asset_contract_address=" + contract + "&token_ids=" + tokenId;
           console.error(now() + " portfolioModule - actions.syncPrices - eventsUrl: " + eventsUrl);
           const eventsData = await fetch(eventsUrl, openseaAPIFetchOptions)
             .then(res => res.json())
             .catch(err => console.error(err));
-          console.log(now() + " portfolioModule - actions.syncPrices - eventsData: " + JSON.stringify(eventsData, null, 2));
+          // console.log(now() + " portfolioModule - actions.syncPrices - eventsData: " + JSON.stringify(eventsData, null, 2));
+          parseOpenseaNFTEvents(eventsData, prices, parameters.chainId, contract, tokenId);
 
           // const offersUrl = "https://api.opensea.io/api/v2/orders/ethereum/seaport/listings?asset_contract_address=" + contract + "&token_ids=" + tokenId;
           // console.error(now() + " portfolioModule - actions.syncPrices - offersUrl: " + offersUrl);
@@ -507,11 +515,11 @@ const portfolioModule = {
           context.commit('setSyncInfo', "Syncing prices for " + contract.substring(0, 6) + "..." + contract.slice(-4) + "/" + tokenId);
           context.commit('setSyncCompleted', ++completed);
           await delay(DELAYINMILLIS);
-          // if (completed > 2) {
+          // if (completed > 10) {
           //   break;
           // }
         }
-        // if (completed > 2) {
+        // if (completed > 10) {
         //   break;
         // }
       }
