@@ -4,6 +4,7 @@ const portfolioModule = {
     inputTagOrAddress: null,
     addresses: {},
     data: {},
+    nftMap: {},
     metadata: {},
     ensData: {},
     sync: {
@@ -17,6 +18,7 @@ const portfolioModule = {
     inputTagOrAddress: state => state.inputTagOrAddress,
     addresses: state => state.addresses,
     data: state => state.data,
+    nftMap: state => state.nftMap,
     metadata: state => state.metadata,
     ensData: state => state.ensData,
     sync: state => state.sync,
@@ -34,6 +36,10 @@ const portfolioModule = {
     setMetadata(state, metadata) {
       // console.log(now() + " portfolioModule - mutations.setMetadata - metadata: " + JSON.stringify(metadata));
       state.metadata = metadata;
+    },
+    setNFTMap(state, nftMap) {
+      // console.log(now() + " portfolioModule - mutations.setNFTMap - nftMap: " + JSON.stringify(nftMap));
+      state.nftMap = nftMap;
     },
     setENSData(state, ensData) {
       // console.log(now() + " portfolioModule - mutations.setENSData - ensData: " + JSON.stringify(ensData));
@@ -110,6 +116,9 @@ const portfolioModule = {
       if (options.includes("addresses") || options.includes("all")) {
         await context.dispatch("syncAddresses", parameters);
       }
+      if (options.includes("metadata") || options.includes("prices") || options.includes("all")) {
+        await context.dispatch("buildNFTMap", parameters);
+      }
       if (options.includes("metadata") || options.includes("all")) {
         await context.dispatch("syncMetadata", parameters);
       }
@@ -158,8 +167,9 @@ const portfolioModule = {
     // ERC-721 ApprovalForAll (index_topic_1 address owner, index_topic_2 address operator, bool approved)
     // ERC-1155 ApprovalForAll (index_topic_1 address account, index_topic_2 address operator, bool approved)
     // '0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31',
-    async syncMetadata(context, parameters) {
-      console.log(now() + " portfolioModule - actions.syncMetadata - chainId: " + parameters.chainId + ", blockNumber: " + parameters.blockNumber + ", timestamp: " + moment.unix(parameters.timestamp).format("YYYY-MM-DD HH:mm:ss"));
+    async buildNFTMap(context, parameters) {
+      console.error(now() + " portfolioModule - actions.buildNFTMap - chainId: " + parameters.chainId + ", blockNumber: " + parameters.blockNumber + ", timestamp: " + moment.unix(parameters.timestamp).format("YYYY-MM-DD HH:mm:ss"));
+
       const BATCH_SIZE = 10000;
       const tokenTopics = {
         "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": "ERC-20/721 Transfer",
@@ -170,7 +180,7 @@ const portfolioModule = {
       };
       const erc1155Interface = new ethers.utils.Interface(ERC1155ABI);
       const metadata = await dbGetCachedData(parameters.db, "portfolio_metadata", {});
-      // console.log(now() + " portfolioModule - actions.syncMetadata - metadata: " + JSON.stringify(metadata, null, 2));
+      // console.log(now() + " portfolioModule - actions.buildNFTMap - metadata: " + JSON.stringify(metadata, null, 2));
       // TODO
       // const metadata = {};
       if (!(parameters.chainId in metadata)) {
@@ -178,71 +188,85 @@ const portfolioModule = {
       }
 
       // Only ERC-721 and ERC-1155 tokens
-      const tokens = {};
+      const nftMap = {};
       let rows = 0;
       for (const [address, addressInfo] of Object.entries(context.state.addresses)) {
-        // console.log(now() + " portfolioModule - actions.syncMetadata - address: " + address);
+        // console.log(now() + " portfolioModule - actions.buildNFTMap - address: " + address);
         let done = false;
         do {
           const logs = await parameters.db.portfolioAddressEvents.where('[address+chainId+blockNumber+logIndex]').between([address, parameters.chainId, Dexie.minKey, Dexie.minKey],[address, parameters.chainId, Dexie.maxKey, Dexie.maxKey]).offset(rows).limit(BATCH_SIZE).toArray();
           for (const log of logs) {
             if (log.topics[0] in tokenTopics) {
-              // console.log(now() + " portfolioModule - actions.syncMetadata - log: " + JSON.stringify(log, null, 2));
+              // console.log(now() + " portfolioModule - actions.buildNFTMap - log: " + JSON.stringify(log, null, 2));
               let tokenId = null;
               let tokenIds = null;
               // ERC-721 Transfer (index_topic_1 address from, index_topic_2 address to, index_topic_3 uint256 id)
               if (log.topics[0] == "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef" && log.topics.length == 4) {
-                // console.log(now() + " portfolioModule - actions.syncMetadata - ERC-721 Transfer log: " + JSON.stringify(log, null, 2));
+                // console.log(now() + " portfolioModule - actions.buildNFTMap - ERC-721 Transfer log: " + JSON.stringify(log, null, 2));
                 tokenId = ethers.BigNumber.from(log.topics[3]).toString();
               // ERC-1155 TransferSingle (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256 id, uint256 value)
               } else if (log.topics[0] == "0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62") {
-                // console.log(now() + " portfolioModule - actions.syncMetadata - ERC-1155 TransferSingle log: " + JSON.stringify(log, null, 2));
+                // console.log(now() + " portfolioModule - actions.buildNFTMap - ERC-1155 TransferSingle log: " + JSON.stringify(log, null, 2));
                 tokenId = ethers.BigNumber.from(log.data.substring(0, 66)).toString();
               // ERC-1155 TransferBatch (index_topic_1 address operator, index_topic_2 address from, index_topic_3 address to, uint256[] ids, uint256[] values)
               } else if (log.topics[0] == "0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb") {
-                // console.log(now() + " portfolioModule - actions.syncMetadata - ERC-1155 TransferBatch log: " + JSON.stringify(log, null, 2));
+                // console.log(now() + " portfolioModule - actions.buildNFTMap - ERC-1155 TransferBatch log: " + JSON.stringify(log, null, 2));
                 const logData = erc1155Interface.parseLog(log);
                 const [ operator, from, to, _tokenIds, values ] = logData.args;
                 tokenIds = _tokenIds;
               // ERC-721 Approval (index_topic_1 address owner, index_topic_2 address approved, index_topic_3 uint256 tokenId)
               } else if (log.topics[0] == "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925" && log.topics.length == 4) {
-                // console.log(now() + " portfolioModule - actions.syncMetadata - ERC-721 Approval log: " + JSON.stringify(log, null, 2));
+                // console.log(now() + " portfolioModule - actions.buildNFTMap - ERC-721 Approval log: " + JSON.stringify(log, null, 2));
                 tokenId = ethers.BigNumber.from(log.topics[3]).toString();
               }
               if (tokenId != null || tokenIds) {
-                if (!(log.contract in tokens)) {
-                  tokens[log.contract] = {};
+                if (!(log.contract in nftMap)) {
+                  nftMap[log.contract] = {};
                 }
                 if (tokenId != null) {
-                  tokens[log.contract][tokenId] = true;
+                  nftMap[log.contract][tokenId] = true;
                 } else {
                   for (const [index, tokenId] of tokenIds.entries()) {
                     const _tokenId = ethers.BigNumber.from(tokenId).toString();
                     // const _value = ethers.BigNumber.from(values[index]).toString();
-                    // tokens[log.contract][_tokenId] = _value;
-                    tokens[log.contract][_tokenId] = true;
+                    // nftMap[log.contract][_tokenId] = _value;
+                    nftMap[log.contract][_tokenId] = true;
                   }
                 }
               }
             }
           }
           rows = parseInt(rows) + logs.length;
-          console.log(now() + " portfolioModule - actions.syncMetadata - rows: " + rows);
+          console.log(now() + " portfolioModule - actions.buildNFTMap - rows: " + rows);
           done = logs.length < BATCH_SIZE;
         } while (!done);
       }
-      // console.log(now() + " portfolioModule - actions.syncMetadata - tokens: " + JSON.stringify(tokens, null, 2));
+      context.commit('setNFTMap', nftMap);
+      // console.log(now() + " portfolioModule - actions.buildNFTMap - nftMap: " + JSON.stringify(nftMap, null, 2));
+    },
 
-      const openseaAPIKey = store.getters['config/config'].openseaAPIKey;
+    async syncMetadata(context, parameters) {
+      console.log(now() + " portfolioModule - actions.syncMetadata - chainId: " + parameters.chainId + ", blockNumber: " + parameters.blockNumber + ", timestamp: " + moment.unix(parameters.timestamp).format("YYYY-MM-DD HH:mm:ss"));
+      const BATCH_SIZE = 10000;
+      const metadata = await dbGetCachedData(parameters.db, "portfolio_metadata", {});
+      // console.log(now() + " portfolioModule - actions.syncMetadata - metadata: " + JSON.stringify(metadata, null, 2));
+      // TODO
+      // const metadata = {};
+      if (!(parameters.chainId in metadata)) {
+        metadata[parameters.chainId] = {};
+      }
+
+      console.log(now() + " portfolioModule - actions.syncMetadata - context.state.nftMap: " + JSON.stringify(context.state.nftMap, null, 2));
+
       const openseaAPIFetchOptions = {
         method: 'GET',
-        headers: {accept: '*/*', 'x-api-key': openseaAPIKey}
+        headers: {accept: '*/*', 'x-api-key': store.getters['config/config'].openseaAPIKey}
       };
       // console.log(now() + " portfolioModule - actions.syncMetadata - openseaAPIFetchOptions: " + JSON.stringify(openseaAPIFetchOptions));
 
-      context.commit('setSyncTotal', Object.keys(tokens).length);
+      context.commit('setSyncTotal', Object.keys(context.state.nftMap).length);
       let completed = 0;
-      for (let [contract, contractData] of Object.entries(tokens)) {
+      for (let [contract, contractData] of Object.entries(context.state.nftMap)) {
         if (context.state.sync.halt) {
           break;
         }
@@ -251,9 +275,9 @@ const portfolioModule = {
         if (!(contract in metadata[parameters.chainId])) {
           const info = await getAddressInfo(contract, parameters.provider);
           // console.log(now() + " portfolioModule - actions.syncMetadata - processing - info: " + JSON.stringify(info, null, 2));
-          metadata[parameters.chainId][contract] = { type: info.type, ensName: info.ensName, balance: info.balance, name: info.name, symbol: info.symbol, decimals: info.decimals, totalSupply: info.totalSupply, tokens: tokens[contract] };
+          metadata[parameters.chainId][contract] = { type: info.type, ensName: info.ensName, balance: info.balance, name: info.name, symbol: info.symbol, decimals: info.decimals, totalSupply: info.totalSupply, tokens: context.state.nftMap[contract] };
         } else {
-          for (let tokenId of Object.keys(tokens[contract])) {
+          for (let tokenId of Object.keys(context.state.nftMap[contract])) {
             if (!(tokenId in metadata[parameters.chainId][contract].tokens)) {
               metadata[parameters.chainId][contract].tokens[tokenId] = true;
             }
@@ -279,7 +303,7 @@ const portfolioModule = {
       // <b-avatar rounded variant="light" size="3.0rem" :src="'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/' + data.item.account + '/logo.png'" v-b-popover.hover="'ERC-20 logo if available'"></b-avatar>
 
       const metadataToRetrieve = [];
-      for (const [contract, contractData] of Object.entries(tokens)) {
+      for (const [contract, contractData] of Object.entries(context.state.nftMap)) {
         // if (contractData.type == "erc721" || contractData.type == "erc1155") {
           // console.log(now() + " portfolioModule - actions.syncMetadata - contract: " + contract + " => " + JSON.stringify(contractData, null, 2));
           for (const [tokenId, tokenData] of Object.entries(contractData)) {
