@@ -230,6 +230,13 @@ const portfolioModule = {
       }
       // console.log(now() + " portfolioModule - actions.syncMetadata - tokens: " + JSON.stringify(tokens, null, 2));
 
+      const openseaAPIKey = store.getters['config/config'].openseaAPIKey;
+      const openseaAPIFetchOptions = {
+        method: 'GET',
+        headers: {accept: '*/*', 'x-api-key': openseaAPIKey}
+      };
+      // console.log(now() + " portfolioModule - actions.syncMetadata - openseaAPIFetchOptions: " + JSON.stringify(openseaAPIFetchOptions));
+
       context.commit('setSyncTotal', Object.keys(tokens).length);
       let completed = 0;
       for (let [contract, contractData] of Object.entries(tokens)) {
@@ -284,13 +291,6 @@ const portfolioModule = {
         // }
       }
       // console.log(now() + " portfolioModule - actions.syncMetadata - metadataToRetrieve: " + JSON.stringify(metadataToRetrieve, null, 2));
-
-      const openseaAPIKey = store.getters['config/config'].openseaAPIKey;
-      const openseaAPIFetchOptions = {
-        method: 'GET',
-        headers: {accept: '*/*', 'x-api-key': openseaAPIKey}
-      };
-      // console.log(now() + " portfolioModule - actions.syncMetadata - openseaAPIFetchOptions: " + JSON.stringify(openseaAPIFetchOptions));
 
       // const BATCHSIZE = 25;
       const DELAYINMILLIS = 500;

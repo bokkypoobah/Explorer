@@ -6,6 +6,9 @@ function parseOpenseaNFTMetadata(data, metadata, chainId) {
     const contract = ethers.utils.getAddress(nft.contract);
     const slug = nft.collection;
 
+    if (!("slug" in metadata[chainId][contract])) {
+      metadata[chainId][contract].slug = slug;
+    }
     if (metadata[chainId][contract].tokens[tokenId] === true) {
       metadata[chainId][contract].tokens[tokenId] = {};
     }
