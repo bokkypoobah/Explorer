@@ -420,8 +420,20 @@ const portfolioModule = {
       const DELAYINMILLIS = 500;
       const openseaAPIFetchOptions = {
         method: 'GET',
+        // mode: 'no-cors',
         headers: {accept: '*/*', 'x-api-key': store.getters['config/config'].openseaAPIKey}
       };
+      // console.log(now() + " portfolioModule - actions.syncPrices - openseaAPIFetchOptions: " + JSON.stringify(openseaAPIFetchOptions, null, 2));
+
+
+      // fetch('https://api.opensea.io/api/v2/offers/collection/larva-chads/nfts/4191/best', openseaAPIFetchOptions)
+      const testData = await fetch('https://api.opensea.io/api/v2/orders/ethereum/seaport/listings?asset_contract_address=0x8FA600364B93C53e0c71C7A33d2adE21f4351da3&token_ids=951', openseaAPIFetchOptions)
+        .then(res => res.json())
+        // .then(res => console.log(res))
+        .catch(err => console.error(now() + " portfolioModule - actions.syncPrices - error: " + JSON.stringify(err)));
+      console.error(now() + " portfolioModule - actions.syncPrices - testData: " + JSON.stringify(testData, null, 2));
+
+
       const prices = await dbGetCachedData(parameters.db, "portfolio_prices", {});
       // console.log(now() + " portfolioModule - actions.syncPrices - prices: " + JSON.stringify(prices, null, 2));
       // TODO
@@ -440,10 +452,18 @@ const portfolioModule = {
         if (context.state.sync.halt) {
           break;
         }
+        const contractMetadata = context.state.metadata[parameters.chainId] && context.state.metadata[parameters.chainId][contract] || null;
+        // console.error(now() + " portfolioModule - actions.syncPrices - contractMetadata: " + JSON.stringify(contractMetadata, null, 2));
+        const slug = contractMetadata.slug || null;
+
         console.error(now() + " portfolioModule - actions.syncPrices - contract: " + contract + " => " + JSON.stringify(contractData, null, 2));
         for (const [tokenId, tokenData] of Object.entries(contractData)) {
           console.error(now() + " portfolioModule - actions.syncPrices - tokenId: " + tokenId + " => " + JSON.stringify(tokenData));
-          const url = "https://api.opensea.io/api/v2/chain/ethereum/contract/" + contract + "/nfts/" + tokenId;
+          // /api/v2/offers/collection/${slug}/nfts/${token_id}/best
+          const url = "https://api.opensea.io/api/v2/offers/collection/" + slug + "/nfts/" + tokenId + "/best";
+          //    fetch('https://api.opensea.io/api/v2/offers/collection/larva-chads/nfts/4191/best', options)
+          //           https://api.opensea.io/api/v2/offers/collection/larva-chads/nfts/4191/best
+
           console.error(now() + " portfolioModule - actions.syncPrices - url: " + url);
           const data = await fetch(url, openseaAPIFetchOptions)
             .then(res => res.json())
@@ -452,6 +472,12 @@ const portfolioModule = {
           context.commit('setSyncInfo', "Syncing prices for " + contract.substring(0, 6) + "..." + contract.slice(-4) + "/" + tokenId);
           context.commit('setSyncCompleted', ++completed);
           await delay(DELAYINMILLIS);
+          if (completed > 2) {
+            break;
+          }
+        }
+        if (completed > 2) {
+          break;
         }
       }
 
