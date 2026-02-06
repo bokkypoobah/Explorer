@@ -425,28 +425,24 @@ const portfolioModule = {
       };
       // console.log(now() + " portfolioModule - actions.syncPrices - openseaAPIFetchOptions: " + JSON.stringify(openseaAPIFetchOptions, null, 2));
 
-      // const options = {
-      //   method: 'GET',
-      //   headers: {accept: '*/*', 'x-api-key': 'hahahahahahahahahahahahahahahaha'}
-      // };
-      //
-      // const d = await fetch('https://api.opensea.io/api/v2/events/chain/ethereum/contract/0x8fa600364b93c53e0c71c7a33d2ade21f4351da3/nfts/2186', options)
+      // const d = await fetch('https://api.opensea.io/api/v2/events/chain/ethereum/contract/0x8fa600364b93c53e0c71c7a33d2ade21f4351da3/nfts/2186', openseaAPIFetchOptions)
       //   .then(res => res.json())
       //   .catch(err => console.error(err));
       // console.log(now() + " portfolioModule - actions.syncPrices - d: " + JSON.stringify(d, null, 2));
       //
 
       // fetch('https://api.opensea.io/api/v2/offers/collection/larva-chads/nfts/4191/best', openseaAPIFetchOptions)
-      // fetch('https://api.opensea.io/api/v2/offers/collection/larva-chads/nfts/2186/best', options)
-
-      // // const testData = await fetch('https://api.opensea.io/api/v2/orders/ethereum/seaport/listings?asset_contract_address=0x8FA600364B93C53e0c71C7A33d2adE21f4351da3&token_ids=951', openseaAPIFetchOptions)
+      // fetch('https://api.opensea.io/api/v2/offers/collection/larva-chads/nfts/2186/best', openseaAPIFetchOptions)
       // const testData = await fetch('https://api.opensea.io/api/v2/offers/collection/larva-chads/nfts/2186/best', openseaAPIFetchOptions)
-      //   .then(res => res.json())
-      //   // .then(res => console.log(res))
-      //   .catch(err => console.error(now() + " portfolioModule - actions.syncPrices - error: " + JSON.stringify(err)));
-      // console.error(now() + " portfolioModule - actions.syncPrices - testData: " + JSON.stringify(testData, null, 2));
+        // .then(res => console.log(res))
 
-      // const test = await fetch('https://api.opensea.io/api/v2/offers/collection/larva-chads/nfts/2186/best', options);
+      // // Listing data
+      // const testListingData = await fetch('https://api.opensea.io/api/v2/orders/ethereum/seaport/listings?asset_contract_address=0x8FA600364B93C53e0c71C7A33d2adE21f4351da3&token_ids=4959', openseaAPIFetchOptions)
+      //   .then(res => res.json())
+      //   .catch(err => console.error(now() + " portfolioModule - actions.syncPrices - error: " + JSON.stringify(err)));
+      // console.error(now() + " portfolioModule - actions.syncPrices - testListingData: " + JSON.stringify(testListingData, null, 2));
+
+      // const test = await fetch('https://api.opensea.io/api/v2/offers/collection/larva-chads/nfts/2186/best', openseaAPIFetchOptions);
       //   // .then(res => res.json())
       //   // .then(res => console.log(res))
       //   // .catch(err => console.error(err));
@@ -491,14 +487,10 @@ const portfolioModule = {
           }
           // console.log(now() + " portfolioModule - actions.syncPrices - tokenId: " + tokenId + " => " + JSON.stringify(tokenData));
 
-          // const d = await fetch('https://api.opensea.io/api/v2/events/chain/ethereum/contract/0x8fa600364b93c53e0c71c7a33d2ade21f4351da3/nfts/2186', options)
-
-
           // /api/v2/offers/collection/${slug}/nfts/${token_id}/best
           // https://api.opensea.io/api/v2/orders/ethereum/seaport/listings?asset_contract_address=0x8fa600364b93c53e0c71c7a33d2ade21f4351da3&token_ids=2186
           // Continuation using `?next=test`
           const eventsUrl = "https://api.opensea.io/api/v2/events/chain/ethereum/contract/" + contract + "/nfts/" + tokenId + "?limit=200";
-          // const eventsUrl = "https://api.opensea.io/api/v2/orders/ethereum/seaport/listings?asset_contract_address=" + contract + "&token_ids=" + tokenId;
           console.log(now() + " portfolioModule - actions.syncPrices - eventsUrl: " + eventsUrl);
           const eventsData = await fetch(eventsUrl, openseaAPIFetchOptions)
             .then(res => res.json())
@@ -506,13 +498,13 @@ const portfolioModule = {
           // console.log(now() + " portfolioModule - actions.syncPrices - eventsData: " + JSON.stringify(eventsData, null, 2));
           parseOpenseaNFTEvents(eventsData, prices, parameters.chainId, contract, tokenId);
 
-          // const offersUrl = "https://api.opensea.io/api/v2/orders/ethereum/seaport/listings?asset_contract_address=" + contract + "&token_ids=" + tokenId;
-          // console.error(now() + " portfolioModule - actions.syncPrices - offersUrl: " + offersUrl);
-          // const listingData = await fetch(offersUrl, openseaAPIFetchOptions)
-          //   .then(res => res.json())
-          //   .catch(err => console.error(err));
+          const listingsUrl = "https://api.opensea.io/api/v2/orders/ethereum/seaport/listings?asset_contract_address=" + contract + "&token_ids=" + tokenId + "&order_direction=asc&order_by=created_at&include_private_listings=true&limit=200";
+          console.log(now() + " portfolioModule - actions.syncPrices - listingsUrl: " + listingsUrl);
+          const listingData = await fetch(listingsUrl, openseaAPIFetchOptions)
+            .then(res => res.json())
+            .catch(err => console.error(err));
           // console.log(now() + " portfolioModule - actions.syncPrices - listingData: " + JSON.stringify(listingData, null, 2));
-
+          parseOpenseaNFTListings(listingData, prices, parameters.chainId, contract, tokenId);
 
           context.commit('setSyncInfo', "Syncing prices for " + contract.substring(0, 6) + "..." + contract.slice(-4) + "/" + tokenId);
           context.commit('setSyncCompleted', ++completed);
