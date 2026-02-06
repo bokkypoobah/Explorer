@@ -427,7 +427,7 @@ const portfolioModule = {
 
       // const options = {
       //   method: 'GET',
-      //   headers: {accept: '*/*', 'x-api-key': '95d64c59ddac49c49efcc524e9c8c177'}
+      //   headers: {accept: '*/*', 'x-api-key': 'hahahahahahahahahahahahahahahaha'}
       // };
       //
       // const d = await fetch('https://api.opensea.io/api/v2/events/chain/ethereum/contract/0x8fa600364b93c53e0c71c7a33d2ade21f4351da3/nfts/2186', options)
@@ -445,11 +445,6 @@ const portfolioModule = {
       //   // .then(res => console.log(res))
       //   .catch(err => console.error(now() + " portfolioModule - actions.syncPrices - error: " + JSON.stringify(err)));
       // console.error(now() + " portfolioModule - actions.syncPrices - testData: " + JSON.stringify(testData, null, 2));
-
-      // const options = {
-      //   method: 'GET',
-      //   headers: {accept: '*/*', 'x-api-key': '95d64c59ddac49c49efcc524e9c8c177'}
-      // };
 
       // const test = await fetch('https://api.opensea.io/api/v2/offers/collection/larva-chads/nfts/2186/best', options);
       //   // .then(res => res.json())
