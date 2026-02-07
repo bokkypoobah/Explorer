@@ -106,8 +106,12 @@ const portfolioModule = {
       const parameters = { provider, chainId, blockNumber, timestamp, db, options: [] };
 
       let metadata = await dbGetCachedData(db, "portfolio_metadata", {});
+      let events = await dbGetCachedData(db, "portfolio_events", {});
+      let listings = await dbGetCachedData(db, "portfolio_listings", {});
       // console.log(now() + " portfolioModule - actions.loadPortfolio - portfolio_metadata: " + JSON.stringify(metadata, null, 2));
       context.commit('setMetadata', metadata);
+      context.commit('setEvents', events);
+      context.commit('setListings', listings);
       await context.dispatch("collateENSData", parameters);
       await context.dispatch("collateData", parameters);
       db.close();

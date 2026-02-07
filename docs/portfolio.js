@@ -762,7 +762,11 @@ portfolioData: {{ portfolioData }}
           for (const [tokenId, tokenInfo] of Object.entries(collection.tokenData)) {
             // console.log(now() + " Portfolio - computed.items - tokenId: " + tokenId + ", tokenInfo: " + JSON.stringify(tokenInfo, null, 2));
             const metadata = this.portfolioMetadata[collection.chainId] && this.portfolioMetadata[collection.chainId][collection.contract] && this.portfolioMetadata[collection.chainId][collection.contract].tokens[tokenId] || {};
+            const events = this.portfolioEvents[collection.chainId] && this.portfolioEvents[collection.chainId][collection.contract] && this.portfolioEvents[collection.chainId][collection.contract][tokenId] || {};
+            const listings = this.portfolioListings[collection.chainId] && this.portfolioListings[collection.chainId][collection.contract] && this.portfolioListings[collection.chainId][collection.contract][tokenId] || {};
             // console.log(now() + " Portfolio - computed.items - metadata: " + JSON.stringify(metadata, null, 2));
+            // console.log(now() + " Portfolio - computed.items - events: " + JSON.stringify(events, null, 2));
+            // console.log(now() + " Portfolio - computed.items - listings: " + JSON.stringify(listings, null, 2));
             let expiry = null;
             let ensStatus = null;
             if (collection.contract == ENS_BASEREGISTRARIMPLEMENTATION_ADDRESS || collection.contract == ENS_NAMEWRAPPER_ADDRESS) {
@@ -801,6 +805,8 @@ portfolioData: {{ portfolioData }}
               description: tokenInfo.description,
               expiry,
               ensStatus,
+              events,
+              listings,
             });
           }
         } else {
@@ -946,7 +952,7 @@ portfolioData: {{ portfolioData }}
     },
     pagedFilteredSortedItems() {
       const results = this.filteredSortedItems.slice((this.settings.items.currentPage - 1) * this.settings.items.itemsPerPage, this.settings.items.currentPage * this.settings.items.itemsPerPage);
-      // console.log(now() + " Portfolio - computed.pagedFilteredSortedItems - results: " + JSON.stringify(results, null, 2));
+      console.log(now() + " Portfolio - computed.pagedFilteredSortedItems - results: " + JSON.stringify(results, null, 2));
       return results;
     },
 
