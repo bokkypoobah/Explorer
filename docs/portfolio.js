@@ -566,6 +566,12 @@ portfolioData: {{ portfolioData }}
     portfolioMetadata() {
       return store.getters['portfolio/metadata'];
     },
+    portfolioEvents() {
+      return store.getters['portfolio/events'];
+    },
+    portfolioListings() {
+      return store.getters['portfolio/listings'];
+    },
     portfolioENSData() {
       return store.getters['portfolio/ensData'];
     },
