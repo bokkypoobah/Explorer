@@ -59,11 +59,11 @@ const Portfolio = {
                   </template>
                   <v-list-item-title>NFT Metadata</v-list-item-title>
                 </v-list-item>
-                <v-list-item @click="syncPortfolio(['prices']);" density="compact">
+                <v-list-item @click="syncPortfolio(['eventsandlistings']);" density="compact">
                   <template v-slot:prepend>
                     <v-icon color="blue-lighten-1">mdi-refresh</v-icon>
                   </template>
-                  <v-list-item-title>NFT Prices</v-list-item-title>
+                  <v-list-item-title>NFT Events & Listings</v-list-item-title>
                 </v-list-item>
                 <v-list-item @click="syncPortfolio(['ens']);" density="compact">
                   <template v-slot:prepend>
