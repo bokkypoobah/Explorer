@@ -507,6 +507,11 @@ const tokenModule = {
       db.close();
     },
     async syncTokenMetadata(context, address) {
+      const DELAYINMILLIS = 500;
+      const openseaAPIFetchOptions = {
+        method: 'GET',
+        headers: {accept: '*/*', 'x-api-key': store.getters['config/config'].openseaAPIKey}
+      };
       const validatedAddress = validateAddress(address);
       if (!validatedAddress) {
         // TODO: Handle error in UI
@@ -514,27 +519,53 @@ const tokenModule = {
         return;
       }
       console.log(now() + " tokenModule - actions.syncTokenMetadata - validatedAddress: " + validatedAddress);
+
+      let url = "https://api.opensea.io/api/v2/chain/ethereum/contract/" + validatedAddress;
+      console.error(now() + " tokenModule - actions.syncTokenMetadata - url: " + url);
+
+      const data = await fetch(url, openseaAPIFetchOptions)
+        .then(res => res.json())
+        .catch(err => console.error(err));
+      console.log(now() + " tokenModule - actions.syncTokenMetadata - data: " + JSON.stringify(data, null, 2));
+      const slug = data && data.collection || null;
+      if (!slug) {
+        // TODO: Handle error in UI
+        console.error(now() + " tokenModule - actions.syncTokenMetadata - No OpenSea collection name found for address: " + address);
+        return;
+      }
+      console.log(now() + " tokenModule - actions.syncTokenMetadata - slug: " + JSON.stringify(slug, null, 2));
+
       const metadata = {};
       let continuation = null;
       do {
-        let url = store.getters['web3/reservoir'] + "tokens/v7?collection=" + validatedAddress + "&sortBy=updatedAt&limit=1000&includeTopBid=true&includeAttributes=true&includeLastSale=true";
-        url = url + (continuation != null ? "&continuation=" + continuation : "");
-        console.log(moment().format("HH:mm:ss") + " downloadFromReservoir - url: " + url);
-        const data = await fetch(url)
-          .then(handleErrors)
-          .then(response => response.json())
-          .catch(function(error) {
-            console.error(now() + " tokenModule - actions.syncTokenMetadata - ERROR: " + error);
-            return {};
-          });
-        continuation = data.continuation;
-        // console.log(now() + " tokenModule - actions.syncTokenMetadata - data: " + JSON.stringify(data, null, 2).substring(0, 200));
-        parseReservoirDataForCollection(data, metadata);
-        console.log(now() + " tokenModule - actions.syncTokenMetadata - metadata - #tokens: " + Object.keys(metadata.tokens).length);
+        url = "https://api.opensea.io/api/v2/collection/" + slug + "/nfts?limit=200" + (continuation && "&next=" + continuation || "");
+        console.error(now() + " tokenModule - actions.syncTokenMetadata - url: " + url);
+
+        const data = await fetch(url, openseaAPIFetchOptions)
+          .then(res => res.json())
+          .catch(err => console.error(err));
+        // console.log(now() + " tokenModule - actions.syncTokenMetadata - data: " + JSON.stringify(data, null, 2));
+        console.log(now() + " tokenModule - actions.syncTokenMetadata - data.nfts.length: " + JSON.stringify(data && data.nfts && data.nfts.length || "", null, 2));
+        // parseOpenseaNFTMetadata(data, metadata, parameters.chainId);
+
+        // let url = store.getters['web3/reservoir'] + "tokens/v7?collection=" + validatedAddress + "&sortBy=updatedAt&limit=1000&includeTopBid=true&includeAttributes=true&includeLastSale=true";
+        // url = url + (continuation != null ? "&continuation=" + continuation : "");
+        // console.log(moment().format("HH:mm:ss") + " downloadFromReservoir - url: " + url);
+        // const data = await fetch(url)
+        //   .then(handleErrors)
+        //   .then(response => response.json())
+        //   .catch(function(error) {
+        //     console.error(now() + " tokenModule - actions.syncTokenMetadata - ERROR: " + error);
+        //     return {};
+        //   });
+        continuation = data.next || null;
+        // // console.log(now() + " tokenModule - actions.syncTokenMetadata - data: " + JSON.stringify(data, null, 2).substring(0, 200));
+        // parseReservoirDataForCollection(data, metadata);
+        // console.log(now() + " tokenModule - actions.syncTokenMetadata - metadata - #tokens: " + Object.keys(metadata.tokens).length);
         if (continuation != null) {
-          await delay(1000);
+          await delay(DELAYINMILLIS);
         }
-      } while (continuation != null);
+      } while (continuation != null && !context.state.sync.halt);
       console.log(now() + " tokenModule - actions.syncTokenMetadata - metadata: " + JSON.stringify(metadata, null, 2));
 
       const chainId = store.getters["web3/chainId"];
