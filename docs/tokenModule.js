@@ -539,15 +539,14 @@ const tokenModule = {
       const metadata = {};
       let continuation = null;
       do {
-        url = "https://api.opensea.io/api/v2/collection/" + slug + "/nfts?limit=5" + (continuation && "&next=" + continuation || "");
-        // url = "https://api.opensea.io/api/v2/collection/" + slug + "/nfts?limit=200" + (continuation && "&next=" + continuation || "");
+        url = "https://api.opensea.io/api/v2/collection/" + slug + "/nfts?limit=200" + (continuation && "&next=" + continuation || "");
         console.error(now() + " tokenModule - actions.syncTokenMetadata - url: " + url);
-
         const data = await fetch(url, openseaAPIFetchOptions)
           .then(handleErrors)
           .then(res => res.json())
           .catch(err => console.error(err));
         parseOpenseaNFTsByCollection(data, metadata, chainId, validatedAddress);
+        continuation = data.next || null;
         if (continuation != null) {
           await delay(DELAYINMILLIS);
         }

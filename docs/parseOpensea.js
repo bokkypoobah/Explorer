@@ -281,39 +281,21 @@ function parseOpenseaNFTEvents(data, events, chainId, contract, tokenId) {
 }
 
 function parseOpenseaNFTsByCollection(data, metadata, chainId, contract) {
-  console.error(moment().format("HH:mm:ss") + " parseOpenseaNFTsByCollection - data: " + JSON.stringify(data, null, 2));
+  // console.log(moment().format("HH:mm:ss") + " parseOpenseaNFTsByCollection - data: " + JSON.stringify(data, null, 2));
+  if (!(chainId in metadata)) {
+    metadata[chainId] = {};
+  }
+  if (!(contract in metadata[chainId])) {
+    metadata[chainId][contract] = {};
+  }
   const records = [];
-  // for (const order of (data && data.orders || [])) {
-  //   let record = null;
-  //   const protocolData = order && order.protocol_data || null;
-  //   record = {
-  //     listingTime: parseInt(order.listing_time),
-  //     expirationTime: parseInt(order.expiration_time),
-  //     // TODO: Delete - for checking initially
-  //     listingTimeString: order.listing_time && moment.unix(order.listing_time).utc().format("YYYY-MM-DD HH:mm:ss") || null,
-  //     expirationTimeString: order.expiration_time && moment.unix(order.expiration_time).utc().format("YYYY-MM-DD HH:mm:ss") || null,
-  //     orderHash: order.order_hash,
-  //     // TODO: Delete - don't need
-  //     // offerer: protocolData && protocolData.parameters && ethers.utils.getAddress(protocolData.parameters.offerer) || null,
-  //     maker: order.maker && ethers.utils.getAddress(order.maker.address) || null,
-  //     currentPrice: ethers.BigNumber.from(order.current_price).toString(),
-  //     // eventType: event.event_type,
-  //     // transferType: event.transfer_type,
-  //     // timestamp: parseInt(event.event_timestamp),
-  //     // txHash: event.transaction,
-  //     // from: ethers.utils.getAddress(event.from_address),
-  //     // to: ethers.utils.getAddress(event.to_address),
-  //     // quantity: parseInt(event.quantity),
-  //   };
-  //   if (record) {
-  //     console.error(moment().format("HH:mm:ss") + " parseOpenseaNFTsByCollection - record: " + JSON.stringify(record, null, 2));
-  //     records.push(record);
-  //   }
-  //   // console.log(moment().format("HH:mm:ss") + " parseOpenseaNFTsByCollection - protocolData: " + JSON.stringify(protocolData, null, 2));
-  //   // console.log(moment().format("HH:mm:ss") + " parseOpenseaNFTsByCollection - order: " + JSON.stringify(order, null, 2));
-  // }
-  // if (!(contract in listings[chainId])) {
-  //   listings[chainId][contract] = {};
-  // }
-  // listings[chainId][contract][tokenId] = records;
+  for (const nft of (data && data.nfts || [])) {
+    let record = null;
+    // console.error(moment().format("HH:mm:ss") + " parseOpenseaNFTsByCollection - nft: " + JSON.stringify(nft, null, 2));
+    metadata[chainId][contract][nft.identifier] = {
+      name: nft.name,
+      description: nft.description,
+      image: nft.image_url,
+    };
+  }
 }
