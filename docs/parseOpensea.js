@@ -214,3 +214,106 @@ function parseOpenseaNFTListings(data, listings, chainId, contract, tokenId) {
   }
   listings[chainId][contract][tokenId] = records;
 }
+
+function parseOpenseaNFTEvents(data, events, chainId, contract, tokenId) {
+  // console.log(moment().format("HH:mm:ss") + " parseOpenseaNFTEvents - data: " + JSON.stringify(data, null, 2));
+  const records = [];
+  for (const event of (data && data.asset_events || [])) {
+    // console.log(moment().format("HH:mm:ss") + " parseOpenseaNFTEvents - event: " + JSON.stringify(event, null, 2));
+    let record = null;
+    if (event.event_type == "order") {
+      // console.log(moment().format("HH:mm:ss") + " parseOpenseaNFTEvents - ORDER event: " + JSON.stringify(event, null, 2));
+      record = {
+        eventType: event.event_type,
+        orderType: event.order_type,
+        timestamp: parseInt(event.event_timestamp),
+        payment: {
+          quantity: ethers.BigNumber.from(event.payment.quantity).toString(),
+          token: ethers.utils.getAddress(event.payment.token_address),
+          decimals: parseInt(event.payment.decimals),
+          symbol: event.payment.symbol,
+        },
+        startDate: event.start_date && parseInt(event.start_date) || null,
+        expirationDate: event.expiration_date && parseInt(event.expiration_date) || null,
+        maker: event.maker && ethers.utils.getAddress(event.maker) || null,
+        taker: event.taker && ethers.utils.getAddress(event.taker) || null,
+        quantity: parseInt(event.quantity),
+      };
+
+    } else if (event.event_type == "sale") {
+      // console.log(moment().format("HH:mm:ss") + " parseOpenseaNFTEvents - SALE event: " + JSON.stringify(event, null, 2));
+      record = {
+        eventType: event.event_type,
+        timestamp: parseInt(event.event_timestamp),
+        txHash: event.transaction,
+        payment: {
+          quantity: ethers.BigNumber.from(event.payment.quantity).toString(),
+          token: ethers.utils.getAddress(event.payment.token_address),
+          decimals: parseInt(event.payment.decimals),
+          symbol: event.payment.symbol,
+        },
+        buyer: ethers.utils.getAddress(event.buyer),
+        seller: ethers.utils.getAddress(event.seller),
+        quantity: parseInt(event.quantity),
+      };
+
+    } else if (event.event_type == "transfer") {
+      // console.log(moment().format("HH:mm:ss") + " parseOpenseaNFTEvents - TRANSFER event: " + JSON.stringify(event, null, 2));
+      record = {
+        eventType: event.event_type,
+        transferType: event.transfer_type,
+        timestamp: parseInt(event.event_timestamp),
+        txHash: event.transaction,
+        from: ethers.utils.getAddress(event.from_address),
+        to: ethers.utils.getAddress(event.to_address),
+        quantity: parseInt(event.quantity),
+      };
+    }
+    if (record) {
+      console.error(moment().format("HH:mm:ss") + " parseOpenseaNFTEvents - record: " + JSON.stringify(record, null, 2));
+      records.push(record);
+    }
+  }
+  if (!(contract in events[chainId])) {
+    events[chainId][contract] = {};
+  }
+  events[chainId][contract][tokenId] = records;
+}
+
+function parseOpenseaNFTsByCollection(data, metadata, chainId, contract) {
+  console.error(moment().format("HH:mm:ss") + " parseOpenseaNFTsByCollection - data: " + JSON.stringify(data, null, 2));
+  const records = [];
+  // for (const order of (data && data.orders || [])) {
+  //   let record = null;
+  //   const protocolData = order && order.protocol_data || null;
+  //   record = {
+  //     listingTime: parseInt(order.listing_time),
+  //     expirationTime: parseInt(order.expiration_time),
+  //     // TODO: Delete - for checking initially
+  //     listingTimeString: order.listing_time && moment.unix(order.listing_time).utc().format("YYYY-MM-DD HH:mm:ss") || null,
+  //     expirationTimeString: order.expiration_time && moment.unix(order.expiration_time).utc().format("YYYY-MM-DD HH:mm:ss") || null,
+  //     orderHash: order.order_hash,
+  //     // TODO: Delete - don't need
+  //     // offerer: protocolData && protocolData.parameters && ethers.utils.getAddress(protocolData.parameters.offerer) || null,
+  //     maker: order.maker && ethers.utils.getAddress(order.maker.address) || null,
+  //     currentPrice: ethers.BigNumber.from(order.current_price).toString(),
+  //     // eventType: event.event_type,
+  //     // transferType: event.transfer_type,
+  //     // timestamp: parseInt(event.event_timestamp),
+  //     // txHash: event.transaction,
+  //     // from: ethers.utils.getAddress(event.from_address),
+  //     // to: ethers.utils.getAddress(event.to_address),
+  //     // quantity: parseInt(event.quantity),
+  //   };
+  //   if (record) {
+  //     console.error(moment().format("HH:mm:ss") + " parseOpenseaNFTsByCollection - record: " + JSON.stringify(record, null, 2));
+  //     records.push(record);
+  //   }
+  //   // console.log(moment().format("HH:mm:ss") + " parseOpenseaNFTsByCollection - protocolData: " + JSON.stringify(protocolData, null, 2));
+  //   // console.log(moment().format("HH:mm:ss") + " parseOpenseaNFTsByCollection - order: " + JSON.stringify(order, null, 2));
+  // }
+  // if (!(contract in listings[chainId])) {
+  //   listings[chainId][contract] = {};
+  // }
+  // listings[chainId][contract][tokenId] = records;
+}
