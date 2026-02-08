@@ -521,32 +521,38 @@ const tokenModule = {
       }
       console.log(now() + " tokenModule - actions.syncTokenMetadata - validatedAddress: " + validatedAddress);
 
+      const metadata = {};
+
       let url = "https://api.opensea.io/api/v2/chain/ethereum/contract/" + validatedAddress;
       console.error(now() + " tokenModule - actions.syncTokenMetadata - url: " + url);
-
       const data = await fetch(url, openseaAPIFetchOptions)
         .then(res => res.json())
         .catch(err => console.error(err));
       console.log(now() + " tokenModule - actions.syncTokenMetadata - data: " + JSON.stringify(data, null, 2));
-      const slug = data && data.collection || null;
-      if (!slug) {
+      if (data) {
+        metadata.chain = data.chain || null;
+        metadata.slug = data.collection || null;
+        metadata.name = data.name || null;
+        metadata.type = data.contract_standard || null;
+      }
+      // const slug = data && data.collection || null;
+      if (!metadata.slug) {
         // TODO: Handle error in UI
         console.error(now() + " tokenModule - actions.syncTokenMetadata - No OpenSea collection name found for address: " + address);
         return;
       }
-      console.log(now() + " tokenModule - actions.syncTokenMetadata - slug: " + JSON.stringify(slug, null, 2));
+      console.log(now() + " tokenModule - actions.syncTokenMetadata - metadata: " + JSON.stringify(metadata, null, 2));
 
-      const metadata = {};
       let continuation = null;
       do {
-        url = "https://api.opensea.io/api/v2/collection/" + slug + "/nfts?limit=200" + (continuation && "&next=" + continuation || "");
+        url = "https://api.opensea.io/api/v2/collection/" + metadata.slug + "/nfts?limit=200" + (continuation && "&next=" + continuation || "");
         console.error(now() + " tokenModule - actions.syncTokenMetadata - url: " + url);
         const data = await fetch(url, openseaAPIFetchOptions)
           .then(handleErrors)
           .then(res => res.json())
           .catch(err => console.error(err));
         parseOpenseaNFTsByCollection(data, metadata, chainId, validatedAddress);
-        continuation = data.next || null;
+        // continuation = data.next || null;
         if (continuation != null) {
           await delay(DELAYINMILLIS);
         }

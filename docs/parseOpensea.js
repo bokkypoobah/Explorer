@@ -282,20 +282,18 @@ function parseOpenseaNFTEvents(data, events, chainId, contract, tokenId) {
 
 function parseOpenseaNFTsByCollection(data, metadata, chainId, contract) {
   // console.log(moment().format("HH:mm:ss") + " parseOpenseaNFTsByCollection - data: " + JSON.stringify(data, null, 2));
-  if (!(chainId in metadata)) {
-    metadata[chainId] = {};
-  }
-  if (!(contract in metadata[chainId])) {
-    metadata[chainId][contract] = {};
+  if (!("tokens" in metadata)) {
+    metadata.tokens = {};
   }
   const records = [];
   for (const nft of (data && data.nfts || [])) {
     let record = null;
     // console.error(moment().format("HH:mm:ss") + " parseOpenseaNFTsByCollection - nft: " + JSON.stringify(nft, null, 2));
-    metadata[chainId][contract][nft.identifier] = {
+    metadata.tokens[nft.identifier] = {
       name: nft.name,
       description: nft.description,
       image: nft.image_url,
+      attributes: [],
     };
   }
 }
