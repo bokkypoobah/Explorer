@@ -11,6 +11,7 @@ Web3 dapp: https://bokkypoobah.github.io/Explorer/ connected to Ethereum Mainnet
 * Web3 connection to archive nodes to retrieve historical event logs, e.g., through MetaMask
 * Etherscan API key to retrieve EOA to EOA, internal, and non-event-log-emitting transactions. The free plan is sufficient. See https://etherscan.io/apis
 * OpenSea API key to retrieve NFT metadata and market information. See https://docs.opensea.io/reference/api-keys
+* Alchemy API key to retrieve NFT metadata and market information. See https://www.alchemy.com/docs/create-an-api-key
 
 Enter the API keys in Other -> Config -> API Keys.
 

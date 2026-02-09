@@ -4,16 +4,14 @@ const configModule = {
     config: {
       etherscanAPIKey: null,
       openseaAPIKey: null,
-      // portfolios: {},
+      alchemyAPIKey: null,
       chains: {},
-      version: 5,
+      version: 6,
     },
   },
   getters: {
     config: state => state.config,
-    // portfolios: state => state.config.portfolios,
     chains(state) {
-      // console.log(now() + " configModule - getters.chains");
       return { ...CHAINS, ...state.config.chains };
     },
   },
@@ -30,22 +28,10 @@ const configModule = {
       console.log(now() + " configModule - mutations.setOpenseaAPIKey - openseaAPIKey: " + openseaAPIKey);
       state.config.openseaAPIKey = openseaAPIKey;
     },
-    // addPortfolio(state, { name, originalName, accounts }) {
-    //   console.log(now() + " configModule - mutations.addPortfolio - name: " + name + ", originalName: " + originalName + ", accounts: " + JSON.stringify(accounts));
-    //   if (originalName != null && name != originalName) {
-    //     delete state.config.portfolios[originalName];
-    //   }
-    //   const accountsMap = {};
-    //   for (const account of accounts) {
-    //     accountsMap[account.account] = { active: account.active };
-    //   }
-    //   state.config.portfolios[name] = accountsMap;
-    //   console.log(now() + " configModule - mutations.addPortfolio - state.config.portfolios[name]: " + JSON.stringify(state.config.portfolios[name]));
-    // },
-    // deletePortfolio(state, name) {
-    //   console.log(now() + " configModule - mutations.deletePortfolio - name: " + name);
-    //   delete state.config.portfolios[name];
-    // },
+    setAlchemyAPIKey(state, alchemyAPIKey) {
+      console.log(now() + " configModule - mutations.setAlchemyAPIKey - alchemyAPIKey: " + alchemyAPIKey);
+      state.config.alchemyAPIKey = alchemyAPIKey;
+    },
   },
   // watch: {
   //   config(newVal, oldVal) {
@@ -59,12 +45,11 @@ const configModule = {
       if (localStorage.explorerConfig) {
         const tempConfig = JSON.parse(localStorage.explorerConfig);
         if ('version' in tempConfig && tempConfig.version == context.state.config.version) {
-          // console.log(now() + " configModule - actions.loadConfig - tempConfig: " + JSON.stringify(tempConfig).substring(0, 200));
           context.commit('setConfig', tempConfig);
         }
       }
       store.subscribe((mutation, state) => {
-        if (mutation.type == "config/setEtherscanAPIKey" || mutation.type == "config/setOpenseaAPIKey" || mutation.type == "config/addChain" || mutation.type == "config/addPortfolio" || mutation.type == "config/deletePortfolio") {
+        if (mutation.type == "config/setEtherscanAPIKey" || mutation.type == "config/setOpenseaAPIKey" || mutation.type == "config/setAlchemyAPIKey" || mutation.type == "config/addChain" || mutation.type == "config/addPortfolio" || mutation.type == "config/deletePortfolio") {
           console.log(now() + " configModule - actions.loadConfig - subscribe - mutation.type: " + mutation.type);
           localStorage.explorerConfig = JSON.stringify(context.state.config);
         }
@@ -76,24 +61,8 @@ const configModule = {
     setOpenseaAPIKey(context, openseaAPIKey) {
       context.commit('setOpenseaAPIKey', openseaAPIKey);
     },
-    // addPortfolio(context, { name, originalName, accounts }) {
-    //   console.log(now() + " configModule - actions.addPortfolio - name: " + name + ", originalName: " + originalName + ", accounts: " + JSON.stringify(accounts));
-    //   context.commit('addPortfolio', { name, originalName, accounts });
-    // },
-    // deletePortfolio(context, name) {
-    //   console.log(now() + " configModule - actions.deletePortfolio - name: " + name);
-    //   context.commit('deletePortfolio', name);
-    // },
-    // TODO:
-    // addChain(context, chain) {
-    //   if (!(chain.chainId in state.config.chains)) {
-    //     state.config.chains[chain.chainId] = {
-    //       name: chain.name,
-    //       explorer: chain.explorer,
-    //       api: chain.api,
-    //       reservoir: chain.reservoir,
-    //     };
-    //   }
-    // },
+    setAlchemyAPIKey(context, alchemyAPIKey) {
+      context.commit('setAlchemyAPIKey', alchemyAPIKey);
+    },
   },
 };

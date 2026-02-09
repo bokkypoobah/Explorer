@@ -23,11 +23,14 @@ const Config = {
                         autocomplete
                         v-model="etherscanAPIKey"
                         label="Etherscan API Key:"
-                        placeholder="See https://etherscan.io/apis"
-                        hint="For API calls to retrieve contract ABI and source, and internal and normal transaction listings by account"
+                        placeholder="To retrieve contract ABI and source, and transactions"
                         :append-inner-icon="showEtherscanAPIKey ? 'mdi-eye' : 'mdi-eye-off'"
                         @click:append-inner="showEtherscanAPIKey = !showEtherscanAPIKey"
-                      ></v-text-field>
+                      >
+                        <template #details>
+                          See &nbsp; <a href="https://etherscan.io/apis" target="_blank">https://etherscan.io/apis</a>
+                        </template>
+                      </v-text-field>
                     </v-col>
                   </v-row>
                   <v-row>
@@ -37,11 +40,31 @@ const Config = {
                         autocomplete
                         v-model="openseaAPIKey"
                         label="Opensea API Key:"
-                        placeholder="See https://opensea.io/settings/developer"
-                        hint="For API calls to retrieve token metadata and prices"
+                        placeholder="To retrieve NFT metadata and prices"
                         :append-inner-icon="showOpenseaAPIKey ? 'mdi-eye' : 'mdi-eye-off'"
                         @click:append-inner="showOpenseaAPIKey = !showOpenseaAPIKey"
-                      ></v-text-field>
+                      >
+                        <template #details>
+                          See &nbsp; <a href="https://opensea.io/settings/developer" target="_blank">https://opensea.io/settings/developer</a>
+                        </template>
+                      </v-text-field>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="4">
+                      <v-text-field
+                        :type="showAlchemyAPIKey ? 'text' : 'password'"
+                        autocomplete
+                        v-model="alchemyAPIKey"
+                        label="Alchemy API Key:"
+                        placeholder="To retrieve NFT metadata"
+                        :append-inner-icon="showAlchemyAPIKey ? 'mdi-eye' : 'mdi-eye-off'"
+                        @click:append-inner="showAlchemyAPIKey = !showAlchemyAPIKey"
+                      >
+                        <template #details>
+                          See &nbsp; <a href="https://www.alchemy.com/docs/create-an-api-key" target="_blank">https://www.alchemy.com/docs/create-an-api-key</a>
+                        </template>
+                      </v-text-field>
                     </v-col>
                   </v-row>
                 </v-form>
@@ -133,6 +156,7 @@ const Config = {
       },
       showEtherscanAPIKey: false,
       showOpenseaAPIKey: false,
+      showAlchemyAPIKey: false,
       portfolioDialog: {
         mode: null,
         name: null,
@@ -179,6 +203,14 @@ const Config = {
       },
       set: function(openseaAPIKey) {
         store.dispatch('config/setOpenseaAPIKey', openseaAPIKey);
+      },
+    },
+    alchemyAPIKey: {
+      get: function() {
+        return store.getters['config/config'].alchemyAPIKey;
+      },
+      set: function(alchemyAPIKey) {
+        store.dispatch('config/setAlchemyAPIKey', alchemyAPIKey);
       },
     },
     portfolios() {
